@@ -9,8 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        bg: "#FFFFFF",
+        "bg-secondary": "#F5F5F7",
+        glass: "rgba(255,255,255,0.72)",
+        "text-primary": "#1D1D1F",
+        "text-secondary": "#86868B",
+        accent: "#000000",
+        interactive: "#0066CC",
+        success: "#34C759",
+        border: "rgba(0,0,0,0.08)",
+      },
+      fontFamily: {
+        outfit: ["var(--font-outfit)", "sans-serif"],
+        manrope: ["var(--font-manrope)", "sans-serif"],
       },
     },
   },
