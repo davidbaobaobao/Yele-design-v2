@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default function YaEresClientePage() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6">

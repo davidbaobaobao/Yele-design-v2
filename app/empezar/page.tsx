@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 export default function EmpezarPage() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6">
