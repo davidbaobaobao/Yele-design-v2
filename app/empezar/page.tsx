@@ -235,7 +235,8 @@ export default function EmpezarPage() {
       body: JSON.stringify(formData),
     })
     if (response.ok) {
-      router.push('/gracias')
+      const result = await response.json()
+      router.push(`/elegir-plan?client_id=${result.clientId ?? ''}`)
     } else {
       setSubmitError('Error al enviar. Por favor inténtalo de nuevo o escríbenos a info@yele.design')
       setLoading(false)
