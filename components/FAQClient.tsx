@@ -6,12 +6,11 @@ import { Plus } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 
 export type FAQItem = {
-  id: string
   question: string
   answer: string
 }
 
-export default function FAQClient({ items }: { items: FAQItem[] }) {
+export default function FAQClient({ faqs }: { faqs: FAQItem[] }) {
   const { t } = useLang()
   const [open, setOpen] = useState<number | null>(null)
 
@@ -35,9 +34,9 @@ export default function FAQClient({ items }: { items: FAQItem[] }) {
         </motion.div>
 
         <div className="flex flex-col divide-y divide-black/[0.06]">
-          {items.map((faq, i) => (
+          {faqs.map((faq, i) => (
             <motion.div
-              key={faq.id}
+              key={i}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.06, ease: 'easeOut' } as Transition}

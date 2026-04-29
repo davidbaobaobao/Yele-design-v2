@@ -95,7 +95,7 @@ function ShowcaseCard({ item, index, isLarge }: { item: ShowcaseProject; index: 
   )
 }
 
-export default function ShowcaseClient({ items }: { items: ShowcaseProject[] }) {
+export default function ShowcaseClient({ projects }: { projects: ShowcaseProject[] }) {
   const { t } = useLang()
 
   return (
@@ -121,7 +121,7 @@ export default function ShowcaseClient({ items }: { items: ShowcaseProject[] }) 
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[220px]">
-          {items.slice(0, 5).map((item, i) => (
+          {projects.slice(0, 5).map((item, i) => (
             <ShowcaseCard key={item.id} item={item} index={i} isLarge={i === 0} />
           ))}
         </div>

@@ -1,33 +1,26 @@
 import { supabase } from '@/lib/supabase'
-import FAQClient, { type FAQItem } from './FAQClient'
+import FAQClient from './FAQClient'
 
 export const revalidate = 60
 
-const fallbackItems: FAQItem[] = [
-  { id: '1', question: '¿Cuánto tarda en estar lista mi web?',          answer: 'Entre 3 y 5 días laborables desde que recibimos tu formulario completo. Es el tiempo real, no marketing.' },
-  { id: '2', question: '¿Puedo pedir cambios una vez esté publicada?',   answer: 'Sí. Los cambios de contenido (textos, fotos, precios, horarios...) los hacemos en 24–48h en todos los planes.' },
-  { id: '3', question: '¿Qué pasa si quiero cancelar?',                  answer: 'Sin permanencia. Avisas con 30 días de antelación y listo. No hay penalizaciones ni letras pequeñas.' },
-  { id: '4', question: '¿Están incluidos el hosting y el dominio?',       answer: 'Sí. Hosting gestionado, dominio (.com o .es), certificado SSL y copias de seguridad diarias están incluidos en todos los planes.' },
-  { id: '5', question: '¿Necesito saber de tecnología para gestionar mi web?', answer: 'No. Te damos acceso a un panel sencillo donde puedes cambiar textos e imágenes tú mismo, sin tocar ninguna línea de código.' },
-  { id: '6', question: '¿Y si necesito algo muy específico?',             answer: 'Consúltanos. Si está fuera de los planes estándar, te preparamos un presupuesto a medida sin compromiso.' },
+const FALLBACK = [
+  { question: '¿Necesito saber de tecnología?',             answer: 'No. Tú nos dices qué quieres y nosotros lo construimos. Para actualizar contenido tienes un panel sencillo, sin código.' },
+  { question: '¿Cuánto tarda en estar lista mi web?',       answer: 'Entre 3 y 5 días desde que recibes tu formulario completado. Sin esperas de semanas.' },
+  { question: '¿Puedo cancelar cuando quiera?',             answer: 'Sí. Sin permanencia, sin penalizaciones. Si en algún momento no lo necesitas, cancelas y listo.' },
+  { question: '¿Qué pasa si quiero cambiar algo de mi web?', answer: 'Nos escribes y lo cambiamos. Según tu plan, en 12, 24 o 48 horas. Sin presupuestos extra.' },
+  { question: '¿El dominio y el hosting están incluidos?',  answer: 'El hosting sí. El dominio se puede gestionar con nosotros o tú puedes traer el tuyo propio.' },
+  { question: '¿Puedo ver ejemplos de webs que hayáis hecho?', answer: 'Sí, en la sección Trabajos de esta misma página puedes ver proyectos reales.' },
 ]
 
 export default async function FAQ() {
-  let items: FAQItem[] = fallbackItems
+  const { data } = await supabase
+    .from('faqs')
+    .select('question, answer')
+    .eq('client_id', process.env.NEXT_PUBLIC_CLIENT_ID)
+    .eq('visible', true)
+    .order('sort_order', { ascending: true })
 
-  try {
-    const { data, error } = await supabase
-      .from('faqs')
-      .select('id, question, answer')
-      .eq('visible', true)
-      .order('sort_order', { ascending: true })
+  const faqs = (data && data.length > 0) ? data : FALLBACK
 
-    if (!error && data && data.length > 0) {
-      items = data
-    }
-  } catch {
-    // Keep fallback on network error
-  }
-
-  return <FAQClient items={items} />
+  return <FAQClient faqs={faqs} />
 }

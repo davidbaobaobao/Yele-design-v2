@@ -4,15 +4,15 @@ import { motion, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
 export type Testimonial = {
-  id: string
-  author: string
+  author_name: string
   role: string
-  text: string
+  body: string
+  rating: number
 }
 
-export default function TestimoniosClient({ items }: { items: Testimonial[] }) {
+export default function TestimoniosClient({ testimonials }: { testimonials: Testimonial[] }) {
   const { t } = useLang()
-  const doubled = [...items, ...items]
+  const doubled = [...testimonials, ...testimonials]
 
   return (
     <section className="py-24 md:py-32 bg-[#F5F5F7] overflow-hidden">
@@ -47,10 +47,10 @@ export default function TestimoniosClient({ items }: { items: Testimonial[] }) {
               className="flex-shrink-0 w-80 bg-white rounded-2xl p-7 shadow-[0_4px_24px_rgba(0,0,0,0.06)]"
             >
               <p className="font-manrope text-[#1D1D1F] text-sm leading-relaxed mb-5">
-                &ldquo;{item.text}&rdquo;
+                &ldquo;{item.body}&rdquo;
               </p>
               <footer>
-                <p className="font-outfit font-medium text-sm text-[#1D1D1F]">{item.author}</p>
+                <p className="font-outfit font-medium text-sm text-[#1D1D1F]">{item.author_name}</p>
                 <p className="font-manrope text-xs text-[#86868B] mt-0.5">{item.role}</p>
               </footer>
             </div>

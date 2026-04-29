@@ -14,10 +14,10 @@ type ShowcaseProject = {
   name: string
   description: string | null
   main_image: string
-  additional_images: string[] | string | null
+  additional_images: unknown
 }
 
-const fallbackProjects: ShowcaseProject[] = [
+const FALLBACK: ShowcaseProject[] = [
   { id: '1', name: 'El Taller · Cerámica, Gràcia',         description: 'Estudio de cerámica artesanal',  main_image: 'https://images.pexels.com/photos/32212371/pexels-photo-32212371.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', additional_images: [] },
   { id: '2', name: 'Bar Zuriñe · Tapas, Barcelona',        description: 'Bar de tapas tradicional',       main_image: 'https://images.pexels.com/photos/21327986/pexels-photo-21327986.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', additional_images: [] },
   { id: '3', name: 'Estudio Noa · Yoga, Madrid',           description: 'Estudio de yoga y meditación',  main_image: 'https://images.pexels.com/photos/4327023/pexels-photo-4327023.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',   additional_images: [] },
@@ -25,28 +25,22 @@ const fallbackProjects: ShowcaseProject[] = [
   { id: '5', name: 'Txema · Fontanero, Bilbao',            description: 'Fontanero autónomo',            main_image: 'https://images.unsplash.com/photo-1649769069590-268b0b994462?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',   additional_images: [] },
 ]
 
-function parseImages(raw: string[] | string | null): string[] {
-  if (!raw) return []
-  if (Array.isArray(raw)) return raw.filter(Boolean)
-  try { return (JSON.parse(raw) as string[]).filter(Boolean) } catch { return [] }
+function parseImages(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw.filter((v): v is string => typeof v === 'string')
+  if (typeof raw === 'string') {
+    try { return (JSON.parse(raw) as string[]).filter(Boolean) } catch { return [] }
+  }
+  return []
 }
 
 export default async function EjemplosPage() {
-  let projects: ShowcaseProject[] = fallbackProjects
+  const { data } = await supabase
+    .from('showcase_projects')
+    .select('id, name, description, main_image, additional_images')
+    .eq('visible', true)
+    .order('sort_order', { ascending: true })
 
-  try {
-    const { data, error } = await supabase
-      .from('showcase_projects')
-      .select('*')
-      .eq('visible', true)
-      .order('sort_order', { ascending: true })
-
-    if (!error && data && data.length > 0) {
-      projects = data
-    }
-  } catch {
-    // Keep fallback on network error
-  }
+  const projects = (data && data.length > 0) ? data : FALLBACK
 
   return (
     <main className="min-h-screen bg-white">

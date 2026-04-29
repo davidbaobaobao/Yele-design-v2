@@ -1,31 +1,24 @@
 import { supabase } from '@/lib/supabase'
-import TestimoniosClient, { type Testimonial } from './TestimoniosClient'
+import TestimoniosClient from './TestimoniosClient'
 
 export const revalidate = 60
 
-const fallbackItems: Testimonial[] = [
-  { id: '1', author: 'Sara M.',    role: 'Instructora de yoga, Madrid',                  text: 'Tenía la web pendiente desde hacía dos años. Con Yele la tuve lista en cuatro días. Ahora mis alumnas me encuentran en Google.' },
-  { id: '2', author: 'Carlos R.', role: 'Fontanero autónomo, Bilbao',                   text: 'Pensé que tener web era complicado y caro. Por €20 al mes tengo algo que parece de empresa grande.' },
-  { id: '3', author: 'Elena T.',  role: 'Propietaria de estudio de cerámica, Gràcia',   text: 'El proceso fue rapidísimo. Me hicieron preguntas concretas, y tres días después tenía una web que realmente me representa.' },
-  { id: '4', author: 'Miguel A.', role: 'Abogado, Valencia',                             text: 'Necesitaba algo serio, no un template de Wix. Yele entendió eso desde el primer mensaje.' },
+const FALLBACK = [
+  { author_name: 'Sara M.',    role: 'Instructora de yoga, Madrid',                  body: 'Tenía la web pendiente desde hacía dos años. Con Yele la tuve lista en cuatro días. Ahora mis alumnas me encuentran en Google.',   rating: 5 },
+  { author_name: 'Carlos R.', role: 'Fontanero autónomo, Bilbao',                   body: 'Pensé que tener web era complicado y caro. Por €29 al mes tengo algo que parece de empresa grande.',                              rating: 5 },
+  { author_name: 'Elena T.',  role: 'Propietaria de estudio de cerámica, Gràcia',   body: 'El proceso fue rapidísimo. Me hicieron preguntas concretas, y tres días después tenía una web que realmente me representa.',      rating: 5 },
+  { author_name: 'Miguel A.', role: 'Abogado, Valencia',                             body: 'Necesitaba algo serio, no un template de Wix. Yele entendió eso desde el primer mensaje.',                                       rating: 5 },
 ]
 
 export default async function Testimonios() {
-  let items: Testimonial[] = fallbackItems
+  const { data } = await supabase
+    .from('testimonials')
+    .select('author_name, role, body, rating')
+    .eq('client_id', process.env.NEXT_PUBLIC_CLIENT_ID)
+    .eq('visible', true)
+    .order('sort_order', { ascending: true })
 
-  try {
-    const { data, error } = await supabase
-      .from('testimonials')
-      .select('id, author, role, text')
-      .eq('visible', true)
-      .order('sort_order', { ascending: true })
+  const testimonials = (data && data.length > 0) ? data : FALLBACK
 
-    if (!error && data && data.length > 0) {
-      items = data
-    }
-  } catch {
-    // Keep fallback on network error
-  }
-
-  return <TestimoniosClient items={items} />
+  return <TestimoniosClient testimonials={testimonials} />
 }
