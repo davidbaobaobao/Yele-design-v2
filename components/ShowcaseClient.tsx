@@ -2,11 +2,12 @@
 
 import { useRef } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
-import type { ShowcaseItem } from './Showcase'
+import type { ShowcaseProject } from './Showcase'
 
-function ShowcaseCard({ item, index, isLarge }: { item: ShowcaseItem; index: number; isLarge: boolean }) {
+function ShowcaseCard({ item, index, isLarge }: { item: ShowcaseProject; index: number; isLarge: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -18,11 +19,9 @@ function ShowcaseCard({ item, index, isLarge }: { item: ShowcaseItem; index: num
   const rotateX = useTransform(smoothY, [-0.5, 0.5], [maxTilt, -maxTilt])
   const rotateY = useTransform(smoothX, [-0.5, 0.5], [-maxTilt, maxTilt])
 
-  // Inner image parallax — moves opposite to mouse for depth
   const imgX = useTransform(smoothX, [-0.5, 0.5], [8, -8])
   const imgY = useTransform(smoothY, [-0.5, 0.5], [8, -8])
 
-  // Spotlight
   const spotX = useTransform(smoothX, [-0.5, 0.5], [0, 100])
   const spotY = useTransform(smoothY, [-0.5, 0.5], [0, 100])
   const spotlight = useMotionTemplate`radial-gradient(circle at ${spotX}% ${spotY}%, rgba(255,255,255,0.18) 0%, transparent 55%)`
@@ -42,7 +41,7 @@ function ShowcaseCard({ item, index, isLarge }: { item: ShowcaseItem; index: num
   return (
     <motion.div
       ref={ref}
-      className={`relative overflow-hidden rounded-2xl cursor-default ${
+      className={`relative overflow-hidden rounded-2xl ${
         isLarge ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1'
       }`}
       style={{ rotateX, rotateY, transformPerspective: 1200 }}
@@ -53,49 +52,50 @@ function ShowcaseCard({ item, index, isLarge }: { item: ShowcaseItem; index: num
       transition={{ duration: 0.5, delay: index * 0.08, ease: 'easeOut' } as Transition}
       viewport={{ once: true, margin: '-80px' }}
     >
-      {/* Parallax image layer */}
-      <motion.div
-        className="absolute inset-0"
-        style={{ x: imgX, y: imgY, scale: 1.12 }}
-      >
-        <Image
-          src={item.image_url}
-          alt={`Web de ${item.caption} — diseñada por Yele`}
-          fill
-          sizes={isLarge ? '(max-width: 768px) 100vw, 50vw' : '(max-width: 768px) 50vw, 25vw'}
-          className="object-cover"
-          priority={index === 0}
+      <Link href={`/ejemplos#${item.id}`} className="block w-full h-full focus-visible:outline-none">
+        {/* Parallax image layer */}
+        <motion.div className="absolute inset-0" style={{ x: imgX, y: imgY, scale: 1.12 }}>
+          <Image
+            src={item.main_image}
+            alt={`Web de ${item.name} — diseñada por Yele`}
+            fill
+            sizes={isLarge ? '(max-width: 768px) 100vw, 50vw' : '(max-width: 768px) 50vw, 25vw'}
+            className="object-cover"
+            priority={index === 0}
+          />
+        </motion.div>
+
+        {/* Spotlight overlay */}
+        <motion.div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{ background: spotlight }}
+          aria-hidden="true"
         />
-      </motion.div>
 
-      {/* Spotlight overlay */}
-      <motion.div
-        className="absolute inset-0 z-10 pointer-events-none"
-        style={{ background: spotlight }}
-        aria-hidden="true"
-      />
-
-      {/* Hover info overlay */}
-      <motion.div
-        className="absolute inset-0 z-20 bg-gradient-to-t from-black/65 via-transparent to-transparent"
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        transition={{ duration: 0.3 } as Transition}
-      />
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 z-30 p-4"
-        initial={{ opacity: 0, y: 6 }}
-        whileHover={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 } as Transition}
-      >
-        <p className="font-outfit font-medium text-white text-sm">{item.caption}</p>
-        <p className="font-manrope text-white/70 text-xs mt-0.5">{item.category}</p>
-      </motion.div>
+        {/* Hover info overlay */}
+        <motion.div
+          className="absolute inset-0 z-20 bg-gradient-to-t from-black/65 via-transparent to-transparent"
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.3 } as Transition}
+        />
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 z-30 p-4"
+          initial={{ opacity: 0, y: 6 }}
+          whileHover={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 } as Transition}
+        >
+          <p className="font-outfit font-medium text-white text-sm">{item.name}</p>
+          {item.description && (
+            <p className="font-manrope text-white/70 text-xs mt-0.5">{item.description}</p>
+          )}
+        </motion.div>
+      </Link>
     </motion.div>
   )
 }
 
-export default function ShowcaseClient({ items }: { items: ShowcaseItem[] }) {
+export default function ShowcaseClient({ items }: { items: ShowcaseProject[] }) {
   const { t } = useLang()
 
   return (
@@ -124,6 +124,15 @@ export default function ShowcaseClient({ items }: { items: ShowcaseItem[] }) {
           {items.slice(0, 5).map((item, i) => (
             <ShowcaseCard key={item.id} item={item} index={i} isLarge={i === 0} />
           ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link
+            href="/ejemplos"
+            className="inline-flex items-center gap-2 font-manrope font-medium text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors"
+          >
+            {t('Ver todos los trabajos', 'See all work')} →
+          </Link>
         </div>
 
       </div>
