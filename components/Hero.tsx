@@ -33,7 +33,7 @@ export default function Hero() {
             {...fadeUp(0)}
           >
             <span className="block">{t('Tu web a medida,', 'Your website, custom-made,')}</span>
-            <span className="block text-[#86868B]">{t('desde 20€ al mes,', 'from €20/month,')}</span>
+            <span className="block text-[#86868B]">{t('desde 29€ al mes,', 'from €29/month,')}</span>
             <span className="block">{t('sin letra pequeña.', 'no fine print.')}</span>
           </motion.h1>
 
@@ -75,7 +75,7 @@ export default function Hero() {
             {[
               { label: t('⚡ Entrega en 3–5 días', '⚡ Delivered in 3–5 days') },
               { label: t('✓ Sin permanencia', '✓ No lock-in') },
-              { label: '€20 / mes' },
+              { label: '€29 / mes' },
             ].map((b, i) => (
               <motion.div
                 key={i}

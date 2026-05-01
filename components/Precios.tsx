@@ -8,30 +8,31 @@ import { useLang } from '@/context/LanguageContext'
 const plans = [
   {
     key: 'starter',
-    monthly: '€20',
+    monthly: '€29',
     annual: '€16',
+    annualNote: { es: 'o €299/año — ahorras €49', en: 'or €299/year — save €49' },
     badge: null as { es: string; en: string } | null,
     highlighted: false,
     es: {
       name: 'Starter',
-      desc: 'Para autónomos y negocios que necesitan presencia online clara y profesional.',
+      desc: 'Para autónomos y negocios que necesitan una presencia profesional online, sin complicaciones. Tu primer paso en internet.',
       features: [
         'Web de hasta 5 secciones',
         'Diseño personalizado',
         'Adaptado a móvil',
-        'Hosting y dominio incluido',
-        'Cambios de contenido en 48h',
+        'Dirección de tu web y dominio incluido',
+        'Cambios de contenido en 24h',
       ],
     },
     en: {
       name: 'Starter',
-      desc: 'For freelancers and businesses that need a clear, professional online presence.',
+      desc: 'For freelancers and businesses that need a professional online presence, hassle-free. Your first step online.',
       features: [
         'Website up to 5 sections',
         'Custom design',
         'Mobile-ready',
-        'Hosting and domain included',
-        'Content updates in 48h',
+        'Web address and domain included',
+        'Content updates in 24h',
       ],
     },
   },
@@ -39,59 +40,75 @@ const plans = [
     key: 'pro',
     monthly: '€49',
     annual: '€39',
+    annualNote: { es: 'o €499/año — ahorras €89', en: 'or €499/year — save €89' },
     badge: { es: 'Más elegido', en: 'Most popular' },
     highlighted: true,
     es: {
       name: 'Pro',
-      desc: 'Para negocios que quieren destacar y convertir más visitas en clientes.',
+      desc: 'Para negocios que quieren destacar, aparecer en Google y convertir visitas en clientes. La versión completa de Yele.',
       features: [
         'Todo lo de Starter',
-        'Web de hasta 10 secciones',
-        'Blog o sección de noticias',
-        'Formulario de contacto avanzado',
-        'SEO local incluido',
-        'Cambios prioritarios en 24h',
+        'Web de hasta 6 secciones (inicio, servicios, sobre ti, galería, contacto…)',
+        'Apareces cuando te buscan cerca — SEO local incluido',
+        'Panel para editar tus contenidos sin tocar código',
+        'Sistema de reservas o citas online',
+        'Correo profesional incluido (tú@tunegocio.com)',
+        'Formulario de contacto con notificaciones',
+        'Revisión de diseño anual para estar siempre al día',
       ],
     },
     en: {
       name: 'Pro',
-      desc: 'For businesses that want to stand out and convert more visitors into clients.',
+      desc: 'For businesses that want to stand out, appear on Google and convert visitors into clients. The full Yele experience.',
       features: [
         'Everything in Starter',
-        'Website up to 10 sections',
-        'Blog or news section',
-        'Advanced contact form',
-        'Local SEO included',
-        'Priority updates in 24h',
+        'Website up to 6 sections (home, services, about, gallery, contact…)',
+        'Appear when searched nearby — local SEO included',
+        'Panel to edit your content without touching code',
+        'Online booking or appointment system',
+        'Professional email included (you@yourbusiness.com)',
+        'Contact form with notifications',
+        'Annual design review to always stay up to date',
       ],
     },
   },
   {
     key: 'business',
-    monthly: '€99',
+    monthly: '€89',
     annual: '€79',
+    annualNote: { es: 'o €899/año — ahorras €169', en: 'or €899/year — save €169' },
     badge: null as { es: string; en: string } | null,
     highlighted: false,
     es: {
       name: 'Business',
-      desc: 'Para negocios con necesidades específicas: tienda, reservas, multiidioma.',
+      desc: 'Para negocios con volumen: pagos, multiidioma y posicionamiento avanzado. Una web que trabaja como un empleado más.',
       features: [
         'Todo lo de Pro',
-        'Funcionalidades a medida',
-        'Integración con reservas o tienda',
-        'Soporte prioritario',
-        'Cambios en 12h',
+        'Secciones ilimitadas',
+        'Pagos integrados',
+        'SEO avanzado — auditoría mensual y optimización continua',
+        'Web en varios idiomas (español + inglés, o catalán)',
+        'Analítica avanzada — sabes quién visita tu web y desde dónde',
+        'Integraciones externas (WhatsApp Business, Google Calendar, CRM)',
+        'Revisión de diseño semestral para estar siempre al día',
+        'Soporte prioritario — respuesta en menos de 4h',
+        'Cambios urgentes en 12h',
       ],
     },
     en: {
       name: 'Business',
-      desc: 'For businesses with specific needs: shop, bookings, multilanguage.',
+      desc: 'For high-volume businesses: payments, multilanguage and advanced SEO. A website that works like an extra employee.',
       features: [
         'Everything in Pro',
-        'Custom functionality',
-        'Bookings or shop integration',
-        'Priority support',
-        'Updates in 12h',
+        'Unlimited sections',
+        'Integrated payments',
+        'Advanced SEO — monthly audit and continuous optimization',
+        'Website in multiple languages (Spanish + English, or Catalan)',
+        'Advanced analytics — know who visits your site and from where',
+        'External integrations (WhatsApp Business, Google Calendar, CRM)',
+        'Semi-annual design review to always stay up to date',
+        'Priority support — response in under 4h',
+        'Urgent updates in 12h',
       ],
     },
   },
@@ -169,7 +186,7 @@ function PricingCard({ plan, index, isAnnual, t }: {
         <p className={`font-manrope text-sm font-medium mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#86868B]'}`}>
           {t(plan.es.name, plan.en.name)}
         </p>
-        <div className="flex items-end gap-1 mb-3">
+        <div className="flex items-end gap-1 mb-1">
           <motion.span
             key={price}
             initial={{ opacity: 0, y: -8 }}
@@ -181,6 +198,11 @@ function PricingCard({ plan, index, isAnnual, t }: {
           </motion.span>
           <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#86868B]'}`}>/mes</span>
         </div>
+        {!isAnnual && (
+          <p className={`font-manrope text-xs mb-3 ${plan.highlighted ? 'text-white/40' : 'text-[#86868B]'}`}>
+            {t(plan.annualNote.es, plan.annualNote.en)}
+          </p>
+        )}
         <p className={`font-manrope text-sm leading-relaxed ${plan.highlighted ? 'text-white/60' : 'text-[#86868B]'}`}>
           {t(plan.es.desc, plan.en.desc)}
         </p>
