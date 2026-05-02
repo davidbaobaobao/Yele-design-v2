@@ -126,7 +126,7 @@ export default function Beneficios() {
   const { t } = useLang()
 
   return (
-    <section className="py-24 md:py-32 bg-white">
+    <section id="beneficios" className="py-24 md:py-32 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
