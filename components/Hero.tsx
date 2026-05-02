@@ -1,7 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useScroll, useTransform, type Transition } from 'framer-motion'
+import { motion, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
 const fadeUp = (delay: number) => ({
@@ -12,24 +11,19 @@ const fadeUp = (delay: number) => ({
 
 export default function Hero() {
   const { t } = useLang()
-  const sectionRef = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] })
-  const badgeY = useTransform(scrollYProgress, [0, 1], [0, -30])
 
   return (
     <section
-      ref={sectionRef}
-      className="relative min-h-screen flex items-center overflow-hidden pt-20"
+      className="relative min-h-screen flex items-end overflow-hidden pt-20"
       style={{
         background: 'radial-gradient(ellipse 80% 60% at 60% 0%, rgba(220,240,255,0.5) 0%, rgba(255,255,255,0) 70%), radial-gradient(ellipse 50% 40% at 90% 20%, rgba(200,255,220,0.25) 0%, transparent 60%), #ffffff',
       }}
     >
-      <div className="relative max-w-6xl mx-auto px-6 py-24 md:py-32 w-full">
-        <div className="max-w-3xl">
-          {/* Headline */}
+      <div className="relative max-w-6xl mx-auto px-6 pb-24 md:pb-32 w-full">
+        <div className="max-w-xl">
           <motion.h1
             className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
-            style={{ fontSize: 'clamp(44px, 6.5vw, 88px)' }}
+            style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
             {...fadeUp(0)}
           >
             <span className="block">{t('Tu web lista en 3 días.', 'Your website ready in 3 days.')}</span>
@@ -37,7 +31,6 @@ export default function Hero() {
             <span className="block">{t('Sin complicaciones.', 'No hassle.')}</span>
           </motion.h1>
 
-          {/* CTAs */}
           <motion.div className="flex items-center gap-4 flex-wrap" {...fadeUp(0.2)}>
             <motion.a
               href="/registro"
@@ -65,29 +58,6 @@ export default function Hero() {
             </button>
           </motion.div>
         </div>
-
-        {/* Floating badges */}
-        <motion.div
-          className="absolute top-1/3 right-8 hidden lg:block"
-          style={{ y: badgeY }}
-        >
-          <motion.div className="flex flex-col gap-3" {...fadeUp(0.45)}>
-            {[
-              { label: t('⚡ Lista en 3 días', '⚡ Ready in 3 days') },
-              { label: t('✓ Sin permanencia', '✓ No lock-in') },
-              { label: '29€ / mes' },
-            ].map((b, i) => (
-              <motion.div
-                key={i}
-                className="bg-white/80 backdrop-blur-md border border-black/[0.07] rounded-2xl px-4 py-2.5 text-sm font-manrope text-[#1D1D1F] shadow-[0_4px_20px_rgba(0,0,0,0.07)] whitespace-nowrap"
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 } as Transition}
-              >
-                {b.label}
-              </motion.div>
-            ))}
-          </motion.div>
-        </motion.div>
       </div>
     </section>
   )

@@ -63,11 +63,14 @@ export default function Navigation() {
             ))}
           </div>
 
+          {/* Divider */}
+          <span className="hidden md:block w-px h-4 bg-black/10 flex-shrink-0" aria-hidden="true" />
+
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3">
             <button
               onClick={toggleLang}
-              className="font-manrope text-xs font-medium text-[#86868B] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none"
+              className="font-manrope text-xs font-medium text-[#86868B] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none bg-[#F2F2F5] px-2.5 py-1 rounded-lg"
               aria-label={`Cambiar a ${lang === 'es' ? 'inglés' : 'español'}`}
             >
               {lang === 'es' ? 'EN' : 'ES'}
