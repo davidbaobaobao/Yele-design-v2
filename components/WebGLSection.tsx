@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { WebGLShader } from '@/components/ui/web-gl-shader'
 import { ChevronDown } from 'lucide-react'
 
-const WORDS = ['Complicado', 'Caro', 'Aburrido']
+const WORDS = ['Complicada', 'Cara', 'Aburrida']
 const TYPING_SPEED = 80    // ms per char
 const ERASING_SPEED = 50   // ms per char
 const SHOW_DURATION = 1000 // ms to hold the full word
@@ -67,20 +67,26 @@ export default function WebGLSection() {
     <section className="relative flex w-full flex-col items-center justify-center overflow-hidden min-h-screen">
       <WebGLShader />
 
-      {/* Text block — matches Hero font style */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-start">
+      {/* Top gradient: white → transparent */}
+      <div className="pointer-events-none absolute top-0 left-0 w-full h-48 z-[1] bg-gradient-to-b from-white to-transparent" />
+
+      {/* Bottom gradient: transparent → white */}
+      <div className="pointer-events-none absolute bottom-0 left-0 w-full h-48 z-[1] bg-gradient-to-t from-white to-transparent" />
+
+      {/* Text block — matches Hero font style, centered */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center">
         <h2
           className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10"
           style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
         >
           <span className="block">Una página web no es</span>
-          <span className="block text-white/50 min-h-[1.1em]">
+          <span className="block min-h-[1.1em]">
             {displayText}
             <span
-              className="inline-block w-[3px] ml-[2px] align-middle"
+              className="inline-block w-[3px] ml-[2px]"
               style={{
                 height: '0.85em',
-                background: 'rgba(255,255,255,0.5)',
+                background: 'rgba(255,255,255,1)',
                 opacity: cursorVisible ? 1 : 0,
                 transition: 'opacity 0.1s',
                 verticalAlign: 'middle',

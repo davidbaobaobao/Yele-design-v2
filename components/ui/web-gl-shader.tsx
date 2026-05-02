@@ -44,6 +44,7 @@ export function WebGLShader() {
       uniform float xScale;
       uniform float yScale;
       uniform float distortion;
+      uniform float yOffset;
 
       void main() {
         vec2 p = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
@@ -55,10 +56,13 @@ export function WebGLShader() {
         float mx = p.x;                // Magenta channel (no shift)
         float yx = p.x * (1.0 - d);   // Yellow channel x-shift
 
+        // Shift waves upward by yOffset (positive = up in WebGL y-space)
+        float py = p.y - yOffset;
+
         // Intensity of each ink wave
-        float c = 0.05 / abs(p.y + sin((cx + time) * xScale) * yScale);
-        float m = 0.05 / abs(p.y + sin((mx + time) * xScale) * yScale);
-        float y = 0.05 / abs(p.y + sin((yx + time) * xScale) * yScale);
+        float c = 0.05 / abs(py + sin((cx + time) * xScale) * yScale);
+        float m = 0.05 / abs(py + sin((mx + time) * xScale) * yScale);
+        float y = 0.05 / abs(py + sin((yx + time) * xScale) * yScale);
 
         // CMYK primaries on black: Cyan=(0,1,1), Magenta=(1,0,1), Yellow=(1,1,0)
         vec3 color = vec3(0.0, 1.0, 1.0) * c
@@ -80,9 +84,10 @@ export function WebGLShader() {
       refs.uniforms = {
         resolution: { value: [window.innerWidth, window.innerHeight] },
         time: { value: 0.0 },
-        xScale: { value: 1.0 },
-        yScale: { value: 0.5 },
+        xScale: { value: 0.65 },
+        yScale: { value: 0.6 },
         distortion: { value: 0.05 },
+        yOffset: { value: 0.3 },
       }
 
       const position = [
