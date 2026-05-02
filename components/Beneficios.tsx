@@ -9,8 +9,8 @@ import type { LucideIcon } from 'lucide-react'
 const cards = [
   {
     Icon: Paintbrush,
-    es: { title: 'Diseño a medida', desc: 'Nunca una plantilla. Cada web se diseña desde cero para tu sector, ciudad y personalidad.' },
-    en: { title: 'Custom design', desc: 'Never a template. Every website is designed from scratch for your sector, city, and personality.' },
+    es: { title: 'Diseño a medida', desc: 'Sin plantillas. Diseñamos a partir de tu negocio real: tu sector, tu ciudad, tus clientes. El resultado es una web que solo podría ser tuya.' },
+    en: { title: 'Custom design', desc: 'No templates. We design from your real business: your sector, your city, your clients. The result is a website that could only be yours.' },
   },
   {
     Icon: Zap,
@@ -24,8 +24,8 @@ const cards = [
   },
   {
     Icon: MapPin,
-    es: { title: 'SEO local optimizado', desc: 'Apareces cuando te buscan cerca. Schema, Google Business, keywords locales. Todo incluido.' },
-    en: { title: 'Local SEO optimised', desc: 'You appear when people search nearby. Schema, Google Business, local keywords. All included.' },
+    es: { title: 'SEO local optimizado', desc: 'Apareces cuando alguien busca lo que haces cerca de donde estás. Sin contratar a un especialista en SEO aparte.' },
+    en: { title: 'Local SEO optimised', desc: 'You appear when someone searches for what you do near where you are. No need to hire a separate SEO specialist.' },
   },
   {
     Icon: Smartphone,

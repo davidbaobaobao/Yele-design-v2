@@ -88,13 +88,12 @@ export default function ComoFunciona() {
                 {t('Cómo funciona', 'How it works')}
               </span>
               <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
-                {t('Hecha para ti.', 'Made for you.')}<br />
-                <span className="text-[#86868B]">{t('No por ti.', 'Not by you.')}</span>
+                {t('Cuatro pasos. Tú hablas, nosotros construimos y lo mantenemos.', 'Four steps. You talk, we build and maintain it.')}
               </h2>
               <p className="font-manrope text-[#86868B] text-lg leading-relaxed">
                 {t(
-                  'Cuatro pasos para tener tu web en marcha. Sin reuniones interminables, sin presupuestos sorpresa.',
-                  'Four steps to get your website live. No endless meetings, no surprise costs.'
+                  'Sin reuniones interminables. Sin presupuestos sorpresa.',
+                  'No endless meetings. No surprise costs.'
                 )}
               </p>
 

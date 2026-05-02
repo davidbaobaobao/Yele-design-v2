@@ -8,6 +8,7 @@ const FALLBACK = [
   { author_name: 'Carlos R.', role: 'Fontanero autónomo, Bilbao',                   body: 'Pensé que tener web era complicado y caro. Por €29 al mes tengo algo que parece de empresa grande.',                              rating: 5 },
   { author_name: 'Elena T.',  role: 'Propietaria de estudio de cerámica, Gràcia',   body: 'El proceso fue rapidísimo. Me hicieron preguntas concretas, y tres días después tenía una web que realmente me representa.',      rating: 5 },
   { author_name: 'Miguel A.', role: 'Abogado, Valencia',                             body: 'Necesitaba algo serio, no un template de Wix. Yele entendió eso desde el primer mensaje.',                                       rating: 5 },
+  { author_name: 'David B.',  role: 'Cliente Yele',                                  body: 'Yele es fantástica!',                                                                                                               rating: 5 },
 ]
 
 export default async function Testimonios() {
