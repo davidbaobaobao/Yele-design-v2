@@ -9,33 +9,33 @@ import type { LucideIcon } from 'lucide-react'
 const cards = [
   {
     Icon: Paintbrush,
-    es: { title: 'Diseño a medida', desc: 'Sin plantillas. Diseñamos a partir de tu negocio real: tu sector, tu ciudad, tus clientes. El resultado es una web que solo podría ser tuya.' },
-    en: { title: 'Custom design', desc: 'No templates. We design from your real business: your sector, your city, your clients. The result is a website that could only be yours.' },
+    es: { title: 'Diseño a medida', desc: 'Sin plantillas. Tu web diseñada desde cero para tu negocio.' },
+    en: { title: 'Custom design', desc: 'No templates. Your website designed from scratch for your business.' },
   },
   {
     Icon: Zap,
-    es: { title: 'Live en 3 a 5 días', desc: 'No semanas ni meses. Tu web profesional publicada y apuntando a tu dominio en menos de una semana.' },
-    en: { title: 'Live in 3 to 5 days', desc: 'Not weeks or months. Your professional website published and pointing to your domain in under a week.' },
+    es: { title: 'Entrega en 5 días', desc: 'Tu web publicada en tu dominio en menos de una semana.' },
+    en: { title: 'Delivered in 5 days', desc: 'Your website live on your domain in under a week.' },
   },
   {
     Icon: LayoutDashboard,
-    es: { title: 'Panel sin código', desc: 'Actualiza menú, precios, fotos, horarios o servicios. Cambios en tu web live en menos de 60 segundos.' },
-    en: { title: 'No-code panel', desc: 'Update menu, prices, photos, hours or services. Changes on your live website in under 60 seconds.' },
+    es: { title: 'Panel de control', desc: 'Actualiza facilmente tus servicios, menús, precios o fotos.' },
+    en: { title: 'Control panel', desc: 'Easily update your services, menus, prices or photos.' },
   },
   {
     Icon: MapPin,
-    es: { title: 'SEO local optimizado', desc: 'Apareces cuando alguien busca lo que haces cerca de donde estás. Sin contratar a un especialista en SEO aparte.' },
-    en: { title: 'Local SEO optimised', desc: 'You appear when someone searches for what you do near where you are. No need to hire a separate SEO specialist.' },
+    es: { title: 'SEO local optimizado', desc: 'Apareces cuando te buscan. Sin pagar a un especialista aparte.' },
+    en: { title: 'Local SEO optimised', desc: 'You appear when they search for you. No need to pay a separate specialist.' },
   },
   {
     Icon: Smartphone,
-    es: { title: 'Mobile-first', desc: 'Rápida, ligera y perfecta en el móvil — donde te busca el 80% de tus clientes.' },
-    en: { title: 'Mobile-first', desc: 'Fast, light and perfect on mobile — where 80% of your customers will find you.' },
+    es: { title: 'Mobile-first', desc: 'Perfecta en el móvil — donde te busca el 80% de tus clientes.' },
+    en: { title: 'Mobile-first', desc: 'Perfect on mobile — where 80% of your customers will find you.' },
   },
   {
     Icon: CheckCircle,
-    es: { title: 'Todo incluido', desc: 'Hosting, dominio, certificado SSL, mantenimiento y soporte. Un precio fijo, sin extras.' },
-    en: { title: 'All-inclusive', desc: 'Hosting, domain, SSL certificate, maintenance and support. One fixed price, no extras.' },
+    es: { title: 'Todo incluido', desc: 'Hosting, dominio, mantenimiento y soporte. Un precio fijo, sin sorpresas.' },
+    en: { title: 'All-inclusive', desc: 'Hosting, domain, maintenance and support. One fixed price, no surprises.' },
   },
 ]
 
@@ -126,7 +126,7 @@ export default function Beneficios() {
   const { t } = useLang()
 
   return (
-    <section id="beneficios" className="py-24 md:py-32 bg-white">
+    <section id="beneficios" className="pt-12 pb-24 md:pt-16 md:pb-32 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -135,9 +135,6 @@ export default function Beneficios() {
           viewport={{ once: true, margin: '-80px' }}
           className="mb-14"
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
-            {t('Beneficios', 'Benefits')}
-          </span>
           <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
             {t('Calidad de agencia', 'Agency quality')}<br />
             {t('al precio de una suscripción.', 'at subscription price.')}
