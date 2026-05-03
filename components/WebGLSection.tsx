@@ -68,10 +68,10 @@ export default function WebGLSection() {
       <WebGLShader />
 
       {/* Top gradient: white → transparent */}
-      <div className="pointer-events-none absolute top-0 left-0 w-full h-48 z-[1] bg-gradient-to-b from-white to-transparent" />
+      <div className="pointer-events-none absolute top-0 left-0 w-full h-4 z-[1] bg-gradient-to-b from-white to-transparent" />
 
       {/* Bottom gradient: transparent → white */}
-      <div className="pointer-events-none absolute bottom-0 left-0 w-full h-48 z-[1] bg-gradient-to-t from-white to-transparent" />
+      <div className="pointer-events-none absolute bottom-0 left-0 w-full h-4 z-[1] bg-gradient-to-t from-white to-transparent" />
 
       {/* Text block — matches Hero font style, centered */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center">
