@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { AuroraBackground } from '@/components/ui/aurora-background'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
@@ -236,7 +237,8 @@ export default function Precios() {
   const isAnnual = billing === 'annual'
 
   return (
-    <section id="precios" className="py-24 md:py-32 bg-white">
+    <section id="precios" className="relative">
+      <AuroraBackground className="py-24 md:py-32">
       <div className="max-w-6xl mx-auto px-6">
 
         <motion.div
@@ -304,6 +306,7 @@ export default function Precios() {
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
       </div>
+      </AuroraBackground>
     </section>
   )
 }

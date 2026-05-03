@@ -72,7 +72,18 @@ export default function ComoFunciona() {
   const { t } = useLang()
 
   return (
-    <section id="como-funciona" className="py-24 md:py-32 bg-white">
+    <section
+      id="como-funciona"
+      className="py-24 md:py-32 relative bg-white"
+      style={{
+        backgroundImage: `
+          linear-gradient(to right, rgba(71,85,105,0.15) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(71,85,105,0.15) 1px, transparent 1px),
+          radial-gradient(circle at 50% 60%, rgba(236,72,153,0.15) 0%, rgba(168,85,247,0.05) 40%, transparent 70%)
+        `,
+        backgroundSize: '40px 40px, 40px 40px, 100% 100%',
+      }}
+    >
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-start">
 
