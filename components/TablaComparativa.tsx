@@ -16,7 +16,7 @@ const rows = [
     es: 'Precio mensual',
     en: 'Monthly cost',
     yele: { es: 'Desde €29', en: 'From €29' },
-    agency: { es: '€500–€3.000 (proyecto)', en: '€500–€3,000 (project)' },
+    agency: { es: '€1.000–€6.000 (proyecto)', en: '€1,000–€6,000 (project)' },
     diy: { es: 'Tiempo tuyo', en: 'Your time' },
   },
   {
@@ -43,7 +43,7 @@ const rows = [
   {
     es: 'Cambios de contenido',
     en: 'Content updates',
-    yele: { es: 'En 24–48h', en: 'In 24–48h' },
+    yele: { es: 'Instantáneo', en: 'Instant' },
     agency: { es: 'Presupuesto aparte', en: 'Extra budget' },
     diy: { es: 'Tú mismo', en: 'DIY' },
   },
@@ -70,7 +70,7 @@ function YeleCell({ value }: { value: CellValue }) {
   }
   if (value === false) return <X size={16} className="text-[#86868B] mx-auto" aria-label="No" />
   return (
-    <span className="font-manrope text-sm font-medium text-white/90">
+    <span className="font-manrope text-sm font-bold text-white">
       {t(value.es, value.en)}
     </span>
   )
