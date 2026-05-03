@@ -13,13 +13,23 @@ export default function Hero() {
   const { t } = useLang()
 
   return (
-    <section
-      className="relative min-h-screen flex items-end overflow-hidden pt-20"
-      style={{
-        background: 'radial-gradient(ellipse 80% 60% at 60% 0%, rgba(220,240,255,0.5) 0%, rgba(255,255,255,0) 70%), radial-gradient(ellipse 50% 40% at 90% 20%, rgba(200,255,220,0.25) 0%, transparent 60%), #ffffff',
-      }}
-    >
-      <div className="relative max-w-6xl mx-auto px-6 pb-24 md:pb-32 w-full">
+    <section className="relative min-h-screen flex items-end overflow-hidden pt-20">
+      {/* Full-bleed video background — no overlay */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover"
+        aria-hidden="true"
+      >
+        {/* webm first: better compression, loads faster in Chrome/Firefox */}
+        <source src="/video/hero.webm" type="video/webm" />
+        <source src="/video/hero.mp4" type="video/mp4" />
+      </video>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 pb-24 md:pb-32 w-full">
         <div className="max-w-xl">
           <motion.h1
             className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
