@@ -50,12 +50,17 @@ export function InfiniteGrid({
       onMouseLeave={handleMouseLeave}
       className={cn("absolute inset-0 overflow-hidden", className)}
     >
-      {/* Base subtle grid */}
-      <div className="absolute inset-0" style={{ opacity: baseOpacity }}>
+      {/* Base layer: always-visible blurred grid */}
+      <div
+        className="absolute inset-0"
+        style={{ opacity: baseOpacity, filter: "blur(3px)" }}
+      >
         <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} patternId={`${uid}_base`} />
       </div>
 
-      {/* Mouse-reveal grid */}
+      {/* Cursor layer: sharp grid revealed inside a radial mask.
+          Outside the mask the blurred layer shows through, creating
+          a smooth blur→clear gradient transition at the mask edge. */}
       <motion.div
         className="absolute inset-0"
         style={{ maskImage, WebkitMaskImage: maskImage, opacity: revealOpacity }}
