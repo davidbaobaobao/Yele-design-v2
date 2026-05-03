@@ -69,15 +69,17 @@ export function WebGLShader() {
                    + vec3(1.0, 0.0, 1.0) * m
                    + vec3(1.0, 1.0, 0.0) * y;
 
-        gl_FragColor = vec4(color, 1.0);
+        // Alpha follows wave intensity so dark areas are transparent → grid shows through
+        float alpha = min(max(color.r, max(color.g, color.b)) * 2.0, 1.0);
+        gl_FragColor = vec4(color, alpha);
       }
     `
 
     const initScene = () => {
       refs.scene = new THREE.Scene()
-      refs.renderer = new THREE.WebGLRenderer({ canvas })
+      refs.renderer = new THREE.WebGLRenderer({ canvas, alpha: true })
       refs.renderer.setPixelRatio(window.devicePixelRatio)
-      refs.renderer.setClearColor(new THREE.Color(0x000000))
+      refs.renderer.setClearColor(new THREE.Color(0x000000), 0)
 
       refs.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, -1)
 

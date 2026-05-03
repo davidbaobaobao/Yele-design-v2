@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { WebGLShader } from '@/components/ui/web-gl-shader'
+import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 import { ChevronDown } from 'lucide-react'
 
 const WORDS = ['Complicada', 'Cara', 'Aburrida']
@@ -64,17 +65,15 @@ export default function WebGLSection() {
   const { displayText, cursorVisible } = useTypewriter(WORDS)
 
   return (
-    <section className="relative flex w-full flex-col items-center justify-center overflow-hidden min-h-screen">
+    <section className="relative flex w-full flex-col items-center justify-center overflow-hidden min-h-screen bg-black">
+      {/* Layer 1: scrolling grid with mouse-reveal */}
+      <InfiniteGrid />
+
+      {/* Layer 2: CMYK waves (transparent bg — grid shows through) */}
       <WebGLShader />
 
-      {/* Top gradient: white → transparent */}
-      <div className="pointer-events-none absolute top-0 left-0 w-full h-4 z-[1] bg-gradient-to-b from-white to-transparent" />
-
-      {/* Bottom gradient: transparent → white */}
-      <div className="pointer-events-none absolute bottom-0 left-0 w-full h-4 z-[1] bg-gradient-to-t from-white to-transparent" />
-
-      {/* Text block — matches Hero font style, centered */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center">
+      {/* Layer 3: text — shifted up so it sits above the wave band */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center -translate-y-16">
         <h2
           className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10"
           style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
