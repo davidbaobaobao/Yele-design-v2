@@ -70,7 +70,7 @@ function YeleCell({ value }: { value: CellValue }) {
   }
   if (value === false) return <X size={16} className="text-[#86868B] mx-auto" aria-label="No" />
   return (
-    <span className="font-manrope text-sm font-bold text-white">
+    <span className="font-manrope text-sm font-bold text-[#1D1D1F]">
       {t(value.es, value.en)}
     </span>
   )
@@ -101,9 +101,6 @@ export default function TablaComparativa() {
           viewport={{ once: true, margin: '-80px' }}
           className="mb-12"
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
-            {t('Comparativa', 'Comparison')}
-          </span>
           <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
             {t('¿Por qué no una agencia', 'Why not an agency')}<br />
             {t('o hacerlo tú mismo?', 'or DIY?')}

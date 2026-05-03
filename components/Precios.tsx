@@ -238,7 +238,7 @@ export default function Precios() {
 
   return (
     <section id="precios" className="relative">
-      <AuroraBackground className="py-24 md:py-32">
+      <div className="py-24 md:py-32 bg-white">
       <div className="max-w-6xl mx-auto px-6">
 
         <motion.div
@@ -306,7 +306,7 @@ export default function Precios() {
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
       </div>
-      </AuroraBackground>
+      </div>
     </section>
   )
 }
