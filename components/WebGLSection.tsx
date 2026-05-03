@@ -72,10 +72,10 @@ export default function WebGLSection() {
       {/* Layer 2: CMYK waves (transparent bg — grid shows through) */}
       <WebGLShader />
 
-      {/* Layer 3: text — shifted up so it sits above the wave band */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center -translate-y-16">
+      {/* Layer 3: text — pointer-events-none so mouse falls through to grid */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center -translate-y-16 pointer-events-none">
         <h2
-          className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10"
+          className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10 select-none"
           style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
         >
           <span className="block">Una página web no es</span>
@@ -95,10 +95,10 @@ export default function WebGLSection() {
           </span>
         </h2>
 
-        {/* Scroll-down button */}
+        {/* Scroll-down button — re-enable pointer events for this one element */}
         <button
           onClick={() => document.querySelector('#beneficios')?.scrollIntoView({ behavior: 'smooth' })}
-          className="flex items-center justify-center w-11 h-11 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          className="pointer-events-auto flex items-center justify-center w-11 h-11 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           aria-label="Ir a la siguiente sección"
         >
           <ChevronDown size={20} className="text-white/60" />

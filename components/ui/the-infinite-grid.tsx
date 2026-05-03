@@ -1,7 +1,7 @@
 "use client"
 
 import { useId, useRef } from "react"
-import { motion, useMotionValue, useMotionTemplate, useAnimationFrame } from "framer-motion"
+import { motion, useMotionValue, useMotionTemplate, useAnimationFrame, useSpring } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface InfiniteGridProps {
@@ -22,6 +22,10 @@ export function InfiniteGrid({
 
   const mouseX = useMotionValue(-9999)
   const mouseY = useMotionValue(-9999)
+  // Spring the mask position so the reveal circle follows the cursor smoothly
+  const springX = useSpring(mouseX, { stiffness: 60, damping: 18, mass: 0.4 })
+  const springY = useSpring(mouseY, { stiffness: 60, damping: 18, mass: 0.4 })
+
   const gridOffsetX = useMotionValue(0)
   const gridOffsetY = useMotionValue(0)
 
@@ -41,7 +45,7 @@ export function InfiniteGrid({
     gridOffsetY.set((gridOffsetY.get() + 0.4) % 40)
   })
 
-  const maskImage = useMotionTemplate`radial-gradient(${revealRadius}px circle at ${mouseX}px ${mouseY}px, black, transparent)`
+  const maskImage = useMotionTemplate`radial-gradient(${revealRadius}px circle at ${springX}px ${springY}px, black, transparent)`
 
   return (
     <div
