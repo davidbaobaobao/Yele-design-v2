@@ -24,9 +24,7 @@ export default function Hero() {
         className="absolute inset-0 w-full h-full object-cover"
         aria-hidden="true"
       >
-        {/* webm first: better compression, loads faster in Chrome/Firefox */}
-        <source src="/video/hero.webm" type="video/webm" />
-        <source src="/video/hero.mp4" type="video/mp4" />
+        <source src="/video/heromain.mp4" type="video/mp4" />
       </video>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 pb-24 md:pb-32 w-full">
