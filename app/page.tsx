@@ -1,5 +1,6 @@
 import Navigation from '@/components/Navigation'
 import Hero from '@/components/Hero'
+import WhyYele from '@/components/WhyYele'
 import WebGLSection from '@/components/WebGLSection'
 import Beneficios from '@/components/Beneficios'
 import Showcase from '@/components/Showcase'
@@ -18,12 +19,13 @@ export default function Home() {
       <Navigation />
       <main id="main-content">
         <Hero />
+        <WhyYele />
         <WebGLSection />
         <Beneficios />
         <Showcase />
+        <ComoFunciona />
         <Precios />
         <TablaComparativa />
-        <ComoFunciona />
         <CTASection />
         <Testimonios />
         <FAQ />
