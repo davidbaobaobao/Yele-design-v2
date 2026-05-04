@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
@@ -29,9 +29,18 @@ const steps = [
 
 type Step = typeof steps[0]
 
-function StepCard({ step, index, t }: { step: Step; index: number; t: (es: string, en: string) => string }) {
+function StepCard({ step, index, t, onActive }: {
+  step: Step
+  index: number
+  t: (es: string, en: string) => string
+  onActive: (i: number) => void
+}) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const isActive = useInView(wrapRef, { once: false, margin: '-35% 0px -35% 0px' })
+
+  useEffect(() => {
+    if (isActive) onActive(index)
+  }, [isActive, index, onActive])
 
   return (
     <motion.div
@@ -70,6 +79,10 @@ function StepCard({ step, index, t }: { step: Step; index: number; t: (es: strin
 
 export default function ComoFunciona() {
   const { t } = useLang()
+  const [activeStep, setActiveStep] = useState(0)
+  const handleStepActive = useCallback((index: number) => {
+    setActiveStep(index)
+  }, [])
 
   return (
     <section id="como-funciona" className="py-24 md:py-32 bg-[#F5F5F7]">
@@ -97,10 +110,17 @@ export default function ComoFunciona() {
                 )}
               </p>
 
-              {/* Progress pills */}
+              {/* Animated progress pills */}
               <div className="flex gap-2 mt-8">
-                {steps.map((s) => (
-                  <div key={s.num} className="h-1 w-8 rounded-full bg-[#1D1D1F]/10" />
+                {steps.map((s, i) => (
+                  <motion.div
+                    key={s.num}
+                    className="h-1 w-8 rounded-full"
+                    animate={{
+                      backgroundColor: i === activeStep ? '#1D1D1F' : 'rgba(29, 29, 31, 0.1)',
+                    }}
+                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                  />
                 ))}
               </div>
             </motion.div>
@@ -109,7 +129,7 @@ export default function ComoFunciona() {
           {/* Steps */}
           <div className="flex flex-col gap-4">
             {steps.map((step, i) => (
-              <StepCard key={step.num} step={step} index={i} t={t} />
+              <StepCard key={step.num} step={step} index={i} t={t} onActive={handleStepActive} />
             ))}
           </div>
 

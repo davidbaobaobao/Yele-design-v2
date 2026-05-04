@@ -27,14 +27,14 @@ function makeCard(project: ShowcaseProject, rowSeed: number, i: number): CardDat
   return { project, image, key: `${rowSeed}-${i}-${project.id}` }
 }
 
-// 4 cards per row — shuffle once and split so no project repeats across rows
+// Row 1: 4 cards; Row 2: 5 cards (extra card on left fills the parallax gap)
 function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
   const pool = shuffle(projects)
   const row1 = pool.slice(0, 4)
   const remainder = pool.slice(4)
-  const row2 = remainder.length >= 4
-    ? remainder.slice(0, 4)
-    : [...remainder, ...shuffle(pool).filter(p => !remainder.includes(p))].slice(0, 4)
+  const row2 = remainder.length >= 5
+    ? remainder.slice(0, 5)
+    : [...remainder, ...shuffle(pool).filter(p => !remainder.includes(p))].slice(0, 5)
 
   return [
     row1.map((p, i) => makeCard(p, 0, i)),
@@ -47,8 +47,9 @@ const CARD_W = 'calc((100vw - 32px) / 2.5)'
 
 const ROW1_START = '0vw'
 const ROW1_END   = '-20vw'
-const ROW2_START = '0vw'
-const ROW2_END   = '14vw'
+// Row 2 starts shifted left so the extra card fills the gap as the row moves right
+const ROW2_START = '-14vw'
+const ROW2_END   = '0vw'
 
 function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue<string> }) {
   return (
@@ -97,6 +98,13 @@ export default function ShowcaseLargeClient({ projects }: { projects: ShowcasePr
 
   return (
     <section ref={sectionRef} className="py-10 bg-[#F5F5F7]">
+      <div className="max-w-6xl mx-auto px-6 mb-10">
+        <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
+          <span className="block">Tener página web</span>
+          <span className="block">nunca fue tan fácil.</span>
+        </h2>
+      </div>
+
       <div className="relative space-y-4 overflow-x-hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 w-40 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-40 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
@@ -110,7 +118,7 @@ export default function ShowcaseLargeClient({ projects }: { projects: ShowcasePr
           <>
             {[0, 1].map(row => (
               <div key={row} className="flex gap-4">
-                {Array.from({ length: 4 }).map((_, i) => (
+                {Array.from({ length: row === 1 ? 5 : 4 }).map((_, i) => (
                   <div
                     key={i}
                     style={{ width: CARD_W }}

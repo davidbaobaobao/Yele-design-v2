@@ -19,7 +19,7 @@ export default function Navigation() {
 
   const links = [
     { label: t('Cómo funciona', 'How it works'), href: '#como-funciona' },
-    { label: t('Ejemplos', 'Examples'), href: '#trabajos' },
+    { label: t('Proyectos', 'Projects'), href: '#trabajos' },
     { label: t('Precios', 'Pricing'), href: '#precios' },
     { label: 'FAQ', href: '#faq' },
   ]

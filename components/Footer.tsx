@@ -67,6 +67,9 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-black text-white overflow-hidden">
+      {/* Gradient connecting to grey background of previous section */}
+      <div className="absolute top-0 left-0 right-0 h-[25px] bg-gradient-to-b from-[#F5F5F7] to-transparent z-20 pointer-events-none" />
+
       {/* WebGL background layers */}
       <InfiniteGrid />
       <WebGLShader />
@@ -74,7 +77,7 @@ export default function Footer() {
       {/* Content */}
       <div className="relative z-10 pointer-events-none">
         {/* Typewriter hero area */}
-        <div className="flex flex-col items-center justify-center min-h-screen text-center px-6 -translate-y-16">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-6 -translate-y-8">
           <h2
             className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10 select-none"
             style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}

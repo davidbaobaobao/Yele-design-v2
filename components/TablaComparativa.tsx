@@ -13,11 +13,11 @@ const rows = [
     diy: { es: 'Semanas o meses', en: 'Weeks or months' },
   },
   {
-    es: 'Precio mensual',
-    en: 'Monthly cost',
-    yele: { es: 'Desde €29', en: 'From €29' },
-    agency: { es: '€1.000–€6.000 (proyecto)', en: '€1,000–€6,000 (project)' },
-    diy: { es: 'Tiempo tuyo', en: 'Your time' },
+    es: 'Coste',
+    en: 'Cost',
+    yele: { es: 'Desde 29€ al mes', en: 'From €29/month' },
+    agency: { es: '1000€–6000€', en: '€1,000–€6,000' },
+    diy: { es: 'Desde 20€ al mes', en: 'From €20/month' },
   },
   {
     es: 'Mantenimiento incluido',

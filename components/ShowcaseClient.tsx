@@ -113,14 +113,11 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
           viewport={{ once: true, margin: '-80px' }}
           className="mb-12"
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
-            {t('Ejemplos reales', 'Real examples')}
-          </span>
           <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
             {t('Webs que hemos construido.', "Websites we've built.")}
           </h2>
           <p className="font-manrope text-[#86868B] text-lg">
-            {t('Para negocios reales, en toda España.', 'For real businesses, all across Spain.')}
+            {t('Para negocios reales', 'For real businesses.')}
           </p>
         </motion.div>
       </div>
