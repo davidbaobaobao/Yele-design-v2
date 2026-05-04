@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { motion, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
@@ -11,11 +12,17 @@ const fadeUp = (delay: number) => ({
 
 export default function Hero() {
   const { t } = useLang()
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    videoRef.current?.play().catch(() => {})
+  }, [])
 
   return (
     <section className="relative min-h-screen flex items-end overflow-hidden pt-20">
       {/* Full-bleed video background — no overlay */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
