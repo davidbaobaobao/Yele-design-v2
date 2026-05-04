@@ -21,15 +21,26 @@ function shuffle<T>(arr: T[]): T[] {
 
 type CardData = { project: ShowcaseProject; image: string; key: string }
 
-// 5 cards per row so there's buffer on both edges for the parallax travel
-function buildRow(projects: ShowcaseProject[], seed: number): CardData[] {
-  const shuffled = shuffle(projects)
-  return Array.from({ length: 5 }, (_, i) => {
-    const project = shuffled[i % shuffled.length]
-    const all = [project.main_image, ...parseImages(project.additional_images)].filter(Boolean)
-    const image = all[Math.floor(Math.random() * all.length)]
-    return { project, image, key: `${seed}-${i}-${project.id}` }
-  })
+function makeCard(project: ShowcaseProject, rowSeed: number, i: number): CardData {
+  const all = [project.main_image, ...parseImages(project.additional_images)].filter(Boolean)
+  const image = all[Math.floor(Math.random() * all.length)]
+  return { project, image, key: `${rowSeed}-${i}-${project.id}` }
+}
+
+// 5 cards per row — shuffle once and split so no project repeats across rows
+function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
+  const pool = shuffle(projects)
+  const row1 = pool.slice(0, 5)
+  // Row 2: take next 5; if pool is small, fill from a fresh shuffle of remaining
+  const remainder = pool.slice(5)
+  const row2 = remainder.length >= 5
+    ? remainder.slice(0, 5)
+    : [...remainder, ...shuffle(pool).filter(p => !remainder.includes(p))].slice(0, 5)
+
+  return [
+    row1.map((p, i) => makeCard(p, 0, i)),
+    row2.map((p, i) => makeCard(p, 1, i)),
+  ]
 }
 
 // Card sized so 3.5 cards fill the viewport:
@@ -89,7 +100,7 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
   const row2X = useTransform(scrollYProgress, [0, 1], [ROW2_START, ROW2_END])
 
   useEffect(() => {
-    setRows([buildRow(projects, 0), buildRow(projects, 1)])
+    setRows(buildRows(projects))
   }, [projects])
 
   return (

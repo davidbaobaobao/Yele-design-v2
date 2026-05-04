@@ -236,7 +236,7 @@ export default function Precios() {
   const isAnnual = billing === 'annual'
 
   return (
-    <section id="precios" className="py-24 md:py-32 bg-white">
+    <section id="precios" className="py-14 md:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-6">
 
         <motion.div
@@ -244,7 +244,7 @@ export default function Precios() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' } as Transition}
           viewport={{ once: true, margin: '-80px' }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
             {t('Precios', 'Pricing')}
@@ -300,7 +300,7 @@ export default function Precios() {
           ))}
         </div>
 
-        <p className="text-center font-manrope text-sm text-[#86868B] mt-8">
+        <p className="text-center font-manrope text-sm text-[#86868B] mt-6">
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
       </div>
