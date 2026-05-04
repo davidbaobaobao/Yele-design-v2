@@ -15,7 +15,7 @@ export default function FAQClient({ faqs }: { faqs: FAQItem[] }) {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <section id="faq" className="py-24 md:py-32 bg-white">
+    <section id="faq" className="py-24 md:py-32 bg-[#F5F5F7]">
       <div className="max-w-3xl mx-auto px-6">
 
         <motion.div

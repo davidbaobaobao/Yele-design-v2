@@ -72,7 +72,7 @@ export default function ComoFunciona() {
   const { t } = useLang()
 
   return (
-    <section id="como-funciona" className="py-24 md:py-32 bg-white">
+    <section id="como-funciona" className="py-24 md:py-32 bg-[#F5F5F7]">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-start">
 

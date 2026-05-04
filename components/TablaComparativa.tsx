@@ -91,7 +91,7 @@ export default function TablaComparativa() {
   const { t } = useLang()
 
   return (
-    <section className="py-24 md:py-32 bg-[#F5F5F7]">
+    <section className="py-24 md:py-32 bg-white">
       <div className="max-w-6xl mx-auto px-6">
 
         <motion.div
