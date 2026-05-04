@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion, type Transition } from 'framer-motion'
+import { motion, useScroll, useTransform, type MotionValue, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 import type { ShowcaseProject } from './Showcase'
 
@@ -21,10 +21,10 @@ function shuffle<T>(arr: T[]): T[] {
 
 type CardData = { project: ShowcaseProject; image: string; key: string }
 
+// 5 cards per row so there's buffer on both edges for the parallax travel
 function buildRow(projects: ShowcaseProject[], seed: number): CardData[] {
   const shuffled = shuffle(projects)
-  // Pick 4 items (with wraparound if fewer than 4 projects)
-  return Array.from({ length: 4 }, (_, i) => {
+  return Array.from({ length: 5 }, (_, i) => {
     const project = shuffled[i % shuffled.length]
     const all = [project.main_image, ...parseImages(project.additional_images)].filter(Boolean)
     const image = all[Math.floor(Math.random() * all.length)]
@@ -32,29 +32,34 @@ function buildRow(projects: ShowcaseProject[], seed: number): CardData[] {
   })
 }
 
-function ScrollRow({ cards, reverse }: { cards: CardData[]; reverse: boolean }) {
-  // Repeat 4x so we always fill any viewport before halving for the seamless loop
-  const base = [...cards, ...cards, ...cards, ...cards]
-  const doubled = [...base, ...base]
+// Card sized so 3.5 cards fill the viewport:
+//   3.5 * cardWidth + 3 gaps(16px) = 100vw  →  cardWidth ≈ 28.57vw
+const CARD_W = 'calc((100vw - 48px) / 3.5)'
 
+// Parallax travel expressed in vw (Framer Motion interpolates same-unit strings):
+//   Row 1: 50% of cardWidth left  = 100vw / (3.5 * 2) ≈ 14.3vw
+//   Row 2: 35% of cardWidth right = 100vw / (3.5 / 0.35) ≈ 10vw
+const ROW1_START = '0vw'
+const ROW1_END   = '-14.3vw'   // moves left
+const ROW2_START = '0vw'
+const ROW2_END   = '10vw'      // moves right
+
+function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue<string> }) {
   return (
     <div className="overflow-hidden">
-      <motion.div
-        className="flex gap-4 w-max"
-        animate={{ x: reverse ? ['-50%', '0%'] : ['0%', '-50%'] }}
-        transition={{ duration: 40, ease: 'linear', repeat: Infinity } as Transition}
-      >
-        {doubled.map((card, i) => (
+      <motion.div className="flex gap-4 w-max" style={{ x: xMotion }}>
+        {cards.map((card, i) => (
           <Link
             key={`${card.key}-${i}`}
             href={`/ejemplos#${card.project.id}`}
-            className="flex-shrink-0 w-72 h-48 relative rounded-2xl overflow-hidden group block focus-visible:outline-none"
+            style={{ width: CARD_W }}
+            className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group block focus-visible:outline-none"
           >
             <Image
               src={card.image}
               alt={`Web de ${card.project.name} — Yele`}
               fill
-              sizes="288px"
+              sizes="(max-width: 768px) 90vw, 30vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -71,13 +76,24 @@ function ScrollRow({ cards, reverse }: { cards: CardData[]; reverse: boolean }) 
 export default function ShowcaseClient({ projects }: { projects: ShowcaseProject[] }) {
   const { t } = useLang()
   const [rows, setRows] = useState<[CardData[], CardData[]] | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  // Track scroll progress of the section entering/exiting the viewport
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  })
+
+  // Direct useTransform — no spring so there's zero lag or overshoot on direction change
+  const row1X = useTransform(scrollYProgress, [0, 1], [ROW1_START, ROW1_END])
+  const row2X = useTransform(scrollYProgress, [0, 1], [ROW2_START, ROW2_END])
 
   useEffect(() => {
     setRows([buildRow(projects, 0), buildRow(projects, 1)])
   }, [projects])
 
   return (
-    <section id="trabajos" className="py-24 md:py-32 bg-[#F5F5F7]">
+    <section ref={sectionRef} id="trabajos" className="py-24 md:py-32 bg-[#F5F5F7]">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -99,21 +115,26 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
       </div>
 
       <div className="relative space-y-4 overflow-hidden">
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
+        {/* Edge fades — wider to cleanly clip the half-visible edge cards */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
 
         {rows ? (
           <>
-            <ScrollRow cards={rows[0]} reverse={false} />
-            <ScrollRow cards={rows[1]} reverse={true} />
+            <ScrollRow cards={rows[0]} xMotion={row1X} />
+            <ScrollRow cards={rows[1]} xMotion={row2X} />
           </>
         ) : (
-          // SSR skeleton — two rows of placeholder blocks
+          // SSR placeholder — matches final card sizing to prevent layout shift
           <>
             {[0, 1].map(row => (
-              <div key={row} className="flex gap-4 px-6">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="flex-shrink-0 w-72 h-48 rounded-2xl bg-black/[0.06]" />
+              <div key={row} className="flex gap-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    style={{ width: CARD_W }}
+                    className="flex-shrink-0 aspect-video rounded-2xl bg-black/[0.06]"
+                  />
                 ))}
               </div>
             ))}
