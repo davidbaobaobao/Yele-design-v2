@@ -96,10 +96,10 @@ export default function ShowcaseLargeClient({ projects }: { projects: ShowcasePr
   }, [projects])
 
   return (
-    <section ref={sectionRef} className="py-6 bg-white">
-      <div className="relative space-y-4 overflow-hidden">
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-40 z-10 bg-gradient-to-r from-white to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-40 z-10 bg-gradient-to-l from-white to-transparent" />
+    <section ref={sectionRef} className="py-10 bg-[#F5F5F7]">
+      <div className="relative space-y-4 overflow-x-hidden">
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-40 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-40 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
 
         {rows ? (
           <>
