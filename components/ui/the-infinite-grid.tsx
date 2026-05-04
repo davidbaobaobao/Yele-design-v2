@@ -23,8 +23,8 @@ export function InfiniteGrid({
   const mouseX = useMotionValue(-9999)
   const mouseY = useMotionValue(-9999)
   // Spring the mask position so the reveal circle follows the cursor smoothly
-  const springX = useSpring(mouseX, { stiffness: 60, damping: 18, mass: 0.4 })
-  const springY = useSpring(mouseY, { stiffness: 60, damping: 18, mass: 0.4 })
+  const springX = useSpring(mouseX, { stiffness: 100, damping: 20, mass: 0.3 })
+  const springY = useSpring(mouseY, { stiffness: 100, damping: 20, mass: 0.3 })
 
   const gridOffsetX = useMotionValue(0)
   const gridOffsetY = useMotionValue(0)
@@ -67,7 +67,7 @@ export function InfiniteGrid({
           a smooth blur→clear gradient transition at the mask edge. */}
       <motion.div
         className="absolute inset-0"
-        style={{ maskImage, WebkitMaskImage: maskImage, opacity: revealOpacity }}
+        style={{ maskImage, WebkitMaskImage: maskImage, opacity: revealOpacity, filter: "blur(1px)" }}
       >
         <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} patternId={`${uid}_reveal`} />
       </motion.div>
