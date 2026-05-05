@@ -77,7 +77,7 @@ export default function Footer() {
       {/* Content */}
       <div className="relative z-10 pointer-events-none">
         {/* Typewriter hero area */}
-        <div className="flex flex-col items-center justify-center min-h-[50vh] md:min-h-[38vh] text-center px-6 -translate-y-8">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] md:min-h-[38vh] text-center px-6 pt-20 -translate-y-8">
           <h2
             className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10 select-none"
             style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
@@ -170,7 +170,7 @@ export default function Footer() {
               </div>
             </div>
 
-            <p className="font-manrope text-xs text-white/40 mt-6">
+            <p className="font-manrope text-xs text-white/70 mt-6">
               {t(
                 '© 2026 Yele. Todos los derechos reservados.',
                 '© 2026 Yele. All rights reserved.'
