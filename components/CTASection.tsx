@@ -56,40 +56,41 @@ export default function CTASection() {
             >
               <source src="/videos/webflow.mp4" type="video/mp4" />
             </video>
-            <div className="absolute inset-0 bg-black/50" />
           </div>
 
-          {/* Content overlay */}
-          <div className="relative z-10 px-8 py-20 md:px-14 md:py-28 flex flex-col items-center text-center">
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-6 leading-tight">
-              {t('Estás a un paso', "You're one step away")}<br />
-              <span className="text-white/60">{t('de la web que mereces.', 'from the website you deserve.')}</span>
-            </h2>
+          {/* Content — left half */}
+          <div className="relative z-10 grid md:grid-cols-2">
+            <div className="px-8 py-16 md:px-14 md:py-20 flex flex-col items-start text-left">
+              <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-6 leading-tight">
+                {t('Estás a un paso', "You're one step away")}<br />
+                <span className="text-white/60">{t('de la web que mereces.', 'from the website you deserve.')}</span>
+              </h2>
 
-            <p className="font-manrope text-white/70 text-lg mb-10 max-w-sm">
-              {t(
-                'Cuéntanos tu negocio y ten tu web lista en menos de una semana.',
-                'Tell us about your business and have your website ready in less than a week.'
-              )}
-            </p>
+              <p className="font-manrope text-white/70 text-lg mb-10 max-w-sm">
+                {t(
+                  'Cuéntanos tu negocio y ten tu web lista en menos de una semana.',
+                  'Tell us about your business and have your website ready in less than a week.'
+                )}
+              </p>
 
-            <motion.a
-              href="/registro"
-              className="relative overflow-hidden inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-8 py-4 rounded-2xl cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-              whileHover="hover"
-              whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}
-              initial="rest"
-            >
-              <motion.span
-                className="absolute inset-0 bg-[#F0F0F0]"
-                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
-                style={{ originX: 0 }}
-                aria-hidden="true"
-              />
-              <span className="relative z-10">{t('Quiero mi web', 'I want my website')}</span>
-              <span className="relative z-10" aria-hidden="true">→</span>
-            </motion.a>
+              <motion.a
+                href="/registro"
+                className="relative overflow-hidden inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-8 py-4 rounded-2xl cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                whileHover="hover"
+                whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}
+                initial="rest"
+              >
+                <motion.span
+                  className="absolute inset-0 bg-black"
+                  variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                  transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
+                  style={{ originX: 0 }}
+                  aria-hidden="true"
+                />
+                <span className="relative z-10">{t('Quiero mi web', 'I want my website')}</span>
+                <span className="relative z-10" aria-hidden="true">→</span>
+              </motion.a>
+            </div>
           </div>
         </motion.div>
       </div>
