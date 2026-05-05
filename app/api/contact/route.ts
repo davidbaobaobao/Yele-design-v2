@@ -1,36 +1,57 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
+
+const RECIPIENTS = ['info@yele.design', 'davidbaobaobao@gmail.com']
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { nombre, email, negocio, mensaje } = body
+    const { nombre, email, mensaje } = body
 
     if (!nombre || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // ── Supabase ────────────────────────────────────────────────────────────
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-    if (!url || !key || url === 'https://placeholder.supabase.co') {
-      // Supabase not configured — log and return success so the form works in dev
-      console.log('[contact form]', { nombre, email, negocio, mensaje })
-      return NextResponse.json({ ok: true })
+    if (url && key && url !== 'https://placeholder.supabase.co') {
+      const supabase = createClient(url, key)
+      const { error } = await supabase
+        .from('contact_requests')
+        .insert({ nombre, email, mensaje })
+
+      if (error) {
+        console.error('[contact] supabase error', error.message)
+      }
     }
 
-    const supabase = createClient(url, key)
-    const { error } = await supabase
-      .from('contact_requests')
-      .insert({ nombre, email, negocio, mensaje })
+    // ── Email via Resend ────────────────────────────────────────────────────
+    const resendKey = process.env.RESEND_API_KEY
 
-    if (error) {
-      console.error('[contact form] supabase error', error.message)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (resendKey) {
+      const resend = new Resend(resendKey)
+      await resend.emails.send({
+        from: 'Yele Contacto <noreply@yele.design>',
+        to: RECIPIENTS,
+        replyTo: email,
+        subject: `Nuevo mensaje de ${nombre}`,
+        text: [
+          `Nombre: ${nombre}`,
+          `Email: ${email}`,
+          '',
+          mensaje ?? '(sin mensaje)',
+        ].join('\n'),
+      })
+    } else {
+      console.log('[contact] RESEND_API_KEY not set — email skipped', { nombre, email, mensaje })
     }
 
     return NextResponse.json({ ok: true })
-  } catch {
+  } catch (err) {
+    console.error('[contact] error', err)
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
