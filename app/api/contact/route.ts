@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 
-const RECIPIENTS = ['info@yele.design', 'davidbaobaobao@gmail.com']
+const RECIPIENTS = [
+  process.env.STUDIO_EMAIL ?? 'info@yele.design',
+  process.env.OWNER_EMAIL  ?? 'davidbaobaobao@gmail.com',
+]
 
 export async function POST(request: Request) {
   try {
