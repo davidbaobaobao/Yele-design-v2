@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useScroll, useTransform, useMotionValue, animate, type MotionValue } from 'framer-motion'
 import type { ShowcaseProject } from './Showcase'
 
 function parseImages(raw: unknown): string[] {
@@ -40,13 +40,16 @@ function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
   ]
 }
 
-// 1.6 cards fill the full viewport width
-const CARD_W = 'calc((100vw - 16px) / 1.6)'
+// ~1.5 cards fill the full viewport width
+const CARD_W = 'calc((100vw - 16px) / 1.5)'
 
-const ROW1_START = '0vw'
-const ROW1_END   = '-10vw'
-const ROW2_START = '0vw'
-const ROW2_END   = '7vw'
+// Scroll-based travel (same as the main showcase)
+const ROW1_SCROLL_END = -14.3 // vw, moves left
+const ROW2_SCROLL_END = 7     // vw, moves right
+
+// Pre-scroll ambient drift: row 1 slowly moves left before user scrolls
+const AUTO_DRIFT_DEST = -5   // vw
+const AUTO_DRIFT_SECS = 8
 
 function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue<string> }) {
   return (
@@ -63,7 +66,7 @@ function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue
               src={card.image}
               alt={`Web de ${card.project.name} — Yele`}
               fill
-              sizes="(max-width: 768px) 90vw, 60vw"
+              sizes="(max-width: 768px) 90vw, 65vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -81,21 +84,59 @@ export default function ShowcaseHeroClient({ projects }: { projects: ShowcasePro
   const [rows, setRows] = useState<[CardData[], CardData[]] | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
 
+  // autoX drives the ambient left-drift before the user scrolls
+  const autoX = useMotionValue(0)
+
+  // Anchor progress=0 to page-load state (hero=75vh, section peeking at viewport bottom 25%).
+  // "start 0.75" fires when section.top aligns with 75% down the viewport, which is exactly
+  // where it sits on load when hero is 75vh tall.
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start end', 'end start'],
+    offset: ['start 0.75', 'end start'],
   })
 
-  const row1X = useTransform(scrollYProgress, [0, 1], [ROW1_START, ROW1_END])
-  const row2X = useTransform(scrollYProgress, [0, 1], [ROW2_START, ROW2_END])
+  // Row 1: ambient drift + scroll-based parallax combined
+  const row1ScrollX = useTransform(scrollYProgress, [0, 1], [0, ROW1_SCROLL_END])
+  const row1X = useTransform(
+    [autoX, row1ScrollX] as MotionValue<number>[],
+    ([auto, scroll]: number[]) => `${auto + scroll}vw`,
+  )
+
+  // Row 2: scroll-based only, moves right
+  const row2X = useTransform(scrollYProgress, [0, 1], ['0vw', `${ROW2_SCROLL_END}vw`])
+
+  useEffect(() => {
+    // Slowly drift row 1 left; stop the moment the user starts scrolling
+    const controls = animate(autoX, AUTO_DRIFT_DEST, {
+      duration: AUTO_DRIFT_SECS,
+      ease: 'linear',
+    })
+
+    const onScroll = () => {
+      if (window.scrollY > 10) {
+        controls.stop()
+        window.removeEventListener('scroll', onScroll)
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    return () => {
+      controls.stop()
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [autoX])
 
   useEffect(() => {
     setRows(buildRows(projects))
   }, [projects])
 
   return (
-    <section ref={sectionRef} className="py-16 bg-white overflow-hidden">
-      <div className="relative space-y-4">
+    <section ref={sectionRef} className="pt-6 pb-16 bg-white">
+      <div className="relative space-y-4 overflow-hidden">
+        {/* Edge fades */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-white to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-white to-transparent" />
+
         {rows ? (
           <>
             <ScrollRow cards={rows[0]} xMotion={row1X} />

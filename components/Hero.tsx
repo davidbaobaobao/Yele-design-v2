@@ -13,7 +13,7 @@ export default function Hero() {
   const { t } = useLang()
 
   return (
-    <section className="min-h-screen flex items-center justify-center pt-20">
+    <section className="h-[75vh] flex items-center justify-center pt-20">
       <div className="max-w-6xl mx-auto px-6 py-24 md:py-32 w-full text-center">
         <motion.h1
           className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
