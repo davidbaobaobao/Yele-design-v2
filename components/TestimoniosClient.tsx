@@ -39,7 +39,7 @@ export default function TestimoniosClient({ testimonials }: { testimonials: Test
         <motion.div
           className="flex gap-5"
           animate={{ x: ['0%', '-50%'] }}
-          transition={{ duration: 40, ease: 'linear', repeat: Infinity } as Transition}
+          transition={{ duration: 20, ease: 'linear', repeat: Infinity } as Transition}
         >
           {doubled.map((item, i) => (
             <div
