@@ -6,20 +6,10 @@ import { useLang } from '@/context/LanguageContext'
 
 type FormState = 'idle' | 'loading' | 'success' | 'error'
 
-const tiposNegocio = [
-  { es: 'Restaurante / Cafetería', en: 'Restaurant / Café' },
-  { es: 'Salud / Bienestar', en: 'Health / Wellness' },
-  { es: 'Servicios profesionales', en: 'Professional services' },
-  { es: 'Comercio / Tienda', en: 'Shop / Retail' },
-  { es: 'Arte / Diseño / Fotografía', en: 'Art / Design / Photography' },
-  { es: 'Construcción / Reformas', en: 'Construction / Renovation' },
-  { es: 'Otro', en: 'Other' },
-]
-
 export default function ContactForm() {
   const { t } = useLang()
   const [formState, setFormState] = useState<FormState>('idle')
-  const [form, setForm] = useState({ nombre: '', email: '', negocio: '', mensaje: '' })
+  const [form, setForm] = useState({ nombre: '', email: '', mensaje: '' })
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -36,7 +26,7 @@ export default function ContactForm() {
       })
       if (!res.ok) throw new Error()
       setFormState('success')
-      setForm({ nombre: '', email: '', negocio: '', mensaje: '' })
+      setForm({ nombre: '', email: '', mensaje: '' })
     } catch {
       setFormState('error')
     }
@@ -59,12 +49,8 @@ export default function ContactForm() {
             {t('Contacto', 'Contact')}
           </span>
           <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-4">
-            {t('Cuéntanos sobre', 'Tell us about')}<br />
-            <span className="text-white/40">{t('tu negocio.', 'your business.')}</span>
+            {t('Dudas, cuestiones, preguntas.', 'Questions, queries, doubts.')}
           </h2>
-          <p className="font-manrope text-white/50 text-lg">
-            {t('Respondemos en menos de 24 horas.', 'We respond within 24 hours.')}
-          </p>
         </motion.div>
 
         {formState === 'success' ? (
@@ -127,29 +113,6 @@ export default function ContactForm() {
                   autoComplete="email"
                 />
               </div>
-            </div>
-
-            <div>
-              <label htmlFor="negocio" className="font-manrope text-xs text-white/40 mb-1.5 block">
-                {t('Tipo de negocio', 'Business type')}
-              </label>
-              <select
-                id="negocio"
-                name="negocio"
-                required
-                value={form.negocio}
-                onChange={handleChange}
-                className={`${inputClass} appearance-none`}
-              >
-                <option value="" disabled className="bg-[#1D1D1F]">
-                  {t('Selecciona tu sector', 'Select your industry')}
-                </option>
-                {tiposNegocio.map(tipo => (
-                  <option key={tipo.es} value={tipo.es} className="bg-[#1D1D1F]">
-                    {t(tipo.es, tipo.en)}
-                  </option>
-                ))}
-              </select>
             </div>
 
             <div>

@@ -67,8 +67,8 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-black text-white overflow-hidden">
-      {/* Gradient connecting to grey background of previous section */}
-      <div className="absolute top-0 left-0 right-0 h-[25px] bg-gradient-to-b from-[#F5F5F7] to-transparent z-20 pointer-events-none" />
+      {/* Gradient connecting ContactForm (#1D1D1F) to black footer */}
+      <div className="absolute top-0 left-0 right-0 h-[60px] bg-gradient-to-b from-[#1D1D1F] to-transparent z-20 pointer-events-none" />
 
       {/* WebGL background layers */}
       <InfiniteGrid />
@@ -77,7 +77,7 @@ export default function Footer() {
       {/* Content */}
       <div className="relative z-10 pointer-events-none">
         {/* Typewriter hero area */}
-        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-6 -translate-y-8">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] md:min-h-[38vh] text-center px-6 -translate-y-8">
           <h2
             className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10 select-none"
             style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
@@ -110,8 +110,8 @@ export default function Footer() {
 
         {/* Footer links */}
         <div className="pointer-events-auto border-t border-white/10">
-          <div className="max-w-6xl mx-auto px-6 py-12">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 pb-10 border-b border-white/10">
+          <div className="max-w-6xl mx-auto px-6 py-8 md:py-6">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 pb-8 border-b border-white/10">
               <div>
                 <p className="font-outfit font-semibold text-2xl mb-2">Yele</p>
                 <p className="font-manrope text-white/60 text-sm max-w-xs leading-relaxed">
@@ -125,23 +125,52 @@ export default function Footer() {
                 </a>
               </div>
 
-              <nav aria-label="Pie de página" className="flex flex-col gap-2">
-                <a
-                  href="/aviso-legal"
-                  className="font-manrope text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
-                >
-                  {t('Aviso Legal', 'Legal Notice')}
-                </a>
-                <a
-                  href="/politica-privacidad"
-                  className="font-manrope text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
-                >
-                  {t('Política de Privacidad', 'Privacy Policy')}
-                </a>
-              </nav>
+              <div className="flex gap-12">
+                <nav aria-label="Secciones">
+                  <p className="font-manrope text-xs text-white/40 uppercase tracking-[0.12em] mb-3">
+                    {t('Secciones', 'Sections')}
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {[
+                      { id: '#trabajos',      es: 'Trabajos',       en: 'Portfolio' },
+                      { id: '#como-funciona', es: 'Cómo funciona',  en: 'How it works' },
+                      { id: '#precios',       es: 'Precios',        en: 'Pricing' },
+                      { id: '#contacto',      es: 'Contacto',       en: 'Contact' },
+                    ].map(({ id, es, en }) => (
+                      <button
+                        key={id}
+                        onClick={() => document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' })}
+                        className="text-left font-manrope text-sm text-white/60 hover:text-white transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+                      >
+                        {t(es, en)}
+                      </button>
+                    ))}
+                  </div>
+                </nav>
+
+                <nav aria-label="Legal">
+                  <p className="font-manrope text-xs text-white/40 uppercase tracking-[0.12em] mb-3">
+                    Legal
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <a
+                      href="/aviso-legal"
+                      className="font-manrope text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+                    >
+                      {t('Aviso Legal', 'Legal Notice')}
+                    </a>
+                    <a
+                      href="/politica-privacidad"
+                      className="font-manrope text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+                    >
+                      {t('Política de Privacidad', 'Privacy Policy')}
+                    </a>
+                  </div>
+                </nav>
+              </div>
             </div>
 
-            <p className="font-manrope text-xs text-white/40 mt-8">
+            <p className="font-manrope text-xs text-white/40 mt-6">
               {t(
                 '© 2026 Yele. Todos los derechos reservados.',
                 '© 2026 Yele. All rights reserved.'

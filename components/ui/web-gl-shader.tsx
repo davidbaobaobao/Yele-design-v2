@@ -87,7 +87,7 @@ export function WebGLShader() {
         resolution: { value: [window.innerWidth, window.innerHeight] },
         time: { value: 0.0 },
         xScale: { value: 0.65 },
-        yScale: { value: 0.6 },
+        yScale: { value: 0.85 },
         distortion: { value: 0.05 },
         yOffset: { value: 0.3 },
       }
