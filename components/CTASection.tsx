@@ -39,12 +39,12 @@ export default function CTASection() {
           viewport={{ once: true, margin: '-80px' }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="relative overflow-hidden rounded-3xl cursor-default"
+          className="relative overflow-hidden rounded-3xl cursor-default bg-[#F5F5F7]"
           style={{ rotateX, rotateY }}
           whileHover={{ scale: 1.01, transition: { duration: 0.2 } }}
         >
-          {/* Full-bleed video */}
-          <div className="absolute inset-0">
+          {/* Video inset 20px top/bottom */}
+          <div className="absolute inset-x-0 top-5 bottom-5 overflow-hidden rounded-2xl">
             <video
               autoPlay
               muted
@@ -61,12 +61,12 @@ export default function CTASection() {
           {/* Content — left half */}
           <div className="relative z-10 grid md:grid-cols-2">
             <div className="px-8 py-16 md:px-14 md:py-20 flex flex-col items-start text-left">
-              <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-6 leading-tight">
+              <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
                 {t('Estás a un paso', "You're one step away")}<br />
-                <span className="text-white/60">{t('de la web que mereces.', 'from the website you deserve.')}</span>
+                <span className="text-[#86868B]">{t('de la web que mereces.', 'from the website you deserve.')}</span>
               </h2>
 
-              <p className="font-manrope text-white/70 text-lg mb-10 max-w-sm">
+              <p className="font-manrope text-[#86868B] text-lg mb-10 max-w-sm">
                 {t(
                   'Cuéntanos tu negocio y ten tu web lista en menos de una semana.',
                   'Tell us about your business and have your website ready in less than a week.'
@@ -75,7 +75,7 @@ export default function CTASection() {
 
               <motion.a
                 href="/registro"
-                className="relative overflow-hidden inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-8 py-4 rounded-2xl cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                className="relative overflow-hidden inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-8 py-4 rounded-2xl cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
                 whileHover="hover"
                 whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}
                 initial="rest"
