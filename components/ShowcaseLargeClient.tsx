@@ -42,7 +42,7 @@ function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
 }
 
 const CARD_W_DESKTOP = 'calc((100vw - 32px) / 2.5)'
-const CARD_W_MOBILE = '75vw'
+const CARD_W_MOBILE = 'calc(100vw - 16px)'
 
 const ROW1_START = '0vw'
 const ROW1_END   = '-20vw'
@@ -85,7 +85,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
 
   useEffect(() => {
     const compute = () => {
-      const cardW = window.innerWidth * 0.75
+      const cardW = window.innerWidth - 16
       const travel = 2.5 * cardW
       travelMV.set(travel)
       setWrapperH(`${window.innerHeight + travel}px`)
@@ -109,19 +109,22 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
           <div className="pointer-events-none absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
           {rows.map((rowCards, rowIdx) => (
             <div key={rowIdx} className="overflow-visible">
-              <motion.div className="flex gap-3 w-max pl-2" style={{ x }}>
+              <motion.div
+                className="flex gap-3 w-max"
+                style={{ x, paddingLeft: rowIdx === 1 ? 'calc((100vw - 16px) / 2)' : '8px' }}
+              >
                 {rowCards.map((card, i) => (
                   <Link
                     key={`${card.key}-${i}`}
                     href={`/ejemplos#${card.project.id}`}
                     style={{ width: CARD_W_MOBILE }}
-                    className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group block focus-visible:outline-none"
+                    className="flex-shrink-0 aspect-[4/3] relative rounded-2xl overflow-hidden group block focus-visible:outline-none"
                   >
                     <Image
                       src={card.image}
                       alt={`Web de ${card.project.name} — Yele`}
                       fill
-                      sizes="75vw"
+                      sizes="95vw"
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

@@ -68,13 +68,13 @@ function ScrollRow({
           <Link
             key={`${card.key}-${i}`}
             href={`/ejemplos#${card.project.id}`}
-            className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group block focus-visible:outline-none w-[75vw] md:w-[calc((100vw-16px)/1.5)]"
+            className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group block focus-visible:outline-none w-[calc(100vw-16px)] md:w-[calc((100vw-16px)/1.5)]"
           >
             <Image
               src={card.image}
               alt={`Web de ${card.project.name} — Yele`}
               fill
-              sizes="(max-width: 768px) 75vw, 65vw"
+              sizes="(max-width: 768px) 95vw, 65vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -145,7 +145,7 @@ export default function ShowcaseHeroClient({ projects }: { projects: ShowcasePro
                 {Array.from({ length: row === 0 ? 4 : 5 }).map((_, i) => (
                   <div
                     key={i}
-                    className="flex-shrink-0 aspect-video rounded-2xl bg-black/[0.06] w-[75vw] md:w-[calc((100vw-16px)/1.5)]"
+                    className="flex-shrink-0 aspect-video rounded-2xl bg-black/[0.06] w-[calc(100vw-16px)] md:w-[calc((100vw-16px)/1.5)]"
                   />
                 ))}
               </div>
