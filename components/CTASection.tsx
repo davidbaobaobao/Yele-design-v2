@@ -43,8 +43,8 @@ export default function CTASection() {
           style={{ rotateX, rotateY }}
           whileHover={{ scale: 1.01, transition: { duration: 0.2 } }}
         >
-          {/* Video inset 20px top/bottom */}
-          <div className="absolute inset-x-0 top-5 bottom-5 overflow-hidden rounded-2xl">
+          {/* Video inset 20px top/bottom — desktop only */}
+          <div className="hidden md:block absolute inset-x-0 top-5 bottom-5 overflow-hidden rounded-2xl">
             <video
               autoPlay
               muted

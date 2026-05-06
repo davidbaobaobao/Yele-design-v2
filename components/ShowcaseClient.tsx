@@ -42,7 +42,7 @@ function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
 }
 
 const CARD_W_DESKTOP = 'calc((100vw - 48px) / 3.5)'
-const CARD_W_MOBILE = 'calc((100vw - 16px) / 1.5)'
+const CARD_W_MOBILE = '75vw'
 
 const ROW1_START = '0vw'
 const ROW1_END   = '-14.3vw'
@@ -85,7 +85,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
 
   useEffect(() => {
     const compute = () => {
-      const cardW = (window.innerWidth - 16) / 1.5
+      const cardW = window.innerWidth * 0.75
       const travel = 2.5 * cardW
       travelMV.set(travel)
       setWrapperH(`${window.innerHeight + travel}px`)
@@ -121,7 +121,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
                       src={card.image}
                       alt={`Web de ${card.project.name} — Yele`}
                       fill
-                      sizes="70vw"
+                      sizes="75vw"
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

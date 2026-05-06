@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
@@ -13,6 +14,10 @@ export type Testimonial = {
 export default function TestimoniosClient({ testimonials }: { testimonials: Testimonial[] }) {
   const { t } = useLang()
   const doubled = [...testimonials, ...testimonials]
+  const [duration, setDuration] = useState(20)
+  useEffect(() => {
+    setDuration(window.innerWidth < 768 ? 10 : 20)
+  }, [])
 
   return (
     <section className="py-24 md:py-32 bg-white overflow-hidden">
@@ -39,7 +44,7 @@ export default function TestimoniosClient({ testimonials }: { testimonials: Test
         <motion.div
           className="flex gap-5"
           animate={{ x: ['0%', '-50%'] }}
-          transition={{ duration: 20, ease: 'linear', repeat: Infinity } as Transition}
+          transition={{ duration, ease: 'linear', repeat: Infinity } as Transition}
         >
           {doubled.map((item, i) => (
             <div

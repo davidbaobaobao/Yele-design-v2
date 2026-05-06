@@ -47,8 +47,6 @@ function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
   ]
 }
 
-// ~1.5 cards fill the full viewport width
-const CARD_W = 'calc((100vw - 16px) / 1.5)'
 
 // Scroll speeds in px/s — slightly faster than the previous implementation
 const ROW1_SPEED = 65
@@ -70,14 +68,13 @@ function ScrollRow({
           <Link
             key={`${card.key}-${i}`}
             href={`/ejemplos#${card.project.id}`}
-            style={{ width: CARD_W }}
-            className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group block focus-visible:outline-none"
+            className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group block focus-visible:outline-none w-[75vw] md:w-[calc((100vw-16px)/1.5)]"
           >
             <Image
               src={card.image}
               alt={`Web de ${card.project.name} — Yele`}
               fill
-              sizes="(max-width: 768px) 90vw, 65vw"
+              sizes="(max-width: 768px) 75vw, 65vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -148,8 +145,7 @@ export default function ShowcaseHeroClient({ projects }: { projects: ShowcasePro
                 {Array.from({ length: row === 0 ? 4 : 5 }).map((_, i) => (
                   <div
                     key={i}
-                    style={{ width: CARD_W }}
-                    className="flex-shrink-0 aspect-video rounded-2xl bg-black/[0.06]"
+                    className="flex-shrink-0 aspect-video rounded-2xl bg-black/[0.06] w-[75vw] md:w-[calc((100vw-16px)/1.5)]"
                   />
                 ))}
               </div>
