@@ -111,7 +111,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
             <div key={rowIdx} className="overflow-visible">
               <motion.div
                 className="flex gap-3 w-max"
-                style={{ x, paddingLeft: rowIdx === 1 ? 'calc((100vw - 16px) / 2)' : '8px' }}
+                style={{ x, paddingLeft: '8px' }}
               >
                 {rowCards.map((card, i) => (
                   <Link
@@ -222,7 +222,7 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
 
       {/* Mobile */}
       <div className="md:hidden">
-        <div className="px-4 pt-20 pb-6">
+        <div className="px-4 pt-10 pb-3">
           {heading}
         </div>
         {rows ? (
@@ -242,7 +242,7 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
             ))}
           </div>
         )}
-        <div className="px-4 py-6 text-center">
+        <div className="px-4 py-3 text-center">
           {seeAllLink}
         </div>
       </div>
