@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useLang } from '@/context/LanguageContext'
 import { X, Menu } from 'lucide-react'
 
 export default function Navigation() {
   const { lang, toggleLang, t } = useLang()
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -26,7 +28,11 @@ export default function Navigation() {
 
   const scroll = (href: string) => {
     setOpen(false)
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
+    if (pathname === '/') {
+      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      window.location.href = `/${href}`
+    }
   }
 
   return (
