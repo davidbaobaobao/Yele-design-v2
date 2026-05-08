@@ -1,11 +1,11 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import EjemplosClient from '@/components/EjemplosClient'
 
 export const revalidate = 60
 
 export const metadata = {
-  title: 'Ejemplos — Yele',
+  title: 'Portafolio — Yele',
   description: 'Webs que hemos construido para negocios reales en toda España.',
 }
 
@@ -40,103 +40,28 @@ export default async function EjemplosPage() {
     .eq('visible', true)
     .order('sort_order', { ascending: true })
 
-  const projects = (data && data.length > 0) ? data : FALLBACK
+  const raw = (data && data.length > 0) ? data : FALLBACK
+  const projects = raw.map(p => ({
+    ...p,
+    additional_images: parseImages(p.additional_images),
+  }))
 
   return (
-    <main className="min-h-screen bg-white">
-      {/* Page header */}
-      <div className="max-w-5xl mx-auto px-6 pt-24 pb-16">
+    <main className="min-h-screen bg-[#F5F5F7]">
+      <div className="px-3 pt-16 pb-4">
         <Link
-          href="/#trabajos"
-          className="inline-flex items-center gap-1.5 font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors mb-10"
+          href="/"
+          className="inline-flex items-center gap-1.5 font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors mb-4"
         >
           ← Volver
         </Link>
-        <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+        <h1 className="font-outfit font-bold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
           Portafolio
-        </span>
-        <h1 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
-          Webs que hemos construido.
         </h1>
-        <p className="font-manrope text-[#86868B] text-lg">
-          Para negocios reales, en toda España.
-        </p>
       </div>
 
-      {/* Project list */}
-      <div className="max-w-5xl mx-auto px-6 pb-32">
-        {projects.map((project, i) => {
-          const extra = parseImages(project.additional_images)
-          return (
-            <div key={project.id}>
-              {i > 0 && <hr className="border-t border-black/[0.06] my-24" />}
-
-              <article id={project.id} className="scroll-mt-20">
-                <h2 className="font-outfit font-semibold text-2xl md:text-3xl text-[#1D1D1F] tracking-tight mb-2">
-                  {project.name}
-                </h2>
-                {project.description && (
-                  <p className="font-manrope text-[#86868B] text-base mb-6">{project.description}</p>
-                )}
-
-                {/* Main image — 16:9 */}
-                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#F5F5F7] mb-4">
-                  <Image
-                    src={project.main_image}
-                    alt={`Web de ${project.name} — diseñada por Yele`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 960px"
-                    className="object-cover"
-                    priority={i === 0}
-                  />
-                </div>
-
-                {/* Additional images */}
-                {extra.length === 1 && (
-                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#F5F5F7]">
-                    <Image
-                      src={extra[0]}
-                      alt={`${project.name} — imagen adicional`}
-                      fill
-                      sizes="960px"
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-                {extra.length === 2 && (
-                  <div className="grid grid-cols-2 gap-3">
-                    {extra.map((img, j) => (
-                      <div key={j} className="relative aspect-video rounded-xl overflow-hidden bg-[#F5F5F7]">
-                        <Image
-                          src={img}
-                          alt={`${project.name} — imagen ${j + 2}`}
-                          fill
-                          sizes="480px"
-                          className="object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {extra.length >= 3 && (
-                  <div className="grid grid-cols-3 gap-3">
-                    {extra.map((img, j) => (
-                      <div key={j} className="relative aspect-video rounded-xl overflow-hidden bg-[#F5F5F7]">
-                        <Image
-                          src={img}
-                          alt={`${project.name} — imagen ${j + 2}`}
-                          fill
-                          sizes="(max-width: 768px) 50vw, 320px"
-                          className="object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </article>
-            </div>
-          )
-        })}
+      <div className="px-3 pb-6">
+        <EjemplosClient projects={projects} />
       </div>
     </main>
   )
