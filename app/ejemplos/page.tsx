@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import EjemplosClient from '@/components/EjemplosClient'
 import Navigation from '@/components/Navigation'

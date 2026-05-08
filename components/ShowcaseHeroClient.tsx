@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion, useMotionValue, animate, type MotionValue } from 'framer-motion'
+import { motion, useMotionValue, animate } from 'framer-motion'
+import type { MotionValue } from 'framer-motion'
 import type { ShowcaseProject } from './Showcase'
 
 function parseImages(raw: unknown): string[] {
