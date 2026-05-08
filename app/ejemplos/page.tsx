@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import EjemplosClient from '@/components/EjemplosClient'
+import Navigation from '@/components/Navigation'
+import ScrollToTopButton from '@/components/ScrollToTopButton'
 
 export const revalidate = 60
 
@@ -48,21 +50,19 @@ export default async function EjemplosPage() {
 
   return (
     <main className="min-h-screen bg-[#F5F5F7]">
-      <div className="px-3 pt-16 pb-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors mb-4"
-        >
-          ← Volver
-        </Link>
+      <Navigation />
+
+      <div className="px-3 pt-28 pb-4">
         <h1 className="font-outfit font-bold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
           Portafolio
         </h1>
       </div>
 
-      <div className="px-3 pb-6">
+      <div className="px-3 pb-10">
         <EjemplosClient projects={projects} />
       </div>
+
+      <ScrollToTopButton />
     </main>
   )
 }
