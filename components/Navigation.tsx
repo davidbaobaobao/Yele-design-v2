@@ -21,14 +21,16 @@ export default function Navigation() {
 
   const links = [
     { label: t('Cómo funciona', 'How it works'), href: '#como-funciona' },
-    { label: t('Proyectos', 'Projects'), href: '#trabajos' },
+    { label: t('Proyectos', 'Projects'), href: '/ejemplos' },
     { label: t('Precios', 'Pricing'), href: '#precios' },
     { label: 'FAQ', href: '#faq' },
   ]
 
   const scroll = (href: string) => {
     setOpen(false)
-    if (pathname === '/') {
+    if (href.startsWith('/')) {
+      window.location.href = href
+    } else if (pathname === '/') {
       document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
     } else {
       window.location.href = `/${href}`
