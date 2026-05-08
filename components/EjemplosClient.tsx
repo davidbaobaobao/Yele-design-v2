@@ -101,19 +101,18 @@ function TitleOverlay({
 }) {
   return (
     <div
-      className="absolute inset-0 flex flex-col justify-end p-5 pointer-events-none"
+      className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 pointer-events-none"
       style={{
         opacity: visible ? 1 : 0,
         transition: 'opacity 0.28s ease',
-        background:
-          'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.22) 45%, transparent 100%)',
+        background: 'rgba(0,0,0,0.28)',
       }}
     >
       <h2 className="font-outfit font-semibold text-white text-xl md:text-2xl tracking-tight leading-tight mb-1">
         {name}
       </h2>
       {description && (
-        <p className="font-manrope text-white/65 text-sm">{description}</p>
+        <p className="font-manrope text-white/70 text-sm">{description}</p>
       )}
     </div>
   )
@@ -184,7 +183,7 @@ function ProjectGroup({ project, priority }: { project: Project; priority: boole
 
 export default function EjemplosClient({ projects }: { projects: Project[] }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-3">
       {projects.map((project, i) => (
         <ProjectGroup key={project.id} project={project} priority={i === 0} />
       ))}
