@@ -100,6 +100,10 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
     [scrollYProgress, travelMV],
     ([p, t]: number[]) => -(p * t)
   )
+  const x2 = useTransform(
+    [scrollYProgress, travelMV],
+    ([p, t]: number[]) => -(p * t) - (t / 2.5) * 0.3
+  )
 
   return (
     <div ref={wrapperRef} style={{ height: wrapperH }}>
@@ -111,7 +115,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
             <div key={rowIdx} className="overflow-visible">
               <motion.div
                 className="flex gap-3 w-max"
-                style={{ x, paddingLeft: '8px' }}
+                style={{ x: rowIdx === 1 ? x2 : x, paddingLeft: '8px' }}
               >
                 {rowCards.map((card, i) => (
                   <Link
