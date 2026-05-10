@@ -3,6 +3,7 @@ import { Outfit, Manrope } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '@/context/LanguageContext'
 import { Analytics } from '@vercel/analytics/react'
+import CookieBanner from '@/components/CookieBanner'
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Saltar al contenido principal
           </a>
           {children}
+          <CookieBanner />
         </LanguageProvider>
         <Analytics />
       </body>
