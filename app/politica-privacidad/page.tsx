@@ -22,8 +22,6 @@ export default function PoliticaPrivacidad() {
               <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">Responsable del tratamiento</h2>
               <ul className="space-y-2 text-[#86868B]">
                 <li><span className="text-[#1D1D1F] font-medium">Denominación:</span> Yele</li>
-                <li><span className="text-[#1D1D1F] font-medium">CIF/NIF:</span> [Añadir antes de publicar]</li>
-                <li><span className="text-[#1D1D1F] font-medium">Domicilio:</span> [Añadir antes de publicar]</li>
                 <li><span className="text-[#1D1D1F] font-medium">Email:</span>{' '}
                   <a href="mailto:info@yele.design" className="text-[#0066CC] hover:underline">
                     info@yele.design

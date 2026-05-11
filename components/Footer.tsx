@@ -165,6 +165,12 @@ export default function Footer() {
                     >
                       {t('Política de Privacidad', 'Privacy Policy')}
                     </a>
+                    <a
+                      href="/condiciones-uso"
+                      className="font-manrope text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+                    >
+                      {t('Condiciones de Uso', 'Terms of Use')}
+                    </a>
                   </div>
                 </nav>
               </div>
