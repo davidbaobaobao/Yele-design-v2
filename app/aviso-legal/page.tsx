@@ -3,8 +3,8 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Aviso Legal — Yele',
-  description: 'Aviso legal de Yele, servicio de diseño web por suscripción.',
+  title: 'Aviso Legal',
+  robots: { index: false, follow: false },
 }
 
 export default function AvisoLegal() {

@@ -3,8 +3,8 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Política de Privacidad — Yele',
-  description: 'Política de privacidad de Yele conforme al RGPD.',
+  title: 'Política de Privacidad',
+  robots: { index: false, follow: false },
 }
 
 export default function PoliticaPrivacidad() {

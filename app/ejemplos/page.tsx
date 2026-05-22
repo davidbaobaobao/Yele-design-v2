@@ -3,11 +3,23 @@ import EjemplosClient from '@/components/EjemplosClient'
 import Navigation from '@/components/Navigation'
 import ScrollToTopButton from '@/components/ScrollToTopButton'
 
+import type { Metadata } from 'next'
+
 export const revalidate = 60
 
-export const metadata = {
-  title: 'Portafolio — Yele',
-  description: 'Webs que hemos construido para negocios reales en toda España.',
+export const metadata: Metadata = {
+  title: 'Trabajos — Webs que hemos construido',
+  description:
+    'Portfolio de webs profesionales construidas por Yele para negocios reales en España. Cerámica, restaurantes, yoga, abogados, fontaneros.',
+  openGraph: {
+    title: 'Trabajos — Webs que hemos construido | Yele',
+    description:
+      'Portfolio de webs profesionales para negocios reales en España.',
+    url: 'https://yele.design/ejemplos',
+  },
+  alternates: {
+    canonical: 'https://yele.design/ejemplos',
+  },
 }
 
 type ShowcaseProject = {
