@@ -80,7 +80,7 @@ Lo que no recomendamos: perder semanas intentando construir tu propia web con Wi
     date: '2026-04-28',
     readTime: 5,
     category: 'Casos de uso',
-    image: 'https://images.pexels.com/photos/6816861/pexels-photo-6816861.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    image: 'https://images.pexels.com/photos/6419128/pexels-photo-6419128.jpeg?auto=compress&cs=tinysrgb&w=1200',
     contentEs: `Si eres fontanero autónomo, tienes una ventaja enorme sobre otros negocios: la gente te busca cuando te necesita, y te necesita urgente. El problema es que si no apareces en Google cuando alguien escribe "fontanero urgente Bilbao", ese cliente se lo lleva tu competencia.
 
 Una web bien hecha puede cambiar eso, y no necesitas gastarte un euro en publicidad.
