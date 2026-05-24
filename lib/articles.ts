@@ -17,7 +17,7 @@ export const articles: Article[] = [
     date: '2026-05-01',
     readTime: 6,
     category: 'Costes',
-    image: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    image: 'https://images.pexels.com/photos/3943729/pexels-photo-3943729.jpeg?auto=compress&cs=tinysrgb&w=1200',
     contentEs: `Cuando un autónomo decide por fin tener presencia online, la primera pregunta es siempre la misma: **¿cuánto me va a costar?** La respuesta honesta es que depende mucho de qué camino elijas. Aquí te desgloso cada opción con números reales.
 
 ## Opción 1: Agencia de diseño web
