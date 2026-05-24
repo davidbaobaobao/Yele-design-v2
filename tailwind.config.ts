@@ -44,6 +44,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [addVariablesForColors],
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  plugins: [addVariablesForColors, require('@tailwindcss/typography')],
 };
 export default config;

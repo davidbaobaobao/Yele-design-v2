@@ -1,8 +1,16 @@
 import { MetadataRoute } from 'next'
+import { articles } from '@/lib/articles'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://yele.design'
   const now = new Date()
+
+  const articleEntries: MetadataRoute.Sitemap = articles.map(a => ({
+    url: `${baseUrl}/blog/${a.slug}`,
+    lastModified: new Date(a.date),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }))
 
   return [
     {
@@ -17,6 +25,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    ...articleEntries,
     {
       url: `${baseUrl}/condiciones-uso`,
       lastModified: now,
