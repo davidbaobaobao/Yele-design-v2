@@ -3,6 +3,7 @@ import { Outfit, Manrope } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '@/context/LanguageContext'
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import CookieBanner from '@/components/CookieBanner'
 
 const outfit = Outfit({
@@ -243,6 +244,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CookieBanner />
         </LanguageProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
