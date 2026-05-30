@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { articles } from '@/lib/articles'
@@ -40,12 +41,14 @@ export default function BlogPage() {
             href={`/blog/${featured.slug}`}
             className="group block md:grid md:grid-cols-2 gap-0 bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300"
           >
-            <div className="aspect-[16/10] md:aspect-auto overflow-hidden">
-              <img
+            <div className="relative aspect-[16/10] md:aspect-auto overflow-hidden">
+              <Image
                 src={featured.image}
                 alt={featured.titleEs}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                loading="eager"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
             <div className="flex flex-col justify-center p-8 md:p-10">
@@ -83,12 +86,13 @@ export default function BlogPage() {
                 href={`/blog/${article.slug}`}
                 className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300"
               >
-                <div className="aspect-[16/9] overflow-hidden">
-                  <img
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <Image
                     src={article.image}
                     alt={article.titleEs}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="p-5">

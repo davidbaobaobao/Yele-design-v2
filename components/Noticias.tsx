@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getRecentArticles } from '@/lib/articles'
 
 function formatDate(iso: string) {
@@ -36,12 +37,13 @@ export default function Noticias() {
               href={`/blog/${article.slug}`}
               className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300"
             >
-              <div className="aspect-[16/9] overflow-hidden">
-                <img
+              <div className="relative aspect-[16/9] overflow-hidden">
+                <Image
                   src={article.image}
                   alt={article.titleEs}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="p-5">

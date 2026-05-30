@@ -3,10 +3,17 @@
 import { motion, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
-const fadeUp = (delay: number) => ({
-  initial: { opacity: 0, y: 32 },
+// H1 is the LCP element — keep it visible on first paint (no opacity: 0)
+const slideUp = (delay: number) => ({
+  initial: { opacity: 1, y: 24 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, delay, ease: 'easeOut' } as Transition,
+  transition: { duration: 0.6, delay, ease: 'easeOut' } as Transition,
+})
+
+const fadeUp = (delay: number) => ({
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, delay, ease: 'easeOut' } as Transition,
 })
 
 export default function Hero() {
@@ -18,7 +25,7 @@ export default function Hero() {
         <motion.h1
           className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
           style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
-          {...fadeUp(0)}
+          {...slideUp(0)}
         >
           <span className="block">{t('Tu web lista en 5 días.', 'Your website ready in 5 days.')}</span>
           <span className="block text-[#86868B]">{t('Por 29€ al mes.', 'For €29/month.')}</span>

@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { articles, getArticleBySlug } from '@/lib/articles'
@@ -132,12 +133,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <Navigation />
       <main id="main-content" className="min-h-screen bg-white pt-[72px]">
         {/* Hero image */}
-        <div className="w-full aspect-[21/8] overflow-hidden bg-[#F5F5F7]">
-          <img
+        <div className="relative w-full aspect-[21/8] overflow-hidden bg-[#F5F5F7]">
+          <Image
             src={article.image}
             alt={article.titleEs}
-            className="w-full h-full object-cover"
-            loading="eager"
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
           />
         </div>
 
@@ -211,12 +214,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     href={`/blog/${a.slug}`}
                     className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300"
                   >
-                    <div className="aspect-[16/9] overflow-hidden">
-                      <img
+                    <div className="relative aspect-[16/9] overflow-hidden">
+                      <Image
                         src={a.image}
                         alt={a.titleEs}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                     <div className="p-5">
