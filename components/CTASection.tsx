@@ -60,7 +60,7 @@ export default function CTASection() {
 
           {/* Content — left half */}
           <div className="relative z-10 grid md:grid-cols-2">
-            <div className="px-8 py-16 md:px-14 md:py-20 flex flex-col items-start text-left">
+            <div className="px-8 py-16 md:px-14 md:py-28 flex flex-col items-start text-left">
               <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
                 {t('Estás a un paso', "You're one step away")}<br />
                 <span className="text-[#86868B]">{t('de la web que mereces.', 'from the website you deserve.')}</span>
