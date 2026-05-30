@@ -90,9 +90,6 @@ export const metadata: Metadata = {
     },
   },
 
-  verification: {
-    google: 'AÑADIR_GOOGLE_SEARCH_CONSOLE_TOKEN',
-  },
 }
 
 const schemaOrg = {
