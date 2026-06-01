@@ -206,8 +206,7 @@ function PricingCard({ plan, index, isAnnual, t }: {
       </ul>
 
       <motion.a
-        href="#contacto"
-        onClick={e => { e.preventDefault(); document.querySelector('#contacto')?.scrollIntoView({ behavior: 'smooth' }) }}
+        href={`/registro?plan=${plan.key}`}
         className={`relative overflow-hidden block text-center font-manrope font-medium text-sm py-3.5 rounded-xl cursor-pointer ${
           plan.highlighted
             ? 'bg-white text-[#1D1D1F]'
