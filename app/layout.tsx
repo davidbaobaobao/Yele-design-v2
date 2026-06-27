@@ -103,7 +103,8 @@ const schemaOrg = {
       url: 'https://yele.design',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://yele.design/logo.png',
+        // TODO: replace with a real square PNG (min 112×112, transparent bg) at public/logo.png
+        url: 'https://yele.design/opengraph-image',
       },
       contactPoint: {
         '@type': 'ContactPoint',
@@ -115,7 +116,6 @@ const schemaOrg = {
         '@type': 'Country',
         name: 'España',
       },
-      sameAs: [],
     },
     {
       '@type': 'WebSite',
