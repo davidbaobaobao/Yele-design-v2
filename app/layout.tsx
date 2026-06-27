@@ -55,7 +55,7 @@ export const metadata: Metadata = {
       'Diseño web profesional para PYMEs y autónomos españoles. Desde €29/mes. Sin pago inicial.',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
         alt: 'Yele — Diseño web por suscripción para negocios españoles',
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     title: 'Yele — Tu web lista en 3 días',
     description:
       'Diseño web profesional para PYMEs y autónomos españoles. Desde €29/mes.',
-    images: ['/og-image.jpg'],
+    images: ['/opengraph-image'],
   },
 
   robots: {
