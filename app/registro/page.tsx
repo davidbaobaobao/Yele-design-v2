@@ -48,6 +48,7 @@ export default function RegistroPage() {
   if (sent) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-6">
+        <h1 className="sr-only">Pide tu web</h1>
         <motion.div
           className="max-w-md w-full text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -59,9 +60,9 @@ export default function RegistroPage() {
               <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="#34C759" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <h1 className="font-outfit font-semibold text-3xl text-[#1D1D1F] mb-3">
+          <h2 className="font-outfit font-semibold text-3xl text-[#1D1D1F] mb-3">
             Revisa tu email
-          </h1>
+          </h2>
           <p className="font-manrope text-[#86868B] text-base leading-relaxed mb-8">
             Te hemos enviado un enlace mágico a <strong className="text-[#1D1D1F]">{email}</strong>. Haz clic en él para continuar.
           </p>
@@ -79,6 +80,7 @@ export default function RegistroPage() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6">
+      <h1 className="sr-only">Pide tu web</h1>
       <div className="max-w-md w-full">
         {/* Logo */}
         <motion.div
@@ -100,9 +102,9 @@ export default function RegistroPage() {
           {...fadeUp}
           transition={{ duration: 0.5, delay: 0.05 } as Transition}
         >
-          <h1 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-2">
+          <h2 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-2">
             Crea tu cuenta
-          </h1>
+          </h2>
           <p className="font-manrope text-[#86868B] text-base">
             Empieza a construir tu web hoy.
           </p>

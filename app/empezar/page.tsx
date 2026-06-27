@@ -249,6 +249,8 @@ export default function EmpezarPage() {
     <div className="min-h-screen bg-white px-6 py-12">
       <div className="max-w-xl mx-auto">
 
+        <h1 className="sr-only">Cuéntanos sobre tu negocio</h2>
+
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
           <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
@@ -394,7 +396,7 @@ function Step1({ formData, set, errors }: StepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Información básica</h1>
+        <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Información básica</h2>
         <p className="font-manrope text-sm text-[#86868B]">Cuéntanos sobre tu negocio.</p>
       </div>
 
@@ -447,7 +449,7 @@ function Step2({ formData, set, errors }: StepProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Contacto</h1>
+        <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Contacto</h2>
         <p className="font-manrope text-sm text-[#86868B]">¿Cómo podemos hablar contigo?</p>
       </div>
 
@@ -498,7 +500,7 @@ function Step3({ formData, set, errors }: StepProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">El negocio</h1>
+        <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">El negocio</h2>
         <p className="font-manrope text-sm text-[#86868B]">Cuéntanos qué haces y cómo lo haces.</p>
       </div>
 
@@ -534,7 +536,7 @@ function Step4({ formData, set, errors }: StepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">La web</h1>
+        <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">La web</h2>
         <p className="font-manrope text-sm text-[#86868B]">Configuremos tu proyecto.</p>
       </div>
 
@@ -590,7 +592,7 @@ function Step5({ formData, set, errors }: StepProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Últimos detalles</h1>
+        <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Últimos detalles</h2>
         <p className="font-manrope text-sm text-[#86868B]">Ya casi hemos terminado.</p>
       </div>
 
