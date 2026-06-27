@@ -107,7 +107,7 @@ export default function FontanerosPage() {
               El cliente te busca con urgencia
             </h2>
             <p className="font-manrope text-[#86868B] text-lg leading-relaxed max-w-2xl">
-              Cuando a alguien se le revienta una tubería o se queda sin agua caliente, no pregunta a un amigo: abre Google y escribe "fontanero" más su barrio. Llama al primero que le da confianza. Si no apareces con una web seria — horarios, zona, teléfono, reseñas a la vista — ese trabajo se lo lleva otro. No es perder un cliente: es trabajo nuevo que podrías coger y que ahora mismo no estás cogiendo.
+              Cuando a alguien se le revienta una tubería o se queda sin agua caliente, no pregunta a un amigo: abre Google y escribe &ldquo;fontanero&rdquo; más su barrio. Llama al primero que le da confianza. Si no apareces con una web seria — horarios, zona, teléfono, reseñas a la vista — ese trabajo se lo lleva otro. No es perder un cliente: es trabajo nuevo que podrías coger y que ahora mismo no estás cogiendo.
             </p>
           </div>
         </section>
