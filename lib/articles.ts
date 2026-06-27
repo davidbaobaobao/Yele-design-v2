@@ -125,7 +125,9 @@ Una suscripción web de 29 €/mes se amortiza con la primera llamada del mes.
 
 ## Conclusión
 
-Para un fontanero autónomo, tener una web no es un lujo: es la herramienta de captación de clientes más rentable que existe. Sin publicidad, sin intermediarios, sin comisiones. Solo tú y tu cliente.`,
+Para un fontanero autónomo, tener una web no es un lujo: es la herramienta de captación de clientes más rentable que existe. Sin publicidad, sin intermediarios, sin comisiones. Solo tú y tu cliente.
+
+Si quieres ver exactamente cómo diseñamos webs para fontaneros —qué secciones incluimos, cómo trabajamos el SEO local y qué aspecto tiene el resultado final—, visita nuestra página de [diseño web para fontaneros](/diseno-web-fontaneros).`,
   },
   {
     slug: 'squarespace-vs-web-profesional-pymes-espanolas',
@@ -336,7 +338,9 @@ Una clínica pequeña en una ciudad de 80.000 habitantes, sin web o con una web 
 
 La misma clínica con una web moderna, bien posicionada en Google y con buenas reseñas puede generar **5 a 15 consultas nuevas al mes** solo de búsquedas orgánicas, sin pagar publicidad.
 
-Con un ticket medio de primera visita de 60 € y un paciente de largo plazo que vale 500-1.000 € en tratamientos, las matemáticas hablan por sí solas.`,
+Con un ticket medio de primera visita de 60 € y un paciente de largo plazo que vale 500-1.000 € en tratamientos, las matemáticas hablan por sí solas.
+
+Si tienes una clínica dental y quieres ver cómo diseñamos webs para el sector —con formulario de cita, listado de tratamientos y SEO local para dentistas—, visita nuestra página de [diseño web para clínicas dentales](/diseno-web-clinicas-dentales).`,
   },
   {
     slug: 'mantenimiento-web-por-que-es-imprescindible',

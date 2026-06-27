@@ -6,6 +6,21 @@ import Footer from '@/components/Footer'
 import { articles, getArticleBySlug } from '@/lib/articles'
 import type { Metadata } from 'next'
 
+const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string; button: string }> = {
+  'web-para-fontanero-como-conseguir-mas-clientes': {
+    href: '/diseno-web-fontaneros',
+    heading: '¿Eres fontanero y buscas una web que te traiga clientes?',
+    body: 'Diseñamos webs específicamente pensadas para fontaneros autónomos: número visible, área de servicio, servicios detallados y SEO local. Listas en 3–5 días.',
+    button: 'Ver diseño web para fontaneros →',
+  },
+  'web-clinica-dental-como-atraer-pacientes': {
+    href: '/diseno-web-clinicas-dentales',
+    heading: '¿Tienes una clínica dental y quieres más pacientes?',
+    body: 'Diseñamos webs para clínicas dentales que transmiten confianza, muestran tus tratamientos y convierten visitas en citas. Desde 29 €/mes.',
+    button: 'Ver diseño web para clínicas dentales →',
+  },
+}
+
 export function generateStaticParams() {
   return articles.map(a => ({ slug: a.slug }))
 }
@@ -29,6 +44,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+function renderInline(raw: string): string {
+  return raw
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#0066CC] underline underline-offset-2 hover:text-[#004D99] font-medium">$1</a>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#1D1D1F] font-semibold">$1</strong>')
 }
 
 function renderMarkdown(md: string) {
@@ -90,7 +111,7 @@ function renderMarkdown(md: string) {
       elements.push(
         <ul key={key++} className="list-disc list-inside space-y-2 text-[#86868B] font-manrope leading-relaxed my-4 ml-2">
           {items.map((item, idx) => (
-            <li key={idx} dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#1D1D1F] font-semibold">$1</strong>') }} />
+            <li key={idx} dangerouslySetInnerHTML={{ __html: renderInline(item) }} />
           ))}
         </ul>
       )
@@ -108,9 +129,7 @@ function renderMarkdown(md: string) {
         <p
           key={key++}
           className="font-manrope text-[#86868B] leading-relaxed text-[17px] my-4"
-          dangerouslySetInnerHTML={{
-            __html: text.replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#1D1D1F] font-semibold">$1</strong>'),
-          }}
+          dangerouslySetInnerHTML={{ __html: renderInline(text) }}
         />
       )
     }
@@ -179,6 +198,25 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             {renderMarkdown(article.contentEs)}
           </div>
         </div>
+
+        {/* Sector landing CTA — pending landing page */}
+        {SECTOR_CTAS[article.slug] && (() => {
+          const cta = SECTOR_CTAS[article.slug]!
+          return (
+            <div className="max-w-[720px] mx-auto px-6 pb-8">
+              <div className="border border-[#0066CC]/20 bg-[#E8F2FF] rounded-2xl p-7">
+                <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{cta.heading}</p>
+                <p className="font-manrope text-sm text-[#86868B] leading-relaxed mb-5">{cta.body}</p>
+                <Link
+                  href={cta.href}
+                  className="inline-flex items-center font-manrope text-sm font-medium text-[#0066CC] hover:text-[#004D99] transition-colors"
+                >
+                  {cta.button}
+                </Link>
+              </div>
+            </div>
+          )
+        })()}
 
         {/* CTA box */}
         <div className="max-w-[720px] mx-auto px-6 pb-16">
