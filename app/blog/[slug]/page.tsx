@@ -147,8 +147,55 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     .filter(a => a.slug !== article.slug && (a.category === article.category || true))
     .slice(0, 3)
 
+  const pageUrl = `https://yele.design/blog/${article.slug}`
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        '@id': `${pageUrl}#article`,
+        headline: article.titleEs,
+        description: article.excerptEs,
+        datePublished: article.date,
+        dateModified: article.date,
+        url: pageUrl,
+        author: {
+          '@type': 'Organization',
+          '@id': 'https://yele.design/#organization',
+          name: 'Yele',
+        },
+        publisher: {
+          '@id': 'https://yele.design/#organization',
+        },
+        image: {
+          '@type': 'ImageObject',
+          url: article.image,
+          width: 1200,
+          height: 630,
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': pageUrl,
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://yele.design' },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://yele.design/blog' },
+          { '@type': 'ListItem', position: 3, name: article.titleEs, item: pageUrl },
+        ],
+      },
+    ],
+  }
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navigation />
       <main id="main-content" className="min-h-screen bg-white pt-[72px]">
         {/* Hero image */}
