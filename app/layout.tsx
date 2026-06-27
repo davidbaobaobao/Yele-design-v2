@@ -103,8 +103,7 @@ const schemaOrg = {
       url: 'https://yele.design',
       logo: {
         '@type': 'ImageObject',
-        // TODO: replace with a real square PNG (min 112×112, transparent bg) at public/logo.png
-        url: 'https://yele.design/opengraph-image',
+        url: 'https://yele.design/logo.png',
       },
       contactPoint: {
         '@type': 'ContactPoint',
