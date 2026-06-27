@@ -188,26 +188,18 @@ const schemaOrg = {
       mainEntity: [
         {
           '@type': 'Question',
+          name: '¿Necesito saber de tecnología?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No. Tú nos dices qué quieres y nosotros lo construimos. Para actualizar contenido tienes un panel sencillo, sin código.',
+          },
+        },
+        {
+          '@type': 'Question',
           name: '¿Cuánto tarda en estar lista mi web?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Entre 3 y 5 días laborables desde que completamos el formulario inicial. Sin esperas de semanas ni meses.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: '¿Cuánto cuesta una web con Yele?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Desde €29/mes. Sin pago inicial, sin permanencia. El precio incluye diseño, desarrollo, hosting, SSL y mantenimiento.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: '¿Necesito saber programación o diseño?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'No. Nosotros nos encargamos de todo. Tú nos dices qué quieres y nosotros lo construimos. Para actualizar contenido tienes un panel sencillo sin código.',
+            text: 'Entre 3 y 5 días desde que recibes tu formulario completado. Sin esperas de semanas.',
           },
         },
         {
@@ -215,7 +207,31 @@ const schemaOrg = {
           name: '¿Puedo cancelar cuando quiera?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Sí. Sin permanencia, sin penalizaciones. Puedes cancelar en cualquier momento.',
+            text: 'Sí. Sin permanencia, sin penalizaciones. Si en algún momento no lo necesitas, cancelas y listo.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: '¿Qué pasa si quiero cambiar algo de mi web?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Nos escribes y lo cambiamos. Según tu plan, en 12, 24 o 48 horas. Sin presupuestos extra.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: '¿El dominio y el hosting están incluidos?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'El hosting sí. El dominio se puede gestionar con nosotros o tú puedes traer el tuyo propio.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: '¿Puedo ver ejemplos de webs que hayáis hecho?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Sí, en la sección Trabajos de esta misma página puedes ver proyectos reales.',
           },
         },
       ],
