@@ -249,7 +249,7 @@ export default function EmpezarPage() {
     <div className="min-h-screen bg-white px-6 py-12">
       <div className="max-w-xl mx-auto">
 
-        <h1 className="sr-only">Cuéntanos sobre tu negocio</h2>
+        <h1 className="sr-only">Cuéntanos sobre tu negocio</h1>
 
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
