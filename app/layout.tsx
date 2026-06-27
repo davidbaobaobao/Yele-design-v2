@@ -29,17 +29,6 @@ export const metadata: Metadata = {
   description:
     'Diseño web profesional para PYMEs y autónomos españoles. Entrega en 3–5 días, mantenimiento incluido, desde €29/mes. Sin pago inicial, sin permanencia.',
 
-  keywords: [
-    'diseño web pymes españa',
-    'página web autónomos',
-    'web profesional sin agencia',
-    'diseño web suscripción mensual',
-    'web para negocio local españa',
-    'alternativa squarespace españa',
-    'diseño web barcelona barato',
-    'web profesional 29 euros mes',
-  ],
-
   authors: [{ name: 'Yele', url: 'https://yele.design' }],
   creator: 'Yele',
   publisher: 'Yele',
@@ -85,10 +74,6 @@ export const metadata: Metadata = {
 
   alternates: {
     canonical: 'https://yele.design',
-    languages: {
-      es: 'https://yele.design',
-      en: 'https://yele.design/en',
-    },
   },
 
 }
