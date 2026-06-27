@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://yele.design'),
 
   title: {
-    default: 'Desde 29€/mes — tu web sin complicaciones | Yele',
+    default: 'Desde 29€/mes. Tu página web profesional, sin complicaciones',
     template: '%s | Yele',
   },
 
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     alternateLocale: 'en_GB',
     url: 'https://yele.design',
     siteName: 'Yele',
-    title: 'Desde 29€/mes — tu web sin complicaciones | Yele',
+    title: 'Desde 29€/mes. Tu página web profesional, sin complicaciones',
     description:
       'Diseño web profesional para PYMEs y autónomos españoles. Desde €29/mes. Sin pago inicial.',
     images: [
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Desde 29€/mes — tu web sin complicaciones | Yele',
+    title: 'Desde 29€/mes. Tu página web profesional, sin complicaciones',
     description:
       'Diseño web profesional para PYMEs y autónomos españoles. Desde €29/mes.',
     images: ['/opengraph-image'],
