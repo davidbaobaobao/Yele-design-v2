@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://yele.design'),
 
   title: {
-    default: 'Yele — Tu web lista en 3 días | Diseño web por suscripción',
+    default: 'Desde 29€/mes — tu web sin complicaciones | Yele',
     template: '%s | Yele',
   },
 
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     alternateLocale: 'en_GB',
     url: 'https://yele.design',
     siteName: 'Yele',
-    title: 'Yele — Tu web lista en 3 días',
+    title: 'Desde 29€/mes — tu web sin complicaciones | Yele',
     description:
       'Diseño web profesional para PYMEs y autónomos españoles. Desde €29/mes. Sin pago inicial.',
     images: [
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Yele — Tu web lista en 3 días',
+    title: 'Desde 29€/mes — tu web sin complicaciones | Yele',
     description:
       'Diseño web profesional para PYMEs y autónomos españoles. Desde €29/mes.',
     images: ['/opengraph-image'],
