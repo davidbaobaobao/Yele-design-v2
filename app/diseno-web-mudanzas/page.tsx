@@ -124,6 +124,11 @@ export default function MudanzasPage() {
               style={{ fontSize: 'clamp(40px, 5.5vw, 72px)' }}
             >
               Diseño web para empresas de mudanzas
+              <span className="mt-4 block">
+                <span className="inline-flex font-manrope text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
+                  Desde 29€/mes
+                </span>
+              </span>
             </h1>
             <p className="font-manrope text-[#86868B] text-xl leading-relaxed max-w-2xl mb-10">
               Quien se muda pide presupuesto a varias empresas el mismo día y elige rápido. Si no te encuentra fácil en Google ni puede pedirte presupuesto sin esfuerzo, ni entras en la lista. Web profesional lista en 5 días. Desde 29€/mes, sin pago inicial, sin permanencia.

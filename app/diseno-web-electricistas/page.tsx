@@ -84,6 +84,11 @@ export default function ElectricistasPage() {
               style={{ fontSize: 'clamp(40px, 5.5vw, 72px)' }}
             >
               Diseño web para electricistas
+              <span className="mt-4 block">
+                <span className="inline-flex font-manrope text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
+                  Desde 29€/mes
+                </span>
+              </span>
             </h1>
             <p className="font-manrope text-[#86868B] text-xl leading-relaxed max-w-2xl mb-10">
               Cuando a alguien se le va la luz o le salta el cuadro, busca un electricista en Google y llama al primero que le da confianza. Aparece tú — con una web profesional lista en 5 días. Desde 29€/mes, sin pago inicial, sin permanencia.
