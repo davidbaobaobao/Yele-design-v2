@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -67,9 +68,24 @@ const jsonLd = {
 }
 
 const GALLERY_PROJECTS = [
-  { label: 'Reforma cocina abierta', location: 'Madrid' },
-  { label: 'Baño completo', location: 'Barcelona' },
-  { label: 'Reforma integral piso', location: 'Valencia' },
+  {
+    label: 'Reforma cocina abierta',
+    location: 'Madrid',
+    before: 'https://images.unsplash.com/photo-1755336522640-d821da5826f1?w=800&q=80',
+    after:  'https://images.unsplash.com/photo-1682888813913-e13f18692019?w=800&q=80',
+  },
+  {
+    label: 'Baño completo',
+    location: 'Barcelona',
+    before: 'https://images.unsplash.com/photo-1779608993392-a76f7c9ebbda?w=800&q=80',
+    after:  'https://images.unsplash.com/photo-1638799869566-b17fa794c4de?w=800&q=80',
+  },
+  {
+    label: 'Reforma integral piso',
+    location: 'Valencia',
+    before: 'https://images.unsplash.com/photo-1769079453311-df7d01fce172?w=800&q=80',
+    after:  'https://images.unsplash.com/photo-1666282167632-c613fbeb163c?w=800&q=80',
+  },
 ]
 
 export default function ReformasPage() {
@@ -135,19 +151,27 @@ export default function ReformasPage() {
               {GALLERY_PROJECTS.map(project => (
                 <div key={project.label} className="rounded-2xl overflow-hidden border border-black/[0.06]">
                   {/* Before */}
-                  <div className="relative">
-                    <div className="aspect-[4/3] bg-[#F5F5F7] flex items-center justify-center">
-                      <span className="font-manrope text-xs text-[#86868B]">Foto antes</span>
-                    </div>
+                  <div className="relative aspect-[4/3]">
+                    <Image
+                      src={project.before}
+                      alt={`${project.label} — antes de la reforma`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
                     <span className="absolute top-3 left-3 font-manrope text-[10px] font-semibold tracking-widest uppercase bg-white/90 text-[#86868B] px-2.5 py-1 rounded-full">
                       Antes
                     </span>
                   </div>
                   {/* After */}
-                  <div className="relative">
-                    <div className="aspect-[4/3] bg-[#E8E8ED] flex items-center justify-center">
-                      <span className="font-manrope text-xs text-[#86868B]">Foto después</span>
-                    </div>
+                  <div className="relative aspect-[4/3]">
+                    <Image
+                      src={project.after}
+                      alt={`${project.label} — después de la reforma`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
                     <span className="absolute top-3 left-3 font-manrope text-[10px] font-semibold tracking-widest uppercase bg-[#1D1D1F]/80 text-white px-2.5 py-1 rounded-full">
                       Después
                     </span>
@@ -160,10 +184,6 @@ export default function ReformasPage() {
                 </div>
               ))}
             </div>
-
-            <p className="font-manrope text-xs text-[#86868B] mt-6 text-center">
-              Estas tarjetas se rellenan con tus fotos reales antes de publicar la web.
-            </p>
           </div>
         </section>
 
