@@ -19,6 +19,12 @@ const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string;
     body: 'Diseñamos webs para clínicas dentales que transmiten confianza, muestran tus tratamientos y convierten visitas en citas. Desde 29 €/mes.',
     button: 'Ver diseño web para clínicas dentales →',
   },
+  'como-una-web-impulsa-tu-negocio-de-fontaneria': {
+    href: '/diseno-web-fontaneros',
+    heading: '¿Eres fontanero y buscas una web que traiga trabajo?',
+    body: 'Webs para fontaneros con teléfono visible, zona de cobertura y SEO local. Listas en 3–5 días, desde 29 €/mes, sin pago inicial.',
+    button: 'Ver diseño web para fontaneros →',
+  },
 }
 
 export function generateStaticParams() {
@@ -102,6 +108,16 @@ function renderMarkdown(md: string) {
           </table>
         </div>
       )
+    } else if (line.startsWith('![')) {
+      const imgMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/)
+      if (imgMatch) {
+        const [, alt, src] = imgMatch
+        elements.push(
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={key++} src={src} alt={alt} className="w-full rounded-xl my-8 border border-black/[0.06]" />
+        )
+      }
+      i++
     } else if (line.startsWith('- ')) {
       const items: string[] = []
       while (i < lines.length && lines[i].startsWith('- ')) {

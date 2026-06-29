@@ -563,6 +563,70 @@ La alternativa es empezar con una web construida desde el principio con las herr
 Una web rápida es una ventaja competitiva real sobre todos los negocios de tu sector que siguen con WordPress lento.`,
   },
   {
+    slug: 'como-una-web-impulsa-tu-negocio-de-fontaneria',
+    titleEs: 'Cómo una web puede impulsar tu negocio de fontanería',
+    excerptEs: 'Tus clientes nuevos te buscan en Google con una urgencia entre manos. Te contamos cómo una web profesional convierte esas búsquedas en llamadas y deja de depender solo del boca a boca.',
+    date: '2026-06-28',
+    readTime: 6,
+    category: 'Casos de uso',
+    image: 'https://images.pexels.com/photos/6419128/pexels-photo-6419128.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    contentEs: `![Infografía: 5 elementos clave de la web de un fontanero — teléfono visible, zona de cobertura, servicios, reseñas y SEO local](/blog/images/fontaneros-web-infografia.svg)
+
+Piensa en la última vez que a alguien se le reventó una tubería o se quedó sin agua caliente un domingo por la noche. ¿Qué hizo? Casi seguro lo mismo que harías tú: cogió el móvil, abrió Google y escribió **"fontanero"** seguido de su barrio o ciudad. Y llamó al primero que le dio confianza.
+
+Esa es, hoy, la forma en que la mayoría de fontaneros consiguen clientes nuevos. No con un anuncio en el periódico ni con un cartel en la furgoneta, sino apareciendo —o no— en ese momento exacto en el que alguien con una avería te necesita. En este artículo te explicamos por qué tener una web propia cambia las reglas del juego para tu negocio, y qué tiene que tener para que de verdad te traiga trabajo.
+
+## 1. Tus clientes nuevos ya te buscan en internet
+
+El boca a boca sigue siendo oro. Cuando un cliente queda contento, te recomienda, y esa es la mejor publicidad que existe. Pero fíjate en lo que pasa justo después de la recomendación: la persona que recibe tu nombre **te busca en Google antes de llamarte**. Quiere ver quién eres, qué haces, en qué zona trabajas y si pareces de fiar.
+
+Si en esa búsqueda apareces con una web clara y profesional, la recomendación se convierte en llamada. Si no apareces, o solo sale una ficha incompleta, esa persona duda… y muchas veces termina llamando a otro. El boca a boca te trae el nombre; la web cierra la confianza.
+
+## 2. El boca a boca es buenísimo, pero no escala
+
+El problema del boca a boca es que depende de que tus clientes hablen de ti. No puedes controlarlo ni acelerarlo. Tienes los trabajos que tienes, y para crecer necesitas una fuente de clientes que funcione **mientras tú estás trabajando o descansando**.
+
+Ahí es donde entra aparecer en Google de tu zona. Cuando alguien busca "fontanero urgente en [tu ciudad]", esa búsqueda ocurre tengas tú trabajo o no, sea de día o de noche. Una web bien hecha trabaja por ti las 24 horas: te pone delante de gente que ni siquiera sabía que existías y que necesita exactamente lo que ofreces.
+
+## 3. Una web te hace aparecer en el momento de la urgencia
+
+Las averías de fontanería tienen una característica clave: son **urgentes**. Nadie planifica una fuga de agua. Y cuando ocurre, el cliente no se pone a comparar diez presupuestos: llama rápido al que transmite seguridad.
+
+Una web profesional te da esa ventaja porque enseña de un vistazo lo que el cliente nervioso necesita ver:
+
+- Tu **teléfono** bien visible para llamar al instante.
+- La **zona** en la que trabajas, para que sepa que le cubres.
+- Tus **servicios** (urgencias, reparaciones, instalaciones, calderas…).
+- Tus **reseñas**, que le dan la tranquilidad de que otros ya confiaron en ti.
+
+Todo eso, antes incluso de descolgar el teléfono. Eso es lo que hace que te llamen a ti y no al siguiente de la lista.
+
+## 4. Deja de pagar comisión por cada cliente
+
+Seguramente ya te llegan algunos avisos a través de portales como Cronoshare o similares. Funcionan, sí, pero con dos pegas grandes: **te cobran por cada contacto** y te ponen a competir en precio con otros cinco fontaneros que reciben el mismo aviso. Acabas bajando tarifas para ganar un trabajo por el que, encima, has pagado.
+
+Con web propia, ese mismo cliente te encuentra **a ti directamente** y te llama **a ti**, sin intermediario y sin comisión. La diferencia a final de mes es real: un par de trabajos que antes se iban en comisiones ahora se quedan enteros para ti. La web se paga sola.
+
+## 5. Qué no puede faltar en la web de un fontanero
+
+No todas las webs sirven. Para que la tuya traiga trabajo de verdad, tiene que tener:
+
+- **Diseño claro y rápido en el móvil**, porque ahí es donde te busca casi todo el mundo.
+- **Tu teléfono visible en todo momento**, con un botón de llamada directa.
+- **Tu zona de cobertura**, para aparecer cuando busquen por tu barrio o ciudad.
+- **Servicios bien explicados**, sin tecnicismos.
+- **Reseñas de clientes**, la prueba social que cierra la confianza.
+- Estar preparada para **aparecer en Google de tu zona**, sin que tengas que ser un experto en nada.
+
+## Tu próximo cliente te está buscando ahora mismo
+
+Cada día, alguien de tu zona escribe "fontanero" en Google con una avería entre manos. La pregunta es sencilla: ¿te encuentra a ti o a tu competencia?
+
+En **Yele** hacemos webs profesionales para fontaneros, listas en 3-5 días, desde 29€/mes, sin pago inicial y sin permanencia. Tú nos cuentas tu negocio y nosotros la construimos y la mantenemos —tú nunca tocas código.
+
+**[Descubre nuestro diseño web para fontaneros](/diseno-web-fontaneros)** y empieza a coger los trabajos que ahora se te escapan.`,
+  },
+  {
     slug: 'por-que-tu-negocio-necesita-web-propia-no-solo-instagram',
     titleEs: 'Por qué tu negocio necesita web propia (y no solo Instagram)',
     excerptEs: 'Instagram puede desaparecer, cambiar el algoritmo o banearte. Tu web es tuya para siempre. Aquí la diferencia en términos prácticos.',
