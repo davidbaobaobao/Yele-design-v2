@@ -25,6 +25,12 @@ const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string;
     body: 'Webs para fontaneros con teléfono visible, zona de cobertura y SEO local. Listas en 3–5 días, desde 29 €/mes, sin pago inicial.',
     button: 'Ver diseño web para fontaneros →',
   },
+  'fontanero-en-espana-numeros-y-estadisticas': {
+    href: '/diseno-web-fontaneros',
+    heading: '¿Eres fontanero y quieres captar esas búsquedas?',
+    body: 'Diseñamos tu web con los cinco elementos que convierten búsquedas en llamadas. Lista en 3–5 días, desde 29 €/mes, sin pago inicial.',
+    button: 'Ver diseño web para fontaneros →',
+  },
 }
 
 export function generateStaticParams() {

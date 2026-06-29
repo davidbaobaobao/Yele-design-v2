@@ -1,0 +1,73 @@
+<svg width="1200" height="680" viewBox="0 0 1200 680" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>text { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; }</style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="680" fill="#1D1D1F"/>
+  <rect width="1200" height="4" fill="#0066CC"/>
+
+  <!-- Title -->
+  <text x="600" y="68" font-size="32" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.5">Fontaneros en España — Números del sector</text>
+  <text x="600" y="102" font-size="16" fill="#86868B" text-anchor="middle">Lo que dicen los datos sobre un sector con alta demanda y baja presencia digital</text>
+  <rect x="80" y="122" width="1040" height="1" fill="#2D2D2F"/>
+
+  <!-- Stat 1 -->
+  <rect x="80" y="148" width="230" height="190" rx="16" fill="#0066CC" fill-opacity="0.1"/>
+  <rect x="80" y="148" width="230" height="4" rx="2" fill="#0066CC"/>
+  <text x="195" y="232" font-size="58" font-weight="800" fill="#0066CC" text-anchor="middle">78%</text>
+  <text x="195" y="268" font-size="13" fill="#FFFFFF" text-anchor="middle">de búsquedas de fontanero</text>
+  <text x="195" y="288" font-size="13" fill="#FFFFFF" text-anchor="middle">se hacen desde el móvil</text>
+  <text x="195" y="320" font-size="11" fill="#555555" text-anchor="middle">Google / Think with Google</text>
+
+  <!-- Stat 2 -->
+  <rect x="330" y="148" width="230" height="190" rx="16" fill="#34C759" fill-opacity="0.1"/>
+  <rect x="330" y="148" width="230" height="4" rx="2" fill="#34C759"/>
+  <text x="445" y="220" font-size="44" font-weight="800" fill="#34C759" text-anchor="middle">+200K</text>
+  <text x="445" y="255" font-size="13" fill="#FFFFFF" text-anchor="middle">búsquedas/mes</text>
+  <text x="445" y="275" font-size="13" fill="#FFFFFF" text-anchor="middle">"fontanero" en Google España</text>
+  <text x="445" y="320" font-size="11" fill="#555555" text-anchor="middle">Google Keyword Planner</text>
+
+  <!-- Stat 3 -->
+  <rect x="580" y="148" width="230" height="190" rx="16" fill="#FF9500" fill-opacity="0.1"/>
+  <rect x="580" y="148" width="230" height="4" rx="2" fill="#FF9500"/>
+  <text x="695" y="232" font-size="58" font-weight="800" fill="#FF9500" text-anchor="middle">3/10</text>
+  <text x="695" y="268" font-size="13" fill="#FFFFFF" text-anchor="middle">fontaneros tienen</text>
+  <text x="695" y="288" font-size="13" fill="#FFFFFF" text-anchor="middle">web profesional propia</text>
+  <text x="695" y="320" font-size="11" fill="#555555" text-anchor="middle">Estimación sector 2025</text>
+
+  <!-- Stat 4 -->
+  <rect x="830" y="148" width="290" height="190" rx="16" fill="#FF3B30" fill-opacity="0.1"/>
+  <rect x="830" y="148" width="290" height="4" rx="2" fill="#FF3B30"/>
+  <text x="975" y="220" font-size="44" font-weight="800" fill="#FF3B30" text-anchor="middle">15–25%</text>
+  <text x="975" y="258" font-size="13" fill="#FFFFFF" text-anchor="middle">de comisión cobran los portales</text>
+  <text x="975" y="278" font-size="13" fill="#FFFFFF" text-anchor="middle">por cada cliente enviado</text>
+  <text x="975" y="320" font-size="11" fill="#555555" text-anchor="middle">Cronoshare, Habitissimo 2025</text>
+
+  <!-- Stat 5 -->
+  <rect x="80" y="358" width="340" height="190" rx="16" fill="#5E5CE6" fill-opacity="0.1"/>
+  <rect x="80" y="358" width="340" height="4" rx="2" fill="#5E5CE6"/>
+  <text x="250" y="438" font-size="54" font-weight="800" fill="#5E5CE6" text-anchor="middle">60.000+</text>
+  <text x="250" y="474" font-size="13" fill="#FFFFFF" text-anchor="middle">fontaneros autónomos</text>
+  <text x="250" y="494" font-size="13" fill="#FFFFFF" text-anchor="middle">activos en España</text>
+  <text x="250" y="530" font-size="11" fill="#555555" text-anchor="middle">INE / Seguridad Social 2024</text>
+
+  <!-- Stat 6 -->
+  <rect x="440" y="358" width="260" height="190" rx="16" fill="#34C759" fill-opacity="0.08"/>
+  <rect x="440" y="358" width="260" height="4" rx="2" fill="#34C759"/>
+  <text x="570" y="438" font-size="54" font-weight="800" fill="#34C759" text-anchor="middle">85€</text>
+  <text x="570" y="474" font-size="13" fill="#FFFFFF" text-anchor="middle">ticket medio por avería</text>
+  <text x="570" y="494" font-size="13" fill="#FFFFFF" text-anchor="middle">urgente en zona urbana</text>
+  <text x="570" y="530" font-size="11" fill="#555555" text-anchor="middle">Media de tarifas 2025</text>
+
+  <!-- Stat 7 -->
+  <rect x="720" y="358" width="400" height="190" rx="16" fill="#0066CC" fill-opacity="0.08"/>
+  <rect x="720" y="358" width="400" height="4" rx="2" fill="#0066CC"/>
+  <text x="920" y="430" font-size="44" font-weight="800" fill="#0066CC" text-anchor="middle">×2 llamadas</text>
+  <text x="920" y="468" font-size="13" fill="#FFFFFF" text-anchor="middle">más con web bien posicionada</text>
+  <text x="920" y="488" font-size="13" fill="#FFFFFF" text-anchor="middle">frente a solo ficha de Google Maps</text>
+  <text x="920" y="530" font-size="11" fill="#555555" text-anchor="middle">Estudio interno Yele 2025</text>
+
+  <!-- Footer -->
+  <text x="600" y="614" font-size="13" fill="#444444" text-anchor="middle">yele.design — Webs para fontaneros desde 29€/mes · Datos orientativos, elaboración propia salvo indicación</text>
+</svg>

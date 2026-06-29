@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -124,6 +125,29 @@ export default function FontanerosPage() {
             <p className="font-manrope text-[#86868B] text-lg leading-relaxed max-w-2xl">
               Cronoshare, Habitissimo y los demás portales te cobran por cada contacto, y te ponen a competir en precio con otros cinco fontaneros en el mismo aviso. Con web propia, el cliente te encuentra a ti directamente y te llama a ti — sin intermediario y sin comisión. La web se paga sola con un par de trabajos al mes que antes se iban al portal.
             </p>
+          </div>
+        </section>
+
+        {/* Infografía — 5 elementos clave */}
+        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+          <div className="max-w-6xl mx-auto px-6">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+              De un vistazo
+            </span>
+            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4 leading-tight">
+              Lo que necesita<br className="hidden md:block" /> tu web para traer trabajo
+            </h2>
+            <p className="font-manrope text-[#86868B] text-base mb-10 max-w-xl">
+              Cinco elementos concretos que marcan la diferencia entre una web que rellena y una que hace sonar el teléfono.
+            </p>
+            <Image
+              src="/blog/images/fontaneros-web-infografia.svg"
+              alt="Los 5 elementos que necesita la web de un fontanero: teléfono visible, zona de cobertura, servicios, reseñas y SEO local"
+              width={1200}
+              height={680}
+              className="w-full rounded-2xl border border-black/[0.06]"
+              unoptimized
+            />
           </div>
         </section>
 

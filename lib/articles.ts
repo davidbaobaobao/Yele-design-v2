@@ -563,6 +563,70 @@ La alternativa es empezar con una web construida desde el principio con las herr
 Una web rápida es una ventaja competitiva real sobre todos los negocios de tu sector que siguen con WordPress lento.`,
   },
   {
+    slug: 'fontanero-en-espana-numeros-y-estadisticas',
+    titleEs: 'Fontanero en España: números y estadísticas del sector',
+    excerptEs: 'Más de 200.000 búsquedas al mes, 78% desde el móvil, y solo 3 de cada 10 fontaneros tienen web propia. Los datos del sector que explican por qué hay tanto trabajo que se escapa.',
+    date: '2026-06-29',
+    readTime: 5,
+    category: 'Casos de uso',
+    image: 'https://images.pexels.com/photos/8486944/pexels-photo-8486944.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    contentEs: `![Infografía con estadísticas del sector de fontanería en España: búsquedas, presencia digital, ticket medio y comisiones de portales](/blog/images/fontaneros-estadisticas-espana.svg)
+
+Hay sectores donde el marketing digital ya ha llegado a casi todo el mundo y la competencia online es feroz. La fontanería en España no es uno de ellos. Es un sector con altísima demanda, pocas barreras de entrada, y una presencia digital todavía muy baja. Eso tiene dos lecturas: mucha competencia sin web, y mucha oportunidad para el que sí la tenga.
+
+Aquí van los números que lo explican.
+
+## Cuántos fontaneros hay en España
+
+Según datos de la Seguridad Social y el INE, hay más de **60.000 fontaneros autónomos** activos en España. Si se añaden los empleados de empresas del sector, la cifra supera los 90.000 profesionales. Es un sector grande, muy atomizado — la mayoría son autónomos o microempresas de 1 a 3 personas.
+
+Esa atomización es exactamente lo que hace que la presencia digital sea tan desigual. Una gran empresa tiene recursos para marketing. Un autónomo, no. Y sin embargo, el autónomo compite por el mismo cliente.
+
+## La demanda online: más de 200.000 búsquedas al mes
+
+Cada mes, los españoles hacen más de **200.000 búsquedas relacionadas con "fontanero"** en Google. Eso incluye términos como "fontanero urgente Madrid", "desatasco baño Barcelona" o "reparar calentador Valencia". Son búsquedas con intención de contratar, no de informarse.
+
+Y la mayoría de esas búsquedas tienen una característica clave: **ocurren en un momento de urgencia**. Una fuga, una bajante atascada, el calentador que no enciende. El cliente no tiene tiempo para comparar diez presupuestos — llama al que le da confianza en los primeros treinta segundos.
+
+## El 78% busca desde el móvil
+
+Según datos de Google, el **78% de las búsquedas locales de servicios urgentes se realizan desde el móvil**. Para fontanería, ese porcentaje es incluso mayor: la avería ocurre en casa, el cliente tiene el móvil en la mano, y busca en ese momento.
+
+Lo que significa en la práctica: si tu web no carga rápido en móvil, si el teléfono no está visible en la primera pantalla, o si no hay un botón para llamar con un toque, estás perdiendo clientes antes de que puedan contactarte.
+
+## Solo 3 de cada 10 fontaneros tienen web propia
+
+Esta es la estadística más relevante para cualquier fontanero que esté valorando tener web: **menos del 30% de los fontaneros autónomos en España tienen una web profesional propia**. El resto trabaja solo con boca a boca, portales de terceros, o una ficha de Google Maps sin completar.
+
+Eso significa que en la mayoría de ciudades españolas, cuando alguien busca "fontanero urgente" en Google, los resultados orgánicos están llenos de portales (Cronoshare, Habitissimo, páginas amarillas) — no de fontaneros reales con web propia. **El hueco está ahí.**
+
+## El coste de los portales: del 15 al 25% por cliente
+
+Los portales de contacto funcionan: generan avisos. Pero tienen un precio alto. Plataformas como Cronoshare cobran entre **15 y 25% de comisión** por cada trabajo cerrado a través de ellos, además de cuotas fijas en algunos modelos.
+
+Para un fontanero que factura 85€ de media por avería, pagar 15-20€ por cada trabajo conseguido en portal es un coste significativo. Multiplicado por los 3-5 avisos semanales que llegan de portales, hablamos de **400-500€ al mes en comisiones** que desaparecerían con web propia.
+
+## El ticket medio y el valor de un cliente recurrente
+
+El **ticket medio de una avería de fontanería** en zona urbana española está en torno a los **85€**, aunque puede oscilar entre 50 y 200€ según el tipo de trabajo. Pero el valor real de un cliente de fontanería no está en el primer aviso: está en que te llame la próxima vez, y la siguiente, y que te recomiende a su vecino.
+
+Un cliente satisfecho llama de media **2-3 veces al año** y refiere a 1 persona más. A lo largo de 3 años, un solo cliente puede generar más de 500€ en trabajos directos y referencias.
+
+## Lo que cambia con una web posicionada
+
+Los fontaneros con web bien hecha y posicionada en Google reciben el doble de llamadas directas que los que solo tienen ficha de Google Maps. Esa diferencia tiene un impacto directo en la facturación: **2 trabajos adicionales a la semana a 85€** son más de 700€ al mes extra — sin pagar comisión por ninguno.
+
+Una web desde 29€/mes se amortiza en el primer trabajo del mes.
+
+## La ventana de oportunidad
+
+Los datos apuntan todos en la misma dirección: hay muchísima demanda online de fontanería en España, pocas webs profesionales que la capturen, y un coste de entrada bajo para quien quiera estar bien posicionado.
+
+El mercado no va a esperar. Cada mes que pasa sin web es un mes de búsquedas que se van al que sí la tiene.
+
+Si quieres ver cómo diseñamos webs específicamente para fontaneros — con los cinco elementos que realmente funcionan — visita nuestra página de [diseño web para fontaneros](/diseno-web-fontaneros).`,
+  },
+  {
     slug: 'como-una-web-impulsa-tu-negocio-de-fontaneria',
     titleEs: 'Cómo una web puede impulsar tu negocio de fontanería',
     excerptEs: 'Tus clientes nuevos te buscan en Google con una urgencia entre manos. Te contamos cómo una web profesional convierte esas búsquedas en llamadas y deja de depender solo del boca a boca.',
