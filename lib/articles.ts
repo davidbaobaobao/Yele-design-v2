@@ -569,10 +569,8 @@ Una web rápida es una ventaja competitiva real sobre todos los negocios de tu s
     date: '2026-06-29',
     readTime: 5,
     category: 'Casos de uso',
-    image: 'https://images.pexels.com/photos/8486944/pexels-photo-8486944.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    contentEs: `![Infografía con estadísticas del sector de fontanería en España: búsquedas, presencia digital, ticket medio y comisiones de portales](/blog/images/fontaneros-estadisticas-espana.svg)
-
-Hay sectores donde el marketing digital ya ha llegado a casi todo el mundo y la competencia online es feroz. La fontanería en España no es uno de ellos. Es un sector con altísima demanda, pocas barreras de entrada, y una presencia digital todavía muy baja. Eso tiene dos lecturas: mucha competencia sin web, y mucha oportunidad para el que sí la tenga.
+    image: '/blog/images/fontaneros-estadisticas-espana.svg',
+    contentEs: `Hay sectores donde el marketing digital ya ha llegado a casi todo el mundo y la competencia online es feroz. La fontanería en España no es uno de ellos. Es un sector con altísima demanda, pocas barreras de entrada, y una presencia digital todavía muy baja. Eso tiene dos lecturas: mucha competencia sin web, y mucha oportunidad para el que sí la tenga.
 
 Aquí van los números que lo explican.
 

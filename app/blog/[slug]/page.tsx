@@ -221,14 +221,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <Navigation />
       <main id="main-content" className="min-h-screen bg-white pt-[72px]">
         {/* Hero image */}
-        <div className="relative w-full aspect-[21/8] overflow-hidden bg-[#F5F5F7]">
+        <div className={`relative w-full aspect-[21/8] overflow-hidden ${article.image.endsWith('.svg') ? 'bg-[#1D1D1F]' : 'bg-[#F5F5F7]'}`}>
           <Image
             src={article.image}
             alt={article.titleEs}
             fill
             sizes="100vw"
             priority
-            className="object-cover"
+            unoptimized={article.image.endsWith('.svg')}
+            className={article.image.endsWith('.svg') ? 'object-contain' : 'object-cover'}
           />
         </div>
 
