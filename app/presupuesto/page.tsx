@@ -114,7 +114,10 @@ export default function PresupuestoPage() {
 
 
 
-        {/* ── 3 · TABLA COMPARATIVA ────────────────────────────── */}
+        {/* ── 3 · CÓMO FUNCIONA ────────────────────────────────── */}
+        <ComoFunciona />
+
+        {/* ── 4 · TABLA COMPARATIVA ────────────────────────────── */}
         <TablaComparativa />
 
         {/* ── 4 · DIFERENCIADOR ────────────────────────────────── */}
@@ -160,9 +163,6 @@ export default function PresupuestoPage() {
             </Link>
           </div>
         </section>
-
-        {/* ── 6 · CÓMO FUNCIONA ────────────────────────────────── */}
-        <ComoFunciona />
 
         {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
         <Testimonios />
