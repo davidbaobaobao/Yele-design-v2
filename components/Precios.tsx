@@ -100,11 +100,12 @@ const plans = [
 
 type Plan = typeof plans[0]
 
-function PricingCard({ plan, index, isAnnual, t }: {
+function PricingCard({ plan, index, isAnnual, t, withShadow }: {
   plan: Plan
   index: number
   isAnnual: boolean
   t: (es: string, en: string) => string
+  withShadow?: boolean
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
@@ -148,7 +149,9 @@ function PricingCard({ plan, index, isAnnual, t }: {
       className={`relative flex flex-col rounded-3xl p-8 cursor-default ${
         plan.highlighted
           ? 'bg-[#1D1D1F] text-white shadow-[0_24px_64px_rgba(0,0,0,0.2)] ring-1 ring-white/10'
-          : 'bg-[#F5F5F7] text-[#1D1D1F]'
+          : withShadow
+            ? 'bg-[#F5F5F7] text-[#1D1D1F] shadow-[0_16px_56px_rgba(0,0,0,0.14)] ring-1 ring-black/[0.07]'
+            : 'bg-[#F5F5F7] text-[#1D1D1F]'
       }`}
     >
       {/* Spotlight overlay */}
@@ -297,7 +300,7 @@ export default function Precios({ singlePlan }: { singlePlan?: string } = {}) {
 
         <div className={singlePlan ? 'max-w-md mx-auto' : 'grid md:grid-cols-3 gap-6 items-stretch'}>
           {displayPlans.map((plan, i) => (
-            <PricingCard key={plan.key} plan={plan} index={i} isAnnual={isAnnual} t={t} />
+            <PricingCard key={plan.key} plan={plan} index={i} isAnnual={isAnnual} t={t} withShadow={!!singlePlan} />
           ))}
         </div>
 

@@ -123,23 +123,14 @@ export default function PresupuestoPage() {
         <Beneficios
           headingLine1="Tu página web"
           subtitle="El diseño de una agencia, sin el muro de entrada."
+          sectionClassName="pt-12 pb-6 md:pt-16 md:pb-8 bg-[#F5F5F7]"
         />
 
 
 
         {/* ── 3 · PORTFOLIO ────────────────────────────────────── */}
-        <section id="ejemplos" className="py-12 md:py-16 bg-white">
+        <section id="ejemplos" className="pt-4 pb-0 bg-white">
           <Showcase />
-          <div className="max-w-6xl mx-auto px-6 mt-8 text-center">
-            <Link
-              href="/ejemplos"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 font-manrope text-sm text-[#0066CC] hover:text-[#004D99] transition-colors"
-            >
-              Ver todos los trabajos <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
         </section>
 
         {/* ── 4 · CÓMO FUNCIONA ────────────────────────────────── */}
@@ -161,9 +152,11 @@ export default function PresupuestoPage() {
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-6 leading-tight">
               Lo que otras agencias<br className="hidden md:block" /> no pueden darte.
             </h2>
-            <p className="font-manrope text-white/60 text-lg leading-relaxed max-w-2xl mb-10">
-              Otras agencias te entregan la web… y ahí se queda, congelada en el año que la hiciste. La tuya está en <strong className="text-white font-semibold">mejora constante</strong>: la mantenemos, la actualizamos y la adaptamos. Sin costes extra. Siempre.
-            </p>
+            <div className="font-manrope text-white/60 text-lg leading-relaxed max-w-2xl mb-10 space-y-4">
+              <p>Otras agencias te entregan la web… y ahí se queda, congelada en el año que la hiciste.</p>
+              <p>La tuya está en <strong className="text-white font-semibold">mejora constante</strong>: la mantenemos, la actualizamos y la adaptamos.</p>
+              <p>Sin costes extra. Siempre.</p>
+            </div>
             <div className="flex flex-wrap gap-3">
               <RegistroButton
                 href="/registro"
@@ -188,7 +181,7 @@ export default function PresupuestoPage() {
         <Precios singlePlan="starter" />
 
         {/* ── 9 · CONTACTO ─────────────────────────────────────── */}
-        <ContactForm />
+        <ContactForm waLink={WA_LINK} />
 
         {/* ── 10 · FAQ ─────────────────────────────────────────── */}
         <FAQClient faqs={LP_FAQS} />
