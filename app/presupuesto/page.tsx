@@ -59,7 +59,7 @@ export default function PresupuestoPage() {
           </span>
           <div className="flex items-center gap-2">
             <RegistroButton
-              href="/registro"
+              href="/registro?plan=starter"
               className="inline-flex items-center gap-1.5 font-manrope font-medium text-sm bg-[#1D1D1F] text-white px-4 py-2 rounded-xl hover:bg-black transition-colors"
             >
               Empezar →
@@ -91,7 +91,7 @@ export default function PresupuestoPage() {
             {/* CTAs */}
             <div className="flex items-center justify-center gap-3 flex-wrap mb-7">
               <RegistroButton
-                href="/registro"
+                href="/registro?plan=starter"
                 className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors"
               >
                 Empezar →
@@ -129,9 +129,7 @@ export default function PresupuestoPage() {
 
 
         {/* ── 3 · PORTFOLIO ────────────────────────────────────── */}
-        <section id="ejemplos" className="pt-4 pb-0 bg-white">
-          <Showcase />
-        </section>
+        <Showcase noHeader />
 
         {/* ── 4 · CÓMO FUNCIONA ────────────────────────────────── */}
         <ComoFunciona />
@@ -159,7 +157,7 @@ export default function PresupuestoPage() {
             </div>
             <div className="flex flex-wrap gap-3">
               <RegistroButton
-                href="/registro"
+                href="/registro?plan=starter"
                 className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-7 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
               >
                 Empezar →
@@ -174,6 +172,9 @@ export default function PresupuestoPage() {
           </div>
         </section>
 
+        {/* ── 6b · PORTFOLIO 2 ─────────────────────────────────── */}
+        <Showcase noHeader />
+
         {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
         <Testimonios />
 
@@ -185,6 +186,9 @@ export default function PresupuestoPage() {
 
         {/* ── 10 · FAQ ─────────────────────────────────────────── */}
         <FAQClient faqs={LP_FAQS} />
+
+        {/* ── 11 · PORTFOLIO 3 ─────────────────────────────────── */}
+        <Showcase noHeader />
 
       </main>
 

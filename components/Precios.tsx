@@ -21,6 +21,7 @@ const plans = [
         'Dominio incluido',
         'Adaptada a móvil',
         'Panel de Control',
+        'Soporte continuo 24/7',
       ],
     },
     en: {
@@ -31,6 +32,7 @@ const plans = [
         'Domain included',
         'Mobile-ready',
         'Control panel',
+        '24/7 ongoing support',
       ],
     },
   },

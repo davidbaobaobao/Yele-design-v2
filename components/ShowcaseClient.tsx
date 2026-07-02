@@ -146,7 +146,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
   )
 }
 
-export default function ShowcaseClient({ projects }: { projects: ShowcaseProject[] }) {
+export default function ShowcaseClient({ projects, noHeader }: { projects: ShowcaseProject[]; noHeader?: boolean }) {
   const { t } = useLang()
   const [rows, setRows] = useState<[CardData[], CardData[]] | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
@@ -189,12 +189,14 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
   )
 
   return (
-    <section ref={sectionRef} id="trabajos" className="bg-white">
+    <section ref={sectionRef} id={noHeader ? undefined : 'trabajos'} className="bg-white">
       {/* Desktop */}
-      <div className="hidden md:block py-32">
-        <div className="max-w-6xl mx-auto px-6 mb-12">
-          {heading}
-        </div>
+      <div className={`hidden md:block ${noHeader ? 'py-10' : 'py-32'}`}>
+        {!noHeader && (
+          <div className="max-w-6xl mx-auto px-6 mb-12">
+            {heading}
+          </div>
+        )}
         <div className="relative space-y-4 overflow-hidden">
           <div className="pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
@@ -219,16 +221,20 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
             </>
           )}
         </div>
-        <div className="max-w-6xl mx-auto px-6 mt-8 text-center">
-          {seeAllLink}
-        </div>
+        {!noHeader && (
+          <div className="max-w-6xl mx-auto px-6 mt-8 text-center">
+            {seeAllLink}
+          </div>
+        )}
       </div>
 
       {/* Mobile */}
       <div className="md:hidden">
-        <div className="px-4 pt-10 pb-3">
-          {heading}
-        </div>
+        {!noHeader && (
+          <div className="px-4 pt-10 pb-3">
+            {heading}
+          </div>
+        )}
         {rows ? (
           <MobileGallery rows={rows} />
         ) : (
@@ -246,9 +252,11 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
             ))}
           </div>
         )}
-        <div className="px-4 py-3 text-center">
-          {seeAllLink}
-        </div>
+        {!noHeader && (
+          <div className="px-4 py-3 text-center">
+            {seeAllLink}
+          </div>
+        )}
       </div>
     </section>
   )

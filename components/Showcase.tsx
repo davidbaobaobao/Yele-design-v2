@@ -19,7 +19,7 @@ const FALLBACK: ShowcaseProject[] = [
   { id: '5', name: 'Txema · Fontanero, Bilbao',            description: 'Fontanero autónomo',            main_image: 'https://images.unsplash.com/photo-1649769069590-268b0b994462?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',   additional_images: [] },
 ]
 
-export default async function Showcase() {
+export default async function Showcase({ noHeader }: { noHeader?: boolean } = {}) {
   const { data } = await supabase
     .from('showcase_projects')
     .select('id, name, main_image, description, additional_images')
@@ -28,5 +28,5 @@ export default async function Showcase() {
 
   const projects = (data && data.length > 0) ? data : FALLBACK
 
-  return <ShowcaseClient projects={projects} />
+  return <ShowcaseClient projects={projects} noHeader={noHeader} />
 }
