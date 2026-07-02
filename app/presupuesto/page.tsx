@@ -69,8 +69,9 @@ export default function PresupuestoPage() {
               className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
               style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
             >
-              <span className="block">El diseño de una agencia,</span>
-              <span className="block text-[#86868B]">sin el muro de entrada.</span>
+              <span className="block">Tu presupuesto:</span>
+              <span className="block text-[#86868B]">29€ al mes.</span>
+              <span className="block">Sin complicaciones.</span>
             </h1>
 
             {/* CTAs */}
@@ -105,7 +106,11 @@ export default function PresupuestoPage() {
         </section>
 
         {/* ── 2 · BENEFICIOS ───────────────────────────────────── */}
-        <Beneficios />
+        <Beneficios
+          headingLine1="El diseño de una agencia,"
+          headingLine2="sin el muro de entrada."
+          subtitle="Calidad de agencia al precio de una suscripción."
+        />
 
         {/* ── 2 · ¿POR QUÉ TAN BARATO? ────────────────────────── */}
         <section className="py-20 md:py-28 bg-[#F5F5F7]">
