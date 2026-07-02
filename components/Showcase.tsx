@@ -20,13 +20,17 @@ const FALLBACK: ShowcaseProject[] = [
 ]
 
 export default async function Showcase({ noHeader }: { noHeader?: boolean } = {}) {
-  const { data } = await supabase
-    .from('showcase_projects')
-    .select('id, name, main_image, description, additional_images')
-    .eq('visible', true)
-    .order('sort_order', { ascending: true })
-
-  const projects = (data && data.length > 0) ? data : FALLBACK
+  let projects = FALLBACK
+  try {
+    const { data } = await supabase
+      .from('showcase_projects')
+      .select('id, name, main_image, description, additional_images')
+      .eq('visible', true)
+      .order('sort_order', { ascending: true })
+    if (data && data.length > 0) projects = data
+  } catch {
+    // falls back to FALLBACK
+  }
 
   return <ShowcaseClient projects={projects} noHeader={noHeader} />
 }
