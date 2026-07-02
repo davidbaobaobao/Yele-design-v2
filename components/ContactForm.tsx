@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
+import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 
 type FormState = 'idle' | 'loading' | 'success' | 'error'
 
@@ -35,8 +36,9 @@ export default function ContactForm({ waLink }: { waLink?: string } = {}) {
   const inputClass = 'w-full bg-white/[0.06] border border-white/[0.10] rounded-xl px-4 py-3.5 font-manrope text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors'
 
   return (
-    <section id="contacto" className="py-24 md:py-32 bg-[#1D1D1F]">
-      <div className="max-w-3xl mx-auto px-6">
+    <section id="contacto" className="relative overflow-hidden py-24 md:py-32 bg-[#1D1D1F]">
+      <InfiniteGrid />
+      <div className="relative z-10 max-w-3xl mx-auto px-6">
 
         <motion.div
           initial={{ opacity: 0, y: 24 }}

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 import Beneficios from '@/components/Beneficios'
 import ComoFunciona from '@/components/ComoFunciona'
 import Showcase from '@/components/Showcase'
@@ -151,8 +152,9 @@ export default function PresupuestoPage() {
         />
 
         {/* ── 6 · DIFERENCIADOR ────────────────────────────────── */}
-        <section className="py-20 md:py-28 bg-[#1D1D1F]">
-          <div className="max-w-6xl mx-auto px-6">
+        <section className="relative overflow-hidden py-20 md:py-28 bg-[#1D1D1F]">
+          <InfiniteGrid />
+          <div className="relative z-10 max-w-6xl mx-auto px-6">
             <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
               La diferencia
             </span>
