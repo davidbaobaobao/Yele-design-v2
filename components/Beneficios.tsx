@@ -144,8 +144,17 @@ export default function Beneficios({
           className="mb-14"
         >
           <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
-            {headingLine1 ?? t('Calidad de agencia', 'Agency quality')}<br />
-            {headingLine2 ?? t('al precio de una suscripción.', 'at subscription price.')}
+            {headingLine1 !== undefined ? (
+              <>
+                {headingLine1}
+                {headingLine2 && <><br />{headingLine2}</>}
+              </>
+            ) : (
+              <>
+                {t('Calidad de agencia', 'Agency quality')}<br />
+                {t('al precio de una suscripción.', 'at subscription price.')}
+              </>
+            )}
           </h2>
           <p className="font-manrope text-[#86868B] text-lg max-w-xl">
             {subtitle ?? t(
