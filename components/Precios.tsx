@@ -229,10 +229,12 @@ function PricingCard({ plan, index, isAnnual, t }: {
   )
 }
 
-export default function Precios() {
+export default function Precios({ singlePlan }: { singlePlan?: string } = {}) {
   const { t } = useLang()
   const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
   const isAnnual = billing === 'annual'
+
+  const displayPlans = singlePlan ? plans.filter(p => p.key === singlePlan) : plans
 
   return (
     <section id="precios" className="py-14 md:py-20 bg-white">
@@ -255,8 +257,8 @@ export default function Precios() {
             {t('Elige tu plan. Cambia cuando quieras.', 'Choose your plan. Change whenever you want.')}
           </p>
 
-          {/* Toggle */}
-          <div className="inline-flex items-center bg-[#F5F5F7] rounded-xl p-1 gap-1">
+          {/* Toggle — hidden in single-plan mode */}
+          {!singlePlan && <div className="inline-flex items-center bg-[#F5F5F7] rounded-xl p-1 gap-1">
             <button
               onClick={() => setBilling('monthly')}
               className={`relative font-manrope text-sm px-5 py-2 rounded-lg transition-colors duration-200 cursor-pointer ${
@@ -290,11 +292,11 @@ export default function Precios() {
                 -20%
               </span>
             </button>
-          </div>
+          </div>}
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 items-stretch">
-          {plans.map((plan, i) => (
+        <div className={singlePlan ? 'max-w-md mx-auto' : 'grid md:grid-cols-3 gap-6 items-stretch'}>
+          {displayPlans.map((plan, i) => (
             <PricingCard key={plan.key} plan={plan} index={i} isAnnual={isAnnual} t={t} />
           ))}
         </div>

@@ -4,7 +4,7 @@ declare global {
   interface Window { gtag?: (...args: unknown[]) => void }
 }
 
-export const WA_LINK = 'https://wa.me/34655517760?text=Hola%2C%20vi%20vuestro%20anuncio%20y%20quiero%20presupuesto%20para%20mi%20web'
+export const WA_LINK = 'https://wa.me/34655517760?text=Hola%21%20Me%20interesar%C3%ADa%20que%20me%20explicaras%20m%C3%A1s%20sobre%20Yele%20y%20vuestras%20paginas%20webs'
 
 function track(event: string) {
   window.gtag?.('event', event)

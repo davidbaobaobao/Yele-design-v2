@@ -87,7 +87,15 @@ function OtherCell({ value }: { value: CellValue }) {
   )
 }
 
-export default function TablaComparativa() {
+export default function TablaComparativa({
+  headingLine1,
+  headingLine2,
+  agencyLabel,
+}: {
+  headingLine1?: string
+  headingLine2?: string
+  agencyLabel?: string
+} = {}) {
   const { t } = useLang()
 
   return (
@@ -102,8 +110,8 @@ export default function TablaComparativa() {
           className="mb-12"
         >
           <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
-            {t('¿Por qué no una agencia', 'Why not an agency')}<br />
-            {t('o hacerlo tú mismo?', 'or DIY?')}
+            {headingLine1 ?? t('¿Por qué no una agencia', 'Why not an agency')}<br />
+            {headingLine2 ?? t('o hacerlo tú mismo?', 'or DIY?')}
           </h2>
         </motion.div>
 
@@ -128,7 +136,7 @@ export default function TablaComparativa() {
                   </span>
                 </th>
                 <th className="bg-white text-center font-manrope text-sm text-[#86868B] px-4 py-4 font-normal">
-                  {t('Agencia', 'Agency')}
+                  {agencyLabel ?? t('Agencia', 'Agency')}
                 </th>
                 <th className="bg-white text-center font-manrope text-sm text-[#86868B] px-4 py-4 font-normal rounded-tr-2xl">
                   {t('Tú mismo (DIY)', 'You (DIY)')}
