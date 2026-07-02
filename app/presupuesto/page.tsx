@@ -134,6 +134,15 @@ export default function PresupuestoPage() {
         {/* ── 4 · CÓMO FUNCIONA ────────────────────────────────── */}
         <ComoFunciona />
 
+        <div className="flex justify-center py-10 bg-white">
+          <RegistroButton
+            href="/registro?plan=starter"
+            className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-8 py-4 rounded-2xl hover:bg-black transition-colors"
+          >
+            Empezar →
+          </RegistroButton>
+        </div>
+
         {/* ── 5 · TABLA COMPARATIVA ────────────────────────────── */}
         <TablaComparativa
           headingLine1="¿Por qué no otra agencia"
