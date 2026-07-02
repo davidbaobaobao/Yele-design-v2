@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import TablaComparativa from '@/components/TablaComparativa'
 import ComoFunciona from '@/components/ComoFunciona'
@@ -40,12 +39,6 @@ const LP_FAQS: FAQItem[] = [
   },
 ]
 
-const HERO_IMAGES = [
-  { src: 'https://images.pexels.com/photos/32212371/pexels-photo-32212371.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', alt: 'El Taller · Cerámica' },
-  { src: 'https://images.pexels.com/photos/21327986/pexels-photo-21327986.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', alt: 'Bar Zuriñe · Tapas' },
-  { src: 'https://images.pexels.com/photos/4327023/pexels-photo-4327023.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', alt: 'Estudio Noa · Yoga' },
-  { src: 'https://images.unsplash.com/photo-1635845080335-dcfe06a0fcf1?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85', alt: 'Despacho Ferrer · Abogados' },
-]
 
 export default function PresupuestoPage() {
   return (
@@ -69,70 +62,40 @@ export default function PresupuestoPage() {
       <main id="main-content">
 
         {/* ── 1 · HERO ─────────────────────────────────────────── */}
-        <section className="pt-16 pb-20 md:pt-20 md:pb-28 bg-white">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+        <section className="min-h-[80vh] flex items-center justify-center py-24 bg-white">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h1
+              className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
+              style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
+            >
+              <span className="block">Tu presupuesto:</span>
+              <span className="block text-[#86868B]">29€ al mes.</span>
+              <span className="block">Sin complicaciones.</span>
+            </h1>
 
-              {/* Copy */}
-              <div>
-                <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-5 block">
-                  Diseño web · Desde 29€/mes
+            {/* Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+              {['Sin pago inicial', 'Sin permanencia', 'Precio fijo', 'Sin letra pequeña', 'Lista en una semana'].map(pill => (
+                <span key={pill} className="font-manrope text-sm text-[#86868B] bg-[#F5F5F7] px-3.5 py-1.5 rounded-full border border-black/[0.06]">
+                  {pill}
                 </span>
-                <h1
-                  className="font-outfit font-bold text-[#1D1D1F] tracking-tighter leading-[1.05] mb-5"
-                  style={{ fontSize: 'clamp(36px, 5vw, 64px)' }}
-                >
-                  ¿Buscando presupuesto<br className="hidden sm:block" /> para tu web?
-                  <span className="block text-[#34C759] mt-1">Aquí lo tienes: 29€ al mes.</span>
-                </h1>
-                <p className="font-manrope text-[#86868B] text-lg leading-relaxed mb-8 max-w-lg">
-                  Calidad de agencia, precio de suscripción. Sin pago inicial, sin permanencia y lista en 3–5 días.
-                </p>
+              ))}
+            </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 mb-6">
-                  <WAButton className="inline-flex items-center justify-center gap-2 font-manrope font-semibold text-base bg-[#25D366] text-white px-7 py-4 rounded-2xl hover:bg-[#20B858] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" aria-hidden="true">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                    </svg>
-                    Pídenos presupuesto por WhatsApp
-                  </WAButton>
-                  <a
-                    href="#ejemplos"
-                    className="inline-flex items-center justify-center gap-1.5 font-manrope font-medium text-base text-[#1D1D1F] border border-black/[0.12] px-7 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
-                  >
-                    Ver ejemplos <span aria-hidden="true">↓</span>
-                  </a>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                  {['Sin pago inicial', 'Sin permanencia', 'Cancela cuando quieras'].map(t => (
-                    <span key={t} className="flex items-center gap-1.5 font-manrope text-sm text-[#86868B]">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                        <circle cx="7" cy="7" r="6.5" stroke="#34C759" strokeWidth="1"/>
-                        <path d="M4.5 7l2 2 3-3" stroke="#34C759" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Mockup grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {HERO_IMAGES.map((img, i) => (
-                  <div key={i} className="relative aspect-[4/3] rounded-xl overflow-hidden border border-black/[0.06] shadow-sm">
-                    <Image
-                      src={img.src}
-                      alt={img.alt}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover"
-                      priority={i < 2}
-                    />
-                  </div>
-                ))}
-              </div>
-
+            {/* CTAs */}
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <RegistroButton
+                href="/registro"
+                className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors"
+              >
+                Empezar →
+              </RegistroButton>
+              <a
+                href="#contacto"
+                className="inline-flex items-center gap-2 font-manrope font-medium text-base text-[#1D1D1F] border border-black/[0.12] bg-white px-7 py-3.5 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
+              >
+                Pregúntanos
+              </a>
             </div>
           </div>
         </section>
@@ -284,8 +247,8 @@ export default function PresupuestoPage() {
         {/* ── 9 · FAQ ──────────────────────────────────────────── */}
         <FAQClient faqs={LP_FAQS} />
 
-        {/* ── 10 · BANDA CTA FINAL ─────────────────────────────── */}
-        <section className="py-24 md:py-32 bg-[#1D1D1F]">
+        {/* ── 10 · CONTACTO / BANDA CTA FINAL ─────────────────── */}
+        <section id="contacto" className="py-24 md:py-32 bg-[#1D1D1F]">
           <div className="max-w-3xl mx-auto px-6 text-center">
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
               Cuéntanos tu negocio y ten<br />tu web esta semana.
