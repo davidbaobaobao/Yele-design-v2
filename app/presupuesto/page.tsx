@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Beneficios from '@/components/Beneficios'
 import TablaComparativa from '@/components/TablaComparativa'
 import ComoFunciona from '@/components/ComoFunciona'
 import Testimonios from '@/components/Testimonios'
@@ -62,28 +63,18 @@ export default function PresupuestoPage() {
       <main id="main-content">
 
         {/* ── 1 · HERO ─────────────────────────────────────────── */}
-        <section className="min-h-[80vh] flex items-center justify-center py-24 bg-white">
+        <section className="min-h-[calc(70vh-4rem)] flex items-center justify-center py-20 bg-white">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1
               className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
               style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
             >
-              <span className="block">Tu presupuesto:</span>
-              <span className="block text-[#86868B]">29€ al mes.</span>
-              <span className="block">Sin complicaciones.</span>
+              <span className="block">El diseño de una agencia,</span>
+              <span className="block text-[#86868B]">sin el muro de entrada.</span>
             </h1>
 
-            {/* Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-              {['Sin pago inicial', 'Sin permanencia', 'Precio fijo', 'Sin letra pequeña', 'Lista en una semana'].map(pill => (
-                <span key={pill} className="font-manrope text-sm text-[#86868B] bg-[#F5F5F7] px-3.5 py-1.5 rounded-full border border-black/[0.06]">
-                  {pill}
-                </span>
-              ))}
-            </div>
-
             {/* CTAs */}
-            <div className="flex items-center justify-center gap-3 flex-wrap">
+            <div className="flex items-center justify-center gap-3 flex-wrap mb-7">
               <RegistroButton
                 href="/registro"
                 className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors"
@@ -97,8 +88,24 @@ export default function PresupuestoPage() {
                 Pregúntanos
               </a>
             </div>
+
+            {/* Green checkmark bullets */}
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+              {['Sin pago inicial', 'Sin permanencia', 'Precio fijo', 'Sin letra pequeña', 'Lista en una semana'].map(item => (
+                <span key={item} className="flex items-center gap-1.5 font-manrope text-sm text-[#86868B]">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <circle cx="7" cy="7" r="6.5" stroke="#34C759" strokeWidth="1"/>
+                    <path d="M4.5 7l2 2 3-3" stroke="#34C759" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
         </section>
+
+        {/* ── 2 · BENEFICIOS ───────────────────────────────────── */}
+        <Beneficios />
 
         {/* ── 2 · ¿POR QUÉ TAN BARATO? ────────────────────────── */}
         <section className="py-20 md:py-28 bg-[#F5F5F7]">
