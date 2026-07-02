@@ -112,33 +112,7 @@ export default function PresupuestoPage() {
           subtitle="Calidad de agencia al precio de una suscripción."
         />
 
-        {/* ── 2 · ¿POR QUÉ TAN BARATO? ────────────────────────── */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
-          <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
-              La pregunta lógica
-            </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
-              ¿Por qué 29€ y no 2.000€?<br className="hidden md:block" /> No es lo que crees.
-            </h2>
-            <p className="font-manrope text-[#86868B] text-lg leading-relaxed max-w-2xl mb-12">
-              No es más barata por ser peor. Es una <strong className="text-[#1D1D1F] font-semibold">suscripción, no un pago único de agencia</strong>. Repartimos el coste en cuotas pequeñas y la mantenemos nosotros — por eso pagas 29€ al mes en lugar de soltar 2.000€ de golpe.
-            </p>
-            <div className="grid sm:grid-cols-3 gap-5">
-              {([
-                { icon: '◎', title: 'Sin pago inicial', desc: 'Nada de presupuestos de 1.500–2.000€ por adelantado. Empiezas a pagar cuando tienes la web.' },
-                { icon: '✦', title: 'Diseño a medida', desc: 'Sin plantillas. Tu web desde cero, pensada para tu negocio y tus clientes.' },
-                { icon: '↻', title: 'Siempre al día', desc: 'La mantenemos y mejoramos mientras seas cliente. Sin coste extra, sin volver a pagar.' },
-              ] as const).map(item => (
-                <div key={item.title} className="bg-white rounded-2xl p-7 border border-black/[0.06]">
-                  <span className="font-outfit text-2xl text-[#34C759] block mb-4" aria-hidden="true">{item.icon}</span>
-                  <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
-                  <p className="font-manrope text-[#86868B] text-sm leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+
 
         {/* ── 3 · TABLA COMPARATIVA ────────────────────────────── */}
         <TablaComparativa />
