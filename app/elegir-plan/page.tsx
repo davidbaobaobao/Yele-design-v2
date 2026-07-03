@@ -2,18 +2,19 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, Suspense } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { PLAN_PRICES } from '@/lib/plan-prices'
 
 const PLANS = [
   {
     id: 'starter',
     name: 'Starter',
     desc: 'Para autónomos y negocios que necesitan presencia online clara y profesional.',
-    monthlyPrice: 20,
-    annualMonthly: 16,
-    annualTotal: 192,
+    monthlyPrice: PLAN_PRICES.starter.monthly,
+    annualMonthly: PLAN_PRICES.starter.annualMonthly,
+    annualTotal: PLAN_PRICES.starter.annualTotal,
     features: [
       'Web de hasta 5 secciones',
       'Diseño personalizado',
@@ -76,6 +77,28 @@ function ElegirPlanContent() {
   const [promoApplied, setPromoApplied] = useState(false)
   const [promoError, setPromoError] = useState('')
   const [loading, setLoading] = useState<string | null>(null)
+
+  // Auto-trigger checkout if a plan intent was saved before auth (e.g. from /presupuesto)
+  const didAutoTrigger = useRef(false)
+  useEffect(() => {
+    if (didAutoTrigger.current) return
+    didAutoTrigger.current = true
+    const intent = localStorage.getItem('yele_plan_intent')
+    if (!intent) return
+    localStorage.removeItem('yele_plan_intent')
+    setLoading(intent)
+    fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ planId: intent, billing: 'monthly', clientId, promoCode: null }),
+    })
+      .then(r => r.json())
+      .then(({ url, error }) => {
+        if (error || !url) { setLoading(null); return }
+        window.location.href = url
+      })
+      .catch(() => setLoading(null))
+  }, [clientId])
 
   function applyPromo() {
     if (!promoCode.trim()) return

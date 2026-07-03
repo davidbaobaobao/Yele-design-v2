@@ -25,11 +25,19 @@ export function WAButton({ className, children }: { className?: string; children
 }
 
 export function RegistroButton({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
+  function handleClick() {
+    track('registro_click')
+    // Persist plan intent across the auth redirect so elegir-plan can auto-trigger checkout
+    const url = new URL(href, window.location.href)
+    const plan = url.searchParams.get('plan')
+    if (plan) localStorage.setItem('yele_plan_intent', plan)
+  }
+
   return (
     <a
       href={href}
       className={className}
-      onClick={() => track('registro_click')}
+      onClick={handleClick}
     >
       {children}
     </a>

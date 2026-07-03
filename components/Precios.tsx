@@ -4,11 +4,12 @@ import { useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
+import { PLAN_PRICES } from '@/lib/plan-prices'
 
 const plans = [
   {
     key: 'starter',
-    monthly: '€29',
+    monthly: `€${PLAN_PRICES.starter.monthly}`,
     annual: '€299',
     annualNote: { es: 'o €299/año — ahorras €49', en: 'or €299/year — save €49' },
     badge: null as { es: string; en: string } | null,
