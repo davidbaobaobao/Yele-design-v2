@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useRef } from "react"
+import { useId, useRef, useEffect } from "react"
 import { motion, useMotionValue, useMotionTemplate, useAnimationFrame, useSpring } from "framer-motion"
 import { cn } from "@/lib/utils"
 
@@ -22,27 +22,42 @@ export function InfiniteGrid({
 
   const mouseX = useMotionValue(-9999)
   const mouseY = useMotionValue(-9999)
-  // Spring the mask position so the reveal circle follows the cursor smoothly
-  const springX = useSpring(mouseX, { stiffness: 100, damping: 20, mass: 0.3 })
-  const springY = useSpring(mouseY, { stiffness: 100, damping: 20, mass: 0.3 })
+
+  // Tighter spring = reveal circle follows cursor almost instantly
+  const springX = useSpring(mouseX, { stiffness: 500, damping: 40, mass: 0.1 })
+  const springY = useSpring(mouseY, { stiffness: 500, damping: 40, mass: 0.1 })
 
   const gridOffsetX = useMotionValue(0)
   const gridOffsetY = useMotionValue(0)
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { left, top } = e.currentTarget.getBoundingClientRect()
-    mouseX.set(e.clientX - left)
-    mouseY.set(e.clientY - top)
-  }
+  // Attach to the parent section so mouse events fire even when content is on top (z-10)
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    const parent = container.parentElement
+    if (!parent) return
 
-  const handleMouseLeave = () => {
-    mouseX.set(-9999)
-    mouseY.set(-9999)
-  }
+    const handleMove = (e: MouseEvent) => {
+      const { left, top } = container.getBoundingClientRect()
+      mouseX.set(e.clientX - left)
+      mouseY.set(e.clientY - top)
+    }
+    const handleLeave = () => {
+      mouseX.set(-9999)
+      mouseY.set(-9999)
+    }
+
+    parent.addEventListener("mousemove", handleMove)
+    parent.addEventListener("mouseleave", handleLeave)
+    return () => {
+      parent.removeEventListener("mousemove", handleMove)
+      parent.removeEventListener("mouseleave", handleLeave)
+    }
+  }, [mouseX, mouseY])
 
   useAnimationFrame(() => {
-    gridOffsetX.set((gridOffsetX.get() + 0.4) % 40)
-    gridOffsetY.set((gridOffsetY.get() + 0.4) % 40)
+    gridOffsetX.set((gridOffsetX.get() + 0.5) % 40)
+    gridOffsetY.set((gridOffsetY.get() + 0.5) % 40)
   })
 
   const maskImage = useMotionTemplate`radial-gradient(${revealRadius}px circle at ${springX}px ${springY}px, black, transparent)`
@@ -50,9 +65,7 @@ export function InfiniteGrid({
   return (
     <div
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className={cn("absolute inset-0 overflow-hidden", className)}
+      className={cn("absolute inset-0 overflow-hidden pointer-events-none", className)}
     >
       {/* Base layer: always-visible blurred grid */}
       <div
@@ -62,9 +75,7 @@ export function InfiniteGrid({
         <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} patternId={`${uid}_base`} />
       </div>
 
-      {/* Cursor layer: sharp grid revealed inside a radial mask.
-          Outside the mask the blurred layer shows through, creating
-          a smooth blur→clear gradient transition at the mask edge. */}
+      {/* Cursor reveal layer */}
       <motion.div
         className="absolute inset-0"
         style={{ maskImage, WebkitMaskImage: maskImage, opacity: revealOpacity, filter: "blur(1px)" }}
