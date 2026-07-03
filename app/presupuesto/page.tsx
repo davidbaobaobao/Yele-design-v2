@@ -183,9 +183,6 @@ export default function PresupuestoPage() {
           </div>
         </section>
 
-        {/* ── 6b · PORTFOLIO 2 ─────────────────────────────────── */}
-        <Showcase noHeader />
-
         {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
         <Testimonios />
 

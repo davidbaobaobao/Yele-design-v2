@@ -12,14 +12,23 @@ const FALLBACK = [
 ]
 
 export default async function Testimonios() {
-  const { data } = await supabase
-    .from('testimonials')
-    .select('author_name, role, body, rating')
-    .eq('client_id', process.env.NEXT_PUBLIC_CLIENT_ID)
-    .eq('visible', true)
-    .order('sort_order', { ascending: true })
+  let testimonials = FALLBACK
+  try {
+    let query = supabase
+      .from('testimonials')
+      .select('author_name, role, body, rating')
+      .eq('visible', true)
+      .order('sort_order', { ascending: true })
 
-  const testimonials = (data && data.length > 0) ? data : FALLBACK
+    if (process.env.NEXT_PUBLIC_CLIENT_ID) {
+      query = query.eq('client_id', process.env.NEXT_PUBLIC_CLIENT_ID)
+    }
+
+    const { data } = await query
+    if (data && data.length > 0) testimonials = data
+  } catch {
+    // falls back to FALLBACK
+  }
 
   return <TestimoniosClient testimonials={testimonials} />
 }
