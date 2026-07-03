@@ -309,6 +309,15 @@ export default function Precios({ singlePlan }: { singlePlan?: string } = {}) {
         <p className="text-center font-manrope text-sm text-[#86868B] mt-6">
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
+        <p className="text-center font-manrope text-sm text-[#86868B] mt-3">
+          {t(
+            '¿Necesitas SEO avanzado, Sistema de Reservas, Tienda Online, Telefonía IA?',
+            'Need advanced SEO, Booking system, Online store, AI telephony?'
+          )}{' '}
+          <a href="#contacto" className="text-[#1D1D1F] font-medium underline underline-offset-2 hover:text-[#0066CC] transition-colors">
+            {t('Pregúntanos', 'Ask us')}
+          </a>
+        </p>
       </div>
     </section>
   )
