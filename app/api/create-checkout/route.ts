@@ -32,8 +32,8 @@ export async function POST(request: Request) {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${baseUrl}/bienvenido?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/elegir-plan?client_id=${clientId ?? ''}`,
+      success_url: `${baseUrl}/gracias?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/elegir-plan`,
       metadata: { clientId: clientId ?? '', planId, billing },
       subscription_data: {
         metadata: { clientId: clientId ?? '', planId, billing },
