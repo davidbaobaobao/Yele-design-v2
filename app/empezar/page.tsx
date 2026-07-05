@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import ClarityScript from '@/components/ClarityScript'
 
 /* ─────────────────────────────────────────────
    Icon paths  (Heroicons v2 outline, 24×24)
@@ -247,6 +248,7 @@ export default function EmpezarPage() {
 
   return (
     <div className="min-h-screen bg-white px-6 py-12">
+      <ClarityScript />
       <div className="max-w-xl mx-auto">
 
         <h1 className="sr-only">Cuéntanos sobre tu negocio</h1>
