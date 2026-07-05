@@ -78,7 +78,7 @@ export default function PresupuestoPage() {
       <main id="main-content">
 
         {/* ── 1 · HERO ─────────────────────────────────────────── */}
-        <section className="min-h-[calc(70vh-4rem)] flex items-center justify-center py-20 bg-white">
+        <section className="relative min-h-[calc(70vh-4rem)] flex items-center justify-center py-20 bg-white">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1
               className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
@@ -117,6 +117,13 @@ export default function PresupuestoPage() {
                 </span>
               ))}
             </div>
+          </div>
+
+          {/* Scroll hint arrow */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce opacity-40">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
           </div>
         </section>
 
