@@ -11,6 +11,7 @@ import ContactForm from '@/components/ContactForm'
 import FAQClient from '@/components/FAQClient'
 import type { FAQItem } from '@/components/FAQClient'
 import { WAButton, RegistroButton, WA_LINK } from './_components/CTAButtons'
+import ClarityScript from './_components/ClarityScript'
 
 export const metadata: Metadata = {
   title: 'Presupuesto web profesional — desde 29€/mes | Yele',
@@ -51,6 +52,7 @@ const LP_FAQS: FAQItem[] = [
 export default function PresupuestoPage() {
   return (
     <div className="bg-white">
+      <ClarityScript />
 
       {/* ── 0 · HEADER MÍNIMO ────────────────────────────────── */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-black/[0.06]">
