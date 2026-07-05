@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { motion, type Transition } from 'framer-motion'
 import Link from 'next/link'
+import ClarityScript from '@/components/ClarityScript'
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -80,6 +81,7 @@ export default function RegistroPage() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6">
+      <ClarityScript />
       <h1 className="sr-only">Pide tu web</h1>
       <div className="max-w-md w-full">
         {/* Logo */}
