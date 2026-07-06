@@ -88,7 +88,7 @@ export default function PresupuestoPage() {
             >
               <span className="block text-[#86868B]">Tu página web</span>
               <span className="block text-[#1D1D1F]">29€ al mes.</span>
-              <span className="block text-[#1D1D1F]">Sin complicaciones.</span>
+              <span className="block text-[#86868B]">Sin complicaciones.</span>
             </h1>
 
             {/* CTAs */}
@@ -121,18 +121,21 @@ export default function PresupuestoPage() {
             </div>
           </div>
 
-          {/* Scroll hint arrow */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce opacity-60">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M12 5v14M5 12l7 7 7-7" />
-            </svg>
-          </div>
         </section>
 
         <Beneficios
           noHeader
-          sectionClassName="pt-6 pb-10 md:pt-8 md:pb-14 bg-[#F5F5F7]"
+          sectionClassName="pt-6 pb-16 md:pt-8 md:pb-20 bg-[#F5F5F7]"
         />
+
+        {/* Scroll hint arrow — below pills, clear of content */}
+        <div className="flex justify-center pb-8 -mt-12 bg-[#F5F5F7]">
+          <div className="animate-bounce opacity-60">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </div>
+        </div>
 
 
 
@@ -141,15 +144,6 @@ export default function PresupuestoPage() {
 
         {/* ── 4 · CÓMO FUNCIONA ────────────────────────────────── */}
         <ComoFunciona />
-
-        <div className="flex justify-center py-10 bg-white">
-          <RegistroButton
-            href="/registro?plan=starter"
-            className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-8 py-4 rounded-2xl hover:bg-black transition-colors"
-          >
-            Empezar →
-          </RegistroButton>
-        </div>
 
         {/* ── 5 · DIFERENCIADOR ────────────────────────────────── */}
         <section className="relative overflow-hidden py-20 md:py-28 bg-[#1D1D1F]">
