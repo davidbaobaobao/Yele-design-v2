@@ -256,7 +256,7 @@ export default function Precios({ singlePlan }: { singlePlan?: string } = {}) {
           <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
             {t('Precios', 'Pricing')}
           </span>
-          <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
+          <h2 className="font-outfit font-semibold text-5xl md:text-6xl text-[#1D1D1F] tracking-tight mb-4">
             {t('Sin letra pequeña.', 'No fine print.')}
           </h2>
           <p className="font-manrope text-[#86868B] text-lg mb-8">

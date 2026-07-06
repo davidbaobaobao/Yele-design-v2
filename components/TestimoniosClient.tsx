@@ -28,9 +28,6 @@ export default function TestimoniosClient({ testimonials }: { testimonials: Test
           transition={{ duration: 0.6, ease: 'easeOut' } as Transition}
           viewport={{ once: true, margin: '-80px' }}
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
-            {t('Clientes reales', 'Real clients')}
-          </span>
           <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
             {t('Lo que dicen nuestros clientes.', 'What our clients say.')}
           </h2>

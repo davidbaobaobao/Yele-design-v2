@@ -151,14 +151,7 @@ export default function PresupuestoPage() {
           </RegistroButton>
         </div>
 
-        {/* ── 5 · TABLA COMPARATIVA ────────────────────────────── */}
-        <TablaComparativa
-          headingLine1="¿Por qué no otra agencia"
-          headingLine2="o hacerlo tú mismo?"
-          agencyLabel="Otras agencias"
-        />
-
-        {/* ── 6 · DIFERENCIADOR ────────────────────────────────── */}
+        {/* ── 5 · DIFERENCIADOR ────────────────────────────────── */}
         <section className="relative overflow-hidden py-20 md:py-28 bg-[#1D1D1F]">
           <InfiniteGrid />
           <div className="relative z-10 max-w-6xl mx-auto px-6">
@@ -189,6 +182,13 @@ export default function PresupuestoPage() {
             </div>
           </div>
         </section>
+
+        {/* ── 6 · TABLA COMPARATIVA ────────────────────────────── */}
+        <TablaComparativa
+          headingLine1="¿Por qué no otra agencia"
+          headingLine2="o hacerlo tú mismo?"
+          agencyLabel="Otras agencias"
+        />
 
         {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
         <Testimonios />
