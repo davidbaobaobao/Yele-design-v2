@@ -54,24 +54,19 @@ function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue
     <div className="overflow-hidden">
       <motion.div className="flex gap-4 w-max" style={{ x: xMotion }}>
         {cards.map((card, i) => (
-          <Link
+          <div
             key={`${card.key}-${i}`}
-            href={`/ejemplos#${card.project.id}`}
             style={{ width: CARD_W_DESKTOP }}
-            className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group block focus-visible:outline-none"
+            className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden"
           >
             <Image
               src={card.image}
               alt={`Web de ${card.project.name} — Yele`}
               fill
               sizes="30vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <p className="absolute bottom-3 left-3 right-3 font-outfit font-medium text-white text-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 truncate">
-              {card.project.name}
-            </p>
-          </Link>
+          </div>
         ))}
       </motion.div>
     </div>
@@ -118,11 +113,10 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
                 style={{ x: rowIdx === 1 ? x2 : x, paddingLeft: '8px' }}
               >
                 {rowCards.map((card, i) => (
-                  <Link
+                  <div
                     key={`${card.key}-${i}`}
-                    href={`/ejemplos#${card.project.id}`}
                     style={{ width: CARD_W_MOBILE }}
-                    className="flex-shrink-0 aspect-[4/3] relative rounded-2xl overflow-hidden group block focus-visible:outline-none"
+                    className="flex-shrink-0 aspect-[4/3] relative rounded-2xl overflow-hidden"
                   >
                     <Image
                       src={card.image}
@@ -131,11 +125,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
                       sizes="95vw"
                       className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <p className="absolute bottom-3 left-3 right-3 font-outfit font-medium text-white text-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 truncate">
-                      {card.project.name}
-                    </p>
-                  </Link>
+                  </div>
                 ))}
               </motion.div>
             </div>
