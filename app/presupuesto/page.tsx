@@ -80,8 +80,8 @@ export default function PresupuestoPage() {
       <main id="main-content">
 
         {/* ── 1 + 2 · HERO + BENEFICIOS (merged) ───────────────── */}
-        <section className="relative bg-white pt-20 pb-0">
-          <div className="max-w-4xl mx-auto px-6 text-center pb-10">
+        <section className="relative bg-white pt-20 pb-8">
+          <div className="max-w-4xl mx-auto px-6 text-center">
             <h1
               className="font-outfit font-bold leading-[1.05] tracking-tighter mb-7"
               style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
@@ -95,20 +95,20 @@ export default function PresupuestoPage() {
             <div className="flex items-center justify-center gap-3 flex-wrap mb-7">
               <RegistroButton
                 href="/registro?plan=starter"
-                className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors"
+                className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-xl hover:bg-black transition-colors"
               >
                 Empezar →
               </RegistroButton>
               <a
                 href="#contacto"
-                className="inline-flex items-center gap-2 font-manrope font-medium text-base text-[#1D1D1F] border border-black/[0.12] bg-white px-7 py-3.5 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
+                className="inline-flex items-center gap-2 font-manrope font-medium text-base text-[#1D1D1F] border border-black/[0.12] bg-white px-7 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
               >
                 Pregúntanos
               </a>
             </div>
 
             {/* Green checkmark bullets */}
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-8">
               {['Sin pago inicial', 'Sin permanencia', 'Precio fijo', 'Sin letra pequeña', 'Lista en una semana'].map(item => (
                 <span key={item} className="flex items-center gap-1.5 font-manrope text-sm text-[#86868B]">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -119,23 +119,22 @@ export default function PresupuestoPage() {
                 </span>
               ))}
             </div>
-          </div>
 
+            {/* Scroll hint arrow */}
+            <div className="flex justify-center pt-1">
+              <div className="animate-bounce opacity-50">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 5v14M5 12l7 7 7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </section>
 
         <Beneficios
           noHeader
           sectionClassName="pt-6 pb-16 md:pt-8 md:pb-20 bg-[#F5F5F7]"
         />
-
-        {/* Scroll hint arrow — below pills, clear of content */}
-        <div className="flex justify-center pb-8 -mt-12 bg-[#F5F5F7]">
-          <div className="animate-bounce opacity-60">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M12 5v14M5 12l7 7 7-7" />
-            </svg>
-          </div>
-        </div>
 
 
 
@@ -184,7 +183,7 @@ export default function PresupuestoPage() {
                   Lo que otras agencias<br className="hidden md:block" /> no pueden darte.
                 </p>
                 <div className="font-manrope text-white/60 text-base leading-relaxed max-w-[460px] mb-9 space-y-4">
-                  <p>Otras agencias te entregan la web… y ahí se queda, congelada en el año que la hiciste.</p>
+                  <p>Otras agencias te entregan la web… y ahí se queda, congelada en el año que la hiciste. Abandonada.</p>
                   <p>La tuya está en{' '}
                     <span className="text-[#34C759] font-bold">mejora constante</span>
                     : la mantenemos, la actualizamos y la adaptamos.
@@ -194,13 +193,13 @@ export default function PresupuestoPage() {
                 <div className="flex flex-wrap gap-3">
                   <RegistroButton
                     href="/registro?plan=starter"
-                    className="inline-flex items-center gap-2 font-manrope font-semibold text-sm bg-[#34C759] text-white px-6 py-3.5 rounded-full hover:opacity-90 transition-opacity"
+                    className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-7 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
                   >
                     Empezar →
                   </RegistroButton>
                   <a
                     href="#contacto"
-                    className="inline-flex items-center gap-2 font-manrope font-semibold text-sm text-white border border-white/20 px-6 py-3.5 rounded-full hover:bg-white/[0.06] transition-colors"
+                    className="inline-flex items-center gap-2 font-manrope font-medium text-base text-white border border-white/20 px-7 py-3.5 rounded-xl hover:bg-white/10 transition-colors"
                   >
                     Contactar
                   </a>
@@ -261,18 +260,18 @@ export default function PresupuestoPage() {
           </div>
         </section>
 
-        {/* ── 6 · TABLA COMPARATIVA ────────────────────────────── */}
+        {/* ── 6 · PRECIO ───────────────────────────────────────── */}
+        <Precios singlePlan="starter" />
+
+        {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
+        <Testimonios />
+
+        {/* ── 8 · TABLA COMPARATIVA ────────────────────────────── */}
         <TablaComparativa
           headingLine1="¿Por qué no otra agencia"
           headingLine2="o hacerlo tú mismo?"
           agencyLabel="Otras agencias"
         />
-
-        {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
-        <Testimonios />
-
-        {/* ── 8 · PRECIO ───────────────────────────────────────── */}
-        <Precios singlePlan="starter" />
 
         {/* ── 9 · CONTACTO ─────────────────────────────────────── */}
         <ContactForm waLink={WA_LINK} />
@@ -280,7 +279,7 @@ export default function PresupuestoPage() {
         {/* ── 10 · FAQ ─────────────────────────────────────────── */}
         <FAQClient faqs={LP_FAQS} />
 
-        {/* ── 11 · PORTFOLIO 3 ─────────────────────────────────── */}
+        {/* ── 11 · PORTFOLIO ───────────────────────────────────── */}
         <Showcase noHeader />
 
       </main>
