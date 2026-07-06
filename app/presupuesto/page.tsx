@@ -79,16 +79,16 @@ export default function PresupuestoPage() {
 
       <main id="main-content">
 
-        {/* ── 1 · HERO ─────────────────────────────────────────── */}
-        <section className="relative min-h-[calc(70vh-4rem)] flex items-center justify-center py-20 bg-white">
-          <div className="max-w-4xl mx-auto px-6 text-center">
+        {/* ── 1 + 2 · HERO + BENEFICIOS (merged) ───────────────── */}
+        <section className="relative bg-white pt-20 pb-0">
+          <div className="max-w-4xl mx-auto px-6 text-center pb-10">
             <h1
-              className="font-outfit font-bold text-[#1D1D1F] leading-[1.05] tracking-tighter mb-7"
+              className="font-outfit font-bold leading-[1.05] tracking-tighter mb-7"
               style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
             >
-              <span className="block">Tu presupuesto:</span>
-              <span className="block text-[#86868B]">29€ al mes.</span>
-              <span className="block">Sin complicaciones.</span>
+              <span className="block text-[#86868B]">Tu página web</span>
+              <span className="block text-[#1D1D1F]">29€ al mes.</span>
+              <span className="block text-[#1D1D1F]">Sin complicaciones.</span>
             </h1>
 
             {/* CTAs */}
@@ -122,18 +122,16 @@ export default function PresupuestoPage() {
           </div>
 
           {/* Scroll hint arrow */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce opacity-40">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce opacity-60">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 5v14M5 12l7 7 7-7" />
             </svg>
           </div>
         </section>
 
-        {/* ── 2 · BENEFICIOS ───────────────────────────────────── */}
         <Beneficios
-          headingLine1="Tu página web"
-          subtitle="El diseño de una agencia, sin el muro de entrada."
-          sectionClassName="pt-12 pb-6 md:pt-16 md:pb-8 bg-[#F5F5F7]"
+          noHeader
+          sectionClassName="pt-6 pb-10 md:pt-8 md:pb-14 bg-[#F5F5F7]"
         />
 
 

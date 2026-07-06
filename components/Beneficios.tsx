@@ -127,44 +127,48 @@ export default function Beneficios({
   headingLine2,
   subtitle,
   sectionClassName,
+  noHeader,
 }: {
   headingLine1?: string
   headingLine2?: string
   subtitle?: string
   sectionClassName?: string
+  noHeader?: boolean
 } = {}) {
   const { t } = useLang()
 
   return (
     <section id="beneficios" className={sectionClassName ?? 'pt-12 pb-24 md:pt-16 md:pb-32 bg-[#F5F5F7]'}>
       <div className="max-w-6xl mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          viewport={{ once: true, margin: '-80px' }}
-          className="mb-14"
-        >
-          <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
-            {headingLine1 !== undefined ? (
-              <>
-                {headingLine1}
-                {headingLine2 && <><br />{headingLine2}</>}
-              </>
-            ) : (
-              <>
-                {t('Calidad de agencia', 'Agency quality')}<br />
-                {t('al precio de una suscripción.', 'at subscription price.')}
-              </>
-            )}
-          </h2>
-          <p className="font-manrope text-[#86868B] text-lg max-w-xl">
-            {subtitle ?? t(
-              'Sin agencias, sin complicaciones, sin permanencia.',
-              'No agencies, no hassle, no lock-in.'
-            )}
-          </p>
-        </motion.div>
+        {!noHeader && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            viewport={{ once: true, margin: '-80px' }}
+            className="mb-14"
+          >
+            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
+              {headingLine1 !== undefined ? (
+                <>
+                  {headingLine1}
+                  {headingLine2 && <><br />{headingLine2}</>}
+                </>
+              ) : (
+                <>
+                  {t('Calidad de agencia', 'Agency quality')}<br />
+                  {t('al precio de una suscripción.', 'at subscription price.')}
+                </>
+              )}
+            </h2>
+            <p className="font-manrope text-[#86868B] text-lg max-w-xl">
+              {subtitle ?? t(
+                'Sin agencias, sin complicaciones, sin permanencia.',
+                'No agencies, no hassle, no lock-in.'
+              )}
+            </p>
+          </motion.div>
+        )}
 
         <motion.div
           className="grid sm:grid-cols-2 md:grid-cols-3 gap-5"
