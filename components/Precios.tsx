@@ -188,11 +188,6 @@ function PricingCard({ plan, index, isAnnual, t, withShadow }: {
           </motion.span>
           <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#86868B]'}`}>{isAnnual ? '/año' : '/mes'}</span>
         </div>
-        {!isAnnual && (
-          <p className={`font-manrope text-xs mb-3 ${plan.highlighted ? 'text-white/40' : 'text-[#86868B]'}`}>
-            {t(plan.annualNote.es, plan.annualNote.en)}
-          </p>
-        )}
         <p className={`font-manrope text-sm leading-relaxed ${plan.highlighted ? 'text-white/60' : 'text-[#86868B]'}`}>
           {t(plan.es.desc, plan.en.desc)}
         </p>
