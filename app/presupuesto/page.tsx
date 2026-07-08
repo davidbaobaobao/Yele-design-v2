@@ -123,11 +123,13 @@ export default function PresupuestoPage() {
             </div>
 
             {/* Scroll hint arrow */}
-            <div className="flex justify-center pt-1">
-              <div className="animate-bounce opacity-50">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M12 5v14M5 12l7 7 7-7" />
-                </svg>
+            <div className="flex justify-center pt-6">
+              <div className="animate-bounce">
+                <div className="w-11 h-11 rounded-full border border-[#1D1D1F]/20 bg-white/70 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
