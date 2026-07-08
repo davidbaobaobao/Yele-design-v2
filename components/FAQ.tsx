@@ -12,7 +12,7 @@ const FALLBACK = [
   { question: '¿Puedo ver ejemplos de webs que hayáis hecho?', answer: 'Sí, en la sección Trabajos de esta misma página puedes ver proyectos reales.' },
 ]
 
-export default async function FAQ() {
+export default async function FAQ({ noBg }: { noBg?: boolean } = {}) {
   const { data } = await supabase
     .from('faqs')
     .select('question, answer')
@@ -22,5 +22,5 @@ export default async function FAQ() {
 
   const faqs = (data && data.length > 0) ? data : FALLBACK
 
-  return <FAQClient faqs={faqs} />
+  return <FAQClient faqs={faqs} noBg={noBg} />
 }

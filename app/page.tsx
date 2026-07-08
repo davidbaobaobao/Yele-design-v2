@@ -9,6 +9,7 @@ import ShowcaseLarge from '@/components/ShowcaseLarge'
 import ComoFunciona from '@/components/ComoFunciona'
 import Footer from '@/components/Footer'
 import WhatsAppButton from '@/components/WhatsAppButton'
+import SandHelixBackground from '@/components/SandHelixBackground'
 
 // Below-fold client components — defer their JS until needed
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
@@ -21,19 +22,20 @@ const Noticias         = dynamic(() => import('@/components/Noticias'))
 export default function Home() {
   return (
     <>
+      <SandHelixBackground />
       <Navigation />
       <main id="main-content">
         <Hero />
-        <ShowcaseHero />
-        <Beneficios />
-        <Showcase />
-        <ComoFunciona />
-        <Precios />
+        <ShowcaseHero noBg />
+        <Beneficios sectionClassName="pt-12 pb-24 md:pt-16 md:pb-32" />
+        <Showcase noBg />
+        <ComoFunciona noBg />
+        <Precios noBg />
         <ShowcaseLarge />
         <TablaComparativa />
         <CTASection />
-        <Testimonios />
-        <FAQ />
+        <Testimonios noBg />
+        <FAQ noBg />
         <ContactForm />
         <Noticias />
       </main>

@@ -89,7 +89,7 @@ function ScrollRow({
   )
 }
 
-export default function ShowcaseHeroClient({ projects }: { projects: ShowcaseProject[] }) {
+export default function ShowcaseHeroClient({ projects, noBg }: { projects: ShowcaseProject[]; noBg?: boolean }) {
   const [rows, setRows] = useState<[CardData[], CardData[]] | null>(null)
   const row1Ref = useRef<HTMLDivElement>(null)
   const row2Ref = useRef<HTMLDivElement>(null)
@@ -129,7 +129,7 @@ export default function ShowcaseHeroClient({ projects }: { projects: ShowcasePro
   }, [rows, row2X])
 
   return (
-    <section className="pt-6 pb-16 bg-white">
+    <section className={`pt-6 pb-16 ${noBg ? '' : 'bg-white'}`}>
       <div className="relative space-y-4 overflow-hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-white to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-white to-transparent" />
