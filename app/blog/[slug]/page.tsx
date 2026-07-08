@@ -10,7 +10,7 @@ const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string;
   'web-para-fontanero-como-conseguir-mas-clientes': {
     href: '/diseno-web-fontaneros',
     heading: '¿Eres fontanero y buscas una web que te traiga clientes?',
-    body: 'Diseñamos webs específicamente pensadas para fontaneros autónomos: número visible, área de servicio, servicios detallados y SEO local. Listas en 3–5 días.',
+    body: 'Diseñamos webs específicamente pensadas para fontaneros autónomos: número visible, área de servicio, servicios detallados y SEO local. Listas en 1 semana.',
     button: 'Ver diseño web para fontaneros →',
   },
   'web-clinica-dental-como-atraer-pacientes': {
@@ -22,13 +22,13 @@ const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string;
   'como-una-web-impulsa-tu-negocio-de-fontaneria': {
     href: '/diseno-web-fontaneros',
     heading: '¿Eres fontanero y buscas una web que traiga trabajo?',
-    body: 'Webs para fontaneros con teléfono visible, zona de cobertura y SEO local. Listas en 3–5 días, desde 29 €/mes, sin pago inicial.',
+    body: 'Webs para fontaneros con teléfono visible, zona de cobertura y SEO local. Listas en 1 semana, desde 29 €/mes, sin pago inicial.',
     button: 'Ver diseño web para fontaneros →',
   },
   'fontanero-en-espana-numeros-y-estadisticas': {
     href: '/diseno-web-fontaneros',
     heading: '¿Eres fontanero y quieres captar esas búsquedas?',
-    body: 'Diseñamos tu web con los cinco elementos que convierten búsquedas en llamadas. Lista en 3–5 días, desde 29 €/mes, sin pago inicial.',
+    body: 'Diseñamos tu web con los cinco elementos que convierten búsquedas en llamadas. Lista en 1 semana, desde 29 €/mes, sin pago inicial.',
     button: 'Ver diseño web para fontaneros →',
   },
 }
@@ -293,7 +293,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className="bg-[#1D1D1F] rounded-2xl p-8 md:p-10">
             <p className="font-manrope text-xs font-medium text-[#86868B] uppercase tracking-wide mb-3">Yele</p>
             <h2 className="font-outfit font-semibold text-2xl text-white mb-3 leading-snug">
-              Tu web lista en 3–5 días.<br />Desde 29 €/mes, sin permanencia.
+              Tu web lista en 1 semana.<br />Desde 29 €/mes, sin permanencia.
             </h2>
             <p className="font-manrope text-[#86868B] text-sm leading-relaxed mb-6">
               Diseño profesional, hosting, SSL y mantenimiento incluidos. Sin pago inicial.

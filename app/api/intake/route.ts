@@ -182,7 +182,7 @@ function buildConfirmationHtml(data: Record<string, unknown>): string {
       <div style="font-size:14px;color:#1D1D1F;line-height:1.7;">
         <div style="margin-bottom:8px;">① Revisamos tu solicitud en las próximas horas</div>
         <div style="margin-bottom:8px;">② Nos ponemos en contacto ${contactLine}</div>
-        <div>③ Tu web estará lista en 3–5 días</div>
+        <div>③ Tu web estará lista en 1 semana</div>
       </div>
     </div>
     <p style="font-size:13px;color:#86868B;line-height:1.6;margin:0 0 28px;">

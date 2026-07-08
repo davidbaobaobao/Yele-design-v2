@@ -52,7 +52,7 @@ Hosting compartido + dominio ≈ **5-12 €/mes**, pero necesitas instalar y man
 
 Pagas una cuota mensual —desde **29 €/mes**— y recibes una web profesional hecha a medida, con mantenimiento, hosting y SSL incluidos. Sin pago inicial, sin permanencia.
 
-**Lo bueno**: coste predecible, web lista en 3-5 días, alguien responsable siempre detrás.
+**Lo bueno**: coste predecible, web lista en 1 semana, alguien responsable siempre detrás.
 **Lo malo**: no eres el propietario del código (aunque sí de tu dominio y contenido).
 
 ## La comparativa real
@@ -63,7 +63,7 @@ Pagas una cuota mensual —desde **29 €/mes**— y recibes una web profesional
 | Freelancer | 800–2.500 € | Variable | 3–8 semanas |
 | Wix/Squarespace | 0 € | 13–45 €/mes | 1–4 semanas (tú) |
 | WordPress auto | 0 € | 5–15 €/mes | 2–6 semanas (tú) |
-| Suscripción Yele | 0 € | desde 29 €/mes | 3–5 días laborables |
+| Suscripción Yele | 0 € | desde 29 €/mes | 1 semana |
 
 ## ¿Qué conviene a un autónomo?
 
@@ -684,7 +684,7 @@ No todas las webs sirven. Para que la tuya traiga trabajo de verdad, tiene que t
 
 Cada día, alguien de tu zona escribe "fontanero" en Google con una avería entre manos. La pregunta es sencilla: ¿te encuentra a ti o a tu competencia?
 
-En **Yele** hacemos webs profesionales para fontaneros, listas en 3-5 días, desde 29€/mes, sin pago inicial y sin permanencia. Tú nos cuentas tu negocio y nosotros la construimos y la mantenemos —tú nunca tocas código.
+En **Yele** hacemos webs profesionales para fontaneros, listas en 1 semana, desde 29€/mes, sin pago inicial y sin permanencia. Tú nos cuentas tu negocio y nosotros la construimos y la mantenemos —tú nunca tocas código.
 
 **[Descubre nuestro diseño web para fontaneros](/diseno-web-fontaneros)** y empieza a coger los trabajos que ahora se te escapan.`,
   },

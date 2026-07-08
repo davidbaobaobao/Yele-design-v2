@@ -5,8 +5,8 @@ import { useLang } from '@/context/LanguageContext'
 const cards = [
   {
     icon: '⚡',
-    es: { title: 'Lista en 5 días', description: 'De cero a online en menos de una semana. Sin esperas de meses ni reuniones interminables.' },
-    en: { title: 'Ready in 5 days', description: 'From zero to online in less than a week. No months of waiting.' },
+    es: { title: 'Lista en 1 semana', description: 'De cero a online en menos de una semana. Sin esperas de meses ni reuniones interminables.' },
+    en: { title: 'Ready in 1 week', description: 'From zero to online in less than a week. No months of waiting.' },
   },
   {
     icon: '📍',

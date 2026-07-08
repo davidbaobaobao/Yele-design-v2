@@ -27,7 +27,7 @@ export default function Hero() {
           style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
           {...slideUp(0)}
         >
-          <span className="block">{t('Tu web lista en 5 días.', 'Your website ready in 5 days.')}</span>
+          <span className="block">{t('Tu web lista en 1 semana.', 'Your website ready in 1 week.')}</span>
           <span className="block text-[#86868B]">{t('Por 29€ al mes.', 'For €29/month.')}</span>
           <span className="block">{t('Sin complicaciones.', 'No hassle.')}</span>
         </motion.h1>

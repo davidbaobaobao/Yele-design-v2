@@ -10,14 +10,14 @@ import type { FAQItem } from '@/components/FAQClient'
 export const metadata: Metadata = {
   title: 'Diseño web para electricistas — más clientes desde Google | Yele',
   description:
-    'Web profesional para electricistas lista en 5 días. Aparece en Google cuando te buscan en tu zona. Sin pago inicial, desde 29€/mes, sin permanencia.',
+    'Web profesional para electricistas lista en 1 semana. Aparece en Google cuando te buscan en tu zona. Sin pago inicial, desde 29€/mes, sin permanencia.',
   alternates: {
     canonical: 'https://yele.design/diseno-web-electricistas',
   },
   openGraph: {
     title: 'Diseño web para electricistas — más clientes desde Google | Yele',
     description:
-      'Web profesional para electricistas lista en 5 días. Sin pago inicial, desde 29€/mes, sin permanencia.',
+      'Web profesional para electricistas lista en 1 semana. Sin pago inicial, desde 29€/mes, sin permanencia.',
     url: 'https://yele.design/diseno-web-electricistas',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Diseño web para electricistas — Yele' }],
   },
@@ -41,7 +41,7 @@ const FAQS: FAQItem[] = [
   },
   {
     question: '¿Cuánto tarda y cuánto cuesta?',
-    answer: 'Lista en 3-5 días, desde 29€/mes, sin pago inicial ni permanencia.',
+    answer: 'Lista en 1 semana, desde 29€/mes, sin pago inicial ni permanencia.',
   },
 ]
 
@@ -91,7 +91,7 @@ export default function ElectricistasPage() {
               </span>
             </h1>
             <p className="font-manrope text-[#86868B] text-xl leading-relaxed max-w-2xl mb-10">
-              Cuando a alguien se le va la luz o le salta el cuadro, busca un electricista en Google y llama al primero que le da confianza. Aparece tú — con una web profesional lista en 5 días. Desde 29€/mes, sin pago inicial, sin permanencia.
+              Cuando a alguien se le va la luz o le salta el cuadro, busca un electricista en Google y llama al primero que le da confianza. Aparece tú — con una web profesional lista en 1 semana. Desde 29€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
               href="/registro"
@@ -149,7 +149,7 @@ export default function ElectricistasPage() {
                 { title: 'Sin pago inicial', desc: 'Empiezas sin desembolsar nada. La primera mensualidad es cuando tienes la web.' },
                 { title: 'Sin permanencia', desc: 'Cancelas cuando quieras, sin penalización.' },
                 { title: 'Todo incluido', desc: 'Dominio, hosting, mantenimiento y soporte. Sin facturas sorpresa.' },
-                { title: 'Lista en 3–5 días', desc: 'No en dos meses. En menos de una semana tu web está en marcha.' },
+                { title: 'Lista en 1 semana', desc: 'No en dos meses. En menos de una semana tu web está en marcha.' },
               ] as const).map(item => (
                 <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
                   <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
@@ -173,7 +173,7 @@ export default function ElectricistasPage() {
               Que te encuentren cuando<br />más te necesitan.
             </h2>
             <p className="font-manrope text-[#86868B] text-lg mb-10">
-              Sin pago inicial. Lista en 3–5 días.
+              Sin pago inicial. Lista en 1 semana.
             </p>
             <Link
               href="/registro"

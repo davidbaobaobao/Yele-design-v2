@@ -10,14 +10,14 @@ import type { FAQItem } from '@/components/FAQClient'
 export const metadata: Metadata = {
   title: 'Diseño web para mudanzas — más presupuestos directos | Yele',
   description:
-    'Web profesional para empresas de mudanzas lista en 5 días. Formulario de presupuesto, zona de cobertura y confianza para que el cliente te elija a ti. Desde 29€/mes.',
+    'Web profesional para empresas de mudanzas lista en 1 semana. Formulario de presupuesto, zona de cobertura y confianza para que el cliente te elija a ti. Desde 29€/mes.',
   alternates: {
     canonical: 'https://yele.design/diseno-web-mudanzas',
   },
   openGraph: {
     title: 'Diseño web para mudanzas — más presupuestos directos | Yele',
     description:
-      'Consigue más presupuestos directos sin intermediarios. Web lista en 5 días, desde 29€/mes, sin pago inicial ni permanencia.',
+      'Consigue más presupuestos directos sin intermediarios. Web lista en 1 semana, desde 29€/mes, sin pago inicial ni permanencia.',
     url: 'https://yele.design/diseno-web-mudanzas',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Diseño web para empresas de mudanzas — Yele' }],
   },
@@ -41,7 +41,7 @@ const FAQS: FAQItem[] = [
   },
   {
     question: '¿Cuánto tarda y cuánto cuesta?',
-    answer: 'Lista en 3-5 días, desde 29€/mes, sin pago inicial ni permanencia.',
+    answer: 'Lista en 1 semana, desde 29€/mes, sin pago inicial ni permanencia.',
   },
 ]
 
@@ -131,7 +131,7 @@ export default function MudanzasPage() {
               </span>
             </h1>
             <p className="font-manrope text-[#86868B] text-xl leading-relaxed max-w-2xl mb-10">
-              Quien se muda pide presupuesto a varias empresas el mismo día y elige rápido. Si no te encuentra fácil en Google ni puede pedirte presupuesto sin esfuerzo, ni entras en la lista. Web profesional lista en 5 días. Desde 29€/mes, sin pago inicial, sin permanencia.
+              Quien se muda pide presupuesto a varias empresas el mismo día y elige rápido. Si no te encuentra fácil en Google ni puede pedirte presupuesto sin esfuerzo, ni entras en la lista. Web profesional lista en 1 semana. Desde 29€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
               href="/registro"
@@ -289,7 +289,7 @@ export default function MudanzasPage() {
                 { title: 'Sin pago inicial', desc: 'Empiezas sin desembolsar nada. La primera mensualidad es cuando tienes la web.' },
                 { title: 'Sin permanencia', desc: 'Cancelas cuando quieras, sin penalización.' },
                 { title: 'Todo incluido', desc: 'Dominio, hosting, mantenimiento y soporte. Sin facturas sorpresa.' },
-                { title: 'Lista en 3–5 días', desc: 'No en dos meses. En menos de una semana tu web está en marcha.' },
+                { title: 'Lista en 1 semana', desc: 'No en dos meses. En menos de una semana tu web está en marcha.' },
               ] as const).map(item => (
                 <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
                   <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
@@ -313,7 +313,7 @@ export default function MudanzasPage() {
               Entra en la lista corta<br />de cada mudanza de tu zona.
             </h2>
             <p className="font-manrope text-[#86868B] text-lg mb-10">
-              Sin pago inicial. Lista en 3–5 días.
+              Sin pago inicial. Lista en 1 semana.
             </p>
             <Link
               href="/registro"

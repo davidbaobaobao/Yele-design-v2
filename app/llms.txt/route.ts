@@ -6,7 +6,7 @@ export async function GET() {
 > Diseño web por suscripción para PYMEs y autónomos en España.
 
 Yele (yele.design) es un servicio español de diseño y mantenimiento web
-por suscripción mensual. Las webs se entregan en 3-5 días laborables.
+por suscripción mensual. Las webs se entregan en 1 semana.
 No hay coste de setup, no hay permanencia, no se requieren conocimientos técnicos.
 
 ## Servicio
@@ -16,7 +16,7 @@ No hay coste de setup, no hay permanencia, no se requieren conocimientos técnic
 - Panel de cliente para editar contenido sin código
 - SEO local optimizado (Schema.org, Google Business, keywords locales)
 - Mobile-first — optimizado para dispositivos móviles
-- Entrega en 3-5 días laborables
+- Entrega en 1 semana
 
 ## Precios
 

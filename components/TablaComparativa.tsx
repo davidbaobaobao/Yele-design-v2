@@ -8,7 +8,7 @@ const rows = [
   {
     es: 'Tiempo hasta tener la web',
     en: 'Time to get your website',
-    yele: { es: '3–5 días', en: '3–5 days' },
+    yele: { es: '1 semana', en: '1 week' },
     agency: { es: '6–12 semanas', en: '6–12 weeks' },
     diy: { es: 'Semanas o meses', en: 'Weeks or months' },
   },

@@ -12,8 +12,8 @@ const steps = [
   },
   {
     num: '02',
-    es: { title: 'Nosotros lo diseñamos', desc: 'En 3–5 días tienes un sitio profesional, adaptado a tu sector, con tu contenido real.' },
-    en: { title: 'We design it', desc: 'In 3–5 days you have a professional site, tailored to your industry, with your real content.' },
+    es: { title: 'Nosotros lo diseñamos', desc: 'En 1 semana tienes un sitio profesional, adaptado a tu sector, con tu contenido real.' },
+    en: { title: 'We design it', desc: 'In 1 week you have a professional site, tailored to your industry, with your real content.' },
   },
   {
     num: '03',

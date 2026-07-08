@@ -16,7 +16,7 @@ import ClarityScript from '@/components/ClarityScript'
 export const metadata: Metadata = {
   title: 'Presupuesto web profesional — desde 29€/mes | Yele',
   description:
-    'Calidad de agencia, precio de suscripción. Tu web lista en 3–5 días, desde 29€/mes. Sin pago inicial, sin permanencia.',
+    'Calidad de agencia, precio de suscripción. Tu web lista en 1 semana, desde 29€/mes. Sin pago inicial, sin permanencia.',
   robots: { index: false, follow: true },
   alternates: { canonical: 'https://yele.design/presupuesto' },
 }
@@ -44,7 +44,7 @@ const LP_FAQS: FAQItem[] = [
   },
   {
     question: '¿Cuánto tarda en estar lista mi web?',
-    answer: 'Entre 3 y 5 días desde que nos das tu contenido. Sin esperas de semanas ni reuniones interminables.',
+    answer: 'En menos de 1 semana desde que nos das tu contenido. Sin esperas ni reuniones interminables.',
   },
 ]
 

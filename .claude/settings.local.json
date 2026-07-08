@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api *)",
+      "Bash(env)",
+      "Bash(git config *)",
+      "Bash(curl -s \"https://api.github.com/repos/davidbaobaobao/Yele-Design-v2/git/trees/HEAD?recursive=1\")",
+      "Bash(curl -s \"https://api.github.com/repos/davidbaobaobao/Yele-Design-v2/commits?per_page=3\")",
+      "Bash(python3 -c ' *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npm install *)",
+      "Bash(/usr/local/bin/npm install *)",
+      "Bash(/opt/homebrew/bin/npm install *)",
+      "Bash(npx --yes npm install @vercel/analytics @vercel/speed-insights)",
+      "Bash(command -v node)",
+      "Bash(\"/Users/bao/Library/Mobile Documents/com~apple~CloudDocs/Documents/Project Website/Yele-design-v2/node_modules/.bin/next\" --version)"
+    ]
+  }
+}

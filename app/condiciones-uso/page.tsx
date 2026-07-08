@@ -35,7 +35,7 @@ export default function CondicionesUso() {
               </p>
               <ul className="list-disc list-inside space-y-2 text-[#86868B] ml-2">
                 <li>Diseño y desarrollo de página web personalizada</li>
-                <li>Entrega en un plazo de 3 a 5 días hábiles desde la aprobación del brief</li>
+                <li>Entrega en un plazo de 1 semana desde la aprobación del brief</li>
                 <li>Alojamiento web y dominio durante la vigencia de la suscripción</li>
                 <li>Mantenimiento técnico y actualizaciones de contenido</li>
                 <li>Soporte por correo electrónico y WhatsApp</li>

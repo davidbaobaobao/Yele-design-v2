@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    'Diseño web profesional para PYMEs y autónomos españoles. Entrega en 3–5 días, mantenimiento incluido, desde €29/mes. Sin pago inicial, sin permanencia.',
+    'Diseño web profesional para PYMEs y autónomos españoles. Entrega en 1 semana, mantenimiento incluido, desde €29/mes. Sin pago inicial, sin permanencia.',
 
   authors: [{ name: 'Yele', url: 'https://yele.design' }],
   creator: 'Yele',
@@ -117,7 +117,7 @@ const schemaOrg = {
       name: 'Diseño web por suscripción',
       provider: { '@id': 'https://yele.design/#organization' },
       description:
-        'Diseño y mantenimiento de páginas web profesionales para PYMEs y autónomos en España. Entrega en 3-5 días, desde €29/mes.',
+        'Diseño y mantenimiento de páginas web profesionales para PYMEs y autónomos en España. Entrega en 1 semana, desde €29/mes.',
       areaServed: { '@type': 'Country', name: 'España' },
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
@@ -184,7 +184,7 @@ const schemaOrg = {
           name: '¿Cuánto tarda en estar lista mi web?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Entre 3 y 5 días desde que recibes tu formulario completado. Sin esperas de semanas.',
+            text: 'En menos de 1 semana desde que recibes tu formulario completado. Sin esperas.',
           },
         },
         {

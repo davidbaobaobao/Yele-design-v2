@@ -14,8 +14,8 @@ const cards = [
   },
   {
     Icon: Zap,
-    es: { title: 'Entrega en 5 días', desc: 'Tu web publicada en tu dominio en menos de una semana.' },
-    en: { title: 'Delivered in 5 days', desc: 'Your website live on your domain in under a week.' },
+    es: { title: 'Entrega en 1 semana', desc: 'Tu web publicada en tu dominio en menos de una semana.' },
+    en: { title: 'Delivered in 1 week', desc: 'Your website live on your domain in under a week.' },
   },
   {
     Icon: LayoutDashboard,
