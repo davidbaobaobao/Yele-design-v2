@@ -142,7 +142,7 @@ export default function SandHelixBackground() {
     function frame(now: number) {
       const dt = Math.min(50, now - last); last = now
 
-      flowH  = (flowH + dt * 0.000016) % 1
+      flowH  = (flowH + dt * 0.0000112) % 1
       vVel  += (V_BASE - vVel) * 0.01
       flowV  = (flowV + vVel * dt + 1) % 1
 
@@ -180,7 +180,7 @@ export default function SandHelixBackground() {
 
         const d = depth * 0.5 + 0.5
         const r = p.rBase * (0.55 + d * 0.85)
-        ctx.globalAlpha = (mobile ? (0.03 + d * 0.04) : (0.08 + d * 0.12)) * (1 - burst * 0.35)
+        ctx.globalAlpha = (mobile ? (0.08 + d * 0.07) : (0.10 + d * 0.12)) * (1 - burst * 0.35)
         ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2)
       }
 
@@ -198,7 +198,7 @@ export default function SandHelixBackground() {
           }
           const d = Math.cos(thV) * 0.5 + 0.5
           const r = p.rBase * (0.55 + d * 0.85)
-          ctx.globalAlpha = (mobile ? (0.03 + d * 0.04) : (0.08 + d * 0.12)) * ph * (1 - burst * 0.35)
+          ctx.globalAlpha = (mobile ? (0.08 + d * 0.07) : (0.10 + d * 0.12)) * ph * (1 - burst * 0.35)
           ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2)
         }
       }
