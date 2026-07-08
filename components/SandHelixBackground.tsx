@@ -114,6 +114,9 @@ export default function SandHelixBackground() {
     function pushScroll(deltaY: number) {
       trigger()
       vVel += -deltaY * 0.000003
+      const maxV = Math.abs(V_BASE) * 1.3
+      if (vVel < -maxV) vVel = -maxV
+      if (vVel >  maxV) vVel =  maxV
     }
 
     const onWheel      = (e: WheelEvent)    => pushScroll(e.deltaY)
@@ -138,7 +141,7 @@ export default function SandHelixBackground() {
     function frame(now: number) {
       const dt = Math.min(50, now - last); last = now
 
-      flowH  = (flowH + dt * 0.000032) % 1
+      flowH  = (flowH + dt * 0.000016) % 1
       vVel  += (V_BASE - vVel) * 0.01
       flowV  = (flowV + vVel * dt + 1) % 1
 
