@@ -15,9 +15,10 @@ export default function SandHelixBackground() {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
 
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const mobile = window.innerWidth < 768
     const TWO_PI = Math.PI * 2
-    const N = 780
-    const NV = 620
+    const N = mobile ? 390 : 780
+    const NV = mobile ? 310 : 620
     const COLOR = [110, 110, 106] as const
 
     let W = 0, H = 0, dpr = 1
