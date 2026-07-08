@@ -230,7 +230,7 @@ function PricingCard({ plan, index, isAnnual, t, withShadow }: {
   )
 }
 
-export default function Precios({ singlePlan }: { singlePlan?: string } = {}) {
+export default function Precios({ singlePlan, noBg }: { singlePlan?: string; noBg?: boolean } = {}) {
   const { t } = useLang()
   const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
   const isAnnual = billing === 'annual'
@@ -238,7 +238,7 @@ export default function Precios({ singlePlan }: { singlePlan?: string } = {}) {
   const displayPlans = singlePlan ? plans.filter(p => p.key === singlePlan) : plans
 
   return (
-    <section id="precios" className="py-14 md:py-20 bg-white">
+    <section id="precios" className={`py-14 md:py-20 ${noBg ? '' : 'bg-white'}`}>
       <div className="max-w-6xl mx-auto px-6">
 
         <motion.div

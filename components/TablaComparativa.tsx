@@ -91,15 +91,17 @@ export default function TablaComparativa({
   headingLine1,
   headingLine2,
   agencyLabel,
+  noBg,
 }: {
   headingLine1?: string
   headingLine2?: string
   agencyLabel?: string
+  noBg?: boolean
 } = {}) {
   const { t } = useLang()
 
   return (
-    <section className="py-24 md:py-32 bg-white">
+    <section className={`py-24 md:py-32 ${noBg ? '' : 'bg-white'}`}>
       <div className="max-w-6xl mx-auto px-6">
 
         <motion.div

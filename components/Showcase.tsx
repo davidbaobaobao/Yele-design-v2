@@ -19,7 +19,7 @@ const FALLBACK: ShowcaseProject[] = [
   { id: '5', name: 'Txema · Fontanero, Bilbao',            description: 'Fontanero autónomo',            main_image: 'https://images.unsplash.com/photo-1649769069590-268b0b994462?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',   additional_images: [] },
 ]
 
-export default async function Showcase({ noHeader }: { noHeader?: boolean } = {}) {
+export default async function Showcase({ noHeader, noBg }: { noHeader?: boolean; noBg?: boolean } = {}) {
   let projects = FALLBACK
   try {
     const { data } = await supabase
@@ -32,5 +32,5 @@ export default async function Showcase({ noHeader }: { noHeader?: boolean } = {}
     // falls back to FALLBACK
   }
 
-  return <ShowcaseClient projects={projects} noHeader={noHeader} />
+  return <ShowcaseClient projects={projects} noHeader={noHeader} noBg={noBg} />
 }

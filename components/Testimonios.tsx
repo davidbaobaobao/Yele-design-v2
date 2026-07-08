@@ -11,7 +11,7 @@ const FALLBACK = [
   { author_name: 'David B.',  role: 'Cliente Yele',                                  body: 'Yele es fantástica!',                                                                                                               rating: 5 },
 ]
 
-export default async function Testimonios() {
+export default async function Testimonios({ noBg }: { noBg?: boolean } = {}) {
   let testimonials = FALLBACK
   try {
     let query = supabase
@@ -30,5 +30,5 @@ export default async function Testimonios() {
     // falls back to FALLBACK
   }
 
-  return <TestimoniosClient testimonials={testimonials} />
+  return <TestimoniosClient testimonials={testimonials} noBg={noBg} />
 }

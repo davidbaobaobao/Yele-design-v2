@@ -12,6 +12,7 @@ import FAQClient from '@/components/FAQClient'
 import type { FAQItem } from '@/components/FAQClient'
 import { WAButton, RegistroButton, WA_LINK } from './_components/CTAButtons'
 import ClarityScript from '@/components/ClarityScript'
+import SandHelixBackground from '@/components/SandHelixBackground'
 
 export const metadata: Metadata = {
   title: 'Presupuesto web profesional — desde 29€/mes | Yele',
@@ -51,7 +52,8 @@ const LP_FAQS: FAQItem[] = [
 
 export default function PresupuestoPage() {
   return (
-    <div className="bg-white">
+    <div>
+      <SandHelixBackground />
       <ClarityScript />
 
       {/* ── 0 · HEADER MÍNIMO ────────────────────────────────── */}
@@ -80,7 +82,7 @@ export default function PresupuestoPage() {
       <main id="main-content">
 
         {/* ── 1 + 2 · HERO + BENEFICIOS (merged) ───────────────── */}
-        <section className="relative bg-white pt-20 pb-8">
+        <section className="relative pt-20 pb-8">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1
               className="font-outfit font-bold leading-[1.05] tracking-tighter mb-7"
@@ -139,7 +141,7 @@ export default function PresupuestoPage() {
 
 
         {/* ── 3 · PORTFOLIO ────────────────────────────────────── */}
-        <Showcase noHeader />
+        <Showcase noHeader noBg />
 
         {/* ── 4 · CÓMO FUNCIONA ────────────────────────────────── */}
         <ComoFunciona />
@@ -261,16 +263,17 @@ export default function PresupuestoPage() {
         </section>
 
         {/* ── 6 · PRECIO ───────────────────────────────────────── */}
-        <Precios singlePlan="starter" />
+        <Precios singlePlan="starter" noBg />
 
         {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
-        <Testimonios />
+        <Testimonios noBg />
 
         {/* ── 8 · TABLA COMPARATIVA ────────────────────────────── */}
         <TablaComparativa
           headingLine1="¿Por qué no otra agencia"
           headingLine2="o hacerlo tú mismo?"
           agencyLabel="Otras agencias"
+          noBg
         />
 
         {/* ── 9 · CONTACTO ─────────────────────────────────────── */}
@@ -280,12 +283,12 @@ export default function PresupuestoPage() {
         <FAQClient faqs={LP_FAQS} />
 
         {/* ── 11 · PORTFOLIO ───────────────────────────────────── */}
-        <Showcase noHeader />
+        <Showcase noHeader noBg />
 
       </main>
 
       {/* ── 11 · FOOTER MÍNIMO ───────────────────────────────── */}
-      <footer className="bg-white border-t border-black/[0.06] py-8">
+      <footer className="border-t border-black/[0.06] py-8">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-manrope text-[#86868B]">
             <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-start">

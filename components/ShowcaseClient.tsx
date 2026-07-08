@@ -144,7 +144,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
   )
 }
 
-export default function ShowcaseClient({ projects, noHeader }: { projects: ShowcaseProject[]; noHeader?: boolean }) {
+export default function ShowcaseClient({ projects, noHeader, noBg }: { projects: ShowcaseProject[]; noHeader?: boolean; noBg?: boolean }) {
   const { t } = useLang()
   const [rows, setRows] = useState<[CardData[], CardData[]] | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
@@ -187,7 +187,7 @@ export default function ShowcaseClient({ projects, noHeader }: { projects: Showc
   )
 
   return (
-    <section ref={sectionRef} id={noHeader ? undefined : 'trabajos'} className="bg-white">
+    <section ref={sectionRef} id={noHeader ? undefined : 'trabajos'} className={noBg ? '' : 'bg-white'}>
       {/* Desktop */}
       <div className={`hidden md:block ${noHeader ? 'py-10' : 'py-32'}`}>
         {!noHeader && (
@@ -196,8 +196,8 @@ export default function ShowcaseClient({ projects, noHeader }: { projects: Showc
           </div>
         )}
         <div className="relative space-y-4 overflow-hidden">
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
+          <div className={`pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r ${noBg ? 'from-white' : 'from-[#F5F5F7]'} to-transparent`} />
+          <div className={`pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l ${noBg ? 'from-white' : 'from-[#F5F5F7]'} to-transparent`} />
           {rows ? (
             <>
               <ScrollRow cards={rows[0]} xMotion={row1X} />

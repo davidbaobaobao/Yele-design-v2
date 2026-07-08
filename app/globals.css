@@ -34,3 +34,8 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Sand helix background — makes body transparent so canvas at z-index:-1 is visible */
+html.sand-helix-page body {
+  background-color: transparent;
+}

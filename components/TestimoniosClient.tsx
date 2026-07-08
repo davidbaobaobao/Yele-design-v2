@@ -11,7 +11,7 @@ export type Testimonial = {
   rating: number
 }
 
-export default function TestimoniosClient({ testimonials }: { testimonials: Testimonial[] }) {
+export default function TestimoniosClient({ testimonials, noBg }: { testimonials: Testimonial[]; noBg?: boolean }) {
   const { t } = useLang()
   const doubled = [...testimonials, ...testimonials]
   const [duration, setDuration] = useState(20)
@@ -20,7 +20,7 @@ export default function TestimoniosClient({ testimonials }: { testimonials: Test
   }, [])
 
   return (
-    <section className="py-24 md:py-32 bg-white overflow-hidden">
+    <section className={`py-24 md:py-32 ${noBg ? '' : 'bg-white'} overflow-hidden`}>
       <div className="max-w-6xl mx-auto px-6 mb-12">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -35,8 +35,8 @@ export default function TestimoniosClient({ testimonials }: { testimonials: Test
       </div>
 
       <div className="relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
+        <div className={`pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r ${noBg ? 'from-white' : 'from-[#F5F5F7]'} to-transparent`} />
+        <div className={`pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l ${noBg ? 'from-white' : 'from-[#F5F5F7]'} to-transparent`} />
 
         <motion.div
           className="flex gap-5"
