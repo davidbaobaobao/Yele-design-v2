@@ -180,7 +180,7 @@ export default function SandHelixBackground() {
 
         const d = depth * 0.5 + 0.5
         const r = p.rBase * (0.55 + d * 0.85)
-        ctx.globalAlpha = (0.03 + d * 0.04) * (1 - burst * 0.35)
+        ctx.globalAlpha = (mobile ? (0.03 + d * 0.04) : (0.08 + d * 0.12)) * (1 - burst * 0.35)
         ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2)
       }
 
@@ -198,7 +198,7 @@ export default function SandHelixBackground() {
           }
           const d = Math.cos(thV) * 0.5 + 0.5
           const r = p.rBase * (0.55 + d * 0.85)
-          ctx.globalAlpha = (0.03 + d * 0.04) * ph * (1 - burst * 0.35)
+          ctx.globalAlpha = (mobile ? (0.03 + d * 0.04) : (0.08 + d * 0.12)) * ph * (1 - burst * 0.35)
           ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2)
         }
       }
