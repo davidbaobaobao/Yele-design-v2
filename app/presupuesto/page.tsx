@@ -41,7 +41,7 @@ const LP_FAQS: FAQItem[] = [
   },
   {
     question: '¿El dominio y el hosting están incluidos?',
-    answer: 'El hosting sí. El dominio se puede gestionar con nosotros o tú puedes traer el tuyo propio.',
+    answer: 'El hosting y Dominio todo incluido. También puedes traer tu dominio.',
   },
   {
     question: '¿Cuánto tarda en estar lista mi web?',
