@@ -81,7 +81,7 @@ export default function SandHelixBackground() {
     let cxV = 0, ampV = 0, bandV = 0, turnsV = 0
 
     function geometry() {
-      cyH    = H * 0.40
+      cyH    = H * 0.25
       ampH   = H * 0.40
       bandH  = H * 0.10
       turnsH = Math.max(3, Math.round(W / 300))
@@ -179,7 +179,7 @@ export default function SandHelixBackground() {
 
         const d = depth * 0.5 + 0.5
         const r = p.rBase * (0.55 + d * 0.85)
-        ctx.globalAlpha = (0.50 + d * 0.50) * (1 - burst * 0.35)
+        ctx.globalAlpha = (0.22 + d * 0.55) * (1 - burst * 0.35)
         ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2)
       }
 
