@@ -10,12 +10,12 @@ export type FAQItem = {
   answer: string
 }
 
-export default function FAQClient({ faqs }: { faqs: FAQItem[] }) {
+export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: boolean }) {
   const { t } = useLang()
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <section id="faq" className="py-24 md:py-32 bg-[#F5F5F7]">
+    <section id="faq" className={`py-24 md:py-32 ${noBg ? '' : 'bg-[#F5F5F7]'}`}>
       <div className="max-w-3xl mx-auto px-6">
 
         <motion.div

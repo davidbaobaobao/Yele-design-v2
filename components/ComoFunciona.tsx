@@ -77,7 +77,7 @@ function StepCard({ step, index, t, onActive }: {
   )
 }
 
-export default function ComoFunciona() {
+export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
   const { t } = useLang()
   const [activeStep, setActiveStep] = useState(0)
   const handleStepActive = useCallback((index: number) => {
@@ -85,7 +85,7 @@ export default function ComoFunciona() {
   }, [])
 
   return (
-    <section id="como-funciona" className="py-24 md:py-32 bg-[#F5F5F7]">
+    <section id="como-funciona" className={`py-24 md:py-32 ${noBg ? '' : 'bg-[#F5F5F7]'}`}>
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-start">
 

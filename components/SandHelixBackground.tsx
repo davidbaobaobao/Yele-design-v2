@@ -82,8 +82,8 @@ export default function SandHelixBackground() {
 
     function geometry() {
       cyH    = H * 0.5
-      ampH   = H * 0.22
-      bandH  = H * 0.08
+      ampH   = H * 0.40
+      bandH  = H * 0.10
       turnsH = Math.max(3, Math.round(W / 300))
       cxV    = W * 0.5
       ampV   = W * 0.26
@@ -103,7 +103,7 @@ export default function SandHelixBackground() {
     }
 
     let vVel = 0
-    const V_BASE = -0.00006
+    const V_BASE = -0.000025
 
     function trigger() {
       if (triggered) return
@@ -113,7 +113,7 @@ export default function SandHelixBackground() {
 
     function pushScroll(deltaY: number) {
       trigger()
-      vVel += -deltaY * 0.0000075
+      vVel += -deltaY * 0.000003
     }
 
     const onWheel      = (e: WheelEvent)    => pushScroll(e.deltaY)
@@ -138,8 +138,8 @@ export default function SandHelixBackground() {
     function frame(now: number) {
       const dt = Math.min(50, now - last); last = now
 
-      flowH  = (flowH + dt * 0.00007) % 1
-      vVel  += (V_BASE - vVel) * 0.03
+      flowH  = (flowH + dt * 0.000032) % 1
+      vVel  += (V_BASE - vVel) * 0.01
       flowV  = (flowV + vVel * dt + 1) % 1
 
       if (triggered) phase = Math.min(1, (now - trigTime) / DUR)

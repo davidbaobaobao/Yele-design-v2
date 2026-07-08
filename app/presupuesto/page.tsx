@@ -135,7 +135,7 @@ export default function PresupuestoPage() {
 
         <Beneficios
           noHeader
-          sectionClassName="pt-6 pb-16 md:pt-8 md:pb-20 bg-[#F5F5F7]"
+          sectionClassName="pt-6 pb-16 md:pt-8 md:pb-20"
         />
 
 
@@ -144,7 +144,7 @@ export default function PresupuestoPage() {
         <Showcase noHeader noBg />
 
         {/* ── 4 · CÓMO FUNCIONA ────────────────────────────────── */}
-        <ComoFunciona />
+        <ComoFunciona noBg />
 
         {/* ── 5 · DIFERENCIADOR ────────────────────────────────── */}
         <section className="relative overflow-hidden py-20 md:py-28 bg-[#16161a]">
@@ -280,7 +280,7 @@ export default function PresupuestoPage() {
         <ContactForm waLink={WA_LINK} />
 
         {/* ── 10 · FAQ ─────────────────────────────────────────── */}
-        <FAQClient faqs={LP_FAQS} />
+        <FAQClient faqs={LP_FAQS} noBg />
 
         {/* ── 11 · PORTFOLIO ───────────────────────────────────── */}
         <Showcase noHeader noBg />
