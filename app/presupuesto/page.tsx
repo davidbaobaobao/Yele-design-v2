@@ -17,9 +17,9 @@ const ContactForm      = dynamic(() => import('@/components/ContactForm'))
 const FAQClient        = dynamic(() => import('@/components/FAQClient'))
 
 export const metadata: Metadata = {
-  title: 'Presupuesto web profesional — desde 29€/mes | Yele',
+  title: 'Diseño web profesional desde 29€/mes | Agencia de diseño web | Yele',
   description:
-    'Calidad de agencia, precio de suscripción. Tu web lista en 1 semana, desde 29€/mes. Sin pago inicial, sin permanencia.',
+    'Diseño web profesional a medida desde 29€/mes. Tu agencia de diseño web sin pago inicial ni permanencia. Página web para tu negocio lista en 3-5 días.',
   robots: { index: true, follow: true },
   alternates: { canonical: 'https://yele.design/presupuesto' },
 }
@@ -88,13 +88,18 @@ export default function PresupuestoPage() {
         <section className="relative pt-20 pb-8">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1
-              className="font-outfit font-bold leading-[1.05] tracking-tighter mb-7"
-              style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
+              className="font-outfit font-bold leading-none tracking-tighter text-[#1D1D1F] mb-4"
+              style={{ fontSize: 'clamp(36px, 4.5vw, 64px)' }}
             >
-              <span className="block text-[#6B7280]">Tu página web</span>
-              <span className="block text-[#1D1D1F]">29€ al mes.</span>
-              <span className="block text-[#6B7280]">Sin complicaciones.</span>
+              Diseño web profesional
             </h1>
+            <p className="font-outfit font-bold text-[#34C759] tracking-tighter mb-5" style={{ fontSize: 'clamp(30px, 3.8vw, 54px)' }}>
+              29€/mes
+            </p>
+            <div className="font-outfit font-semibold text-[#6B7280] tracking-tight leading-snug mb-7" style={{ fontSize: 'clamp(20px, 2.5vw, 36px)' }}>
+              <span className="block">Tu agencia de diseño web</span>
+              <span className="block">Sin complicaciones.</span>
+            </div>
 
             {/* CTAs */}
             <div className="flex items-center justify-center gap-3 flex-wrap mb-7">
@@ -178,23 +183,23 @@ export default function PresupuestoPage() {
 
               {/* ── Left: copy ── */}
               <div>
-                <div
-                  className="font-outfit font-extrabold uppercase tracking-tight text-white leading-none mb-5"
-                  style={{ fontSize: 'clamp(34px, 5vw, 58px)' }}
+                <h2
+                  className="font-outfit font-extrabold tracking-tight text-white leading-tight mb-5"
+                  style={{ fontSize: 'clamp(28px, 4vw, 52px)' }}
                 >
-                  La diferencia
-                </div>
+                  Tu agencia de diseño web,<br className="hidden md:block" /> sin el precio de agencia
+                </h2>
                 <p
                   className="font-manrope font-semibold text-white/55 mb-8 leading-snug"
                   style={{ fontSize: 'clamp(17px, 2vw, 22px)' }}
                 >
-                  Lo que otras agencias<br className="hidden md:block" /> no pueden darte.
+                  Diseño web profesional con soporte continuo incluido.
                 </p>
                 <div className="font-manrope text-white/60 text-base leading-relaxed max-w-[460px] mb-9 space-y-4">
                   <p>Otras agencias te entregan la web… y ahí se queda, congelada en el año que la hiciste. Abandonada.</p>
-                  <p>La tuya está en{' '}
+                  <p>Tu página web para tu negocio está en{' '}
                     <span className="text-[#34C759] font-bold">mejora constante</span>
-                    : la mantenemos, la actualizamos y la adaptamos.
+                    : la mantenemos, la actualizamos y la adaptamos. Sin necesidad de contratar un diseñador web aparte.
                   </p>
                   <p className="text-white/90 font-medium">Sin costes extra. Siempre.</p>
                 </div>
@@ -277,8 +282,8 @@ export default function PresupuestoPage() {
 
         {/* ── 8 · TABLA COMPARATIVA ────────────────────────────── */}
         <TablaComparativa
-          headingLine1="¿Por qué no otra agencia"
-          headingLine2="o hacerlo tú mismo?"
+          headingLine1="¿Por qué Yele como"
+          headingLine2="agencia de diseño web?"
           agencyLabel="Otras agencias"
           noBg
         />
