@@ -49,13 +49,6 @@ function ParallaxCard({ img, sector, title, desc, i }: (typeof cards)[0] & { i: 
         </motion.div>
         <div className="absolute inset-x-0 bottom-0 h-24
                         bg-gradient-to-t from-black/65 to-transparent pointer-events-none" />
-        <span className="absolute bottom-4 left-4 z-10
-                         inline-flex items-center font-manrope font-medium text-[11px]
-                         tracking-wide text-white/90
-                         bg-white/10 backdrop-blur-md border border-white/20
-                         px-3 py-1.5 rounded-full">
-          {sector}
-        </span>
       </div>
 
       {/* Text */}
