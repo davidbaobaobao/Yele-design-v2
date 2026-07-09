@@ -76,14 +76,15 @@ export default function ShowcaseFeatureCards() {
                          hover:-translate-y-1.5 transition-all duration-300"
             >
               {/* ── Image ── */}
-              <div className="relative aspect-[16/10] overflow-hidden bg-[#111]">
+              <div className="relative overflow-hidden bg-[#111]" style={{ paddingBottom: '62.5%' }}>
                 <Image
                   src={img}
                   alt={`Web para ${sector}`}
-                  fill
+                  width={800}
+                  height={500}
                   sizes="(max-width: 640px) 95vw, (max-width: 1024px) 48vw, 32vw"
                   quality={75}
-                  className="object-cover object-center
+                  className="absolute inset-0 w-full h-full object-cover object-center
                              group-hover:scale-[1.04] transition-transform duration-500 ease-out"
                 />
                 {/* Bottom gradient so badge is always readable */}

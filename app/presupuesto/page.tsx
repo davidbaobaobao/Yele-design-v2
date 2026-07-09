@@ -88,14 +88,12 @@ export default function PresupuestoPage() {
         <section className="relative pt-20 pb-8">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <h1
-              className="font-outfit font-bold leading-none tracking-tighter text-[#1D1D1F] mb-4"
+              className="font-outfit font-bold leading-[1.05] tracking-tighter mb-5"
               style={{ fontSize: 'clamp(36px, 4.5vw, 64px)' }}
             >
-              Diseño web profesional
+              <span className="block text-[#6B7280]">Diseño web profesional</span>
+              <span className="block text-[#1D1D1F]">29€/mes</span>
             </h1>
-            <p className="font-outfit font-bold text-[#34C759] tracking-tighter mb-5" style={{ fontSize: 'clamp(30px, 3.8vw, 54px)' }}>
-              29€/mes
-            </p>
             <div className="font-outfit font-semibold text-[#6B7280] tracking-tight leading-snug mb-7" style={{ fontSize: 'clamp(20px, 2.5vw, 36px)' }}>
               <span className="block">Tu agencia de diseño web</span>
               <span className="block">Sin complicaciones.</span>
