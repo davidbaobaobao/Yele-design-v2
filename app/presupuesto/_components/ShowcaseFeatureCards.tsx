@@ -32,7 +32,7 @@ function ParallaxCard({ img, sector, title, desc, i }: (typeof cards)[0] & { i: 
                  hover:-translate-y-2 transition-all duration-300"
     >
       {/* Parallax image */}
-      <div className="relative h-72 md:h-84 overflow-hidden bg-[#0a0a0a]">
+      <div className="relative h-80 md:h-96 overflow-hidden bg-[#0a0a0a]">
         <motion.div
           style={{ y }}
           className="absolute inset-x-0 top-[-10%] bottom-[-10%]"
@@ -59,12 +59,12 @@ function ParallaxCard({ img, sector, title, desc, i }: (typeof cards)[0] & { i: 
       </div>
 
       {/* Text */}
-      <div className="px-7 pt-6 pb-7">
-        <h3 className="font-outfit font-semibold text-[#1D1D1F] text-[17px]
-                       leading-tight tracking-tight mb-2">
+      <div className="px-5 pt-5 pb-5">
+        <h3 className="font-outfit font-semibold text-[#1D1D1F] text-[15px]
+                       leading-tight tracking-tight mb-1.5">
           {title}
         </h3>
-        <p className="font-manrope text-[14px] text-[#6B7280] leading-relaxed">
+        <p className="font-manrope text-[13px] text-[#6B7280] leading-relaxed">
           {desc}
         </p>
       </div>
@@ -77,7 +77,7 @@ export default function ShowcaseFeatureCards() {
     <section className="pt-6 pb-16 md:pt-8 md:pb-20">
       <h2 className="sr-only">Características</h2>
       <div className="max-w-6xl mx-auto px-6">
-        <div className="grid sm:grid-cols-2 gap-7">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
           {cards.map((card, i) => (
             <ParallaxCard key={card.title} {...card} i={i} />
           ))}
