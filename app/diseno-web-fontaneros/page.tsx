@@ -86,7 +86,7 @@ export default function FontanerosPage() {
             >
               Diseño web para fontaneros
             </h1>
-            <p className="font-manrope text-[#86868B] text-xl leading-relaxed max-w-2xl mb-10">
+            <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
               Tu web profesional lista en 1 semana. Aparece en Google cuando alguien de tu zona busca un fontanero — y consigue trabajos nuevos sin pagar comisión por cada cliente. Desde 29€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
@@ -101,13 +101,13 @@ export default function FontanerosPage() {
         {/* Pilar 1 — El cliente te busca con urgencia */}
         <section className="py-20 md:py-28 bg-[#F5F5F7]">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               Por qué importa
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
               El cliente te busca con urgencia
             </h2>
-            <p className="font-manrope text-[#86868B] text-lg leading-relaxed max-w-2xl">
+            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
               Cuando a alguien se le revienta una tubería o se queda sin agua caliente, no pregunta a un amigo: abre Google y escribe &ldquo;fontanero&rdquo; más su barrio. Llama al primero que le da confianza. Si no apareces con una web seria — horarios, zona, teléfono, reseñas a la vista — ese trabajo se lo lleva otro. No es perder un cliente: es trabajo nuevo que podrías coger y que ahora mismo no estás cogiendo.
             </p>
           </div>
@@ -116,13 +116,13 @@ export default function FontanerosPage() {
         {/* Pilar 2 — Sin comisión */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               La trampa de los portales
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
               Deja de pagar comisión<br />por cada cliente
             </h2>
-            <p className="font-manrope text-[#86868B] text-lg leading-relaxed max-w-2xl">
+            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
               Cronoshare, Habitissimo y los demás portales te cobran por cada contacto, y te ponen a competir en precio con otros cinco fontaneros en el mismo aviso. Con web propia, el cliente te encuentra a ti directamente y te llama a ti — sin intermediario y sin comisión. La web se paga sola con un par de trabajos al mes que antes se iban al portal.
             </p>
           </div>
@@ -131,13 +131,13 @@ export default function FontanerosPage() {
         {/* Infografía — 5 elementos clave */}
         <section className="py-20 md:py-28 bg-[#F5F5F7]">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               De un vistazo
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4 leading-tight">
               Lo que necesita<br className="hidden md:block" /> tu web para traer trabajo
             </h2>
-            <p className="font-manrope text-[#86868B] text-base mb-10 max-w-xl">
+            <p className="font-manrope text-[#6B7280] text-base mb-10 max-w-xl">
               Cinco elementos concretos que marcan la diferencia entre una web que rellena y una que hace sonar el teléfono.
             </p>
             <Image
@@ -157,7 +157,7 @@ export default function FontanerosPage() {
         {/* Por qué Yele y no una agencia */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               Por qué Yele
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
@@ -172,7 +172,7 @@ export default function FontanerosPage() {
               ] as const).map(item => (
                 <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
                   <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
-                  <p className="font-manrope text-[#86868B] text-sm leading-relaxed">{item.desc}</p>
+                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -191,7 +191,7 @@ export default function FontanerosPage() {
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
               Empieza a coger los trabajos<br />que ahora se te escapan.
             </h2>
-            <p className="font-manrope text-[#86868B] text-lg mb-10">
+            <p className="font-manrope text-[#6B7280] text-lg mb-10">
               Sin pago inicial. Lista en 1 semana.
             </p>
             <Link

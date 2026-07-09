@@ -37,7 +37,7 @@ export default function WhyYele() {
   return (
     <section className="py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-8 mb-12">
-        <p className="text-[#86868B] text-sm uppercase tracking-widest mb-3">
+        <p className="text-[#6B7280] text-sm uppercase tracking-widest mb-3">
           {t('Por qué Yele', 'Why Yele')}
         </p>
         <h2 className="text-5xl font-['Outfit'] font-semibold text-[#1D1D1F] leading-tight">
@@ -69,7 +69,7 @@ export default function WhyYele() {
               <h3 className="text-xl font-['Outfit'] font-semibold text-[#1D1D1F]">
                 {t(card.es.title, card.en.title)}
               </h3>
-              <p className="text-[#86868B] font-['Instrument_Sans'] text-base leading-relaxed">
+              <p className="text-[#6B7280] font-['Instrument_Sans'] text-base leading-relaxed">
                 {t(card.es.description, card.en.description)}
               </p>
             </div>

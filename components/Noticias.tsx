@@ -14,7 +14,7 @@ export default function Noticias() {
       <div className="max-w-[1100px] mx-auto">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <p className="font-manrope text-sm font-medium text-[#86868B] tracking-wide uppercase mb-2">Blog</p>
+            <p className="font-manrope text-sm font-medium text-[#6B7280] tracking-wide uppercase mb-2">Blog</p>
             <h2 className="font-outfit font-semibold text-3xl md:text-4xl text-[#1D1D1F] tracking-tight">
               Recursos para tu negocio
             </h2>
@@ -51,12 +51,12 @@ export default function Noticias() {
                   <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
                     {article.category}
                   </span>
-                  <span className="font-manrope text-xs text-[#86868B]">{article.readTime} min</span>
+                  <span className="font-manrope text-xs text-[#6B7280]">{article.readTime} min</span>
                 </div>
                 <h3 className="font-outfit font-semibold text-[#1D1D1F] text-lg leading-snug mb-2 group-hover:text-[#0066CC] transition-colors line-clamp-2">
                   {article.titleEs}
                 </h3>
-                <p className="font-manrope text-sm text-[#86868B] leading-relaxed line-clamp-2">
+                <p className="font-manrope text-sm text-[#6B7280] leading-relaxed line-clamp-2">
                   {article.excerptEs}
                 </p>
                 <p className="font-manrope text-xs text-[#ADADB8] mt-4">{formatDate(article.date)}</p>

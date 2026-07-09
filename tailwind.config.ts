@@ -32,7 +32,7 @@ const config: Config = {
         "bg-secondary": "#F5F5F7",
         glass: "rgba(255,255,255,0.72)",
         "text-primary": "#1D1D1F",
-        "text-secondary": "#86868B",
+        "text-secondary": "#6B7280",
         accent: "#000000",
         interactive: "#0066CC",
         success: "#34C759",

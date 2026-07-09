@@ -64,13 +64,13 @@ export default function RegistroPage() {
           <h2 className="font-outfit font-semibold text-3xl text-[#1D1D1F] mb-3">
             Revisa tu email
           </h2>
-          <p className="font-manrope text-[#86868B] text-base leading-relaxed mb-8">
+          <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-8">
             Te hemos enviado un enlace mágico a <strong className="text-[#1D1D1F]">{email}</strong>. Haz clic en él para continuar.
           </p>
           <button
             type="button"
             onClick={() => setSent(false)}
-            className="font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors cursor-pointer"
+            className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors cursor-pointer"
           >
             ← Usar otro email
           </button>
@@ -93,7 +93,7 @@ export default function RegistroPage() {
           <Link href="/" className="flex items-center gap-1.5 focus-visible:outline-none">
             <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
             <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-              yele<span className="text-[#86868B] font-normal">.design</span>
+              yele<span className="text-[#6B7280] font-normal">.design</span>
             </span>
           </Link>
         </motion.div>
@@ -107,7 +107,7 @@ export default function RegistroPage() {
           <h2 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-2">
             Crea tu cuenta
           </h2>
-          <p className="font-manrope text-[#86868B] text-base">
+          <p className="font-manrope text-[#6B7280] text-base">
             Empieza a construir tu web hoy.
           </p>
         </motion.div>
@@ -136,13 +136,13 @@ export default function RegistroPage() {
           {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-black/[0.07]" />
-            <span className="font-manrope text-xs text-[#86868B]">o</span>
+            <span className="font-manrope text-xs text-[#6B7280]">o</span>
             <div className="flex-1 h-px bg-black/[0.07]" />
           </div>
 
           {/* Email magic link */}
           <div>
-            <label htmlFor="email" className="font-manrope text-xs text-[#86868B] mb-1.5 block">
+            <label htmlFor="email" className="font-manrope text-xs text-[#6B7280] mb-1.5 block">
               Email
             </label>
             <input
@@ -152,7 +152,7 @@ export default function RegistroPage() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleEmailLink()}
-              className="w-full bg-white border border-black/[0.12] rounded-xl px-4 py-3.5 font-manrope text-sm text-[#1D1D1F] placeholder-[#86868B] focus:outline-none focus:border-[#1D1D1F] transition-colors"
+              className="w-full bg-white border border-black/[0.12] rounded-xl px-4 py-3.5 font-manrope text-sm text-[#1D1D1F] placeholder-[#6B7280] focus:outline-none focus:border-[#1D1D1F] transition-colors"
               autoComplete="email"
             />
           </div>
@@ -173,7 +173,7 @@ export default function RegistroPage() {
 
         {/* Footer */}
         <motion.p
-          className="mt-8 font-manrope text-xs text-[#86868B] text-center leading-relaxed"
+          className="mt-8 font-manrope text-xs text-[#6B7280] text-center leading-relaxed"
           {...fadeUp}
           transition={{ duration: 0.5, delay: 0.15 } as Transition}
         >
@@ -194,7 +194,7 @@ export default function RegistroPage() {
         >
           <Link
             href="/"
-            className="font-manrope text-xs text-[#86868B] hover:text-[#1D1D1F] transition-colors"
+            className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors"
           >
             ← Volver al inicio
           </Link>

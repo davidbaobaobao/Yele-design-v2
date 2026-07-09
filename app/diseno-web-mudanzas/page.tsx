@@ -130,7 +130,7 @@ export default function MudanzasPage() {
                 </span>
               </span>
             </h1>
-            <p className="font-manrope text-[#86868B] text-xl leading-relaxed max-w-2xl mb-10">
+            <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
               Quien se muda pide presupuesto a varias empresas el mismo día y elige rápido. Si no te encuentra fácil en Google ni puede pedirte presupuesto sin esfuerzo, ni entras en la lista. Web profesional lista en 1 semana. Desde 29€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
@@ -145,13 +145,13 @@ export default function MudanzasPage() {
         {/* Pilar 1 — Rapidez + confianza */}
         <section className="py-20 md:py-28 bg-[#F5F5F7]">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               Por qué importa
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
               La mudanza se decide<br className="hidden md:block" /> en un día
             </h2>
-            <p className="font-manrope text-[#86868B] text-lg leading-relaxed max-w-2xl">
+            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
               Cuando alguien tiene fecha de mudanza, busca &ldquo;mudanzas&rdquo; más su ciudad en Google y pide presupuesto a las primeras empresas que le dan confianza. Decide por dos cosas: precio claro y la tranquilidad de que no le van a romper sus cosas. Una web con tu zona de cobertura, lo que incluye el servicio y un botón fácil de pedir presupuesto te mete en esa lista corta. Sin web, ni te llaman.
             </p>
           </div>
@@ -160,13 +160,13 @@ export default function MudanzasPage() {
         {/* Presupuesto + Zona de cobertura — feature showcase */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               Funcionalidades clave
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4 leading-tight">
               Presupuesto fácil<br className="hidden md:block" /> + zona de cobertura
             </h2>
-            <p className="font-manrope text-[#86868B] text-base mb-12 max-w-xl">
+            <p className="font-manrope text-[#6B7280] text-base mb-12 max-w-xl">
               Dos elementos que convierten visitas en contactos: un formulario directo y un mapa claro de dónde trabajas.
             </p>
 
@@ -185,10 +185,10 @@ export default function MudanzasPage() {
                     { label: 'Metros cuadrados aprox.', placeholder: 'p. ej. 80 m²' },
                   ].map(field => (
                     <div key={field.label}>
-                      <label className="font-manrope text-[10px] font-semibold uppercase tracking-widest text-[#86868B] block mb-1">
+                      <label className="font-manrope text-[10px] font-semibold uppercase tracking-widest text-[#6B7280] block mb-1">
                         {field.label}
                       </label>
-                      <div className="w-full bg-white border border-black/[0.08] rounded-xl px-4 py-3 font-manrope text-sm text-[#86868B]">
+                      <div className="w-full bg-white border border-black/[0.08] rounded-xl px-4 py-3 font-manrope text-sm text-[#6B7280]">
                         {field.placeholder}
                       </div>
                     </div>
@@ -197,7 +197,7 @@ export default function MudanzasPage() {
                     Pedir presupuesto →
                   </div>
                 </div>
-                <p className="font-manrope text-[10px] text-[#86868B] mt-4 text-center">
+                <p className="font-manrope text-[10px] text-[#6B7280] mt-4 text-center">
                   Te llega directo por email — sin intermediarios.
                 </p>
               </div>
@@ -207,7 +207,7 @@ export default function MudanzasPage() {
                 <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">
                   Zona de cobertura
                 </p>
-                <p className="font-manrope text-sm text-[#86868B] mb-6">
+                <p className="font-manrope text-sm text-[#6B7280] mb-6">
                   El cliente ve al momento si le cubres — sin llamar para preguntar.
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -223,11 +223,11 @@ export default function MudanzasPage() {
                       {city}
                     </span>
                   ))}
-                  <span className="font-manrope text-xs text-[#86868B] px-3 py-1.5">
+                  <span className="font-manrope text-xs text-[#6B7280] px-3 py-1.5">
                     + tus zonas propias
                   </span>
                 </div>
-                <p className="font-manrope text-[10px] text-[#86868B] mt-6">
+                <p className="font-manrope text-[10px] text-[#6B7280] mt-6">
                   Estas ciudades se personalizan con las zonas reales donde operas.
                 </p>
               </div>
@@ -239,13 +239,13 @@ export default function MudanzasPage() {
         {/* Pilar 2 — Sin comparadores */}
         <section className="py-20 md:py-28 bg-[#F5F5F7]">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               La trampa de los comparadores
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
               Deja de depender<br className="hidden md:block" /> de los comparadores
             </h2>
-            <p className="font-manrope text-[#86868B] text-lg leading-relaxed max-w-2xl">
+            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
               Los portales comparadores te ponen en una guerra de precios y te cobran por cada contacto. Con web propia, el cliente te pide presupuesto a ti directamente, sin intermediario y sin comisión, y tú controlas la relación desde el primer mensaje.
             </p>
           </div>
@@ -254,7 +254,7 @@ export default function MudanzasPage() {
         {/* Confianza */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               Genera confianza antes de la llamada
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
@@ -265,7 +265,7 @@ export default function MudanzasPage() {
                 <div key={signal.title} className="bg-[#F5F5F7] rounded-2xl p-6">
                   <div className="text-[#1D1D1F] mb-3">{signal.icon}</div>
                   <p className="font-outfit font-semibold text-[#1D1D1F] text-base mb-2">{signal.title}</p>
-                  <p className="font-manrope text-[#86868B] text-sm leading-relaxed">{signal.desc}</p>
+                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{signal.desc}</p>
                 </div>
               ))}
             </div>
@@ -278,7 +278,7 @@ export default function MudanzasPage() {
         {/* Por qué Yele */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
               Por qué Yele
             </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
@@ -293,7 +293,7 @@ export default function MudanzasPage() {
               ] as const).map(item => (
                 <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
                   <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
-                  <p className="font-manrope text-[#86868B] text-sm leading-relaxed">{item.desc}</p>
+                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -312,7 +312,7 @@ export default function MudanzasPage() {
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
               Entra en la lista corta<br />de cada mudanza de tu zona.
             </h2>
-            <p className="font-manrope text-[#86868B] text-lg mb-10">
+            <p className="font-manrope text-[#6B7280] text-lg mb-10">
               Sin pago inicial. Lista en 1 semana.
             </p>
             <Link

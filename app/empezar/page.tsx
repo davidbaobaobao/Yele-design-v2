@@ -92,8 +92,8 @@ const ESTILOS = [
 /* ─────────────────────────────────────────────
    Shared styles
 ───────────────────────────────────────────── */
-const inputClass = 'w-full bg-white border border-black/[0.12] rounded-xl px-4 py-3 font-manrope text-sm text-[#1D1D1F] placeholder-[#86868B] focus:outline-none focus:border-[#1D1D1F] transition-colors'
-const labelClass = 'font-manrope text-xs text-[#86868B] mb-1.5 block'
+const inputClass = 'w-full bg-white border border-black/[0.12] rounded-xl px-4 py-3 font-manrope text-sm text-[#1D1D1F] placeholder-[#6B7280] focus:outline-none focus:border-[#1D1D1F] transition-colors'
+const labelClass = 'font-manrope text-xs text-[#6B7280] mb-1.5 block'
 const errorClass = 'font-manrope text-xs text-red-500 mt-1'
 
 /* ─────────────────────────────────────────────
@@ -257,7 +257,7 @@ export default function EmpezarPage() {
         <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
           <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
           <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-            yele<span className="text-[#86868B] font-normal">.design</span>
+            yele<span className="text-[#6B7280] font-normal">.design</span>
           </span>
         </Link>
 
@@ -268,7 +268,7 @@ export default function EmpezarPage() {
               type="button"
               onClick={prevStep}
               disabled={step === 1}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.05] transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#6B7280] hover:text-[#1D1D1F] hover:bg-black/[0.05] transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               aria-label="Paso anterior"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -276,13 +276,13 @@ export default function EmpezarPage() {
               </svg>
             </button>
 
-            <span className="font-manrope text-xs text-[#86868B]">Paso {step} de 5</span>
+            <span className="font-manrope text-xs text-[#6B7280]">Paso {step} de 5</span>
 
             <button
               type="button"
               onClick={nextStep}
               disabled={step === 5}
-              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-black/[0.05] transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-[#6B7280] hover:text-[#1D1D1F] hover:bg-black/[0.05] transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               aria-label="Siguiente paso"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -309,11 +309,11 @@ export default function EmpezarPage() {
         {/* Bottom navigation */}
         <div className="flex items-center justify-between mt-8">
           {step > 1 ? (
-            <button type="button" onClick={prevStep} className="font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors cursor-pointer">
+            <button type="button" onClick={prevStep} className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors cursor-pointer">
               ← Atrás
             </button>
           ) : (
-            <Link href="/" className="font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors">
+            <Link href="/" className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors">
               ← Volver
             </Link>
           )}
@@ -399,7 +399,7 @@ function Step1({ formData, set, errors }: StepProps) {
     <div className="space-y-6">
       <div>
         <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Información básica</h2>
-        <p className="font-manrope text-sm text-[#86868B]">Cuéntanos sobre tu negocio.</p>
+        <p className="font-manrope text-sm text-[#6B7280]">Cuéntanos sobre tu negocio.</p>
       </div>
 
       <Field label="Nombre del negocio" required error={errors.nombre_negocio}>
@@ -452,7 +452,7 @@ function Step2({ formData, set, errors }: StepProps) {
     <div className="space-y-5">
       <div>
         <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Contacto</h2>
-        <p className="font-manrope text-sm text-[#86868B]">¿Cómo podemos hablar contigo?</p>
+        <p className="font-manrope text-sm text-[#6B7280]">¿Cómo podemos hablar contigo?</p>
       </div>
 
       <Field label="Nombre de contacto" required error={errors.nombre_contacto}>
@@ -503,7 +503,7 @@ function Step3({ formData, set, errors }: StepProps) {
     <div className="space-y-5">
       <div>
         <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">El negocio</h2>
-        <p className="font-manrope text-sm text-[#86868B]">Cuéntanos qué haces y cómo lo haces.</p>
+        <p className="font-manrope text-sm text-[#6B7280]">Cuéntanos qué haces y cómo lo haces.</p>
       </div>
 
       <Field label="Describe tu negocio en pocas palabras" required error={errors.descripcion}>
@@ -539,7 +539,7 @@ function Step4({ formData, set, errors }: StepProps) {
     <div className="space-y-6">
       <div>
         <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">La web</h2>
-        <p className="font-manrope text-sm text-[#86868B]">Configuremos tu proyecto.</p>
+        <p className="font-manrope text-sm text-[#6B7280]">Configuremos tu proyecto.</p>
       </div>
 
       <RadioGroup label="¿Tiene logo?" options={['Sí', 'No', 'En proceso']}
@@ -574,7 +574,7 @@ function Step4({ formData, set, errors }: StepProps) {
                 </div>
                 <div>
                   <p className="font-manrope font-semibold text-xs">{e.label}</p>
-                  <p className={`font-manrope text-[10px] leading-tight mt-0.5 ${selected ? 'text-white/60' : 'text-[#86868B]'}`}>
+                  <p className={`font-manrope text-[10px] leading-tight mt-0.5 ${selected ? 'text-white/60' : 'text-[#6B7280]'}`}>
                     {e.desc}
                   </p>
                 </div>
@@ -595,7 +595,7 @@ function Step5({ formData, set, errors }: StepProps) {
     <div className="space-y-5">
       <div>
         <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">Últimos detalles</h2>
-        <p className="font-manrope text-sm text-[#86868B]">Ya casi hemos terminado.</p>
+        <p className="font-manrope text-sm text-[#6B7280]">Ya casi hemos terminado.</p>
       </div>
 
       <Field label="¿Cómo nos has conocido?" error={errors.como_nos_conocio}>
@@ -624,7 +624,7 @@ function Step5({ formData, set, errors }: StepProps) {
           <span className="font-manrope text-sm text-[#1D1D1F]">
             He leído y acepto la{' '}
             <Link href="/politica-privacidad" target="_blank"
-              className="underline hover:text-[#86868B] transition-colors">
+              className="underline hover:text-[#6B7280] transition-colors">
               política de privacidad
             </Link>
             <span className="text-red-500 ml-0.5">*</span>

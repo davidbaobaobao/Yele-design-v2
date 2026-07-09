@@ -25,7 +25,7 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
           viewport={{ once: true, margin: '-80px' }}
           className="mb-12"
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
             FAQ
           </span>
           <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
@@ -47,7 +47,7 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
                 onClick={() => setOpen(open === i ? null : i)}
                 aria-expanded={open === i}
               >
-                <span className="font-outfit font-medium text-base text-[#1D1D1F] group-hover:text-[#86868B] transition-colors pr-6">
+                <span className="font-outfit font-medium text-base text-[#1D1D1F] group-hover:text-[#6B7280] transition-colors pr-6">
                   {faq.question}
                 </span>
                 <motion.div
@@ -55,7 +55,7 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
                   transition={{ duration: 0.25 } as Transition}
                   className="flex-shrink-0"
                 >
-                  <Plus size={18} className="text-[#86868B]" />
+                  <Plus size={18} className="text-[#6B7280]" />
                 </motion.div>
               </button>
 
@@ -69,7 +69,7 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
                     transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
                     className="overflow-hidden"
                   >
-                    <p className="font-manrope text-sm text-[#86868B] leading-relaxed pb-5">
+                    <p className="font-manrope text-sm text-[#6B7280] leading-relaxed pb-5">
                       {faq.answer}
                     </p>
                   </motion.div>

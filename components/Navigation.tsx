@@ -55,7 +55,7 @@ export default function Navigation() {
           <Link href="/" className="flex items-center gap-1.5 flex-shrink-0 focus-visible:outline-none">
             <span className="w-2 h-2 rounded-full bg-[#34C759] flex-shrink-0" aria-hidden="true" />
             <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-              yele<span className="text-[#86868B] font-normal">.design</span>
+              yele<span className="text-[#6B7280] font-normal">.design</span>
             </span>
           </Link>
 
@@ -65,7 +65,7 @@ export default function Navigation() {
               <button
                 key={link.href}
                 onClick={() => scroll(link.href)}
-                className="font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline"
+                className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline"
               >
                 {link.label}
               </button>
@@ -79,7 +79,7 @@ export default function Navigation() {
           <div className="hidden md:flex items-center gap-3">
             <button
               onClick={toggleLang}
-              className="font-manrope text-xs font-medium text-[#86868B] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none bg-[#F2F2F5] px-2.5 py-1 rounded-lg"
+              className="font-manrope text-xs font-medium text-[#6B7280] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none bg-[#F2F2F5] px-2.5 py-1 rounded-lg"
               aria-label={`Cambiar a ${lang === 'es' ? 'inglés' : 'español'}`}
             >
               {lang === 'es' ? 'EN' : 'ES'}
@@ -88,7 +88,7 @@ export default function Navigation() {
             {/* Ingresar → always goes to dashboard login */}
             <a
               href="https://app.yele.design/login"
-              className="font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none"
+              className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none"
             >
               {t('Ingresar', 'Log in')}
             </a>
@@ -136,12 +136,12 @@ export default function Navigation() {
               </button>
             ))}
             <div className="flex items-center gap-3 pt-3">
-              <button onClick={toggleLang} className="font-manrope text-xs text-[#86868B] cursor-pointer">
+              <button onClick={toggleLang} className="font-manrope text-xs text-[#6B7280] cursor-pointer">
                 {lang === 'es' ? 'EN' : 'ES'}
               </button>
               <a
                 href="https://app.yele.design/login"
-                className="font-manrope text-sm text-[#86868B] cursor-pointer"
+                className="font-manrope text-sm text-[#6B7280] cursor-pointer"
               >
                 {t('Ingresar', 'Log in')}
               </a>

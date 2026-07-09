@@ -115,7 +115,7 @@ function BeneficioCard({
       <h3 className="relative font-outfit font-semibold text-lg text-[#1D1D1F] mb-2">
         {title}
       </h3>
-      <p className="relative font-manrope text-sm text-[#86868B] leading-relaxed">
+      <p className="relative font-manrope text-sm text-[#6B7280] leading-relaxed">
         {desc}
       </p>
     </motion.div>
@@ -161,7 +161,7 @@ export default function Beneficios({
                 </>
               )}
             </h2>
-            <p className="font-manrope text-[#86868B] text-lg max-w-xl">
+            <p className="font-manrope text-[#6B7280] text-lg max-w-xl">
               {subtitle ?? t(
                 'Sin agencias, sin complicaciones, sin permanencia.',
                 'No agencies, no hassle, no lock-in.'
@@ -170,6 +170,9 @@ export default function Beneficios({
           </motion.div>
         )}
 
+        {noHeader && (
+          <h2 className="sr-only">{t('Características', 'Features')}</h2>
+        )}
         <motion.div
           className="grid sm:grid-cols-2 md:grid-cols-3 gap-5"
           variants={container}

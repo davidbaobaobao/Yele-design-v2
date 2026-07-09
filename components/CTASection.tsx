@@ -63,10 +63,10 @@ export default function CTASection() {
             <div className="px-8 py-16 md:px-14 md:py-28 flex flex-col items-start text-left">
               <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
                 {t('Estás a un paso', "You're one step away")}<br />
-                <span className="text-[#86868B]">{t('de la web que mereces.', 'from the website you deserve.')}</span>
+                <span className="text-[#6B7280]">{t('de la web que mereces.', 'from the website you deserve.')}</span>
               </h2>
 
-              <p className="font-manrope text-[#86868B] text-lg mb-10 max-w-sm">
+              <p className="font-manrope text-[#6B7280] text-lg mb-10 max-w-sm">
                 {t(
                   'Cuéntanos tu negocio y ten tu web lista en menos de una semana.',
                   'Tell us about your business and have your website ready in less than a week.'

@@ -30,7 +30,7 @@ export default function CookieBanner() {
             <button
               onClick={() => setExpanded(false)}
               aria-label="Colapsar"
-              className="text-[#86868B] hover:text-[#1D1D1F] transition-colors"
+              className="text-[#6B7280] hover:text-[#1D1D1F] transition-colors"
             >
               <ChevronDown size={15} />
             </button>
@@ -41,7 +41,7 @@ export default function CookieBanner() {
             <div className="flex items-center justify-between px-3 py-2.5 border-b border-black/[0.06] bg-black/[0.01]">
               <div>
                 <p className="font-manrope text-xs font-medium text-[#1D1D1F]">Esenciales</p>
-                <p className="font-manrope text-[11px] text-[#86868B]">Necesarias para el funcionamiento del sitio.</p>
+                <p className="font-manrope text-[11px] text-[#6B7280]">Necesarias para el funcionamiento del sitio.</p>
               </div>
               <span className="font-manrope text-[11px] text-[#34C759] font-medium shrink-0 ml-4">Siempre activas</span>
             </div>
@@ -50,7 +50,7 @@ export default function CookieBanner() {
             <div className="flex items-center justify-between px-3 py-2.5 border-b border-black/[0.06]">
               <div>
                 <p className="font-manrope text-xs font-medium text-[#1D1D1F]">Análisis</p>
-                <p className="font-manrope text-[11px] text-[#86868B]">Nos ayudan a mejorar el sitio web.</p>
+                <p className="font-manrope text-[11px] text-[#6B7280]">Nos ayudan a mejorar el sitio web.</p>
               </div>
               <button
                 role="switch"
@@ -66,7 +66,7 @@ export default function CookieBanner() {
             <div className="flex items-center justify-between px-3 py-2.5">
               <div>
                 <p className="font-manrope text-xs font-medium text-[#1D1D1F]">Marketing</p>
-                <p className="font-manrope text-[11px] text-[#86868B]">Publicidad personalizada.</p>
+                <p className="font-manrope text-[11px] text-[#6B7280]">Publicidad personalizada.</p>
               </div>
               <button
                 role="switch"
@@ -80,13 +80,13 @@ export default function CookieBanner() {
           </div>
 
           <div className="flex items-center justify-between">
-            <a href="/politica-privacidad" className="font-manrope text-[11px] text-[#86868B] hover:text-[#1D1D1F] transition-colors underline underline-offset-2">
+            <a href="/politica-privacidad" className="font-manrope text-[11px] text-[#6B7280] hover:text-[#1D1D1F] transition-colors underline underline-offset-2">
               Política de privacidad
             </a>
             <div className="flex gap-2">
               <button
                 onClick={() => save(prefs)}
-                className="font-manrope text-xs text-[#86868B] hover:text-[#1D1D1F] transition-colors px-3 py-1.5 rounded-lg border border-black/10 hover:border-black/20"
+                className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors px-3 py-1.5 rounded-lg border border-black/10 hover:border-black/20"
               >
                 Guardar selección
               </button>
@@ -101,7 +101,7 @@ export default function CookieBanner() {
         </div>
       ) : (
         <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center gap-3">
-          <p className="font-manrope text-xs text-[#86868B] flex-1 min-w-0 truncate">
+          <p className="font-manrope text-xs text-[#6B7280] flex-1 min-w-0 truncate">
             Usamos cookies para mejorar tu experiencia.{' '}
             <a href="/politica-privacidad" className="underline underline-offset-2 hover:text-[#1D1D1F] transition-colors">
               Más info
@@ -110,13 +110,13 @@ export default function CookieBanner() {
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => setExpanded(true)}
-              className="font-manrope text-xs text-[#86868B] hover:text-[#1D1D1F] transition-colors flex items-center gap-0.5 px-2 py-1.5"
+              className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors flex items-center gap-0.5 px-2 py-1.5"
             >
               Personalizar <ChevronUp size={11} />
             </button>
             <button
               onClick={() => save({ analytics: false, marketing: false })}
-              className="font-manrope text-xs text-[#86868B] hover:text-[#1D1D1F] transition-colors px-2 py-1.5"
+              className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors px-2 py-1.5"
             >
               Solo esenciales
             </button>

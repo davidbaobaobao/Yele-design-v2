@@ -1,24 +1,26 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 import Beneficios from '@/components/Beneficios'
 import ComoFunciona from '@/components/ComoFunciona'
 import Showcase from '@/components/Showcase'
-import TablaComparativa from '@/components/TablaComparativa'
 import Testimonios from '@/components/Testimonios'
 import Precios from '@/components/Precios'
-import ContactForm from '@/components/ContactForm'
-import FAQClient from '@/components/FAQClient'
 import type { FAQItem } from '@/components/FAQClient'
 import { WAButton, RegistroButton, WA_LINK } from './_components/CTAButtons'
 import ClarityScript from '@/components/ClarityScript'
 import SandHelixBackground from '@/components/SandHelixBackground'
 
+const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
+const ContactForm      = dynamic(() => import('@/components/ContactForm'))
+const FAQClient        = dynamic(() => import('@/components/FAQClient'))
+
 export const metadata: Metadata = {
   title: 'Presupuesto web profesional — desde 29€/mes | Yele',
   description:
     'Calidad de agencia, precio de suscripción. Tu web lista en 1 semana, desde 29€/mes. Sin pago inicial, sin permanencia.',
-  robots: { index: false, follow: true },
+  robots: { index: true, follow: true },
   alternates: { canonical: 'https://yele.design/presupuesto' },
 }
 
@@ -66,6 +68,7 @@ export default function PresupuestoPage() {
             <RegistroButton
               href="/registro?plan=starter"
               className="inline-flex items-center gap-1.5 font-manrope font-medium text-sm bg-[#1D1D1F] text-white px-4 py-2 rounded-xl hover:bg-black transition-colors"
+              aria-label="Empezar con el plan Starter"
             >
               Empezar →
             </RegistroButton>
@@ -88,9 +91,9 @@ export default function PresupuestoPage() {
               className="font-outfit font-bold leading-[1.05] tracking-tighter mb-7"
               style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
             >
-              <span className="block text-[#86868B]">Tu página web</span>
+              <span className="block text-[#6B7280]">Tu página web</span>
               <span className="block text-[#1D1D1F]">29€ al mes.</span>
-              <span className="block text-[#86868B]">Sin complicaciones.</span>
+              <span className="block text-[#6B7280]">Sin complicaciones.</span>
             </h1>
 
             {/* CTAs */}
@@ -98,6 +101,7 @@ export default function PresupuestoPage() {
               <RegistroButton
                 href="/registro?plan=starter"
                 className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-xl hover:bg-black transition-colors"
+                aria-label="Empezar con el plan Starter"
               >
                 Empezar →
               </RegistroButton>
@@ -112,7 +116,7 @@ export default function PresupuestoPage() {
             {/* Green checkmark bullets */}
             <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-8">
               {['Sin pago inicial', 'Sin permanencia', 'Precio fijo', 'Sin letra pequeña', 'Lista en una semana'].map(item => (
-                <span key={item} className="flex items-center gap-1.5 font-manrope text-sm text-[#86868B]">
+                <span key={item} className="flex items-center gap-1.5 font-manrope text-sm text-[#6B7280]">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                     <circle cx="7" cy="7" r="6.5" stroke="#34C759" strokeWidth="1"/>
                     <path d="M4.5 7l2 2 3-3" stroke="#34C759" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -198,6 +202,7 @@ export default function PresupuestoPage() {
                   <RegistroButton
                     href="/registro?plan=starter"
                     className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-7 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
+                    aria-label="Empezar con el plan Starter"
                   >
                     Empezar →
                   </RegistroButton>
@@ -292,7 +297,7 @@ export default function PresupuestoPage() {
       {/* ── 11 · FOOTER MÍNIMO ───────────────────────────────── */}
       <footer className="border-t border-black/[0.06] py-8">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-manrope text-[#86868B]">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-manrope text-[#6B7280]">
             <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-start">
               <span>Yele · Diseño web para negocios españoles</span>
               <a href="mailto:info@yele.design" className="hover:text-[#1D1D1F] transition-colors">

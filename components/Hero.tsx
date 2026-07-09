@@ -28,7 +28,7 @@ export default function Hero() {
           {...slideUp(0)}
         >
           <span className="block">{t('Tu web lista en 1 semana.', 'Your website ready in 1 week.')}</span>
-          <span className="block text-[#86868B]">{t('Por 29€ al mes.', 'For €29/month.')}</span>
+          <span className="block text-[#6B7280]">{t('Por 29€ al mes.', 'For €29/month.')}</span>
           <span className="block">{t('Sin complicaciones.', 'No hassle.')}</span>
         </motion.h1>
 
@@ -53,7 +53,7 @@ export default function Hero() {
 
           <button
             onClick={() => document.querySelector('#trabajos')?.scrollIntoView({ behavior: 'smooth' })}
-            className="font-manrope text-base text-[#86868B] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline"
+            className="font-manrope text-base text-[#6B7280] hover:text-[#1D1D1F] transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline"
           >
             {t('Ver ejemplos', 'See examples')}
           </button>

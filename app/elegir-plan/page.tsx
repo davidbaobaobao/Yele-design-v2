@@ -144,7 +144,7 @@ function ElegirPlanContent() {
           <Link href="/" className="inline-flex items-center gap-1.5 focus-visible:outline-none">
             <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
             <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-              yele<span className="text-[#86868B] font-normal">.design</span>
+              yele<span className="text-[#6B7280] font-normal">.design</span>
             </span>
           </Link>
         </div>
@@ -154,7 +154,7 @@ function ElegirPlanContent() {
           <h1 className="font-outfit font-semibold text-4xl sm:text-5xl text-[#1D1D1F] tracking-tight mb-3">
             Sin letra pequeña.
           </h1>
-          <p className="font-manrope text-[#86868B] text-lg">
+          <p className="font-manrope text-[#6B7280] text-lg">
             Elige tu plan. Cambia cuando quieras.
           </p>
         </div>
@@ -166,7 +166,7 @@ function ElegirPlanContent() {
               type="button"
               onClick={() => setAnnual(false)}
               className={`font-manrope text-sm px-5 py-2 rounded-lg transition-all cursor-pointer ${
-                !annual ? 'bg-[#1D1D1F] text-white' : 'text-[#86868B] hover:text-[#1D1D1F]'
+                !annual ? 'bg-[#1D1D1F] text-white' : 'text-[#6B7280] hover:text-[#1D1D1F]'
               }`}
             >
               Mensual
@@ -175,7 +175,7 @@ function ElegirPlanContent() {
               type="button"
               onClick={() => setAnnual(true)}
               className={`font-manrope text-sm px-5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                annual ? 'bg-[#1D1D1F] text-white' : 'text-[#86868B] hover:text-[#1D1D1F]'
+                annual ? 'bg-[#1D1D1F] text-white' : 'text-[#6B7280] hover:text-[#1D1D1F]'
               }`}
             >
               Anual
@@ -217,7 +217,7 @@ function ElegirPlanContent() {
 
         {/* Promo code */}
         <div className="max-w-sm mx-auto mb-6">
-          <p className="font-manrope text-xs text-[#86868B] mb-2 text-center">
+          <p className="font-manrope text-xs text-[#6B7280] mb-2 text-center">
             ¿Tienes un código promocional?
           </p>
           {promoApplied ? (
@@ -236,7 +236,7 @@ function ElegirPlanContent() {
                   value={promoCode}
                   onChange={e => { setPromoCode(e.target.value.toUpperCase()); setPromoError('') }}
                   onKeyDown={e => e.key === 'Enter' && applyPromo()}
-                  className="flex-1 bg-white border border-black/[0.12] rounded-xl px-4 py-2.5 font-manrope text-sm text-[#1D1D1F] placeholder-[#86868B] focus:outline-none focus:border-[#1D1D1F] transition-colors uppercase tracking-widest"
+                  className="flex-1 bg-white border border-black/[0.12] rounded-xl px-4 py-2.5 font-manrope text-sm text-[#1D1D1F] placeholder-[#6B7280] focus:outline-none focus:border-[#1D1D1F] transition-colors uppercase tracking-widest"
                 />
                 <button
                   type="button"
@@ -254,7 +254,7 @@ function ElegirPlanContent() {
         </div>
 
         {/* Fine print */}
-        <p className="font-manrope text-xs text-[#86868B] text-center">
+        <p className="font-manrope text-xs text-[#6B7280] text-center">
           Sin permanencia. Cancela cuando quieras.
         </p>
 
@@ -334,15 +334,15 @@ function PlanCard({ plan, annual, loading, onSelect, mobile }: {
     <div className="bg-white border border-black/[0.08] rounded-2xl p-6 flex flex-col">
       <div className="mb-4">
         <h3 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-1">{plan.name}</h3>
-        <p className="font-manrope text-sm text-[#86868B] leading-relaxed">{plan.desc}</p>
+        <p className="font-manrope text-sm text-[#6B7280] leading-relaxed">{plan.desc}</p>
       </div>
       <div className="mb-5">
         <div className="flex items-baseline gap-1">
           <span className="font-outfit font-semibold text-4xl text-[#1D1D1F]">€{priceDisplay}</span>
-          <span className="font-manrope text-sm text-[#86868B]">/mes</span>
+          <span className="font-manrope text-sm text-[#6B7280]">/mes</span>
         </div>
         {annual && (
-          <p className="font-manrope text-xs text-[#86868B] mt-0.5">
+          <p className="font-manrope text-xs text-[#6B7280] mt-0.5">
             Facturado €{plan.annualTotal.toFixed(2).replace('.', ',')}/año
           </p>
         )}

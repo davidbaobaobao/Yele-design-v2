@@ -58,7 +58,7 @@ function StepCard({ step, index, t, onActive }: {
         }`}
       >
         <span className={`font-outfit text-5xl font-semibold block mb-4 leading-none transition-colors duration-500 ${
-          isActive ? 'text-white/20' : 'text-[#86868B]/40'
+          isActive ? 'text-white/20' : 'text-[#6B7280]/40'
         }`}>
           {step.num}
         </span>
@@ -68,7 +68,7 @@ function StepCard({ step, index, t, onActive }: {
           {t(step.es.title, step.en.title)}
         </h3>
         <p className={`font-manrope text-base leading-relaxed transition-colors duration-500 ${
-          isActive ? 'text-white/60' : 'text-[#86868B]'
+          isActive ? 'text-white/60' : 'text-[#6B7280]'
         }`}>
           {t(step.es.desc, step.en.desc)}
         </p>
@@ -97,7 +97,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
               transition={{ duration: 0.6, ease: 'easeOut' }}
               viewport={{ once: true, margin: '-80px' }}
             >
-              <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+              <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
                 {t('Cómo funciona', 'How it works')}
               </span>
               <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
@@ -105,7 +105,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
                 {t('Tú nos cuentas,', 'You tell us,')}<br />
                 {t('nosotros nos encargamos de todo.', 'we take care of everything.')}
               </h2>
-              <p className="font-manrope text-[#86868B] text-lg leading-relaxed">
+              <p className="font-manrope text-[#6B7280] text-lg leading-relaxed">
                 {t(
                   'Sin reuniones interminables. Sin presupuestos sorpresa.',
                   'No endless meetings. No surprise costs.'

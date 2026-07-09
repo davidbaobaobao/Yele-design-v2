@@ -249,9 +249,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Google Ads tag */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18281072925"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-ads" strategy="afterInteractive">
+        <Script id="google-ads" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

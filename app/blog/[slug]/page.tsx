@@ -131,7 +131,7 @@ function renderMarkdown(md: string) {
         i++
       }
       elements.push(
-        <ul key={key++} className="list-disc list-inside space-y-2 text-[#86868B] font-manrope leading-relaxed my-4 ml-2">
+        <ul key={key++} className="list-disc list-inside space-y-2 text-[#6B7280] font-manrope leading-relaxed my-4 ml-2">
           {items.map((item, idx) => (
             <li key={idx} dangerouslySetInnerHTML={{ __html: renderInline(item) }} />
           ))}
@@ -150,7 +150,7 @@ function renderMarkdown(md: string) {
       elements.push(
         <p
           key={key++}
-          className="font-manrope text-[#86868B] leading-relaxed text-[17px] my-4"
+          className="font-manrope text-[#6B7280] leading-relaxed text-[17px] my-4"
           dangerouslySetInnerHTML={{ __html: renderInline(text) }}
         />
       )
@@ -238,7 +238,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           {/* Back link */}
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1.5 font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors mb-8"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M11.5 7h-9M6 3.5L2.5 7 6 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -251,7 +251,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
               {article.category}
             </span>
-            <span className="font-manrope text-xs text-[#86868B]">{article.readTime} min de lectura</span>
+            <span className="font-manrope text-xs text-[#6B7280]">{article.readTime} min de lectura</span>
             <span className="font-manrope text-xs text-[#ADADB8]">{formatDate(article.date)}</span>
           </div>
 
@@ -259,7 +259,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             {article.titleEs}
           </h1>
 
-          <p className="font-manrope text-xl text-[#86868B] leading-relaxed mb-10 pb-10 border-b border-black/[0.08]">
+          <p className="font-manrope text-xl text-[#6B7280] leading-relaxed mb-10 pb-10 border-b border-black/[0.08]">
             {article.excerptEs}
           </p>
 
@@ -276,7 +276,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <div className="max-w-[720px] mx-auto px-6 pb-8">
               <div className="border border-[#0066CC]/20 bg-[#E8F2FF] rounded-2xl p-7">
                 <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{cta.heading}</p>
-                <p className="font-manrope text-sm text-[#86868B] leading-relaxed mb-5">{cta.body}</p>
+                <p className="font-manrope text-sm text-[#6B7280] leading-relaxed mb-5">{cta.body}</p>
                 <Link
                   href={cta.href}
                   className="inline-flex items-center font-manrope text-sm font-medium text-[#0066CC] hover:text-[#004D99] transition-colors"
@@ -291,11 +291,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {/* CTA box */}
         <div className="max-w-[720px] mx-auto px-6 pb-16">
           <div className="bg-[#1D1D1F] rounded-2xl p-8 md:p-10">
-            <p className="font-manrope text-xs font-medium text-[#86868B] uppercase tracking-wide mb-3">Yele</p>
+            <p className="font-manrope text-xs font-medium text-[#6B7280] uppercase tracking-wide mb-3">Yele</p>
             <h2 className="font-outfit font-semibold text-2xl text-white mb-3 leading-snug">
               Tu web lista en 1 semana.<br />Desde 29 €/mes, sin permanencia.
             </h2>
-            <p className="font-manrope text-[#86868B] text-sm leading-relaxed mb-6">
+            <p className="font-manrope text-[#6B7280] text-sm leading-relaxed mb-6">
               Diseño profesional, hosting, SSL y mantenimiento incluidos. Sin pago inicial.
             </p>
             <Link

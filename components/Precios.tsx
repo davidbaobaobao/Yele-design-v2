@@ -173,7 +173,7 @@ function PricingCard({ plan, index, isAnnual, t, withShadow }: {
       )}
 
       <div className="relative mb-6">
-        <p className={`font-manrope text-sm font-medium mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#86868B]'}`}>
+        <p className={`font-manrope text-sm font-medium mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>
           {t(plan.es.name, plan.en.name)}
         </p>
         <div className="flex items-end gap-1 mb-1">
@@ -186,9 +186,9 @@ function PricingCard({ plan, index, isAnnual, t, withShadow }: {
           >
             {price}
           </motion.span>
-          <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#86868B]'}`}>{isAnnual ? '/año' : '/mes'}</span>
+          <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>{isAnnual ? '/año' : '/mes'}</span>
         </div>
-        <p className={`font-manrope text-sm leading-relaxed ${plan.highlighted ? 'text-white/60' : 'text-[#86868B]'}`}>
+        <p className={`font-manrope text-sm leading-relaxed ${plan.highlighted ? 'text-white/60' : 'text-[#6B7280]'}`}>
           {t(plan.es.desc, plan.en.desc)}
         </p>
       </div>
@@ -208,6 +208,7 @@ function PricingCard({ plan, index, isAnnual, t, withShadow }: {
 
       <motion.a
         href={`/registro?plan=${plan.key}`}
+        aria-label={t(`Empezar con el plan ${plan.es.name}`, `Get started with ${plan.en.name} plan`)}
         className={`relative overflow-hidden block text-center font-manrope font-medium text-sm py-3.5 rounded-xl cursor-pointer ${
           plan.highlighted
             ? 'bg-white text-[#1D1D1F]'
@@ -248,13 +249,13 @@ export default function Precios({ singlePlan, noBg }: { singlePlan?: string; noB
           viewport={{ once: true, margin: '-80px' }}
           className="text-center mb-8"
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#86868B] mb-4 block">
+          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
             {t('Precios', 'Pricing')}
           </span>
           <h2 className="font-outfit font-semibold text-5xl md:text-6xl text-[#1D1D1F] tracking-tight mb-4">
             {t('Sin letra pequeña.', 'No fine print.')}
           </h2>
-          <p className="font-manrope text-[#86868B] text-lg mb-8">
+          <p className="font-manrope text-[#6B7280] text-lg mb-8">
             {t('Elige tu plan. Cambia cuando quieras.', 'Choose your plan. Change whenever you want.')}
           </p>
 
@@ -263,7 +264,7 @@ export default function Precios({ singlePlan, noBg }: { singlePlan?: string; noB
             <button
               onClick={() => setBilling('monthly')}
               className={`relative font-manrope text-sm px-5 py-2 rounded-lg transition-colors duration-200 cursor-pointer ${
-                billing === 'monthly' ? 'text-[#1D1D1F]' : 'text-[#86868B]'
+                billing === 'monthly' ? 'text-[#1D1D1F]' : 'text-[#6B7280]'
               }`}
             >
               {billing === 'monthly' && (
@@ -278,7 +279,7 @@ export default function Precios({ singlePlan, noBg }: { singlePlan?: string; noB
             <button
               onClick={() => setBilling('annual')}
               className={`relative flex items-center gap-1.5 font-manrope text-sm px-5 py-2 rounded-lg transition-colors duration-200 cursor-pointer ${
-                billing === 'annual' ? 'text-[#1D1D1F]' : 'text-[#86868B]'
+                billing === 'annual' ? 'text-[#1D1D1F]' : 'text-[#6B7280]'
               }`}
             >
               {billing === 'annual' && (
@@ -302,10 +303,10 @@ export default function Precios({ singlePlan, noBg }: { singlePlan?: string; noB
           ))}
         </div>
 
-        <p className="text-center font-manrope text-sm text-[#86868B] mt-6">
+        <p className="text-center font-manrope text-sm text-[#6B7280] mt-6">
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
-        <p className="text-center font-manrope text-sm text-[#86868B] mt-3">
+        <p className="text-center font-manrope text-sm text-[#6B7280] mt-3">
           {t(
             '¿Necesitas SEO avanzado, Sistema de Reservas, Tienda Online, Telefonía IA?',
             'Need advanced SEO, Booking system, Online store, AI telephony?'

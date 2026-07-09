@@ -64,7 +64,8 @@ function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue
               src={card.image}
               alt={`Web de ${card.project.name} — Yele`}
               fill
-              sizes="42vw"
+              sizes="(max-width: 640px) 95vw, 40vw"
+              quality={75}
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -129,6 +130,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
                       alt={`Web de ${card.project.name} — Yele`}
                       fill
                       sizes="95vw"
+                      quality={75}
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

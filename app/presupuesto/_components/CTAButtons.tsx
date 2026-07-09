@@ -24,7 +24,7 @@ export function WAButton({ className, children }: { className?: string; children
   )
 }
 
-export function RegistroButton({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
+export function RegistroButton({ href, className, children, ...rest }: { href: string; className?: string; children: React.ReactNode } & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
   function handleClick() {
     track('registro_click')
     // Persist plan intent across the auth redirect so elegir-plan can auto-trigger checkout
@@ -38,6 +38,7 @@ export function RegistroButton({ href, className, children }: { href: string; cl
       href={href}
       className={className}
       onClick={handleClick}
+      {...rest}
     >
       {children}
     </a>

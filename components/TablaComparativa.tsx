@@ -68,7 +68,7 @@ function YeleCell({ value }: { value: CellValue }) {
       </span>
     )
   }
-  if (value === false) return <X size={16} className="text-[#86868B] mx-auto" aria-label="No" />
+  if (value === false) return <X size={16} className="text-[#6B7280] mx-auto" aria-label="No" />
   return (
     <span className="font-manrope text-sm font-bold text-[#1D1D1F]">
       {t(value.es, value.en)}
@@ -79,9 +79,9 @@ function YeleCell({ value }: { value: CellValue }) {
 function OtherCell({ value }: { value: CellValue }) {
   const { t } = useLang()
   if (value === true) return <Check size={18} className="text-[#34C759] mx-auto" aria-label="Sí" />
-  if (value === false) return <X size={18} className="text-[#86868B] mx-auto" aria-label="No" />
+  if (value === false) return <X size={18} className="text-[#6B7280] mx-auto" aria-label="No" />
   return (
-    <span className="font-manrope text-sm text-[#86868B]">
+    <span className="font-manrope text-sm text-[#6B7280]">
       {t(value.es, value.en)}
     </span>
   )
@@ -127,7 +127,7 @@ export default function TablaComparativa({
           <table className="w-full min-w-[600px]">
             <thead>
               <tr>
-                <th className="bg-white text-left font-manrope text-sm text-[#86868B] px-6 py-4 font-normal rounded-tl-2xl w-[40%]" />
+                <th className="bg-white text-left font-manrope text-sm text-[#6B7280] px-6 py-4 font-normal rounded-tl-2xl w-[40%]" />
                 <th className="bg-[#1D1D1F] text-center px-4 py-4">
                   <span className="inline-flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
@@ -137,10 +137,10 @@ export default function TablaComparativa({
                     <span className="font-outfit font-semibold text-sm text-white">Yele</span>
                   </span>
                 </th>
-                <th className="bg-white text-center font-manrope text-sm text-[#86868B] px-4 py-4 font-normal">
+                <th className="bg-white text-center font-manrope text-sm text-[#6B7280] px-4 py-4 font-normal">
                   {agencyLabel ?? t('Agencia', 'Agency')}
                 </th>
-                <th className="bg-white text-center font-manrope text-sm text-[#86868B] px-4 py-4 font-normal rounded-tr-2xl">
+                <th className="bg-white text-center font-manrope text-sm text-[#6B7280] px-4 py-4 font-normal rounded-tr-2xl">
                   {t('Tú mismo (DIY)', 'You (DIY)')}
                 </th>
               </tr>

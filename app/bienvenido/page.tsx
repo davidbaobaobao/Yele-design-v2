@@ -35,7 +35,7 @@ function BienvenidoContent() {
         <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
           <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
           <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-            yele<span className="text-[#86868B] font-normal">.design</span>
+            yele<span className="text-[#6B7280] font-normal">.design</span>
           </span>
         </Link>
 
@@ -49,11 +49,11 @@ function BienvenidoContent() {
         <h1 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-3">
           ¡Bienvenido a Yele!
         </h1>
-        <p className="font-manrope text-[#86868B] text-base leading-relaxed mb-2">
+        <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-2">
           Tu suscripción está activa
           {planName ? <> — <strong className="text-[#1D1D1F]">Plan {planName}</strong></> : ''}.
         </p>
-        <p className="font-manrope text-[#86868B] text-base leading-relaxed mb-8">
+        <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-8">
           Ya estamos trabajando en tu web. Te contactaremos en menos de 24 horas.
         </p>
 
@@ -70,7 +70,7 @@ function BienvenidoContent() {
             </svg>
           </a>
 
-          <p className="font-manrope text-xs text-[#86868B]">
+          <p className="font-manrope text-xs text-[#6B7280]">
             ¿Preguntas?{' '}
             <a href="mailto:info@yele.design" className="underline hover:text-[#1D1D1F] transition-colors">
               info@yele.design

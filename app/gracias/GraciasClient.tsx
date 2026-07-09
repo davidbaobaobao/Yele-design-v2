@@ -29,7 +29,7 @@ export default function GraciasClient() {
         <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
           <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
           <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-            yele<span className="text-[#86868B] font-normal">.design</span>
+            yele<span className="text-[#6B7280] font-normal">.design</span>
           </span>
         </Link>
 
@@ -43,10 +43,10 @@ export default function GraciasClient() {
         <h1 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-3">
           ¡Solicitud enviada!
         </h1>
-        <p className="font-manrope text-[#86868B] text-base leading-relaxed mb-3">
+        <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-3">
           Hemos recibido toda tu información. En breve nos ponemos en contacto contigo.
         </p>
-        <p className="font-manrope text-[#86868B] text-sm leading-relaxed mb-8">
+        <p className="font-manrope text-[#6B7280] text-sm leading-relaxed mb-8">
           Mientras tanto, puedes acceder a tu panel para ver el estado de tu web.
         </p>
 
@@ -65,7 +65,7 @@ export default function GraciasClient() {
 
           <Link
             href="/"
-            className="font-manrope text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors py-2"
+            className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors py-2"
           >
             Volver al inicio
           </Link>

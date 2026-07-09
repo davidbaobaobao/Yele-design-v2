@@ -63,7 +63,8 @@ function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue
               src={card.image}
               alt={`Web de ${card.project.name} — Yele`}
               fill
-              sizes="30vw"
+              sizes="(max-width: 640px) 95vw, 29vw"
+              quality={75}
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -127,6 +128,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
                       alt={`Web de ${card.project.name} — Yele`}
                       fill
                       sizes="95vw"
+                      quality={75}
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -171,7 +173,7 @@ export default function ShowcaseClient({ projects, noHeader, noBg }: { projects:
       <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
         {t('Webs que hemos construido.', "Websites we've built.")}
       </h2>
-      <p className="font-manrope text-[#86868B] text-lg">
+      <p className="font-manrope text-[#6B7280] text-lg">
         {t('Para negocios reales', 'For real businesses.')}
       </p>
     </motion.div>
@@ -180,7 +182,7 @@ export default function ShowcaseClient({ projects, noHeader, noBg }: { projects:
   const seeAllLink = (
     <Link
       href="/ejemplos"
-      className="inline-flex items-center gap-2 font-manrope font-medium text-sm text-[#86868B] hover:text-[#1D1D1F] transition-colors"
+      className="inline-flex items-center gap-2 font-manrope font-medium text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors"
     >
       {t('Ver todos los trabajos', 'See all work')} →
     </Link>

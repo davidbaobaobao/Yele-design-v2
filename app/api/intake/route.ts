@@ -95,11 +95,11 @@ function buildEmailHtml(data: Record<string, unknown>): string {
   <div style="background:#1D1D1F;padding:24px 32px;">
     <span style="font-size:20px;font-weight:700;color:#FFFFFF;font-family:Georgia,serif;">yele</span>
     <span style="color:#34C759;font-size:20px;font-weight:700;">.design</span>
-    <span style="color:#86868B;font-size:12px;margin-left:12px;">Nueva solicitud</span>
+    <span style="color:#6B7280;font-size:12px;margin-left:12px;">Nueva solicitud</span>
   </div>
   <div style="padding:28px 32px 8px;">
     <h1 style="margin:0;font-size:26px;color:#1D1D1F;font-family:Georgia,serif;font-weight:400;letter-spacing:-0.02em;">${data.nombre_negocio}</h1>
-    <p style="margin:6px 0 0;font-size:14px;color:#86868B;">${data.sector} · ${data.ciudad}</p>
+    <p style="margin:6px 0 0;font-size:14px;color:#6B7280;">${data.sector} · ${data.ciudad}</p>
   </div>
   <div style="padding:16px 32px 32px;">
     ${section('Información del negocio',
@@ -142,7 +142,7 @@ function buildEmailHtml(data: Record<string, unknown>): string {
       </a>
     </div>
   </div>
-  <div style="background:#F5F2EE;padding:16px 32px;font-size:11px;color:#86868B;text-align:center;border-top:1px solid #E8E4DF;">
+  <div style="background:#F5F2EE;padding:16px 32px;font-size:11px;color:#6B7280;text-align:center;border-top:1px solid #E8E4DF;">
     Yele Studio · yele.design · Solicitud recibida el ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
   </div>
 </div>
@@ -178,21 +178,21 @@ function buildConfirmationHtml(data: Record<string, unknown>): string {
       Hola${contacto ? ', ' + contacto : ''}. Gracias por confiar en Yele Studio para crear la web de <strong>${nombre}</strong>. Ya estamos trabajando en ello.
     </p>
     <div style="background:#F5F5F7;border-radius:8px;padding:20px;margin:0 0 24px;">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#86868B;margin-bottom:10px;">Próximos pasos</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:10px;">Próximos pasos</div>
       <div style="font-size:14px;color:#1D1D1F;line-height:1.7;">
         <div style="margin-bottom:8px;">① Revisamos tu solicitud en las próximas horas</div>
         <div style="margin-bottom:8px;">② Nos ponemos en contacto ${contactLine}</div>
         <div>③ Tu web estará lista en 1 semana</div>
       </div>
     </div>
-    <p style="font-size:13px;color:#86868B;line-height:1.6;margin:0 0 28px;">
+    <p style="font-size:13px;color:#6B7280;line-height:1.6;margin:0 0 28px;">
       ¿Tienes alguna pregunta? Responde a este email o escríbenos a <a href="mailto:info@yele.design" style="color:#1D1D1F;">info@yele.design</a>
     </p>
     <a href="https://app.yele.design" style="display:inline-block;background:#1D1D1F;color:#FFFFFF;font-weight:700;font-size:13px;padding:14px 28px;text-decoration:none;border-radius:8px;">
       Acceder a mi panel →
     </a>
   </div>
-  <div style="background:#F5F5F7;padding:14px 32px;font-size:11px;color:#86868B;border-top:1px solid #E5E5E5;">
+  <div style="background:#F5F5F7;padding:14px 32px;font-size:11px;color:#6B7280;border-top:1px solid #E5E5E5;">
     Yele Studio · yele.design
   </div>
 </div>
