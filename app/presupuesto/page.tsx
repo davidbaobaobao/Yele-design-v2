@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
-import Beneficios from '@/components/Beneficios'
+import ShowcaseFeatureCards from './_components/ShowcaseFeatureCards'
 import ComoFunciona from '@/components/ComoFunciona'
 import Showcase from '@/components/Showcase'
 import Testimonios from '@/components/Testimonios'
@@ -144,10 +144,7 @@ export default function PresupuestoPage() {
           </div>
         </section>
 
-        <Beneficios
-          noHeader
-          sectionClassName="pt-6 pb-16 md:pt-8 md:pb-20"
-        />
+        <ShowcaseFeatureCards />
 
 
 
