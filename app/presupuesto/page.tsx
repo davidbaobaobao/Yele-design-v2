@@ -10,7 +10,7 @@ import Precios from '@/components/Precios'
 import type { FAQItem } from '@/components/FAQClient'
 import { WAButton, RegistroButton, WA_LINK } from './_components/CTAButtons'
 import ClarityScript from '@/components/ClarityScript'
-import ScrollHintArrow from './_components/ScrollHintArrow'
+import HeroBento from './_components/HeroBento'
 
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
 const ContactForm      = dynamic(() => import('@/components/ContactForm'))
@@ -83,55 +83,8 @@ export default function PresupuestoPage() {
 
       <main id="main-content">
 
-        {/* ── 1 + 2 · HERO + BENEFICIOS (merged) ───────────────── */}
-        <section className="relative pt-20 pb-8">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h1
-              className="font-outfit font-bold leading-[1.05] tracking-tighter mb-5"
-              style={{ fontSize: 'clamp(36px, 4.5vw, 64px)' }}
-            >
-              <span className="block text-[#1D1D1F]">Diseño web profesional</span>
-              <span className="block text-[#1D1D1F]">29€/mes</span>
-            </h1>
-            <div className="font-outfit font-semibold text-[#6B7280] tracking-tight leading-snug mb-7" style={{ fontSize: 'clamp(20px, 2.5vw, 36px)' }}>
-              <span className="block">Tu agencia de diseño web</span>
-              <span className="block">Sin complicaciones.</span>
-            </div>
-
-            {/* CTAs */}
-            <div className="flex items-center justify-center gap-3 flex-wrap mb-7">
-              <RegistroButton
-                href="/registro?plan=starter"
-                className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-xl hover:bg-black transition-colors"
-                aria-label="Empezar con el plan Starter"
-              >
-                Empezar →
-              </RegistroButton>
-              <a
-                href="#contacto"
-                className="inline-flex items-center gap-2 font-manrope font-medium text-base text-[#1D1D1F] border border-black/[0.12] bg-white px-7 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
-              >
-                Pregúntanos
-              </a>
-            </div>
-
-            {/* Green checkmark bullets */}
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-8">
-              {['Sin pago inicial', 'Sin permanencia', 'Precio fijo', 'Sin letra pequeña', 'Lista en una semana'].map(item => (
-                <span key={item} className="flex items-center gap-1.5 font-manrope text-sm text-[#6B7280]">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <circle cx="7" cy="7" r="6.5" stroke="#34C759" strokeWidth="1"/>
-                    <path d="M4.5 7l2 2 3-3" stroke="#34C759" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  {item}
-                </span>
-              ))}
-            </div>
-
-            {/* Scroll hint arrow */}
-            <ScrollHintArrow />
-          </div>
-        </section>
+        {/* ── 1 · HERO BENTO ───────────────────────────────────── */}
+        <HeroBento />
 
         <div id="showcase-cards">
           <ShowcaseFeatureCards />

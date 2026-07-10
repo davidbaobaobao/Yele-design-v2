@@ -98,7 +98,7 @@ function ParallaxCard({ img, title, desc, i }: (typeof cards)[0] & { i: number }
 
 export default function ShowcaseFeatureCards() {
   return (
-    <section className="pt-6 pb-16 md:pt-8 md:pb-20">
+    <section className="pt-2 pb-16 md:pt-4 md:pb-20">
       <h2 className="sr-only">Características</h2>
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
