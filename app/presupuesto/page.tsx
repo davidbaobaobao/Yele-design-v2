@@ -139,9 +139,13 @@ export default function PresupuestoPage() {
           <ShowcaseFeatureCards />
         </div>
 
+        {/* ── 3 · CÓMO FUNCIONA ────────────────────────────────── */}
+        <ComoFunciona noBg />
 
+        {/* ── 4 · PRECIO ───────────────────────────────────────── */}
+        <Precios singlePlan="starter" noBg />
 
-        {/* ── 3 · PORTFOLIO ────────────────────────────────────── */}
+        {/* ── 5 · PORTFOLIO ────────────────────────────────────── */}
         <div className="max-w-6xl mx-auto px-6 pt-10 pb-1">
           <h2
             className="font-outfit font-semibold text-[#1D1D1F] tracking-tight"
@@ -152,10 +156,7 @@ export default function PresupuestoPage() {
         </div>
         <Showcase noHeader noBg />
 
-        {/* ── 4 · CÓMO FUNCIONA ────────────────────────────────── */}
-        <ComoFunciona noBg />
-
-        {/* ── 5 · DIFERENCIADOR ────────────────────────────────── */}
+        {/* ── 6 · DIFERENCIADOR ────────────────────────────────── */}
         <section className="relative overflow-hidden py-20 md:py-28 bg-[#16161a]">
           <style>{`
             @media (prefers-reduced-motion: no-preference) {
@@ -272,9 +273,6 @@ export default function PresupuestoPage() {
           </div>
         </section>
 
-        {/* ── 6 · PRECIO ───────────────────────────────────────── */}
-        <Precios singlePlan="starter" noBg />
-
         {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
         <Testimonios noBg />
 
@@ -291,9 +289,6 @@ export default function PresupuestoPage() {
 
         {/* ── 10 · FAQ ─────────────────────────────────────────── */}
         <FAQClient faqs={LP_FAQS} noBg />
-
-        {/* ── 11 · PORTFOLIO ───────────────────────────────────── */}
-        <Showcase noHeader noBg />
 
       </main>
 
