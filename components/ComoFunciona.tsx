@@ -34,10 +34,8 @@ const steps = [
 
 type Step = typeof steps[0]
 
-// COLLAPSE_MS: how long to wait for the previous card to collapse before expanding the next.
-// Matches the image height animation duration (550ms) but we don't need to wait the full duration —
-// 320ms is enough for the collapse to be visually clear before the next card starts opening.
-const COLLAPSE_MS = 320
+const COLLAPSE_MS = 320  // ms to wait for collapse before expanding next
+const EXPAND_MS   = 600  // ms to wait for expand before checking if we need to continue
 
 function StepCard({ step, index, t, isExpanded, onActive }: {
   step: Step
@@ -68,7 +66,6 @@ function StepCard({ step, index, t, isExpanded, onActive }: {
             : 'bg-white border border-black/[0.07] shadow-sm'
         }`}
       >
-        {/* Image: expands/contracts with the card */}
         <motion.div
           animate={{ height: isExpanded ? 210 : 0 }}
           transition={{ duration: 0.55, ease: [0.32, 0, 0.24, 1] }}
@@ -86,7 +83,6 @@ function StepCard({ step, index, t, isExpanded, onActive }: {
           </div>
         </motion.div>
 
-        {/* Content */}
         <div className={`transition-all duration-500 ${isExpanded ? 'p-7' : 'p-5'}`}>
           <span className={`font-outfit text-5xl font-semibold block mb-3 leading-none transition-colors duration-500 ${
             isExpanded ? 'text-white/20' : 'text-[#6B7280]/30'
@@ -99,7 +95,6 @@ function StepCard({ step, index, t, isExpanded, onActive }: {
             {t(step.es.title, step.en.title)}
           </h3>
 
-          {/* Description only visible when expanded */}
           <AnimatePresence initial={false}>
             {isExpanded && (
               <motion.p
@@ -123,47 +118,69 @@ function StepCard({ step, index, t, isExpanded, onActive }: {
 export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
   const { t } = useLang()
 
-  // displayStep: which card is visually expanded (-1 = none, during collapse gap)
-  const [displayStep, setDisplayStep] = useState(0)
-  // activeStep: tracks the current in-view step for the progress pills
-  const [activeStep, setActiveStep] = useState(0)
+  const [displayStep, setDisplayStep] = useState(0)  // -1 = no card (mid-collapse gap)
+  const [activeStep,  setActiveStep]  = useState(0)  // drives progress pills
 
-  const prevInViewRef  = useRef(-1)
-  const isFirstRef     = useRef(true)
-  const isAnimatingRef = useRef(false)   // locked while collapse+expand is running
-  const collapseTimer  = useRef<ReturnType<typeof setTimeout>>()
-  const unlockTimer    = useRef<ReturnType<typeof setTimeout>>()
+  const displayRef = useRef(0)     // mirrors displayStep, readable in closures
+  const targetRef  = useRef(0)     // where scroll wants us to be
+  const busyRef    = useRef(false) // true while sequencing animations
+  const firstRef   = useRef(true)
+  const t1 = useRef<ReturnType<typeof setTimeout>>()
+  const t2 = useRef<ReturnType<typeof setTimeout>>()
+
+  // Advance one step toward targetRef, then schedule the next advance.
+  // Using a ref so the recursive setTimeout callback always calls the latest version.
+  const advanceRef = useRef<() => void>(() => {})
+  advanceRef.current = () => {
+    const cur = displayRef.current
+    const tgt = targetRef.current
+    if (cur === tgt) {
+      busyRef.current = false
+      return
+    }
+    const next = cur < tgt ? cur + 1 : cur - 1
+
+    // Collapse current card
+    setDisplayStep(-1)
+    displayRef.current = -1
+    clearTimeout(t1.current)
+    clearTimeout(t2.current)
+
+    t1.current = setTimeout(() => {
+      // Expand next card, update pills
+      setDisplayStep(next)
+      setActiveStep(next)
+      displayRef.current = next
+
+      // After expand finishes, check if we still need to continue
+      t2.current = setTimeout(() => advanceRef.current(), EXPAND_MS)
+    }, COLLAPSE_MS)
+  }
 
   const handleStepActive = useCallback((index: number) => {
-    if (index === prevInViewRef.current) return
-    if (isAnimatingRef.current) return   // ignore scroll events during animation
-    prevInViewRef.current = index
-    setActiveStep(index)
+    if (index === targetRef.current) return
+    targetRef.current = index
 
-    // First activation: expand immediately, no collapse gap
-    if (isFirstRef.current) {
-      isFirstRef.current = false
+    // Very first activation: expand instantly, no animation
+    if (firstRef.current) {
+      firstRef.current = false
       setDisplayStep(index)
+      setActiveStep(index)
+      displayRef.current = index
       return
     }
 
-    // Lock, collapse current, then expand new, then unlock
-    isAnimatingRef.current = true
-    setDisplayStep(-1)
-    clearTimeout(collapseTimer.current)
-    clearTimeout(unlockTimer.current)
-    collapseTimer.current = setTimeout(() => {
-      setDisplayStep(index)
-      // Unlock after expand animation finishes (image: 550ms + small buffer)
-      unlockTimer.current = setTimeout(() => {
-        isAnimatingRef.current = false
-      }, 600)
-    }, COLLAPSE_MS)
+    // If already sequencing, just updating targetRef is enough —
+    // the running advanceRef loop will re-evaluate direction on its next tick.
+    if (busyRef.current) return
+
+    busyRef.current = true
+    advanceRef.current()
   }, [])
 
   useEffect(() => () => {
-    clearTimeout(collapseTimer.current)
-    clearTimeout(unlockTimer.current)
+    clearTimeout(t1.current)
+    clearTimeout(t2.current)
   }, [])
 
   return (
@@ -192,7 +209,6 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
                 )}
               </p>
 
-              {/* Animated progress pills */}
               <div className="flex gap-2 mt-8">
                 {steps.map((s, i) => (
                   <motion.div
