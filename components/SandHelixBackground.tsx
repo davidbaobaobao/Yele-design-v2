@@ -89,6 +89,7 @@ export default function SandHelixBackground() {
     }
 
     function resize() {
+      if (!canvas) return
       dpr = Math.min(devicePixelRatio || 1, 2)
       W = innerWidth; H = innerHeight
       canvas.width = W * dpr; canvas.height = H * dpr
