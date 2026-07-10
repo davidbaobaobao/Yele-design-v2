@@ -18,20 +18,8 @@ export default function SandHelixBackground() {
       return
     }
 
-    // — soft gray radial dot sprite —
-    const SR = 13
-    const spr = document.createElement('canvas')
-    spr.width = spr.height = SR * 2
-    const sc = spr.getContext('2d')!
-    const g = sc.createRadialGradient(SR, SR, 0, SR, SR, SR)
-    g.addColorStop(0,    'rgba(105,105,100,1)')
-    g.addColorStop(0.5,  'rgba(105,105,100,0.75)')
-    g.addColorStop(1,    'rgba(105,105,100,0)')
-    sc.fillStyle = g
-    sc.beginPath(); sc.arc(SR, SR, SR, 0, TWO_PI); sc.fill()
-
     let W = 0, H = 0, dpr = 1
-    let fX = 0, fY = 0   // focal = center of down arrow
+    let fX = 0, fY = 0
 
     function findFocal() {
       const el = document.getElementById('scroll-hint-arrow')
@@ -46,42 +34,58 @@ export default function SandHelixBackground() {
     }
 
     // — particle pool —
-    const N = mobile ? 60 : 120
+    const N       = mobile ? 55 : 110
+    const N_GREEN = Math.floor(N * 0.09)   // ~9% brand green
+    const GREEN   = '#34C759'
+    const GRAY    = 'rgb(105,105,100)'
+
     type P = {
-      // swarm
-      ang: number; rad: number; angV: number; no: number; esc: boolean
+      angle:    number   // base direction from focal
+      noiseOff: number   // static angular noise baked at birth
+      noiseF:   number   // dynamic noise oscillation frequency
+      maxR:     number   // max radius at pulse peak
       // spiral
-      sa: number; sr: number; st: number; sv: number
-      // render
-      sz: number
+      sAng: number; sRad: number; sT: number; sSpd: number
+      green: boolean
+      sz:   number       // solid circle radius px
     }
 
-    const pts: P[] = Array.from({ length: N }, (_, i) => {
-      const esc = i < N * 0.20           // 20% escape particles
-      const ang = (i / N) * TWO_PI + Math.random() * 0.5
-      const rad = esc
-        ? 130 + Math.random() * 300
-        : 8   + Math.pow(Math.random(), 0.65) * 165
+    const pts: P[] = Array.from({ length: N }, (_, i) => ({
+      angle:    Math.random() * TWO_PI,
+      noiseOff: (Math.random() - 0.5) * 1.6,
+      noiseF:   0.3 + Math.random() * 0.9,
+      // wide range → irregular cloud shape at peak
+      maxR:     10 + Math.pow(Math.random(), 0.42) * 230,
 
-      return {
-        ang, rad,
-        angV: (0.07 + Math.random() * 0.18) * (Math.random() > .5 ? 1 : -1) * 0.001,
-        no:   Math.random() * TWO_PI,
-        esc,
-        sa:   (i / N) * TWO_PI * 3.5 + Math.random(),
-        sr:   esc ? 70 + Math.random() * 130 : 18 + Math.random() * 85,
-        st:   Math.random(),
-        sv:   (0.5 + Math.random() * 0.9) * 0.00013,
-        sz:   0.65 + Math.random() * 1.05,
-      }
-    })
+      sAng: (i / N) * TWO_PI * 3.5 + Math.random() * 0.6,
+      sRad: 18 + Math.random() * 90,
+      sT:   Math.random(),
+      sSpd: (0.5 + Math.random() * 1.0) * 0.00011,
 
-    // — state —
-    let triggered = false, trigTime = 0, spiralPh = 0
+      green: i < N_GREEN,
+      sz:    1.1 + Math.random() * 2.1,
+    }))
+
+    // — pulse waveform 0..1 → 0..1 —
+    // shape: sharp rise 13% | hold 27% | fall 18% | dark pause 42%
+    function pulse(t: number): number {
+      if (t < 0.13) return t / 0.13
+      if (t < 0.40) return 1
+      if (t < 0.58) return 1 - (t - 0.40) / 0.18
+      return 0
+    }
+    const PERIOD = 2400   // ms
+
+    // — scroll state —
+    let triggered = false, trigTime = 0
     let flow = 0, last = performance.now(), raf = 0
+    const t0 = performance.now()
 
-    const s3  = (t: number) => t * t * (3 - 2 * t)
-    const mix = (a: number, b: number, t: number) => a + (b - a) * t
+    // +40% colour strength over previous baseline
+    const BASE = (mobile ? 0.10 : 0.14) * 1.4
+
+    const s3   = (t: number) => t * t * (3 - 2 * t)
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
     function trigger() {
       if (triggered) return
@@ -92,8 +96,8 @@ export default function SandHelixBackground() {
       if (!canvas) return
       dpr = Math.min(devicePixelRatio || 1, 2)
       W = innerWidth; H = innerHeight
-      canvas.width = W * dpr; canvas.height = H * dpr
-      canvas.style.width = W + 'px'; canvas.style.height = H + 'px'
+      canvas.width  = W * dpr; canvas.height = H * dpr
+      canvas.style.width  = W + 'px'; canvas.style.height = H + 'px'
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       findFocal()
     }
@@ -102,55 +106,70 @@ export default function SandHelixBackground() {
       const dt = Math.min(50, now - last); last = now
       flow += dt * 0.000085
 
-      if (triggered) spiralPh = Math.min(1, (now - trigTime) / 1700)
-      const ph = s3(spiralPh)
+      // Current pulse intensity (0 when invisible between beats)
+      const pv = pulse(((now - t0) % PERIOD) / PERIOD)
+
+      // Scroll phases: 0.55s swarm-out, then 1.7s spiral (overlapping start)
+      const el      = triggered ? now - trigTime : 0
+      const swarmPh = s3(Math.min(1,                    el / 550))
+      const spirPh  = s3(Math.max(0, Math.min(1, (el - 380) / 1700)))
 
       ctx.clearRect(0, 0, W, H)
 
       for (let i = 0; i < N; i++) {
         const p = pts[i]
 
-        // —— SWARM ——
-        p.ang += p.angV * dt
-        p.no  += dt * 0.00021
-        const nx = Math.sin(p.no * 2.1 + 0.6) * 13
-        const ny = Math.cos(p.no * 1.7 + 2.3) * 8
-        // elliptical: wide X, narrow Y keeps particles in the hero band
-        const sx = fX + Math.cos(p.ang) * p.rad + nx
-        const sy = fY + Math.sin(p.ang) * p.rad * 0.42 + ny
+        // —— PULSE position ——
+        // living noise on angle → unique shape each beat
+        const dn = Math.sin(now * 0.00065 * p.noiseF + p.angle * 1.7) * 0.24
+        const a  = p.angle + p.noiseOff * 0.52 + dn
+        const bx = fX + Math.cos(a) * p.maxR * pv
+        const by = fY + Math.sin(a) * p.maxR * pv
 
-        // —— SPIRAL ——
-        p.st = (p.st + p.sv * dt) % 1
-        const sa = p.sa + flow * TWO_PI * 2.2
-        const rx = W * 0.5 + Math.cos(sa) * p.sr
-        const ry = p.st * (H + 60) - 30   // continuous downward flow
+        // —— SWARM position (fully extended from focal) ——
+        const ex = fX + Math.cos(a) * p.maxR
+        const ey = fY + Math.sin(a) * p.maxR
 
-        // —— BLEND ——
-        const x = mix(sx, rx, ph)
-        const y = mix(sy, ry, ph)
+        // —— SPIRAL position ——
+        p.sT = (p.sT + p.sSpd * dt) % 1
+        const sa = p.sAng + flow * TWO_PI * 2.3
+        const sx = W * 0.5 + Math.cos(sa) * p.sRad
+        const sy = p.sT * (H + 60) - 30
+
+        // —— BLEND: pulse → swarm → spiral ——
+        const mx = lerp(bx, ex, swarmPh)
+        const my = lerp(by, ey, swarmPh)
+        const x  = lerp(mx, sx, spirPh)
+        const y  = lerp(my, sy, spirPh)
 
         // —— ALPHA ——
-        const dist = Math.hypot(x - fX, y - fY)
-        const glow = Math.max(0, 1 - dist / (Math.max(W, H) * 0.42))
-        const base = mobile ? 0.095 : 0.12
-        const alpha = base * (ph < 0.5 ? 0.55 + glow * 0.45 : 0.8 + glow * 0.2)
+        // before scroll: tied to pulse (invisible between beats)
+        // after swarm:   fully on
+        const alpha = triggered
+          ? lerp(pv * BASE, BASE, swarmPh)
+          : pv * BASE
 
+        if (alpha < 0.006) continue   // skip invisible dots cheaply
+
+        // —— DRAW: solid circle, zero blur ——
         ctx.globalAlpha = alpha
-        const rs = p.sz * SR
-        ctx.drawImage(spr, x - rs, y - rs, rs * 2, rs * 2)
+        ctx.fillStyle   = p.green ? GREEN : GRAY
+        ctx.beginPath()
+        ctx.arc(x, y, p.sz, 0, TWO_PI)
+        ctx.fill()
       }
 
       ctx.globalAlpha = 1
       raf = requestAnimationFrame(frame)
     }
 
-    window.addEventListener('wheel',      trigger,                    { passive: true })
-    window.addEventListener('scroll',     trigger,                    { passive: true })
-    window.addEventListener('touchmove',  trigger,                    { passive: true })
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
+    window.addEventListener('wheel',     trigger,                    { passive: true })
+    window.addEventListener('scroll',    trigger,                    { passive: true })
+    window.addEventListener('touchmove', trigger,                    { passive: true })
+    window.addEventListener('keydown',   (e: KeyboardEvent) => {
       if ([' ', 'ArrowDown', 'PageDown'].includes(e.key)) trigger()
-    },                                                                 { passive: true })
-    window.addEventListener('resize',     resize,                     { passive: true })
+    },                                                               { passive: true })
+    window.addEventListener('resize',    resize,                     { passive: true })
 
     resize()
     setTimeout(findFocal, 180)
