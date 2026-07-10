@@ -58,15 +58,15 @@ export default function PresupuestoPage() {
       <ClarityScript />
 
       {/* ── 0 · HEADER MÍNIMO ────────────────────────────────── */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-black/[0.06]">
+      <header className="absolute top-0 left-0 right-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="font-outfit font-semibold text-[#1D1D1F] text-lg tracking-tight select-none">
+          <span className="font-outfit font-semibold text-white text-lg tracking-tight select-none">
             <span className="text-[#34C759]">·</span> yele.design
           </span>
           <div className="flex items-center gap-2">
             <RegistroButton
               href="/registro?plan=starter"
-              className="inline-flex items-center gap-1.5 font-manrope font-medium text-sm bg-[#1D1D1F] text-white px-4 py-2 rounded-xl hover:bg-black transition-colors"
+              className="inline-flex items-center gap-1.5 font-manrope font-medium text-sm bg-white text-[#1D1D1F] px-4 py-2 rounded-xl hover:bg-[#F5F5F7] transition-colors"
               aria-label="Empezar con el plan Starter"
             >
               Empezar →
