@@ -97,13 +97,6 @@ export default function HeroBento() {
         <div
           className="hero-right-panel absolute bottom-0 left-0 right-0 md:left-auto md:w-[52%] flex flex-col"
         >
-          {/* Left-edge bleed — desktop only */}
-          <div
-            className="hidden md:block absolute left-0 top-0 bottom-0 w-20 pointer-events-none z-10"
-            style={{ background: 'linear-gradient(to right, transparent 0%, rgba(29,29,31,0.65) 50%, #1D1D1F 100%)' }}
-            aria-hidden="true"
-          />
-
           {/* Box 1 — black, grows to fill space */}
           <div className="relative flex-1 bg-[#1D1D1F] flex flex-col justify-end px-8 pb-8 pt-8 md:px-14 md:pb-10 md:pt-24">
             <h1
