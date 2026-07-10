@@ -10,7 +10,6 @@ import Precios from '@/components/Precios'
 import type { FAQItem } from '@/components/FAQClient'
 import { WAButton, RegistroButton, WA_LINK } from './_components/CTAButtons'
 import ClarityScript from '@/components/ClarityScript'
-import SandHelixBackground from '@/components/SandHelixBackground'
 import ScrollHintArrow from './_components/ScrollHintArrow'
 
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
@@ -56,7 +55,6 @@ const LP_FAQS: FAQItem[] = [
 export default function PresupuestoPage() {
   return (
     <div>
-      <SandHelixBackground />
       <ClarityScript />
 
       {/* ── 0 · HEADER MÍNIMO ────────────────────────────────── */}
