@@ -155,7 +155,15 @@ export default function PresupuestoPage() {
         <Showcase noHeader noBg />
 
         {/* ── 6 · DIFERENCIADOR ────────────────────────────────── */}
-        <section className="relative overflow-hidden py-20 md:py-28 bg-[#16161a]">
+        <section className="relative overflow-hidden py-20 md:py-28">
+          {/* Background image */}
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: "url('/diferencia-bg.jpg')" }}
+            aria-hidden="true"
+          />
+          {/* Dark overlay so text stays legible */}
+          <div className="absolute inset-0 bg-[#0a0a0f]/70" aria-hidden="true" />
           <style>{`
             @media (prefers-reduced-motion: no-preference) {
               .orb-cw  { transform-box: fill-box; transform-origin: center; animation: orbSpin 26s linear infinite; }
@@ -180,11 +188,16 @@ export default function PresupuestoPage() {
 
               {/* ── Left: copy ── */}
               <div>
+                <p className="font-manrope text-xs tracking-[0.18em] uppercase text-white/40 mb-4">
+                  La diferencia
+                </p>
                 <h2
                   className="font-outfit font-extrabold tracking-tight text-white leading-tight mb-5"
                   style={{ fontSize: 'clamp(28px, 4vw, 52px)' }}
                 >
-                  Tu agencia de diseño web,<br className="hidden md:block" /> sin el precio de agencia
+                  Tu agencia de diseño web<br />
+                  sin el precio de agencia<br />
+                  soporte continuo
                 </h2>
                 <p
                   className="font-manrope font-semibold text-white/55 mb-8 leading-snug"
