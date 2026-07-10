@@ -35,7 +35,7 @@ const steps = [
 type Step = typeof steps[0]
 
 const COLLAPSE_MS = 320  // ms to wait for collapse before expanding next
-const EXPAND_MS   = 600  // ms to wait for expand before checking if we need to continue
+const EXPAND_MS   = 1000 // ms card stays expanded before checking if we need to continue (min 1 s hold)
 
 function StepCard({ step, index, t, isExpanded, onActive }: {
   step: Step

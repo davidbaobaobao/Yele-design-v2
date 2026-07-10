@@ -90,7 +90,7 @@ export default function PresupuestoPage() {
               className="font-outfit font-bold leading-[1.05] tracking-tighter mb-5"
               style={{ fontSize: 'clamp(36px, 4.5vw, 64px)' }}
             >
-              <span className="block text-[#6B7280]">Diseño web profesional</span>
+              <span className="block text-[#1D1D1F]">Diseño web profesional</span>
               <span className="block text-[#1D1D1F]">29€/mes</span>
             </h1>
             <div className="font-outfit font-semibold text-[#6B7280] tracking-tight leading-snug mb-7" style={{ fontSize: 'clamp(20px, 2.5vw, 36px)' }}>
