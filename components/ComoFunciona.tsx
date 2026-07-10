@@ -128,12 +128,15 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
   // activeStep: tracks the current in-view step for the progress pills
   const [activeStep, setActiveStep] = useState(0)
 
-  const prevInViewRef = useRef(-1)
-  const isFirstRef   = useRef(true)
-  const collapseTimer = useRef<ReturnType<typeof setTimeout>>()
+  const prevInViewRef  = useRef(-1)
+  const isFirstRef     = useRef(true)
+  const isAnimatingRef = useRef(false)   // locked while collapse+expand is running
+  const collapseTimer  = useRef<ReturnType<typeof setTimeout>>()
+  const unlockTimer    = useRef<ReturnType<typeof setTimeout>>()
 
   const handleStepActive = useCallback((index: number) => {
     if (index === prevInViewRef.current) return
+    if (isAnimatingRef.current) return   // ignore scroll events during animation
     prevInViewRef.current = index
     setActiveStep(index)
 
@@ -144,13 +147,24 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
       return
     }
 
-    // Subsequent: collapse current card first, then expand the new one
+    // Lock, collapse current, then expand new, then unlock
+    isAnimatingRef.current = true
     setDisplayStep(-1)
     clearTimeout(collapseTimer.current)
-    collapseTimer.current = setTimeout(() => setDisplayStep(index), COLLAPSE_MS)
+    clearTimeout(unlockTimer.current)
+    collapseTimer.current = setTimeout(() => {
+      setDisplayStep(index)
+      // Unlock after expand animation finishes (image: 550ms + small buffer)
+      unlockTimer.current = setTimeout(() => {
+        isAnimatingRef.current = false
+      }, 600)
+    }, COLLAPSE_MS)
   }, [])
 
-  useEffect(() => () => clearTimeout(collapseTimer.current), [])
+  useEffect(() => () => {
+    clearTimeout(collapseTimer.current)
+    clearTimeout(unlockTimer.current)
+  }, [])
 
   return (
     <section id="como-funciona" className={`py-24 md:py-32 ${noBg ? '' : 'bg-[#F5F5F7]'}`}>
