@@ -34,18 +34,24 @@ const steps = [
 
 type Step = typeof steps[0]
 
-function StepCard({ step, index, t, onActive }: {
+// COLLAPSE_MS: how long to wait for the previous card to collapse before expanding the next.
+// Matches the image height animation duration (550ms) but we don't need to wait the full duration —
+// 320ms is enough for the collapse to be visually clear before the next card starts opening.
+const COLLAPSE_MS = 320
+
+function StepCard({ step, index, t, isExpanded, onActive }: {
   step: Step
   index: number
   t: (es: string, en: string) => string
+  isExpanded: boolean
   onActive: (i: number) => void
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
-  const isActive = useInView(wrapRef, { once: false, margin: '-35% 0px -35% 0px' })
+  const isInView = useInView(wrapRef, { once: false, margin: '-35% 0px -35% 0px' })
 
   useEffect(() => {
-    if (isActive) onActive(index)
-  }, [isActive, index, onActive])
+    if (isInView) onActive(index)
+  }, [isInView, index, onActive])
 
   return (
     <motion.div
@@ -57,14 +63,14 @@ function StepCard({ step, index, t, onActive }: {
       <div
         ref={wrapRef}
         className={`rounded-2xl overflow-hidden cursor-default transition-colors duration-500 ${
-          isActive
+          isExpanded
             ? 'bg-[#1D1D1F] shadow-[0_24px_64px_rgba(0,0,0,0.22)]'
             : 'bg-white border border-black/[0.07] shadow-sm'
         }`}
       >
         {/* Image: expands/contracts with the card */}
         <motion.div
-          animate={{ height: isActive ? 210 : 0 }}
+          animate={{ height: isExpanded ? 210 : 0 }}
           transition={{ duration: 0.55, ease: [0.32, 0, 0.24, 1] }}
           className="relative overflow-hidden"
           style={{ willChange: 'height' }}
@@ -81,21 +87,21 @@ function StepCard({ step, index, t, onActive }: {
         </motion.div>
 
         {/* Content */}
-        <div className={`transition-all duration-500 ${isActive ? 'p-7' : 'p-5'}`}>
+        <div className={`transition-all duration-500 ${isExpanded ? 'p-7' : 'p-5'}`}>
           <span className={`font-outfit text-5xl font-semibold block mb-3 leading-none transition-colors duration-500 ${
-            isActive ? 'text-white/20' : 'text-[#6B7280]/30'
+            isExpanded ? 'text-white/20' : 'text-[#6B7280]/30'
           }`}>
             {step.num}
           </span>
           <h3 className={`font-outfit font-semibold text-xl transition-colors duration-500 ${
-            isActive ? 'text-white' : 'text-[#1D1D1F]'
+            isExpanded ? 'text-white' : 'text-[#1D1D1F]'
           }`}>
             {t(step.es.title, step.en.title)}
           </h3>
 
-          {/* Description only visible when active */}
+          {/* Description only visible when expanded */}
           <AnimatePresence initial={false}>
-            {isActive && (
+            {isExpanded && (
               <motion.p
                 key="desc"
                 initial={{ opacity: 0, height: 0, marginTop: 0 }}
@@ -116,10 +122,35 @@ function StepCard({ step, index, t, onActive }: {
 
 export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
   const { t } = useLang()
+
+  // displayStep: which card is visually expanded (-1 = none, during collapse gap)
+  const [displayStep, setDisplayStep] = useState(0)
+  // activeStep: tracks the current in-view step for the progress pills
   const [activeStep, setActiveStep] = useState(0)
+
+  const prevInViewRef = useRef(-1)
+  const isFirstRef   = useRef(true)
+  const collapseTimer = useRef<ReturnType<typeof setTimeout>>()
+
   const handleStepActive = useCallback((index: number) => {
+    if (index === prevInViewRef.current) return
+    prevInViewRef.current = index
     setActiveStep(index)
+
+    // First activation: expand immediately, no collapse gap
+    if (isFirstRef.current) {
+      isFirstRef.current = false
+      setDisplayStep(index)
+      return
+    }
+
+    // Subsequent: collapse current card first, then expand the new one
+    setDisplayStep(-1)
+    clearTimeout(collapseTimer.current)
+    collapseTimer.current = setTimeout(() => setDisplayStep(index), COLLAPSE_MS)
   }, [])
+
+  useEffect(() => () => clearTimeout(collapseTimer.current), [])
 
   return (
     <section id="como-funciona" className={`py-24 md:py-32 ${noBg ? '' : 'bg-[#F5F5F7]'}`}>
@@ -166,7 +197,14 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
           {/* Steps */}
           <div className="flex flex-col gap-4">
             {steps.map((step, i) => (
-              <StepCard key={step.num} step={step} index={i} t={t} onActive={handleStepActive} />
+              <StepCard
+                key={step.num}
+                step={step}
+                index={i}
+                t={t}
+                isExpanded={displayStep === i}
+                onActive={handleStepActive}
+              />
             ))}
           </div>
 
