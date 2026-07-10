@@ -1,27 +1,32 @@
 'use client'
 
+import Image from 'next/image'
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
 const steps = [
   {
     num: '01',
+    img: '/como-funciona/step-01.jpg',
     es: { title: 'Cuéntanos tu negocio', desc: 'Rellenas un formulario breve. Nos dices qué haces, a quién, y cómo quieres que te vean.' },
     en: { title: 'Tell us about your business', desc: 'Fill out a short form. Tell us what you do, who you serve, and how you want to be seen.' },
   },
   {
     num: '02',
+    img: '/como-funciona/step-02.jpg',
     es: { title: 'Nosotros lo diseñamos', desc: 'En 1 semana tienes un sitio profesional, adaptado a tu sector, con tu contenido real.' },
     en: { title: 'We design it', desc: 'In 1 week you have a professional site, tailored to your industry, with your real content.' },
   },
   {
     num: '03',
+    img: '/como-funciona/step-03.jpg',
     es: { title: 'Tu web, en marcha', desc: 'Apruebas, publicamos. Tu web está live y empieza a trabajar por ti desde el primer día.' },
     en: { title: 'Your website, live', desc: 'You approve, we publish. Your site is live and starts working for you from day one.' },
   },
   {
     num: '04',
+    img: '/como-funciona/step-04.jpg',
     es: { title: 'Soporte continuo', desc: 'Actualizamos, mantenemos y mejoramos tu web. Tú no tocas código. Nunca.' },
     en: { title: 'Ongoing support', desc: 'We update, maintain and improve your website. You never touch the code.' },
   },
@@ -51,27 +56,59 @@ function StepCard({ step, index, t, onActive }: {
     >
       <div
         ref={wrapRef}
-        className={`rounded-2xl p-8 cursor-default transition-all duration-500 ${
+        className={`rounded-2xl overflow-hidden cursor-default transition-colors duration-500 ${
           isActive
-            ? 'bg-[#1D1D1F] shadow-[0_20px_60px_rgba(0,0,0,0.18)]'
-            : 'bg-[#F5F5F7] shadow-none'
+            ? 'bg-[#1D1D1F] shadow-[0_24px_64px_rgba(0,0,0,0.22)]'
+            : 'bg-white border border-black/[0.07] shadow-sm'
         }`}
       >
-        <span className={`font-outfit text-5xl font-semibold block mb-4 leading-none transition-colors duration-500 ${
-          isActive ? 'text-white/20' : 'text-[#6B7280]/40'
-        }`}>
-          {step.num}
-        </span>
-        <h3 className={`font-outfit font-semibold text-xl mb-3 transition-colors duration-500 ${
-          isActive ? 'text-white' : 'text-[#1D1D1F]'
-        }`}>
-          {t(step.es.title, step.en.title)}
-        </h3>
-        <p className={`font-manrope text-base leading-relaxed transition-colors duration-500 ${
-          isActive ? 'text-white/60' : 'text-[#6B7280]'
-        }`}>
-          {t(step.es.desc, step.en.desc)}
-        </p>
+        {/* Image: expands/contracts with the card */}
+        <motion.div
+          animate={{ height: isActive ? 210 : 0 }}
+          transition={{ duration: 0.55, ease: [0.32, 0, 0.24, 1] }}
+          className="relative overflow-hidden"
+          style={{ willChange: 'height' }}
+        >
+          <div className="relative" style={{ height: 210 }}>
+            <Image
+              src={step.img}
+              alt={t(step.es.title, step.en.title)}
+              fill
+              unoptimized
+              className="object-cover object-center"
+            />
+          </div>
+        </motion.div>
+
+        {/* Content */}
+        <div className={`transition-all duration-500 ${isActive ? 'p-7' : 'p-5'}`}>
+          <span className={`font-outfit text-5xl font-semibold block mb-3 leading-none transition-colors duration-500 ${
+            isActive ? 'text-white/20' : 'text-[#6B7280]/30'
+          }`}>
+            {step.num}
+          </span>
+          <h3 className={`font-outfit font-semibold text-xl transition-colors duration-500 ${
+            isActive ? 'text-white' : 'text-[#1D1D1F]'
+          }`}>
+            {t(step.es.title, step.en.title)}
+          </h3>
+
+          {/* Description only visible when active */}
+          <AnimatePresence initial={false}>
+            {isActive && (
+              <motion.p
+                key="desc"
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                className="font-manrope text-base leading-relaxed text-white/60 overflow-hidden"
+              >
+                {t(step.es.desc, step.en.desc)}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </motion.div>
   )
@@ -101,9 +138,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
                 {t('Cómo funciona', 'How it works')}
               </span>
               <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
-                {t('Cuatro pasos.', 'Four steps.')}<br />
-                {t('Tú nos cuentas,', 'You tell us,')}<br />
-                {t('nosotros nos encargamos de todo.', 'we take care of everything.')}
+                {t('Cuatro pasos.', 'Four steps.')}
               </h2>
               <p className="font-manrope text-[#6B7280] text-lg leading-relaxed">
                 {t(
