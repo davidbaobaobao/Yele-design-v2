@@ -6,226 +6,158 @@ export default function SandHelixBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    // Make body transparent so the z-index:-1 canvas is visible
     document.documentElement.classList.add('sand-helix-page')
-
     const canvas = canvasRef.current
     if (!canvas) return
-    // Non-null assertion: getContext('2d') is always non-null on a valid canvas element
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const mobile = window.innerWidth < 768
     const TWO_PI = Math.PI * 2
-    const N = mobile ? 390 : 780
-    const NV = mobile ? 310 : 620
-    const COLOR = [110, 110, 106] as const
+    const mobile = window.innerWidth < 768
 
-    let W = 0, H = 0, dpr = 1
-
-    // Pre-rendered dot sprite (drawImage is cheaper than arc+fill per particle)
-    const SPRITE_R = 16
-    const sprite = document.createElement('canvas')
-    sprite.width = sprite.height = SPRITE_R * 2
-    const sc = sprite.getContext('2d')!
-    const grd = sc.createRadialGradient(SPRITE_R, SPRITE_R, 0, SPRITE_R, SPRITE_R, SPRITE_R)
-    const cStr = `${COLOR[0]},${COLOR[1]},${COLOR[2]}`
-    grd.addColorStop(0,    `rgba(${cStr},1)`)
-    grd.addColorStop(0.55, `rgba(${cStr},1)`)
-    grd.addColorStop(1,    `rgba(${cStr},0)`)
-    sc.fillStyle = grd
-    sc.beginPath()
-    sc.arc(SPRITE_R, SPRITE_R, SPRITE_R, 0, TWO_PI)
-    sc.fill()
-
-    let triggered = false
-    let phase = 0
-    let trigTime = 0
-    const DUR = reduce ? 900 : 1900
-
-    let flowH = Math.random()
-    let flowV = Math.random()
-
-    const grand = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5
-
-    type P = {
-      s: number; s2: number; ph: number; freq: number
-      band: number; band2: number; sdir: number; smag: number
-      sspin: number; rBase: number
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.remove('sand-helix-page')
+      return
     }
 
-    function mk(order: number): P {
-      return {
-        s:     (order + (Math.random() - 0.5) * 0.02 + 1) % 1,
-        s2:    Math.random(),
-        ph:    Math.random() * TWO_PI,
-        freq:  0.85 + Math.random() * 0.35,
-        band:  grand(),
-        band2: grand(),
-        sdir:  Math.random() * TWO_PI,
-        smag:  90 + Math.random() * 230,
-        sspin: (Math.random() - 0.5) * 6,
-        rBase: 0.9 + Math.random() * 1.0,
+    // — soft gray radial dot sprite —
+    const SR = 13
+    const spr = document.createElement('canvas')
+    spr.width = spr.height = SR * 2
+    const sc = spr.getContext('2d')!
+    const g = sc.createRadialGradient(SR, SR, 0, SR, SR, SR)
+    g.addColorStop(0,    'rgba(105,105,100,1)')
+    g.addColorStop(0.5,  'rgba(105,105,100,0.75)')
+    g.addColorStop(1,    'rgba(105,105,100,0)')
+    sc.fillStyle = g
+    sc.beginPath(); sc.arc(SR, SR, SR, 0, TWO_PI); sc.fill()
+
+    let W = 0, H = 0, dpr = 1
+    let fX = 0, fY = 0   // focal = center of down arrow
+
+    function findFocal() {
+      const el = document.getElementById('scroll-hint-arrow')
+      if (el) {
+        const r = el.getBoundingClientRect()
+        fX = r.left + r.width  / 2
+        fY = r.top  + r.height / 2
+      } else {
+        fX = W / 2
+        fY = H * 0.60
       }
     }
 
-    const pool: P[] = []
-    for (let i = 0; i < N; i++) pool.push(mk(i / N))
-    const vPool: P[] = []
-    for (let i = 0; i < NV; i++) vPool.push(mk(Math.random()))
-
-    function wave(t: number) {
-      return (Math.sin(t) * 0.7 + Math.sin(t * 1.73 + 1.3) * 0.24 + Math.sin(t * 0.51 + 4.0) * 0.18) / 1.12
+    // — particle pool —
+    const N = mobile ? 60 : 120
+    type P = {
+      // swarm
+      ang: number; rad: number; angV: number; no: number; esc: boolean
+      // spiral
+      sa: number; sr: number; st: number; sv: number
+      // render
+      sz: number
     }
 
-    let cyH = 0, ampH = 0, bandH = 0, turnsH = 0
-    let cxV = 0, ampV = 0, bandV = 0, turnsV = 0
+    const pts: P[] = Array.from({ length: N }, (_, i) => {
+      const esc = i < N * 0.20           // 20% escape particles
+      const ang = (i / N) * TWO_PI + Math.random() * 0.5
+      const rad = esc
+        ? 130 + Math.random() * 300
+        : 8   + Math.pow(Math.random(), 0.65) * 165
 
-    function geometry() {
-      cyH    = H * 0.40
-      ampH   = H * 0.20
-      bandH  = H * 0.10
-      turnsH = Math.max(3, Math.round(W / 300))
-      cxV    = W * 0.5
-      ampV   = W * 0.26
-      bandV  = W * 0.09
-      turnsV = Math.max(3, Math.round(H / 240))
-    }
+      return {
+        ang, rad,
+        angV: (0.07 + Math.random() * 0.18) * (Math.random() > .5 ? 1 : -1) * 0.001,
+        no:   Math.random() * TWO_PI,
+        esc,
+        sa:   (i / N) * TWO_PI * 3.5 + Math.random(),
+        sr:   esc ? 70 + Math.random() * 130 : 18 + Math.random() * 85,
+        st:   Math.random(),
+        sv:   (0.5 + Math.random() * 0.9) * 0.00013,
+        sz:   0.65 + Math.random() * 1.05,
+      }
+    })
 
-    function resize() {
-      if (!canvas || !ctx) return
-      dpr = Math.min(devicePixelRatio || 1, 2)
-      W = innerWidth; H = innerHeight
-      canvas.width  = W * dpr; canvas.height = H * dpr
-      canvas.style.width  = W + 'px'
-      canvas.style.height = H + 'px'
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      geometry()
-    }
+    // — state —
+    let triggered = false, trigTime = 0, spiralPh = 0
+    let flow = 0, last = performance.now(), raf = 0
 
-    let vVel = 0
-    const V_BASE = -0.000025
+    const s3  = (t: number) => t * t * (3 - 2 * t)
+    const mix = (a: number, b: number, t: number) => a + (b - a) * t
 
     function trigger() {
       if (triggered) return
-      triggered = true
-      trigTime = performance.now()
+      triggered = true; trigTime = performance.now()
     }
 
-    function pushScroll(deltaY: number) {
-      trigger()
-      vVel += -deltaY * 0.000003
-      const maxV = Math.abs(V_BASE) * 1.3
-      if (vVel < -maxV) vVel = -maxV
-      if (vVel >  maxV) vVel =  maxV
+    function resize() {
+      dpr = Math.min(devicePixelRatio || 1, 2)
+      W = innerWidth; H = innerHeight
+      canvas.width = W * dpr; canvas.height = H * dpr
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      findFocal()
     }
-
-    const onWheel      = (e: WheelEvent)    => pushScroll(e.deltaY)
-    const onKeydown    = (e: KeyboardEvent) => {
-      if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key)) pushScroll(60)
-      else if (['ArrowUp', 'PageUp'].includes(e.key)) pushScroll(-60)
-    }
-    let touchY: number | null = null
-    const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY }
-    const onTouchMove  = (e: TouchEvent) => {
-      const y = e.touches[0].clientY
-      if (touchY !== null) pushScroll((touchY - y) * 1.4)
-      touchY = y
-    }
-
-    const smooth = (t: number) => t * t * (3 - 2 * t)
-    const lerp   = (a: number, b: number, t: number) => a + (b - a) * t
-
-    let last = performance.now()
-    let rafId = 0
 
     function frame(now: number) {
       const dt = Math.min(50, now - last); last = now
+      flow += dt * 0.000085
 
-      flowH  = (flowH + dt * 0.0000112) % 1
-      vVel  += (V_BASE - vVel) * 0.01
-      flowV  = (flowV + vVel * dt + 1) % 1
-
-      if (triggered) phase = Math.min(1, (now - trigTime) / DUR)
-      const ph    = smooth(phase)
-      const burst = reduce ? 0 : Math.pow(Math.sin(phase * Math.PI), 0.85)
+      if (triggered) spiralPh = Math.min(1, (now - trigTime) / 1700)
+      const ph = s3(spiralPh)
 
       ctx.clearRect(0, 0, W, H)
 
-      const mX = 40, mY = 40
       for (let i = 0; i < N; i++) {
-        const p = pool[i]
+        const p = pts[i]
 
-        const hs   = (p.s + flowH) % 1
-        const thH  = hs * turnsH * TWO_PI * p.freq + p.ph
-        const hx   = -mX + hs * (W + mX * 2) + p.band2 * 22
-        const hy   = cyH + wave(thH) * ampH + p.band * bandH
-        const hDep = Math.cos(thH)
+        // —— SWARM ——
+        p.ang += p.angV * dt
+        p.no  += dt * 0.00021
+        const nx = Math.sin(p.no * 2.1 + 0.6) * 13
+        const ny = Math.cos(p.no * 1.7 + 2.3) * 8
+        // elliptical: wide X, narrow Y keeps particles in the hero band
+        const sx = fX + Math.cos(p.ang) * p.rad + nx
+        const sy = fY + Math.sin(p.ang) * p.rad * 0.42 + ny
 
-        const vs   = (p.s2 + flowV) % 1
-        const thV  = vs * turnsV * TWO_PI * p.freq + p.ph
-        const vy   = -mY + vs * (H + mY * 2) + p.band2 * 22
-        const vx   = cxV + wave(thV) * ampV + p.band * bandV
-        const vDep = Math.cos(thV)
+        // —— SPIRAL ——
+        p.st = (p.st + p.sv * dt) % 1
+        const sa = p.sa + flow * TWO_PI * 2.2
+        const rx = W * 0.5 + Math.cos(sa) * p.sr
+        const ry = p.st * (H + 60) - 30   // continuous downward flow
 
-        let x = lerp(hx, vx, ph)
-        let y = lerp(hy, vy, ph)
-        const depth = lerp(hDep, vDep, ph)
+        // —— BLEND ——
+        const x = mix(sx, rx, ph)
+        const y = mix(sy, ry, ph)
 
-        if (burst > 0.001) {
-          const a = p.sdir + burst * p.sspin
-          x += Math.cos(a) * p.smag * burst
-          y += Math.sin(a) * p.smag * burst
-        }
+        // —— ALPHA ——
+        const dist = Math.hypot(x - fX, y - fY)
+        const glow = Math.max(0, 1 - dist / (Math.max(W, H) * 0.42))
+        const base = mobile ? 0.095 : 0.12
+        const alpha = base * (ph < 0.5 ? 0.55 + glow * 0.45 : 0.8 + glow * 0.2)
 
-        const d = depth * 0.5 + 0.5
-        const r = p.rBase * (0.55 + d * 0.85)
-        ctx.globalAlpha = (mobile ? (0.08 + d * 0.07) : (0.10 + d * 0.12)) * (1 - burst * 0.35)
-        ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2)
-      }
-
-      if (ph > 0.001) {
-        for (let i = 0; i < NV; i++) {
-          const p = vPool[i]
-          const vs  = (p.s2 + flowV) % 1
-          const thV = vs * turnsV * TWO_PI * p.freq + p.ph
-          let x = cxV + wave(thV) * ampV + p.band * bandV
-          let y = -mY + vs * (H + mY * 2) + p.band2 * 22
-          if (burst > 0.001) {
-            const a = p.sdir + burst * p.sspin
-            x += Math.cos(a) * p.smag * burst
-            y += Math.sin(a) * p.smag * burst
-          }
-          const d = Math.cos(thV) * 0.5 + 0.5
-          const r = p.rBase * (0.55 + d * 0.85)
-          ctx.globalAlpha = (mobile ? (0.08 + d * 0.07) : (0.10 + d * 0.12)) * ph * (1 - burst * 0.35)
-          ctx.drawImage(sprite, x - r, y - r, r * 2, r * 2)
-        }
+        ctx.globalAlpha = alpha
+        const rs = p.sz * SR
+        ctx.drawImage(spr, x - rs, y - rs, rs * 2, rs * 2)
       }
 
       ctx.globalAlpha = 1
-      rafId = requestAnimationFrame(frame)
+      raf = requestAnimationFrame(frame)
     }
 
-    window.addEventListener('wheel',      onWheel,      { passive: true })
-    window.addEventListener('keydown',    onKeydown,    { passive: true })
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchmove',  onTouchMove,  { passive: true })
-    window.addEventListener('scroll',     trigger,      { passive: true })
-    window.addEventListener('resize',     resize,       { passive: true })
+    window.addEventListener('wheel',      trigger,                    { passive: true })
+    window.addEventListener('scroll',     trigger,                    { passive: true })
+    window.addEventListener('touchmove',  trigger,                    { passive: true })
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+      if ([' ', 'ArrowDown', 'PageDown'].includes(e.key)) trigger()
+    },                                                                 { passive: true })
+    window.addEventListener('resize',     resize,                     { passive: true })
 
     resize()
-    rafId = requestAnimationFrame(frame)
+    setTimeout(findFocal, 180)
+    raf = requestAnimationFrame(frame)
 
     return () => {
       document.documentElement.classList.remove('sand-helix-page')
-      cancelAnimationFrame(rafId)
-      window.removeEventListener('wheel',      onWheel)
-      window.removeEventListener('keydown',    onKeydown)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove',  onTouchMove)
-      window.removeEventListener('scroll',     trigger)
-      window.removeEventListener('resize',     resize)
+      cancelAnimationFrame(raf)
     }
   }, [])
 
@@ -233,14 +165,7 @@ export default function SandHelixBackground() {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: -1,
-        pointerEvents: 'none',
-      }}
+      style={{ position: 'fixed', inset: 0, width: '100%', height: '100%', zIndex: -1, pointerEvents: 'none' }}
     />
   )
 }

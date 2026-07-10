@@ -11,6 +11,7 @@ import type { FAQItem } from '@/components/FAQClient'
 import { WAButton, RegistroButton, WA_LINK } from './_components/CTAButtons'
 import ClarityScript from '@/components/ClarityScript'
 import SandHelixBackground from '@/components/SandHelixBackground'
+import ScrollHintArrow from './_components/ScrollHintArrow'
 
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
 const ContactForm      = dynamic(() => import('@/components/ContactForm'))
@@ -130,23 +131,25 @@ export default function PresupuestoPage() {
             </div>
 
             {/* Scroll hint arrow */}
-            <div className="flex justify-center pt-6">
-              <div className="animate-bounce">
-                <div className="w-11 h-11 rounded-full border border-[#1D1D1F]/20 bg-white/70 backdrop-blur-sm flex items-center justify-center shadow-sm">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <ScrollHintArrow />
           </div>
         </section>
 
-        <ShowcaseFeatureCards />
+        <div id="showcase-cards">
+          <ShowcaseFeatureCards />
+        </div>
 
 
 
         {/* ── 3 · PORTFOLIO ────────────────────────────────────── */}
+        <div className="max-w-6xl mx-auto px-6 pt-10 pb-1">
+          <h2
+            className="font-outfit font-semibold text-[#1D1D1F] tracking-tight"
+            style={{ fontSize: 'clamp(22px, 3vw, 38px)' }}
+          >
+            Así puede lucir tu página web
+          </h2>
+        </div>
         <Showcase noHeader noBg />
 
         {/* ── 4 · CÓMO FUNCIONA ────────────────────────────────── */}
