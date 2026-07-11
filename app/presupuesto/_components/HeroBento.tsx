@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 /* ── Marquee SVG icons ── */
 function IcoClock() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3.5 2" />
     </svg>
@@ -13,7 +13,7 @@ function IcoClock() {
 }
 function IcoCoin() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="9" />
       <path d="M12 6v12M9.5 9.2c0-1.2 1.1-2 2.5-2s2.5.8 2.5 2-1.1 1.6-2.5 2-2.5.8-2.5 2 1.1 2 2.5 2 2.5-.8 2.5-2" />
     </svg>
@@ -21,7 +21,7 @@ function IcoCoin() {
 }
 function IcoNoCard() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="3" y="6" width="18" height="13" rx="2" />
       <path d="M3 10h18" />
       <line x1="4" y1="21" x2="20" y2="5" />
@@ -30,7 +30,7 @@ function IcoNoCard() {
 }
 function IcoDoc() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M6 3h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
       <path d="M9 13h6M9 16.5h4" />
     </svg>
@@ -38,7 +38,7 @@ function IcoDoc() {
 }
 function IcoUnlock() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="5" y="11" width="14" height="10" rx="2" />
       <path d="M8 11V7.5a4 4 0 0 1 7.85-1" />
     </svg>
@@ -71,6 +71,8 @@ export default function HeroBento() {
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap');
+
         @keyframes marqueeLeft {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
@@ -88,12 +90,13 @@ export default function HeroBento() {
 
         @keyframes badgeStar {
           0%   { transform: scale(1)    rotate(0deg);   }
-          50%  { transform: scale(1.35) rotate(180deg); }
+          50%  { transform: scale(1.4)  rotate(180deg); }
           100% { transform: scale(1)    rotate(360deg); }
         }
         .hero-badge-star {
           animation: badgeStar 2.4s ease-in-out infinite;
           transform-origin: center;
+          flex-shrink: 0;
         }
       `}</style>
 
@@ -133,105 +136,134 @@ export default function HeroBento() {
           style={{
             top: '50%',
             transform: 'translateY(-50%)',
-            width: 'clamp(300px, 44vw, 620px)',
+            width: 'clamp(300px, 46vw, 720px)',
           }}
         >
+          {/* Card shell — relative so badge can be absolute inside */}
           <div
-            className="flex overflow-hidden"
-            style={{ boxShadow: '0 32px 64px -24px rgba(0,0,0,0.55)' }}
+            style={{
+              position: 'relative',
+              overflow: 'hidden',
+              boxShadow: '0 30px 60px -20px rgba(0,0,0,0.35)',
+            }}
           >
-            {/* ── Main card column ── */}
-            <div className="flex-1 flex flex-col min-w-0">
-
-              {/* Black box */}
-              <div
+            {/* ── Red promo badge — absolute, overlapping black box ── */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 'clamp(60px, 10%, 168px)',
+                right: 0,
+                width: 'clamp(44px, 5.5vw, 70px)',
+                height: 'clamp(130px, 18vw, 220px)',
+                background: '#e2482f',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                paddingTop: '16px',
+                gap: '10px',
+                zIndex: 2,
+              }}
+              aria-hidden="true"
+            >
+              <svg className="hero-badge-star" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff">
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z" />
+              </svg>
+              <span
                 style={{
-                  background: '#0a0a0a',
-                  padding: 'clamp(24px, 3.5vw, 52px) clamp(18px, 3vw, 40px) clamp(20px, 2.8vw, 36px)',
+                  writingMode: 'vertical-rl',
+                  transform: 'rotate(180deg)',
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  fontSize: 'clamp(10px, 1vw, 16px)',
+                  letterSpacing: '0.04em',
+                  color: '#ffffff',
+                  whiteSpace: 'nowrap',
+                  marginTop: '4px',
                 }}
               >
-                <h1
-                  className="font-outfit font-black text-white"
-                  style={{
-                    fontSize: 'clamp(34px, 6.2vw, 90px)',
-                    lineHeight: 0.96,
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  Diseño<br />
-                  Web<br />
-                  Profesional
-                </h1>
-
-                <p
-                  className="font-manrope text-white/55 mt-5"
-                  style={{ fontSize: 'clamp(11px, 1.2vw, 16px)', lineHeight: 1.5 }}
-                >
-                  Tu agencia de diseño web · Sin complicaciones
-                </p>
-                <p
-                  className="font-outfit font-bold text-white"
-                  style={{ fontSize: 'clamp(13px, 1.4vw, 18px)', marginTop: '4px' }}
-                >
-                  Desde <span style={{ color: '#34C759' }}>29€/mes</span>
-                </p>
-              </div>
-
-              {/* White marquee box */}
-              <div style={{ background: '#ffffff', padding: '18px 0', overflow: 'hidden' }}>
-                <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
-                  {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
-                    <div key={i} className="flex items-center gap-2 shrink-0" style={{ padding: '0 16px' }}>
-                      <Icon />
-                      <span
-                        className="font-manrope font-semibold text-[#0a0a0a] whitespace-nowrap"
-                        style={{ fontSize: 'clamp(11px, 1.1vw, 15px)' }}
-                      >
-                        {label}
-                      </span>
-                      <span className="text-[#D1D5DB] text-xs ml-2 select-none" aria-hidden="true">·</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+                Primer mes gratis
+              </span>
             </div>
 
-            {/* ── Red promo badge strip ── */}
+            {/* ── Black content box ── */}
             <div
-              className="flex-shrink-0 flex flex-col items-center"
               style={{
-                background: '#e2482f',
-                width: 'clamp(38px, 4vw, 56px)',
-                padding: '16px 0',
+                background: '#0a0a0a',
+                padding: 'clamp(28px, 4.2vw, 56px) clamp(14px, 2vw, 24px) clamp(20px, 3vw, 40px)',
               }}
             >
-              <svg
-                className="hero-badge-star flex-shrink-0"
-                width="16" height="16" viewBox="0 0 24 24" fill="none"
-                aria-hidden="true"
+              <h1
+                style={{
+                  fontFamily: "'Archivo', sans-serif",
+                  fontWeight: 500,
+                  fontSize: 'clamp(38px, 6.5vw, 96px)',
+                  lineHeight: 0.98,
+                  letterSpacing: '-0.02em',
+                  color: '#ffffff',
+                  marginLeft: 'clamp(10px, 1.5vw, 20px)',
+                }}
               >
-                <path
-                  d="M12 3l2 5.5L19.5 10l-5.5 2L12 18l-2-6L4.5 10 10 8.5 12 3z"
-                  fill="#ffffff"
-                />
-                <path
-                  d="M19 15l1 3 3 .5-3 .5-1 3-1-3-3-.5 3-.5 1-3z"
-                  fill="#ffffff"
-                />
-              </svg>
-              <div className="flex-1 flex items-center justify-center mt-3">
-                <span
-                  className="font-manrope font-semibold text-white whitespace-nowrap"
-                  style={{
-                    writingMode: 'vertical-rl',
-                    transform: 'rotate(180deg)',
-                    fontSize: 'clamp(9px, 0.85vw, 13px)',
-                    letterSpacing: '0.05em',
-                  }}
-                >
-                  Primer mes gratis
-                </span>
+                Diseño<br />
+                Web<br />
+                Profesional
+              </h1>
+
+              <p
+                style={{
+                  marginTop: 'clamp(16px, 2.5vw, 32px)',
+                  marginLeft: 'clamp(10px, 1.5vw, 20px)',
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 400,
+                  fontSize: 'clamp(13px, 1.7vw, 22px)',
+                  letterSpacing: '0.01em',
+                  color: '#ffffff',
+                  opacity: 0.85,
+                }}
+              >
+                Tu agencia de diseño web · Sin complicaciones
+              </p>
+
+              <p
+                style={{
+                  marginTop: '8px',
+                  marginLeft: 'clamp(10px, 1.5vw, 20px)',
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  fontSize: 'clamp(13px, 1.7vw, 22px)',
+                  letterSpacing: '0.01em',
+                  color: '#ffffff',
+                }}
+              >
+                Desde <span style={{ color: '#34C759' }}>29€/mes</span>
+              </p>
+            </div>
+
+            {/* ── White marquee box ── */}
+            <div
+              style={{
+                background: '#ffffff',
+                padding: 'clamp(14px, 1.8vw, 22px) 0',
+                overflow: 'hidden',
+              }}
+            >
+              <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
+                {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
+                  <div key={i} className="flex items-center shrink-0" style={{ gap: '10px', padding: '0 20px' }}>
+                    <Icon />
+                    <span
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontWeight: 600,
+                        fontSize: 'clamp(12px, 1.3vw, 18px)',
+                        color: '#0a0a0a',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {label}
+                    </span>
+                    <span style={{ color: '#D1D5DB', marginLeft: '10px', fontSize: '12px' }} aria-hidden="true">·</span>
+                  </div>
+                ))}
               </div>
             </div>
 
