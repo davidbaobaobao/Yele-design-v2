@@ -209,7 +209,7 @@ export default function HeroBento() {
                   color: '#ffffff',
                 }}
               >
-                Desde <span style={{ color: '#34C759' }}>29€/mes</span>
+                Desde 49€/mes
               </p>
             </div>
 
