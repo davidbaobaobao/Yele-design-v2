@@ -2,71 +2,67 @@
 
 import { useEffect, useRef } from 'react'
 
-/* ── Topic icons (stroke, 20 × 20) ── */
-function IconWallet() {
+/* ── Marquee SVG icons ── */
+function IcoClock() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="1" y="6" width="22" height="14" rx="2" />
-      <path d="M1 10h22" />
-      <circle cx="17.5" cy="15" r="1.5" fill="#1D1D1F" stroke="none" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
     </svg>
   )
 }
-function IconCalendar() {
+function IcoCoin() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-      <path d="M9 16l2 2 4-4" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 6v12M9.5 9.2c0-1.2 1.1-2 2.5-2s2.5.8 2.5 2-1.1 1.6-2.5 2-2.5.8-2.5 2 1.1 2 2.5 2 2.5-.8 2.5-2" />
     </svg>
   )
 }
-function IconZap() {
+function IcoNoCard() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="6" width="18" height="13" rx="2" />
+      <path d="M3 10h18" />
+      <line x1="4" y1="21" x2="20" y2="5" />
     </svg>
   )
 }
-function IconTag() {
+function IcoDoc() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-      <line x1="7" y1="7" x2="7.01" y2="7" strokeWidth="2.5" strokeLinecap="round" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M6 3h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+      <path d="M9 13h6M9 16.5h4" />
     </svg>
   )
 }
-function IconShield() {
+function IcoUnlock() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D1D1F" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      <path d="M9 12l2 2 4-4" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V7.5a4 4 0 0 1 7.85-1" />
     </svg>
   )
 }
 
 const ITEMS = [
-  { label: 'Sin pago inicial',    Icon: IconWallet   },
-  { label: 'Sin permanencia',     Icon: IconCalendar },
-  { label: 'Lista en 1 semana',   Icon: IconZap      },
-  { label: 'Precio fijo mensual', Icon: IconTag      },
-  { label: 'Sin letra pequeña',   Icon: IconShield   },
+  { label: 'Lista en 1 semana',   Icon: IcoClock  },
+  { label: 'Precio fijo mensual', Icon: IcoCoin   },
+  { label: 'Sin pago inicial',    Icon: IcoNoCard },
+  { label: 'Sin letra pequeña',   Icon: IcoDoc    },
+  { label: 'Sin permanencia',     Icon: IcoUnlock },
 ]
-
 const MARQUEE_ITEMS = [...ITEMS, ...ITEMS]
 
 export default function HeroBento() {
-  const panelRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
 
-  /* Parallax: card moves at 30% of scroll speed */
   useEffect(() => {
-    const panel = panelRef.current
-    if (!panel) return
+    const card = cardRef.current
+    if (!card) return
     function onScroll() {
       const y = window.scrollY
-      if (panel) panel.style.transform = `translateY(${y * 0.3}px)`
+      if (card) card.style.transform = `translateY(calc(-50% + ${y * 0.3}px))`
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -75,29 +71,35 @@ export default function HeroBento() {
   return (
     <>
       <style>{`
-        /* Marquee scrolls left infinitely */
         @keyframes marqueeLeft {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
         .hero-marquee-track {
-          animation: marqueeLeft 18s linear infinite;
+          animation: marqueeLeft 16s linear infinite;
           will-change: transform;
         }
         .hero-marquee-track:hover { animation-play-state: paused; }
 
-        /* Scroll arrow pulse */
         @keyframes heroPulse {
           0%, 100% { transform: translateY(0);   opacity: 1;    }
           50%       { transform: translateY(7px); opacity: 0.55; }
+        }
+
+        @keyframes badgeStar {
+          0%   { transform: scale(1)    rotate(0deg);   }
+          50%  { transform: scale(1.35) rotate(180deg); }
+          100% { transform: scale(1)    rotate(360deg); }
+        }
+        .hero-badge-star {
+          animation: badgeStar 2.4s ease-in-out infinite;
+          transform-origin: center;
         }
       `}</style>
 
       <section className="relative h-screen overflow-hidden">
 
-        {/* ── HQ Video background ──
-             Blurred poster fills any letterbox gaps so video can use
-             object-contain (no crop/zoom) while leaving no black bars. */}
+        {/* Blurred poster fills letterbox gaps */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -124,51 +126,119 @@ export default function HeroBento() {
           aria-hidden="true"
         />
 
-        {/* ── Floating card — 40% wide, vertically centred in middle 50% ── */}
+        {/* ── Floating card — vertically centred, right-aligned, parallax ── */}
         <div
-          ref={panelRef}
-          className="absolute right-0 flex flex-col"
+          ref={cardRef}
+          className="absolute right-0 z-20"
           style={{
-            top: '25%',
-            bottom: '25%',
-            width: '40%',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 'clamp(300px, 44vw, 620px)',
           }}
         >
-          {/* Black card — matte black */}
           <div
-            className="relative flex-1 flex flex-col justify-end px-10 pb-9 pt-10"
-            style={{ backgroundColor: '#0a0a0a' }}
+            className="flex overflow-hidden"
+            style={{ boxShadow: '0 32px 64px -24px rgba(0,0,0,0.55)' }}
           >
-            <h1
-              className="font-outfit font-black text-white leading-[0.93] tracking-tight mb-5"
-              style={{ fontSize: 'clamp(32px, 3.6vw, 68px)' }}
-            >
-              DISEÑO<br />
-              WEB PROFESIONAL<br />
-              DESDE <span className="text-[#34C759]">29€/MES</span>
-            </h1>
-            <p className="font-manrope text-[10px] tracking-[0.22em] uppercase text-white/40 leading-relaxed">
-              TU AGENCIA DE DISEÑO WEB&nbsp;·&nbsp;SIN COMPLICACIONES.
-            </p>
-          </div>
+            {/* ── Main card column ── */}
+            <div className="flex-1 flex flex-col min-w-0">
 
-          {/* White card — compact looping marquee */}
-          <div className="bg-white overflow-hidden py-3.5">
-            <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
-              {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
-                <div key={i} className="flex items-center gap-2.5 px-6 shrink-0">
-                  <Icon />
-                  <span className="font-manrope text-xs font-medium text-[#1D1D1F] whitespace-nowrap">
-                    {label}
-                  </span>
-                  <span className="ml-4 text-[#D1D5DB] text-[10px] select-none">·</span>
+              {/* Black box */}
+              <div
+                style={{
+                  background: '#0a0a0a',
+                  padding: 'clamp(24px, 3.5vw, 52px) clamp(18px, 3vw, 40px) clamp(20px, 2.8vw, 36px)',
+                }}
+              >
+                <h1
+                  className="font-outfit font-black text-white"
+                  style={{
+                    fontSize: 'clamp(34px, 6.2vw, 90px)',
+                    lineHeight: 0.96,
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  Diseño<br />
+                  Web<br />
+                  Profesional
+                </h1>
+
+                <p
+                  className="font-manrope text-white/55 mt-5"
+                  style={{ fontSize: 'clamp(11px, 1.2vw, 16px)', lineHeight: 1.5 }}
+                >
+                  Tu agencia de diseño web · Sin complicaciones
+                </p>
+                <p
+                  className="font-outfit font-bold text-white"
+                  style={{ fontSize: 'clamp(13px, 1.4vw, 18px)', marginTop: '4px' }}
+                >
+                  Desde <span style={{ color: '#34C759' }}>29€/mes</span>
+                </p>
+              </div>
+
+              {/* White marquee box */}
+              <div style={{ background: '#ffffff', padding: '18px 0', overflow: 'hidden' }}>
+                <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
+                  {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
+                    <div key={i} className="flex items-center gap-2 shrink-0" style={{ padding: '0 16px' }}>
+                      <Icon />
+                      <span
+                        className="font-manrope font-semibold text-[#0a0a0a] whitespace-nowrap"
+                        style={{ fontSize: 'clamp(11px, 1.1vw, 15px)' }}
+                      >
+                        {label}
+                      </span>
+                      <span className="text-[#D1D5DB] text-xs ml-2 select-none" aria-hidden="true">·</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
             </div>
+
+            {/* ── Red promo badge strip ── */}
+            <div
+              className="flex-shrink-0 flex flex-col items-center"
+              style={{
+                background: '#e2482f',
+                width: 'clamp(38px, 4vw, 56px)',
+                padding: '16px 0',
+              }}
+            >
+              <svg
+                className="hero-badge-star flex-shrink-0"
+                width="16" height="16" viewBox="0 0 24 24" fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 3l2 5.5L19.5 10l-5.5 2L12 18l-2-6L4.5 10 10 8.5 12 3z"
+                  fill="#ffffff"
+                />
+                <path
+                  d="M19 15l1 3 3 .5-3 .5-1 3-1-3-3-.5 3-.5 1-3z"
+                  fill="#ffffff"
+                />
+              </svg>
+              <div className="flex-1 flex items-center justify-center mt-3">
+                <span
+                  className="font-manrope font-semibold text-white whitespace-nowrap"
+                  style={{
+                    writingMode: 'vertical-rl',
+                    transform: 'rotate(180deg)',
+                    fontSize: 'clamp(9px, 0.85vw, 13px)',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  Primer mes gratis
+                </span>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {/* ── Scroll arrow — bottom-center of section ── */}
+        {/* ── Pulsing scroll arrow — bottom-centre ── */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
           <button
             onClick={() => document.getElementById('showcase-cards')?.scrollIntoView({ behavior: 'smooth' })}
