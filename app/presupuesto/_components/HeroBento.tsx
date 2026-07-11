@@ -86,12 +86,21 @@ export default function HeroBento() {
           50%       { transform: translateY(7px); opacity: 0.55; }
         }
 
-        @keyframes badgeStar {
+        @keyframes badgeStarBig {
           0%, 100% { transform: scale(1)    rotate(0deg);  opacity: 0.85; }
-          50%       { transform: scale(1.25) rotate(45deg); opacity: 1;    }
+          50%       { transform: scale(1.18) rotate(45deg); opacity: 1;    }
         }
-        .hero-badge-star {
-          animation: badgeStar 2.8s ease-in-out infinite;
+        @keyframes badgeStarSmall {
+          0%, 100% { transform: scale(1)    rotate(0deg);  opacity: 1;    }
+          50%       { transform: scale(1.35) rotate(-45deg); opacity: 0.7; }
+        }
+        .hero-badge-star-big {
+          animation: badgeStarBig 2.8s ease-in-out infinite;
+          transform-origin: center;
+          flex-shrink: 0;
+        }
+        .hero-badge-star-small {
+          animation: badgeStarSmall 2.8s ease-in-out infinite 1.4s;
           transform-origin: center;
           flex-shrink: 0;
         }
@@ -144,8 +153,15 @@ export default function HeroBento() {
               }}
               aria-hidden="true"
             >
-              {/* 4-pointed sparkle — modern AI-style star */}
-              <svg className="hero-badge-star" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              {/* Big sparkle — outline only */}
+              <svg className="hero-badge-star-big" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M12 2C12 2 12.8 7.6 14.8 9.6C16.8 11.6 22 12 22 12C22 12 16.8 12.4 14.8 14.4C12.8 16.4 12 22 12 22C12 22 11.2 16.4 9.2 14.4C7.2 12.4 2 12 2 12C2 12 7.2 11.6 9.2 9.6C11.2 7.6 12 2 12 2Z"
+                  stroke="#ffffff" strokeWidth="1.5" strokeLinejoin="round"
+                />
+              </svg>
+              {/* Small sparkle — solid fill */}
+              <svg className="hero-badge-star-small" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M12 2C12 2 12.8 7.6 14.8 9.6C16.8 11.6 22 12 22 12C22 12 16.8 12.4 14.8 14.4C12.8 16.4 12 22 12 22C12 22 11.2 16.4 9.2 14.4C7.2 12.4 2 12 2 12C2 12 7.2 11.6 9.2 9.6C11.2 7.6 12 2 12 2Z"
                   fill="#ffffff"
