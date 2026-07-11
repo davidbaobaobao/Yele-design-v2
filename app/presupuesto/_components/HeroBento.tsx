@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
+
 /* ── Topic icons (stroke, 20 × 20) ── */
 function IconWallet() {
   return (
@@ -53,20 +55,27 @@ const ITEMS = [
   { label: 'Sin letra pequeña',   Icon: IconShield   },
 ]
 
-/* Duplicate for seamless infinite loop */
 const MARQUEE_ITEMS = [...ITEMS, ...ITEMS]
 
 export default function HeroBento() {
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  /* Parallax: card moves at 30% of scroll speed */
+  useEffect(() => {
+    const panel = panelRef.current
+    if (!panel) return
+    function onScroll() {
+      const y = window.scrollY
+      if (panel) panel.style.transform = `translateY(${y * 0.3}px)`
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <>
       <style>{`
-        /* Panel: bottom-anchored on mobile, floats in middle 60% on desktop */
-        .hero-right-panel { bottom: 0; }
-        @media (min-width: 768px) {
-          .hero-right-panel { top: 20%; bottom: 20%; }
-        }
-
-        /* Looping marquee — scrolls left continuously */
+        /* Marquee scrolls left infinitely */
         @keyframes marqueeLeft {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
@@ -84,63 +93,72 @@ export default function HeroBento() {
         }
       `}</style>
 
-      <section className="relative h-[80vh] min-h-[560px] overflow-hidden">
+      <section className="relative h-screen overflow-hidden">
 
-        {/* ── Video ── */}
+        {/* ── HQ Video background ── */}
         <video
           className="absolute inset-0 w-full h-full object-cover"
           autoPlay muted loop playsInline
-          poster="/media/main_hero/poster.jpg"
+          poster="/media/main_hero/poster_hq.jpg"
           aria-hidden="true"
         >
-          <source src="/media/main_hero/hero.webm" type="video/webm" />
-          <source src="/media/main_hero/hero.mp4"  type="video/mp4" />
+          <source src="/media/main_hero/hero_hq.webm" type="video/webm" />
+          <source src="/media/main_hero/hero_hq.mp4"  type="video/mp4" />
         </video>
 
-        {/* Top vignette — nav readability */}
+        {/* Top vignette for nav legibility */}
         <div
           className="absolute inset-x-0 top-0 h-28 pointer-events-none z-10"
-          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, transparent 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, transparent 100%)' }}
           aria-hidden="true"
         />
 
-        {/* ── Right panel: floats in middle 60% (desktop), bottom-anchored (mobile) ── */}
-        <div className="hero-right-panel absolute left-0 right-0 md:left-auto md:w-[52%] flex flex-col overflow-hidden">
-
-          {/* Box 1 — black, grows to fill */}
-          <div className="relative flex-1 bg-[#1D1D1F] flex flex-col justify-end px-8 pb-8 pt-8 md:px-14 md:pb-10 md:pt-10">
+        {/* ── Floating card — 40% wide, vertically centred in middle 50% ── */}
+        <div
+          ref={panelRef}
+          className="absolute right-0 flex flex-col"
+          style={{
+            top: '25%',
+            bottom: '25%',
+            width: '40%',
+          }}
+        >
+          {/* Black card — matte black */}
+          <div
+            className="relative flex-1 flex flex-col justify-end px-10 pb-9 pt-10"
+            style={{ backgroundColor: '#0a0a0a' }}
+          >
             <h1
               className="font-outfit font-black text-white leading-[0.93] tracking-tight mb-5"
-              style={{ fontSize: 'clamp(40px, 5.2vw, 76px)' }}
+              style={{ fontSize: 'clamp(32px, 3.6vw, 68px)' }}
             >
               DISEÑO<br />
               WEB PROFESIONAL<br />
               DESDE <span className="text-[#34C759]">29€/MES</span>
             </h1>
-            <p className="font-manrope text-[10px] md:text-[11px] tracking-[0.22em] uppercase text-white/45 leading-relaxed">
+            <p className="font-manrope text-[10px] tracking-[0.22em] uppercase text-white/40 leading-relaxed">
               TU AGENCIA DE DISEÑO WEB&nbsp;·&nbsp;SIN COMPLICACIONES.
             </p>
           </div>
 
-          {/* Box 2 — white, single-line looping marquee */}
-          <div className="relative bg-white overflow-hidden py-3.5">
+          {/* White card — compact looping marquee */}
+          <div className="bg-white overflow-hidden py-3.5">
             <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
               {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
-                <div key={i} className="flex items-center gap-2.5 px-7 shrink-0">
+                <div key={i} className="flex items-center gap-2.5 px-6 shrink-0">
                   <Icon />
                   <span className="font-manrope text-xs font-medium text-[#1D1D1F] whitespace-nowrap">
                     {label}
                   </span>
-                  <span className="ml-5 text-[#D1D5DB] text-[10px] select-none">·</span>
+                  <span className="ml-4 text-[#D1D5DB] text-[10px] select-none">·</span>
                 </div>
               ))}
             </div>
           </div>
-
         </div>
 
-        {/* ── Pulsing scroll arrow — over video, desktop only ── */}
-        <div className="absolute z-20 hidden md:block" style={{ bottom: '10%', left: '22%', transform: 'translateX(-50%)' }}>
+        {/* ── Scroll arrow — bottom-center of section ── */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
           <button
             onClick={() => document.getElementById('showcase-cards')?.scrollIntoView({ behavior: 'smooth' })}
             aria-label="Ver ejemplos de webs"
