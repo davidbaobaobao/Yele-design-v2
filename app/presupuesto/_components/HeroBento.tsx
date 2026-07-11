@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
-/* ── Marquee SVG icons ── */
+/* ── Marquee SVG icons (stroke, 20×20) ── */
 function IcoClock() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -76,7 +76,7 @@ export default function HeroBento() {
           100% { transform: translateX(-50%); }
         }
         .hero-marquee-track {
-          animation: marqueeLeft 16s linear infinite;
+          animation: marqueeLeft 14s linear infinite;
           will-change: transform;
         }
         .hero-marquee-track:hover { animation-play-state: paused; }
@@ -100,18 +100,9 @@ export default function HeroBento() {
 
       <section className="relative h-screen overflow-hidden">
 
-        {/* Blurred poster fills letterbox gaps */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/media/main_hero/poster_hq.jpg')",
-            filter: 'blur(28px)',
-            transform: 'scale(1.08)',
-          }}
-          aria-hidden="true"
-        />
+        {/* Video: object-cover crops on small windows, zooms/expands on large */}
         <video
-          className="absolute inset-0 w-full h-full object-contain"
+          className="absolute inset-0 w-full h-full object-cover"
           autoPlay muted loop playsInline
           poster="/media/main_hero/poster_hq.jpg"
           aria-hidden="true"
@@ -127,47 +118,34 @@ export default function HeroBento() {
           aria-hidden="true"
         />
 
-        {/* ── Floating card — vertically centred, right-anchored, parallax ── */}
+        {/* ── Card — fixed 670 px wide, vertically centred, right-anchored ── */}
         <div
           ref={cardRef}
           className="absolute right-0 z-20"
-          style={{
-            top: '50%',
-            transform: 'translateY(-50%)',
-            /* Reference card = 670px inside a 750px container. Scale to 46vw max 670px */
-            width: 'clamp(300px, 46vw, 670px)',
-          }}
+          style={{ top: '50%', transform: 'translateY(-50%)', width: 670 }}
         >
-          {/* Card shell — position:relative for absolute badge inside */}
-          <div
-            style={{
-              position: 'relative',
-              overflow: 'hidden',
-              boxShadow: '0 30px 60px -20px rgba(0,0,0,0.35)',
-            }}
-          >
+          {/* Card shell */}
+          <div style={{ position: 'relative', overflow: 'hidden', boxShadow: '0 30px 60px -20px rgba(0,0,0,0.35)' }}>
 
-            {/* ── Red promo badge — absolutely overlays black box ──
-                Reference: top:168px, right:0, width:70px, height:220px.
-                168px ≈ 14vw at 1200px viewport (max = 168px). */}
+            {/* ── Red promo badge ── exact reference: top 168, right 0, w 70, h 220 */}
             <div
               style={{
                 position: 'absolute',
-                top: 'clamp(70px, 14vw, 168px)',
+                top: 168,
                 right: 0,
-                width: 'clamp(44px, 5.8vw, 70px)',
-                height: 'clamp(130px, 18.3vw, 220px)',
+                width: 70,
+                height: 220,
                 background: '#e2482f',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                paddingTop: '18px',
-                gap: '12px',
+                paddingTop: 18,
+                gap: 12,
                 zIndex: 2,
               }}
               aria-hidden="true"
             >
-              <svg className="hero-badge-star" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff">
+              <svg className="hero-badge-star" width="18" height="18" viewBox="0 0 24 24" fill="#ffffff">
                 <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z" />
               </svg>
               <span
@@ -176,7 +154,7 @@ export default function HeroBento() {
                   transform: 'rotate(180deg)',
                   fontFamily: 'var(--font-manrope), sans-serif',
                   fontWeight: 600,
-                  fontSize: 'clamp(10px, 1.1vw, 16px)',
+                  fontSize: 16,
                   letterSpacing: '0.04em',
                   color: '#ffffff',
                   whiteSpace: 'nowrap',
@@ -186,25 +164,17 @@ export default function HeroBento() {
               </span>
             </div>
 
-            {/* ── Black content box ──
-                Reference: padding: 56px 24px 40px 24px */}
-            <div
-              style={{
-                background: '#0a0a0a',
-                padding: 'clamp(28px, 4.7vw, 56px) clamp(12px, 2vw, 24px) clamp(20px, 3.3vw, 40px)',
-              }}
-            >
-              {/* Reference: font-family Archivo, weight 500, 96px, line-height 0.98,
-                  letter-spacing -0.02em, margin-left 20px */}
+            {/* ── Black content box ── exact reference: padding 56 24 40 24 */}
+            <div style={{ background: '#0a0a0a', padding: '56px 24px 40px 24px' }}>
               <h1
                 className="font-archivo"
                 style={{
                   fontWeight: 500,
-                  fontSize: 'clamp(38px, 8vw, 96px)',
+                  fontSize: 96,
                   lineHeight: 0.98,
                   letterSpacing: '-0.02em',
                   color: '#ffffff',
-                  marginLeft: 'clamp(10px, 1.7vw, 20px)',
+                  marginLeft: 20,
                 }}
               >
                 Diseño<br />
@@ -212,14 +182,14 @@ export default function HeroBento() {
                 Profesional
               </h1>
 
-              {/* Reference: Inter 400, 22px, margin-top 32px, margin-left 20px */}
+              {/* Subtitle — Inter 400, 22 px, mt 32, ml 20 */}
               <p
                 className="font-manrope"
                 style={{
-                  marginTop: 'clamp(16px, 2.7vw, 32px)',
-                  marginLeft: 'clamp(10px, 1.7vw, 20px)',
+                  marginTop: 32,
+                  marginLeft: 20,
                   fontWeight: 400,
-                  fontSize: 'clamp(13px, 1.8vw, 22px)',
+                  fontSize: 22,
                   letterSpacing: '0.01em',
                   color: '#ffffff',
                 }}
@@ -227,14 +197,14 @@ export default function HeroBento() {
                 Tu agencia de diseño web · Sin complicaciones
               </p>
 
-              {/* Reference: Inter 600, 22px, margin-top 8px, margin-left 20px */}
+              {/* Price — Inter 600, 22 px, mt 8, ml 20 */}
               <p
                 className="font-manrope"
                 style={{
-                  marginTop: '8px',
-                  marginLeft: 'clamp(10px, 1.7vw, 20px)',
+                  marginTop: 8,
+                  marginLeft: 20,
                   fontWeight: 600,
-                  fontSize: 'clamp(13px, 1.8vw, 22px)',
+                  fontSize: 22,
                   letterSpacing: '0.01em',
                   color: '#ffffff',
                 }}
@@ -243,31 +213,24 @@ export default function HeroBento() {
               </p>
             </div>
 
-            {/* ── White marquee box ──
-                Reference: padding 22px 0, Inter 600 18px */}
-            <div
-              style={{
-                background: '#ffffff',
-                padding: 'clamp(14px, 1.8vw, 22px) 0',
-                overflow: 'hidden',
-              }}
-            >
+            {/* ── White marquee box ── exact reference: padding 22 0 */}
+            <div style={{ background: '#ffffff', padding: '22px 0', overflow: 'hidden' }}>
               <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
                 {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
-                  <div key={i} className="flex items-center shrink-0" style={{ gap: '10px', padding: '0 20px' }}>
+                  <div key={i} className="flex items-center shrink-0" style={{ gap: 12, padding: '0 24px' }}>
                     <Icon />
                     <span
                       className="font-manrope"
                       style={{
                         fontWeight: 600,
-                        fontSize: 'clamp(12px, 1.5vw, 18px)',
+                        fontSize: 18,
                         color: '#0a0a0a',
                         whiteSpace: 'nowrap',
                       }}
                     >
                       {label}
                     </span>
-                    <span style={{ color: '#D1D5DB', marginLeft: '10px', fontSize: '12px' }} aria-hidden="true">·</span>
+                    <span style={{ color: '#D1D5DB', marginLeft: 8, fontSize: 12 }} aria-hidden="true">·</span>
                   </div>
                 ))}
               </div>
