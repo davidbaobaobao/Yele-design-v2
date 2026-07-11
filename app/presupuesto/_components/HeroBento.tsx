@@ -95,9 +95,20 @@ export default function HeroBento() {
 
       <section className="relative h-screen overflow-hidden">
 
-        {/* ── HQ Video background ── */}
+        {/* ── HQ Video background ──
+             Blurred poster fills any letterbox gaps so video can use
+             object-contain (no crop/zoom) while leaving no black bars. */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/media/main_hero/poster_hq.jpg')",
+            filter: 'blur(28px)',
+            transform: 'scale(1.08)',
+          }}
+          aria-hidden="true"
+        />
         <video
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain"
           autoPlay muted loop playsInline
           poster="/media/main_hero/poster_hq.jpg"
           aria-hidden="true"
