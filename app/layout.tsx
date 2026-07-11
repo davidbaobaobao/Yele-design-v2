@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Outfit, Manrope } from 'next/font/google'
+import { Outfit, Manrope, Archivo } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 import { LanguageProvider } from '@/context/LanguageContext'
@@ -16,6 +16,13 @@ const outfit = Outfit({
 const manrope = Manrope({
   subsets: ['latin'],
   variable: '--font-manrope',
+  display: 'swap',
+})
+
+const archivo = Archivo({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-archivo',
   display: 'swap',
 })
 
@@ -226,7 +233,7 @@ const schemaOrg = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${outfit.variable} ${manrope.variable}`}>
+    <html lang="es" className={`${outfit.variable} ${manrope.variable} ${archivo.variable}`}>
       <head>
         <script
           type="application/ld+json"

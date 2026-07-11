@@ -71,8 +71,6 @@ export default function HeroBento() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap');
-
         @keyframes marqueeLeft {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
@@ -129,17 +127,18 @@ export default function HeroBento() {
           aria-hidden="true"
         />
 
-        {/* ── Floating card — vertically centred, right-aligned, parallax ── */}
+        {/* ── Floating card — vertically centred, right-anchored, parallax ── */}
         <div
           ref={cardRef}
           className="absolute right-0 z-20"
           style={{
             top: '50%',
             transform: 'translateY(-50%)',
-            width: 'clamp(300px, 46vw, 720px)',
+            /* Reference card = 670px inside a 750px container. Scale to 46vw max 670px */
+            width: 'clamp(300px, 46vw, 670px)',
           }}
         >
-          {/* Card shell — relative so badge can be absolute inside */}
+          {/* Card shell — position:relative for absolute badge inside */}
           <div
             style={{
               position: 'relative',
@@ -147,20 +146,23 @@ export default function HeroBento() {
               boxShadow: '0 30px 60px -20px rgba(0,0,0,0.35)',
             }}
           >
-            {/* ── Red promo badge — absolute, overlapping black box ── */}
+
+            {/* ── Red promo badge — absolutely overlays black box ──
+                Reference: top:168px, right:0, width:70px, height:220px.
+                168px ≈ 14vw at 1200px viewport (max = 168px). */}
             <div
               style={{
                 position: 'absolute',
-                top: 'clamp(60px, 10%, 168px)',
+                top: 'clamp(70px, 14vw, 168px)',
                 right: 0,
-                width: 'clamp(44px, 5.5vw, 70px)',
-                height: 'clamp(130px, 18vw, 220px)',
+                width: 'clamp(44px, 5.8vw, 70px)',
+                height: 'clamp(130px, 18.3vw, 220px)',
                 background: '#e2482f',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                paddingTop: '16px',
-                gap: '10px',
+                paddingTop: '18px',
+                gap: '12px',
                 zIndex: 2,
               }}
               aria-hidden="true"
@@ -172,35 +174,37 @@ export default function HeroBento() {
                 style={{
                   writingMode: 'vertical-rl',
                   transform: 'rotate(180deg)',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--font-manrope), sans-serif',
                   fontWeight: 600,
-                  fontSize: 'clamp(10px, 1vw, 16px)',
+                  fontSize: 'clamp(10px, 1.1vw, 16px)',
                   letterSpacing: '0.04em',
                   color: '#ffffff',
                   whiteSpace: 'nowrap',
-                  marginTop: '4px',
                 }}
               >
                 Primer mes gratis
               </span>
             </div>
 
-            {/* ── Black content box ── */}
+            {/* ── Black content box ──
+                Reference: padding: 56px 24px 40px 24px */}
             <div
               style={{
                 background: '#0a0a0a',
-                padding: 'clamp(28px, 4.2vw, 56px) clamp(14px, 2vw, 24px) clamp(20px, 3vw, 40px)',
+                padding: 'clamp(28px, 4.7vw, 56px) clamp(12px, 2vw, 24px) clamp(20px, 3.3vw, 40px)',
               }}
             >
+              {/* Reference: font-family Archivo, weight 500, 96px, line-height 0.98,
+                  letter-spacing -0.02em, margin-left 20px */}
               <h1
+                className="font-archivo"
                 style={{
-                  fontFamily: "'Archivo', sans-serif",
                   fontWeight: 500,
-                  fontSize: 'clamp(38px, 6.5vw, 96px)',
+                  fontSize: 'clamp(38px, 8vw, 96px)',
                   lineHeight: 0.98,
                   letterSpacing: '-0.02em',
                   color: '#ffffff',
-                  marginLeft: 'clamp(10px, 1.5vw, 20px)',
+                  marginLeft: 'clamp(10px, 1.7vw, 20px)',
                 }}
               >
                 Diseño<br />
@@ -208,28 +212,29 @@ export default function HeroBento() {
                 Profesional
               </h1>
 
+              {/* Reference: Inter 400, 22px, margin-top 32px, margin-left 20px */}
               <p
+                className="font-manrope"
                 style={{
-                  marginTop: 'clamp(16px, 2.5vw, 32px)',
-                  marginLeft: 'clamp(10px, 1.5vw, 20px)',
-                  fontFamily: "'Inter', sans-serif",
+                  marginTop: 'clamp(16px, 2.7vw, 32px)',
+                  marginLeft: 'clamp(10px, 1.7vw, 20px)',
                   fontWeight: 400,
-                  fontSize: 'clamp(13px, 1.7vw, 22px)',
+                  fontSize: 'clamp(13px, 1.8vw, 22px)',
                   letterSpacing: '0.01em',
                   color: '#ffffff',
-                  opacity: 0.85,
                 }}
               >
                 Tu agencia de diseño web · Sin complicaciones
               </p>
 
+              {/* Reference: Inter 600, 22px, margin-top 8px, margin-left 20px */}
               <p
+                className="font-manrope"
                 style={{
                   marginTop: '8px',
-                  marginLeft: 'clamp(10px, 1.5vw, 20px)',
-                  fontFamily: "'Inter', sans-serif",
+                  marginLeft: 'clamp(10px, 1.7vw, 20px)',
                   fontWeight: 600,
-                  fontSize: 'clamp(13px, 1.7vw, 22px)',
+                  fontSize: 'clamp(13px, 1.8vw, 22px)',
                   letterSpacing: '0.01em',
                   color: '#ffffff',
                 }}
@@ -238,7 +243,8 @@ export default function HeroBento() {
               </p>
             </div>
 
-            {/* ── White marquee box ── */}
+            {/* ── White marquee box ──
+                Reference: padding 22px 0, Inter 600 18px */}
             <div
               style={{
                 background: '#ffffff',
@@ -251,10 +257,10 @@ export default function HeroBento() {
                   <div key={i} className="flex items-center shrink-0" style={{ gap: '10px', padding: '0 20px' }}>
                     <Icon />
                     <span
+                      className="font-manrope"
                       style={{
-                        fontFamily: "'Inter', sans-serif",
                         fontWeight: 600,
-                        fontSize: 'clamp(12px, 1.3vw, 18px)',
+                        fontSize: 'clamp(12px, 1.5vw, 18px)',
                         color: '#0a0a0a',
                         whiteSpace: 'nowrap',
                       }}

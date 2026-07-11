@@ -41,6 +41,7 @@ const config: Config = {
       fontFamily: {
         outfit: ["var(--font-outfit)", "sans-serif"],
         manrope: ["var(--font-manrope)", "sans-serif"],
+        archivo: ["var(--font-archivo)", "sans-serif"],
       },
     },
   },
