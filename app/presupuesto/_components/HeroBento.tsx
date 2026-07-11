@@ -184,7 +184,7 @@ export default function HeroBento() {
             </div>
 
             {/* ── Black content box ── exact reference: padding 56 24 40 24 */}
-            <div style={{ background: '#0a0a0a', padding: '56px 24px 40px 24px' }}>
+            <div style={{ background: '#000000', padding: '56px 24px 40px 24px' }}>
               <h1
                 className="font-archivo"
                 style={{
