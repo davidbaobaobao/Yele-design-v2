@@ -157,30 +157,22 @@ export default function PrecioCard() {
                 <span className="font-manrope text-sm text-[#6B7280] mb-1.5">/mes</span>
               </div>
 
-              {/* Notification-style animated pill */}
+              {/* Animated pill */}
               <div className="relative">
-                {/* Expanding ping ring */}
+                {/* Single slow ring */}
                 <motion.span
                   className="absolute inset-0 rounded-full pointer-events-none"
                   style={{ background: ORANGE }}
-                  animate={{ scale: [1, 1.65], opacity: [0.55, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.6, ease: 'easeOut' }}
+                  animate={{ scale: [1, 1.45], opacity: [0.3, 0] }}
+                  transition={{ repeat: Infinity, duration: 2.8, ease: 'easeOut' }}
                   aria-hidden="true"
                 />
-                {/* Second ring, offset */}
-                <motion.span
-                  className="absolute inset-0 rounded-full pointer-events-none"
-                  style={{ background: ORANGE }}
-                  animate={{ scale: [1, 1.65], opacity: [0.35, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.6, ease: 'easeOut', delay: 0.5 }}
-                  aria-hidden="true"
-                />
-                {/* Pill itself — subtle scale pulse */}
+                {/* Pill itself — very gentle breathe */}
                 <motion.span
                   style={{ background: ORANGE }}
-                  animate={{ scale: [1, 1.04, 1] }}
-                  transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
-                  className="relative font-manrope font-bold text-sm text-white px-4 py-2 rounded-full block"
+                  animate={{ opacity: [1, 0.82, 1] }}
+                  transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
+                  className="relative font-manrope font-semibold text-sm text-white px-4 py-2 rounded-full block"
                 >
                   Primer mes gratuito
                 </motion.span>

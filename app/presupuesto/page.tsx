@@ -70,7 +70,7 @@ export default function PresupuestoPage() {
               className="inline-flex items-center gap-1.5 font-manrope font-medium text-sm bg-white text-[#1D1D1F] px-4 py-2 rounded-xl hover:bg-[#F5F5F7] transition-colors"
               aria-label="Empezar con el plan Starter"
             >
-              Empezar →
+              Empezar por 0€
             </RegistroButton>
             <WAButton className="inline-flex items-center gap-2 font-manrope font-medium text-sm bg-[#25D366] text-white px-4 py-2 rounded-xl hover:bg-[#20B858] transition-colors">
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true">

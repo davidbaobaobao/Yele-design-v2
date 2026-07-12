@@ -11,12 +11,11 @@ export default function DiferenciaSection() {
       <video
         className="absolute inset-0 w-full h-full object-cover"
         autoPlay muted loop playsInline
-        poster="/media/diferencia/orbital_poster.jpg"
+        poster="/media/diferencia/orbital2_poster.jpg"
         aria-hidden="true"
       >
-        {/* mp4 first so Safari picks it up reliably */}
-        <source src="/media/diferencia/orbital_hero.mp4"  type="video/mp4" />
-        <source src="/media/diferencia/orbital_hero.webm" type="video/webm" />
+        <source src="/media/diferencia/orbital2_hero.mp4"  type="video/mp4" />
+        <source src="/media/diferencia/orbital2_hero.webm" type="video/webm" />
       </video>
 
       {/* Dark scrim */}
@@ -34,10 +33,10 @@ export default function DiferenciaSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
-            className="font-outfit font-extrabold text-white tracking-tight leading-none mb-10 text-left"
-            style={{ fontSize: 'clamp(48px, 7vw, 110px)' }}
+            className="font-outfit font-extrabold text-white tracking-tight leading-none mb-10 text-left whitespace-nowrap"
+            style={{ fontSize: 'clamp(32px, 4vw, 58px)' }}
           >
-            LA<br />DIFERENCIA
+            LA DIFERENCIA
           </motion.h2>
 
           <motion.div
@@ -49,13 +48,13 @@ export default function DiferenciaSection() {
             style={{ fontSize: 'clamp(15px, 1.6vw, 20px)' }}
           >
             <p className="text-white/60">
-              Otras agencias te entregan la web… y ahí se lavan las manos
+              Otras agencias te entregan la web… y se lavan las manos.
             </p>
             <p className="text-white">
               Nosotros estamos... <strong className="font-bold">Siempre.</strong>
             </p>
             <p className="text-white/60">
-              Mejora constante, Siempre al día
+              Mejora constante... Siempre al día.
             </p>
           </motion.div>
 
