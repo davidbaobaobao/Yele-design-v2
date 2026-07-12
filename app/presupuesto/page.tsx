@@ -11,6 +11,7 @@ import type { FAQItem } from '@/components/FAQClient'
 import { WAButton, RegistroButton, WA_LINK } from './_components/CTAButtons'
 import ClarityScript from '@/components/ClarityScript'
 import HeroBento from './_components/HeroBento'
+import ScrollBrake from './_components/ScrollBrake'
 
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
 const ContactForm      = dynamic(() => import('@/components/ContactForm'))
@@ -82,13 +83,12 @@ export default function PresupuestoPage() {
       </header>
 
       <main id="main-content">
+        <ScrollBrake />
 
         {/* ── 1 · HERO BENTO ───────────────────────────────────── */}
         <HeroBento />
 
-        <div id="showcase-cards">
-          <ShowcaseFeatureCards />
-        </div>
+        <ShowcaseFeatureCards />
 
         {/* ── 3 · CÓMO FUNCIONA ────────────────────────────────── */}
         <ComoFunciona noBg />

@@ -42,7 +42,6 @@ const HOLD_MS = 1000  // lock after each card expand
 
 /* ── Card heights: image 80%, text ~20% ── */
 const IMG_H  = 260   // expanded image height px
-const TEXT_H = 64    // collapsed text row height px (approx)
 
 function StepCard({
   step, expanded, t,
