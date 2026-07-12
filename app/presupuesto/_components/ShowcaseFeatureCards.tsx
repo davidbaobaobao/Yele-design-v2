@@ -70,7 +70,7 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
                    transition-shadow duration-300"
       >
         {/* Image + video layer — both inside the same parallax wrapper */}
-        <div className="relative h-80 md:h-96 overflow-hidden bg-[#0a0a0a]">
+        <div className="relative h-44 md:h-52 overflow-hidden bg-[#0a0a0a]">
           <motion.div
             style={{ y: imageY }}
             className="absolute inset-x-0 top-[-10%] bottom-[-10%]"
@@ -123,9 +123,9 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
 
 export default function ShowcaseFeatureCards() {
   return (
-    <section id="showcase-cards" className="pt-2 pb-6 md:pt-4 md:pb-8">
+    <section id="showcase-cards" className="min-h-screen flex flex-col justify-center py-6">
       <h2 className="sr-only">Características</h2>
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6 w-full">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
           {cards.map((card, i) => (
             <ParallaxCard key={card.title} {...card} i={i} />

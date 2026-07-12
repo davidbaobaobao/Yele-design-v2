@@ -1,11 +1,36 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useRef, useCallback } from 'react'
+import { motion, useMotionValue, useMotionTemplate } from 'framer-motion'
 import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 
 export default function DiferenciaSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const mouseX = useMotionValue(-2000)
+  const mouseY = useMotionValue(-2000)
+
+  /* Dynamic scrim — nearly transparent where cursor is, dark at edges */
+  const scrimBg = useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(10,10,15,0.05) 0%, rgba(10,10,15,0.72) 65%)`
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const rect = sectionRef.current?.getBoundingClientRect()
+    if (!rect) return
+    mouseX.set(e.clientX - rect.left)
+    mouseY.set(e.clientY - rect.top)
+  }, [mouseX, mouseY])
+
+  const handleMouseLeave = useCallback(() => {
+    mouseX.set(-2000)
+    mouseY.set(-2000)
+  }, [mouseX, mouseY])
+
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative min-h-screen flex items-center overflow-hidden"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
 
       {/* Background video */}
       <video
@@ -18,11 +43,15 @@ export default function DiferenciaSection() {
         <source src="/media/diferencia/orbital2_hero.webm" type="video/webm" />
       </video>
 
-      {/* Dark scrim */}
-      <div className="absolute inset-0 bg-[#0a0a0f]/60" aria-hidden="true" />
+      {/* Spotlight scrim — lighter under cursor, dark elsewhere */}
+      <motion.div
+        className="absolute inset-0"
+        style={{ background: scrimBg }}
+        aria-hidden="true"
+      />
 
-      {/* Grid mouse-reveal — attaches to parent section */}
-      <InfiniteGrid revealRadius={300} revealOpacity={0.2} baseOpacity={0.04} cellSize={22} />
+      {/* Subtle grid overlay — original 40px cell size */}
+      <InfiniteGrid revealRadius={280} revealOpacity={0.18} baseOpacity={0.05} />
 
       {/* Content — left half of the screen */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-12 md:px-20 py-20">
