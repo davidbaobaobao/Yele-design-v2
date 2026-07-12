@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { useRef, useState, useCallback, useEffect } from 'react'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { useRef, useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
 const steps = [
@@ -32,210 +32,213 @@ const steps = [
   },
 ]
 
-type Step = typeof steps[0]
-
-const COLLAPSE_MS = 320  // ms to wait for collapse before expanding next
-const EXPAND_MS   = 1000 // ms card stays expanded before checking if we need to continue (min 1 s hold)
-
-function StepCard({ step, index, t, isExpanded, onActive }: {
-  step: Step
-  index: number
-  t: (es: string, en: string) => string
-  isExpanded: boolean
-  onActive: (i: number) => void
-}) {
-  const wrapRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(wrapRef, { once: false, margin: '-35% 0px -35% 0px' })
-
-  useEffect(() => {
-    if (isInView) onActive(index)
-  }, [isInView, index, onActive])
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
-      viewport={{ once: true, margin: '-80px' }}
-    >
-      <div
-        ref={wrapRef}
-        className={`rounded-2xl overflow-hidden cursor-default transition-colors duration-500 ${
-          isExpanded
-            ? 'bg-[#1D1D1F] shadow-[0_24px_64px_rgba(0,0,0,0.22)]'
-            : 'bg-white border border-black/[0.07] shadow-sm'
-        }`}
-      >
-        <motion.div
-          animate={{ height: isExpanded ? 210 : 0 }}
-          transition={{ duration: 0.55, ease: [0.32, 0, 0.24, 1] }}
-          className="relative overflow-hidden"
-          style={{ willChange: 'height' }}
-        >
-          <div className="relative" style={{ height: 210 }}>
-            <Image
-              src={step.img}
-              alt={t(step.es.title, step.en.title)}
-              fill
-              unoptimized
-              className="object-cover object-center"
-            />
-          </div>
-        </motion.div>
-
-        <div className={`transition-all duration-500 ${isExpanded ? 'p-7' : 'p-5'}`}>
-          <span className={`font-outfit text-5xl font-semibold block mb-3 leading-none transition-colors duration-500 ${
-            isExpanded ? 'text-white/20' : 'text-[#6B7280]/30'
-          }`}>
-            {step.num}
-          </span>
-          <h3 className={`font-outfit font-semibold text-xl transition-colors duration-500 ${
-            isExpanded ? 'text-white' : 'text-[#1D1D1F]'
-          }`}>
-            {t(step.es.title, step.en.title)}
-          </h3>
-
-          <AnimatePresence initial={false}>
-            {isExpanded && (
-              <motion.p
-                key="desc"
-                initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
-                exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                transition={{ duration: 0.4, ease: 'easeInOut' }}
-                className="font-manrope text-base leading-relaxed text-white/60 overflow-hidden"
-              >
-                {t(step.es.desc, step.en.desc)}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
+/* ── Timings ──────────────────────────────────────────────────── */
+const ANIM_MS  = 340   // height animation duration
+const HOLD_MS  = 2000  // lock after each expand (ignores scrolls)
 
 export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
   const { t } = useLang()
+  const sectionRef = useRef<HTMLElement>(null)
 
-  const [displayStep, setDisplayStep] = useState(0)  // -1 = no card (mid-collapse gap)
-  const [activeStep,  setActiveStep]  = useState(0)  // drives progress pills
+  /* displayCard: index 0-3 = that card is expanded; -1 = all collapsed */
+  const [displayCard, setDisplayCard] = useState(0)
+  const [activeCard,  setActiveCard]  = useState(0) // drives progress pills
 
-  const displayRef = useRef(0)     // mirrors displayStep, readable in closures
-  const targetRef  = useRef(0)     // where scroll wants us to be
-  const busyRef    = useRef(false) // true while sequencing animations
-  const firstRef   = useRef(true)
-  const t1 = useRef<ReturnType<typeof setTimeout>>()
-  const t2 = useRef<ReturnType<typeof setTimeout>>()
+  const displayRef = useRef(0)
+  const lockedRef  = useRef(false) // true during animation + 2s hold
 
-  // Advance one step toward targetRef, then schedule the next advance.
-  // Using a ref so the recursive setTimeout callback always calls the latest version.
-  const advanceRef = useRef<() => void>(() => {})
-  advanceRef.current = () => {
-    const cur = displayRef.current
-    const tgt = targetRef.current
-    if (cur === tgt) {
-      busyRef.current = false
-      return
-    }
-    const next = cur < tgt ? cur + 1 : cur - 1
-
-    // Collapse current card
-    setDisplayStep(-1)
-    displayRef.current = -1
-    clearTimeout(t1.current)
-    clearTimeout(t2.current)
-
-    t1.current = setTimeout(() => {
-      // Expand next card, update pills
-      setDisplayStep(next)
-      setActiveStep(next)
-      displayRef.current = next
-
-      // After expand finishes, check if we still need to continue
-      t2.current = setTimeout(() => advanceRef.current(), EXPAND_MS)
-    }, COLLAPSE_MS)
+  /* ── Section-in-view helper ── */
+  function sectionIsActive() {
+    const el = sectionRef.current
+    if (!el) return false
+    const { top, bottom } = el.getBoundingClientRect()
+    const vh = window.innerHeight
+    const visible = Math.min(bottom, vh) - Math.max(top, 0)
+    return visible / vh > 0.55 // section fills >55% of viewport
   }
 
-  const handleStepActive = useCallback((index: number) => {
-    if (index === targetRef.current) return
-    targetRef.current = index
+  /* ── Wheel handler (desktop only) ── */
+  useEffect(() => {
+    function onWheel(e: WheelEvent) {
+      if (window.innerWidth < 768) return
+      if (!sectionIsActive()) return
 
-    // Very first activation: expand instantly, no animation
-    if (firstRef.current) {
-      firstRef.current = false
-      setDisplayStep(index)
-      setActiveStep(index)
-      displayRef.current = index
-      return
+      const cur       = displayRef.current
+      const goingDown = e.deltaY > 0
+
+      // At boundaries: let page scroll naturally
+      if (goingDown  && cur === steps.length - 1) return
+      if (!goingDown && cur === 0) return
+
+      // Consume the event regardless (prevent page scroll while inside section)
+      e.preventDefault()
+
+      // During lock: consume but don't advance
+      if (lockedRef.current) return
+
+      // ── Start transition ──
+      lockedRef.current = true
+      const next = goingDown ? cur + 1 : cur - 1
+
+      // Phase 1: collapse (all cards → height 0)
+      setDisplayCard(-1)
+      displayRef.current = -1
+
+      setTimeout(() => {
+        // Phase 2: expand next card
+        setDisplayCard(next)
+        setActiveCard(next)
+        displayRef.current = next
+
+        // Phase 3: hold 2 s, then unlock
+        setTimeout(() => {
+          lockedRef.current = false
+        }, HOLD_MS)
+      }, ANIM_MS)
     }
 
-    // If already sequencing, just updating targetRef is enough —
-    // the running advanceRef loop will re-evaluate direction on its next tick.
-    if (busyRef.current) return
-
-    busyRef.current = true
-    advanceRef.current()
+    window.addEventListener('wheel', onWheel, { passive: false })
+    return () => window.removeEventListener('wheel', onWheel)
   }, [])
 
-  useEffect(() => () => {
-    clearTimeout(t1.current)
-    clearTimeout(t2.current)
+  /* ── On first entry: card 0 shown; brief lock prevents accidental skip ── */
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Brief lock when entering so the first card has time to render
+          lockedRef.current = true
+          setTimeout(() => { lockedRef.current = false }, 700)
+        } else {
+          lockedRef.current = true // lock while out of view
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [])
 
   return (
-    <section id="como-funciona" className={`py-24 md:py-32 ${noBg ? '' : 'bg-[#F5F5F7]'}`}>
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid md:grid-cols-2 gap-16 items-start">
+    <section
+      ref={sectionRef}
+      id="como-funciona"
+      className={`md:h-screen flex items-center py-14 md:py-0 ${noBg ? '' : 'bg-[#F5F5F7]'}`}
+    >
+      <div className="max-w-6xl mx-auto px-6 w-full">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
 
-          {/* Sticky left */}
-          <div className="md:sticky md:top-[30%]">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-              viewport={{ once: true, margin: '-80px' }}
-            >
-              <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
-                {t('Cómo funciona', 'How it works')}
-              </span>
-              <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
-                {t('Cuatro pasos.', 'Four steps.')}
-              </h2>
-              <p className="font-manrope text-[#6B7280] text-lg leading-relaxed">
-                {t(
-                  'Sin reuniones interminables. Sin presupuestos sorpresa.',
-                  'No endless meetings. No surprise costs.'
-                )}
-              </p>
+          {/* ── Left: heading ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+            viewport={{ once: true }}
+          >
+            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+              {t('Cómo funciona', 'How it works')}
+            </span>
+            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-5 leading-tight">
+              {t('Cuatro pasos.', 'Four steps.')}
+            </h2>
+            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-sm">
+              {t(
+                'Sin reuniones interminables. Sin presupuestos sorpresa.',
+                'No endless meetings. No surprise costs.'
+              )}
+            </p>
 
-              <div className="flex gap-2 mt-8">
-                {steps.map((s, i) => (
+            {/* Progress pills */}
+            <div className="flex gap-2 mt-8">
+              {steps.map((s, i) => (
+                <motion.div
+                  key={s.num}
+                  className="h-[3px] rounded-full"
+                  animate={{
+                    width: i === activeCard ? 32 : 20,
+                    backgroundColor:
+                      i === activeCard
+                        ? '#1D1D1F'
+                        : 'rgba(29,29,31,0.12)',
+                  }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ── Right: 4 step cards ── */}
+          <div className="flex flex-col gap-2.5">
+            {steps.map((step, i) => {
+              const expanded = displayCard === i
+              return (
+                <div
+                  key={step.num}
+                  className={`rounded-2xl overflow-hidden transition-colors duration-500 ${
+                    expanded
+                      ? 'bg-[#1D1D1F] shadow-[0_20px_56px_rgba(0,0,0,0.2)]'
+                      : 'bg-white border border-black/[0.07] shadow-sm'
+                  }`}
+                >
+                  {/* ── Animated image ── */}
                   <motion.div
-                    key={s.num}
-                    className="h-1 w-8 rounded-full"
-                    animate={{
-                      backgroundColor: i === activeStep ? '#1D1D1F' : 'rgba(29, 29, 31, 0.1)',
+                    animate={{ height: expanded ? 172 : 0 }}
+                    transition={{
+                      duration: ANIM_MS / 1000,
+                      ease: expanded
+                        ? [0.16, 1, 0.3, 1]   // expand: fast in, settle
+                        : [0.4, 0, 0.6, 1],   // collapse: fast out
                     }}
-                    transition={{ duration: 0.4, ease: 'easeOut' }}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </div>
+                    className="relative overflow-hidden"
+                  >
+                    <div className="relative" style={{ height: 172 }}>
+                      <Image
+                        src={step.img}
+                        alt={t(step.es.title, step.en.title)}
+                        fill
+                        unoptimized
+                        className="object-cover object-center"
+                      />
+                    </div>
+                  </motion.div>
 
-          {/* Steps */}
-          <div className="flex flex-col gap-4">
-            {steps.map((step, i) => (
-              <StepCard
-                key={step.num}
-                step={step}
-                index={i}
-                t={t}
-                isExpanded={displayStep === i}
-                onActive={handleStepActive}
-              />
-            ))}
+                  {/* ── Card content ── */}
+                  <div className={`transition-all duration-400 ${expanded ? 'p-6' : 'p-4'}`}>
+                    <span
+                      className={`font-outfit text-4xl font-semibold block mb-2 leading-none transition-colors duration-500 ${
+                        expanded ? 'text-white/18' : 'text-[#6B7280]/25'
+                      }`}
+                    >
+                      {step.num}
+                    </span>
+                    <h3
+                      className={`font-outfit font-semibold text-[17px] transition-colors duration-500 ${
+                        expanded ? 'text-white' : 'text-[#1D1D1F]'
+                      }`}
+                    >
+                      {t(step.es.title, step.en.title)}
+                    </h3>
+
+                    <AnimatePresence initial={false}>
+                      {expanded && (
+                        <motion.p
+                          key="desc"
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: 'auto', marginTop: 10 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          transition={{ duration: 0.32, ease: 'easeInOut' }}
+                          className="font-manrope text-sm leading-relaxed text-white/58 overflow-hidden"
+                        >
+                          {t(step.es.desc, step.en.desc)}
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              )
+            })}
           </div>
 
         </div>
