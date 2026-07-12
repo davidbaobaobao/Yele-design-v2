@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'framer-motion'
 import { Check } from 'lucide-react'
 
@@ -16,36 +16,78 @@ const features = [
 ]
 
 export default function PrecioCard() {
-  const ref = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const cardRef    = useRef<HTMLDivElement>(null)
+
+  /* ── 3D parallax tilt ── */
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-
   const smoothX = useSpring(mouseX, { stiffness: 150, damping: 20 })
   const smoothY = useSpring(mouseY, { stiffness: 150, damping: 20 })
-
   const rotateX = useTransform(smoothY, [-0.5, 0.5], [4, -4])
   const rotateY = useTransform(smoothX, [-0.5, 0.5], [-4, 4])
-
-  const spotX = useTransform(smoothX, [-0.5, 0.5], [0, 100])
-  const spotY = useTransform(smoothY, [-0.5, 0.5], [0, 100])
-  const spotBg = useMotionTemplate`radial-gradient(circle at ${spotX}% ${spotY}%, rgba(255,255,255,0.18) 0%, transparent 55%)`
+  const spotX   = useTransform(smoothX, [-0.5, 0.5], [0, 100])
+  const spotY   = useTransform(smoothY, [-0.5, 0.5], [0, 100])
+  const spotBg  = useMotionTemplate`radial-gradient(circle at ${spotX}% ${spotY}%, rgba(255,255,255,0.12) 0%, transparent 55%)`
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = ref.current?.getBoundingClientRect()
+    const rect = cardRef.current?.getBoundingClientRect()
     if (!rect) return
     mouseX.set((e.clientX - rect.left) / rect.width - 0.5)
     mouseY.set((e.clientY - rect.top) / rect.height - 0.5)
   }
+  function handleMouseLeave() { mouseX.set(0); mouseY.set(0) }
 
-  function handleMouseLeave() {
-    mouseX.set(0)
-    mouseY.set(0)
-  }
+  /* ── Auto-snap to fill screen + 2s scroll lock on entry ── */
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    let snapping = false
+    let locked   = false
+    let lockTimer: ReturnType<typeof setTimeout>
+
+    function preventScroll(e: WheelEvent) {
+      if (locked) e.preventDefault()
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !snapping) {
+        const { top, bottom } = el.getBoundingClientRect()
+        const vh = window.innerHeight
+        const ratio = (Math.min(bottom, vh) - Math.max(top, 0)) / vh
+
+        if (ratio < 0.88) {
+          snapping = true
+          locked   = true
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          window.addEventListener('wheel', preventScroll, { passive: false })
+          clearTimeout(lockTimer)
+          lockTimer = setTimeout(() => {
+            locked   = false
+            snapping = false
+            window.removeEventListener('wheel', preventScroll)
+          }, 2000)
+        }
+      } else if (!entry.isIntersecting) {
+        snapping = false
+      }
+    }, { threshold: 0.12 })
+
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+      clearTimeout(lockTimer)
+      window.removeEventListener('wheel', preventScroll)
+    }
+  }, [])
 
   return (
-    <section id="precios" className="relative py-14 md:py-20 overflow-hidden">
-
-      {/* Background video — fills entire section */}
+    <section
+      ref={sectionRef}
+      id="precios"
+      className="relative min-h-screen flex items-center overflow-hidden py-16"
+    >
+      {/* Background video */}
       <video
         className="absolute inset-0 w-full h-full object-cover"
         autoPlay muted loop playsInline
@@ -55,12 +97,11 @@ export default function PrecioCard() {
         <source src="/media/precios/bg.webm" type="video/webm" />
         <source src="/media/precios/bg.mp4"  type="video/mp4" />
       </video>
-      {/* Subtle dark scrim for legibility */}
       <div className="absolute inset-0 bg-black/35" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
 
-        {/* Heading — full-width so it stays on one line */}
+        {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -68,11 +109,13 @@ export default function PrecioCard() {
           viewport={{ once: true, margin: '-80px' }}
           className="text-center mb-10"
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-white/60 mb-4 block">
+          <span className="font-manrope text-sm font-semibold tracking-[0.18em] uppercase text-white/70 mb-4 block">
             Precios
           </span>
-          <h2 className="font-outfit font-semibold text-white tracking-tight whitespace-nowrap"
-              style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}>
+          <h2
+            className="font-outfit font-semibold text-white tracking-tight whitespace-nowrap"
+            style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}
+          >
             Sin letra pequeña.
           </h2>
         </motion.div>
@@ -80,7 +123,7 @@ export default function PrecioCard() {
         {/* Card */}
         <div className="max-w-md mx-auto">
           <motion.div
-            ref={ref}
+            ref={cardRef}
             style={{ rotateX, rotateY, transformPerspective: 1000 }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
@@ -88,9 +131,8 @@ export default function PrecioCard() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.12, ease: 'easeOut' }}
             viewport={{ once: true, margin: '-80px' }}
-            className="relative bg-white text-[#1D1D1F] rounded-3xl p-8
-                       shadow-[0_28px_72px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.06]
-                       cursor-default"
+            className="relative bg-[#F5F5F7] text-[#1D1D1F] rounded-3xl p-10 cursor-default
+                       shadow-[0_24px_64px_rgba(0,0,0,0.32)] ring-1 ring-black/[0.07]"
           >
             {/* Spotlight overlay */}
             <motion.div
@@ -100,7 +142,7 @@ export default function PrecioCard() {
             />
 
             {/* Price + orange pill inline */}
-            <div className="flex items-center gap-3 flex-wrap mb-7">
+            <div className="flex items-center gap-3 flex-wrap mb-8">
               <div className="flex items-end gap-1">
                 <span className="font-outfit font-semibold text-6xl tracking-tight leading-none">
                   49€
@@ -116,10 +158,10 @@ export default function PrecioCard() {
             </div>
 
             {/* Features */}
-            <ul className="relative flex flex-col gap-3.5 mb-8">
+            <ul className="relative flex flex-col gap-4 mb-10">
               {features.map(feat => (
-                <li key={feat} className="flex items-center gap-2.5">
-                  <Check size={15} className="flex-shrink-0 text-[#34C759]" aria-hidden="true" />
+                <li key={feat} className="flex items-center gap-3">
+                  <Check size={16} className="flex-shrink-0 text-[#34C759]" aria-hidden="true" />
                   <span className="font-manrope text-sm text-[#1D1D1F]">{feat}</span>
                 </li>
               ))}
@@ -128,7 +170,7 @@ export default function PrecioCard() {
             {/* CTA */}
             <a
               href="/registro?plan=starter"
-              className="relative block text-center font-manrope font-semibold text-sm py-3.5 rounded-xl
+              className="relative block text-center font-manrope font-semibold text-sm py-4 rounded-xl
                          bg-[#1D1D1F] text-white hover:bg-black transition-colors"
             >
               Empezar por 0€

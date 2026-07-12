@@ -38,21 +38,21 @@ const steps = [
 
 /* ── Timings ── */
 const ANIM_MS = 340   // collapse / expand animation
-const HOLD_MS = 1000  // lock after each card expand
+const HOLD_MS = 750   // lock after each card expand
 
-/* ── Card heights: image 80%, text ~20% ── */
-const IMG_H  = 260   // expanded image height px
+/* ── Card image height ── */
+const IMG_H = 260
 
 function StepCard({
-  step, expanded, t,
+  step, expanded, onClick, t,
 }: {
   step: typeof steps[0]
   expanded: boolean
+  onClick: () => void
   t: (es: string, en: string) => string
 }) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  /* Play / pause video when expanded state changes */
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
@@ -67,13 +67,14 @@ function StepCard({
 
   return (
     <div
+      onClick={onClick}
       className={`rounded-2xl overflow-hidden transition-colors duration-500 ${
         expanded
-          ? 'bg-[#1D1D1F] shadow-[0_20px_56px_rgba(0,0,0,0.2)]'
-          : 'bg-white border border-black/[0.07] shadow-sm'
+          ? 'bg-[#1D1D1F] shadow-[0_20px_56px_rgba(0,0,0,0.2)] cursor-default'
+          : 'bg-white border border-black/[0.07] shadow-sm cursor-pointer hover:shadow-md'
       }`}
     >
-      {/* ── Image + video (animated height) ── */}
+      {/* Image + video (animated height) */}
       <motion.div
         animate={{ height: expanded ? IMG_H : 0 }}
         transition={{
@@ -83,7 +84,6 @@ function StepCard({
         className="relative overflow-hidden"
       >
         <div className="relative" style={{ height: IMG_H }}>
-          {/* Poster image — always rendered as fallback / first frame */}
           <Image
             src={step.img}
             alt={t(step.es.title, step.en.title)}
@@ -91,13 +91,9 @@ function StepCard({
             unoptimized
             className="object-cover object-center"
           />
-          {/* Video — overlaid, plays when expanded */}
           <video
             ref={videoRef}
-            loop
-            muted
-            playsInline
-            preload="metadata"
+            loop muted playsInline preload="metadata"
             poster={step.img}
             className="absolute inset-0 w-full h-full object-cover object-center"
           >
@@ -107,7 +103,7 @@ function StepCard({
         </div>
       </motion.div>
 
-      {/* ── Text label (~20% of total expanded height) ── */}
+      {/* Text label */}
       <div className="flex items-center gap-3 px-4 py-3">
         <span
           className={`font-outfit text-xl font-semibold leading-none transition-colors duration-500 ${
@@ -145,6 +141,23 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
     const { top, bottom } = el.getBoundingClientRect()
     const vh = window.innerHeight
     return (Math.min(bottom, vh) - Math.max(top, 0)) / vh > 0.55
+  }
+
+  /* ── Click handler: collapse current → expand clicked ── */
+  function handleCardClick(i: number) {
+    if (lockedRef.current) return
+    if (displayRef.current === i) return // already expanded, ignore
+
+    lockedRef.current = true
+    setDisplayCard(-1)
+    displayRef.current = -1
+
+    setTimeout(() => {
+      setDisplayCard(i)
+      setActiveCard(i)
+      displayRef.current = i
+      setTimeout(() => { lockedRef.current = false }, HOLD_MS)
+    }, ANIM_MS)
   }
 
   /* ── Wheel handler (desktop only) ── */
@@ -222,7 +235,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
       <div className="max-w-6xl mx-auto px-6 w-full">
         <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
 
-          {/* ── Left: heading ── */}
+          {/* Left: heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -253,13 +266,14 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
             </div>
           </motion.div>
 
-          {/* ── Right: 4 step cards ── */}
+          {/* Right: 4 step cards */}
           <div className="flex flex-col gap-2.5">
             {steps.map((step, i) => (
               <StepCard
                 key={step.num}
                 step={step}
                 expanded={displayCard === i}
+                onClick={() => handleCardClick(i)}
                 t={t}
               />
             ))}
