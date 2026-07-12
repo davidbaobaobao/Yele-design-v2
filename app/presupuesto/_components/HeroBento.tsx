@@ -86,9 +86,9 @@ export default function HeroBento() {
           50%       { transform: translateY(7px); opacity: 0.55; }
         }
 
-        /* Mobile: shift video to show purple animated area */
+        /* Mobile: shift video right+down to reveal animated elements */
         @media (max-width: 767px) {
-          .hero-vid { object-position: 72% center; }
+          .hero-vid { object-position: 85% 62%; }
         }
 
         @keyframes sparkleMain {

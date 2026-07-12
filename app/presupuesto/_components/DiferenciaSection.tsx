@@ -38,7 +38,7 @@ export default function DiferenciaSection() {
       {/* Background video — shifted down on mobile so purple elements are visible at bottom */}
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover object-bottom md:object-center"
+        className="absolute inset-0 w-full h-full object-cover object-right-bottom md:object-center"
         autoPlay muted loop playsInline
         poster="/media/diferencia/orbital2_poster.jpg"
         aria-hidden="true"

@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion'
 
 const cards = [
@@ -16,6 +16,22 @@ const cards = [
 function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: number }) {
   const ref      = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+
+  // Mobile: autoplay video when card enters viewport
+  useEffect(() => {
+    if (window.innerWidth >= 768) return
+    const v = videoRef.current
+    if (!v) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { v.play().catch(() => {}) }
+        else { v.pause() }
+      },
+      { threshold: 0.35 }
+    )
+    observer.observe(v)
+    return () => observer.disconnect()
+  }, [])
 
   // Scroll-based image parallax
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })

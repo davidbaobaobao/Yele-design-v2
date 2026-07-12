@@ -96,10 +96,10 @@ export default function PrecioCard() {
       id="precios"
       className="relative min-h-screen flex items-center overflow-hidden py-16"
     >
-      {/* Background video */}
+      {/* Background video — shifted right on mobile to show animated areas */}
       <video
         ref={videoBgRef}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover object-right md:object-center"
         autoPlay muted loop playsInline
         poster="/media/precios/precios2_poster.jpg"
         aria-hidden="true"
