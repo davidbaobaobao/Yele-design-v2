@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 import ShowcaseFeatureCards from './_components/ShowcaseFeatureCards'
+import DiferenciaSection from './_components/DiferenciaSection'
 import ComoFunciona from '@/components/ComoFunciona'
 import Showcase from '@/components/Showcase'
 import Testimonios from '@/components/Testimonios'
@@ -108,134 +108,7 @@ export default function PresupuestoPage() {
         <Showcase noHeader noBg />
 
         {/* ── 6 · DIFERENCIADOR ────────────────────────────────── */}
-        <section className="relative overflow-hidden py-20 md:py-28">
-          {/* Background image */}
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: "url('/diferencia-bg.jpg')" }}
-            aria-hidden="true"
-          />
-          {/* Dark overlay so text stays legible */}
-          <div className="absolute inset-0 bg-[#0a0a0f]/70" aria-hidden="true" />
-          <style>{`
-            @media (prefers-reduced-motion: no-preference) {
-              .orb-cw  { transform-box: fill-box; transform-origin: center; animation: orbSpin 26s linear infinite; }
-              .orb-cw2 { transform-box: fill-box; transform-origin: center; animation: orbSpin 18s linear infinite; }
-              .orb-ccw { transform-box: fill-box; transform-origin: center; animation: orbSpin 34s linear infinite reverse; }
-              .orb-pulse { transform-box: fill-box; transform-origin: center; animation: orbPulse 3.4s ease-in-out infinite; }
-              .orb-ring { transform-box: fill-box; transform-origin: center; animation: orbRing 3.6s ease-out infinite; }
-              .orb-ring.d2 { animation-delay: 1.2s; }
-              .orb-ring.d3 { animation-delay: 2.4s; }
-            }
-            @keyframes orbSpin { to { transform: rotate(360deg); } }
-            @keyframes orbPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.14); } }
-            @keyframes orbRing {
-              0%   { transform: scale(0.55); opacity: 0.7; }
-              80%  { opacity: 0; }
-              100% { transform: scale(1.5); opacity: 0; }
-            }
-          `}</style>
-          <InfiniteGrid />
-          <div className="relative z-10 max-w-6xl mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-
-              {/* ── Left: copy ── */}
-              <div>
-                <p className="font-manrope text-xs tracking-[0.18em] uppercase text-white/40 mb-4">
-                  La diferencia
-                </p>
-                <h2
-                  className="font-outfit font-extrabold tracking-tight text-white leading-tight mb-5"
-                  style={{ fontSize: 'clamp(28px, 4vw, 52px)' }}
-                >
-                  Tu agencia de diseño web<br />
-                  sin el precio de agencia<br />
-                  soporte continuo
-                </h2>
-                <p
-                  className="font-manrope font-semibold text-white/55 mb-8 leading-snug"
-                  style={{ fontSize: 'clamp(17px, 2vw, 22px)' }}
-                >
-                  Diseño web profesional con soporte continuo incluido.
-                </p>
-                <div className="font-manrope text-white/60 text-base leading-relaxed max-w-[460px] mb-9 space-y-4">
-                  <p>Otras agencias te entregan la web… y ahí se queda, congelada en el año que la hiciste. Abandonada.</p>
-                  <p>Tu página web para tu negocio está en{' '}
-                    <span className="text-[#34C759] font-bold">mejora constante</span>
-                    : la mantenemos, la actualizamos y la adaptamos. Sin necesidad de contratar un diseñador web aparte.
-                  </p>
-                  <p className="text-white/90 font-medium">Sin costes extra. Siempre.</p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <RegistroButton
-                    href="/registro?plan=starter"
-                    className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-7 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
-                    aria-label="Empezar con el plan Starter"
-                  >
-                    Empezar →
-                  </RegistroButton>
-                  <a
-                    href="#contacto"
-                    className="inline-flex items-center gap-2 font-manrope font-medium text-base text-white border border-white/20 px-7 py-3.5 rounded-xl hover:bg-white/10 transition-colors"
-                  >
-                    Contactar
-                  </a>
-                </div>
-              </div>
-
-              {/* ── Right: orbital SVG ── */}
-              <div className="relative w-full max-w-[400px] mx-auto aspect-square order-first md:order-last">
-                <svg viewBox="0 0 400 400" aria-hidden="true" className="w-full h-full overflow-visible">
-                  <defs>
-                    <radialGradient id="orbGlow" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%"   stopColor="#34C759" stopOpacity="0.45" />
-                      <stop offset="60%"  stopColor="#34C759" stopOpacity="0.10" />
-                      <stop offset="100%" stopColor="#34C759" stopOpacity="0"    />
-                    </radialGradient>
-                  </defs>
-
-                  {/* Glow halo */}
-                  <circle cx="200" cy="200" r="150" fill="url(#orbGlow)" />
-
-                  {/* Pulse rings */}
-                  <circle className="orb-ring"    cx="200" cy="200" r="120" fill="none" stroke="#34C759" strokeWidth="1.2" opacity="0" />
-                  <circle className="orb-ring d2" cx="200" cy="200" r="120" fill="none" stroke="#34C759" strokeWidth="1.2" opacity="0" />
-                  <circle className="orb-ring d3" cx="200" cy="200" r="120" fill="none" stroke="#34C759" strokeWidth="1.2" opacity="0" />
-
-                  {/* Outer orbit — counter-clockwise, dashed */}
-                  <g className="orb-ccw">
-                    <circle cx="200" cy="200" r="164" fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="1.4" strokeDasharray="3 9" />
-                    <circle cx="200" cy="36"  r="7"  fill="#34C759" />
-                    <circle cx="200" cy="36"  r="13" fill="none" stroke="#34C759" strokeWidth="1.3" opacity="0.4" />
-                    <circle cx="364" cy="200" r="4"  fill="rgba(255,255,255,0.55)" />
-                  </g>
-
-                  {/* Mid orbit — clockwise */}
-                  <g className="orb-cw">
-                    <circle cx="200" cy="200" r="118" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.4" />
-                    <circle cx="200" cy="82"  r="6"  fill="#fff" />
-                    <circle cx="200" cy="318" r="5"  fill="#34C759" />
-                    <circle cx="82"  cy="200" r="3.5" fill="rgba(255,255,255,0.5)" />
-                  </g>
-
-                  {/* Inner orbit — fast clockwise, dashed */}
-                  <g className="orb-cw2">
-                    <circle cx="200" cy="200" r="74" fill="none" stroke="#34C759" strokeWidth="1.4" opacity="0.5" strokeDasharray="2 7" />
-                    <circle cx="274" cy="200" r="5"  fill="#34C759" />
-                  </g>
-
-                  {/* Pulsing center */}
-                  <g className="orb-pulse">
-                    <circle cx="200" cy="200" r="30" fill="none" stroke="#34C759" strokeWidth="1.6" opacity="0.45" />
-                    <circle cx="200" cy="200" r="19" fill="none" stroke="#34C759" strokeWidth="1.6" opacity="0.7" />
-                    <circle cx="200" cy="200" r="9"  fill="#34C759" />
-                  </g>
-                </svg>
-              </div>
-
-            </div>
-          </div>
-        </section>
+        <DiferenciaSection />
 
         {/* ── 7 · TESTIMONIOS ──────────────────────────────────── */}
         <Testimonios noBg />
