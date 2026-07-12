@@ -87,19 +87,20 @@ export default function HeroBento() {
         }
 
         @keyframes sparkleMain {
-          0%, 100% { transform: scale(1)    rotate(0deg);  opacity: 0.85; }
-          50%       { transform: scale(1.15) rotate(20deg); opacity: 1;    }
+          0%   { transform: rotate(0deg)   scale(1);    opacity: 0.8; }
+          50%  { transform: rotate(180deg) scale(1.22); opacity: 1;   }
+          100% { transform: rotate(360deg) scale(1);    opacity: 0.8; }
         }
         @keyframes sparkleDot {
-          0%, 100% { opacity: 1;   transform: scale(1);    }
-          50%       { opacity: 0.5; transform: scale(0.75); }
+          0%, 100% { transform: scale(1);    opacity: 1;   }
+          50%       { transform: scale(1.5);  opacity: 0.6; }
         }
         .hero-sparkle-main {
-          animation: sparkleMain 2.8s ease-in-out infinite;
+          animation: sparkleMain 3s ease-in-out infinite;
           transform-origin: 12px 10px;
         }
         .hero-sparkle-dot {
-          animation: sparkleDot 2.8s ease-in-out infinite 1.4s;
+          animation: sparkleDot 3s ease-in-out infinite 1.5s;
           transform-origin: 19px 17.5px;
         }
       `}</style>
