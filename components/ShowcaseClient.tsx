@@ -88,7 +88,9 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
   useEffect(() => {
     const compute = () => {
       const cardW = window.innerWidth - 16
-      const travel = 2.5 * cardW
+      const gap   = 12
+      // enough travel to bring the last of 5 cards fully into view
+      const travel = 4 * (cardW + gap)
       travelMV.set(travel)
       setWrapperH(`${window.innerHeight + travel}px`)
     }
@@ -104,7 +106,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
   )
   const x2 = useTransform(
     [scrollYProgress, travelMV],
-    ([p, t]: number[]) => -(p * t) - (t / 2.5) * 0.3
+    ([p, t]: number[]) => -(p * t) - t * 0.08
   )
 
   return (

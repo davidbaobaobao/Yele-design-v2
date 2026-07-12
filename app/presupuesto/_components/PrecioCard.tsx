@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from 'framer-motion'
 import { Check } from 'lucide-react'
 
 const ORANGE = '#e2482f'
@@ -16,8 +16,16 @@ const features = [
 ]
 
 export default function PrecioCard() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const cardRef    = useRef<HTMLDivElement>(null)
+  const sectionRef  = useRef<HTMLElement>(null)
+  const cardRef     = useRef<HTMLDivElement>(null)
+  const videoBgRef  = useRef<HTMLVideoElement>(null)
+
+  /* ── Force video play on mount (needed on mobile) ── */
+  useEffect(() => { videoBgRef.current?.play().catch(() => {}) }, [])
+
+  /* ── Scroll-based card parallax (mobile) ── */
+  const { scrollYProgress: secScroll } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
+  const cardScrollY = useTransform(secScroll, [0, 0.5, 1], [36, 0, -36])
 
   /* ── 3D parallax tilt ── */
   const mouseX = useMotionValue(0)
@@ -88,8 +96,9 @@ export default function PrecioCard() {
       id="precios"
       className="relative min-h-screen flex items-center overflow-hidden py-16"
     >
-      {/* Background video — switched to precios2 */}
+      {/* Background video */}
       <video
+        ref={videoBgRef}
         className="absolute inset-0 w-full h-full object-cover"
         autoPlay muted loop playsInline
         poster="/media/precios/precios2_poster.jpg"
@@ -131,6 +140,7 @@ export default function PrecioCard() {
             style={{
               rotateX,
               rotateY,
+              y: cardScrollY,
               transformPerspective: 1000,
               background: 'linear-gradient(155deg, #ffffff 0%, #dde0eb 100%)',
             }}

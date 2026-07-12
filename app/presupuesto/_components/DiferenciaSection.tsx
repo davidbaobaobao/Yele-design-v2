@@ -30,15 +30,15 @@ export default function DiferenciaSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative min-h-screen flex items-start md:items-center overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
 
-      {/* Background video */}
+      {/* Background video — shifted down on mobile so purple elements are visible at bottom */}
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover object-bottom md:object-center"
         autoPlay muted loop playsInline
         poster="/media/diferencia/orbital2_poster.jpg"
         aria-hidden="true"
@@ -58,7 +58,7 @@ export default function DiferenciaSection() {
       <InfiniteGrid revealRadius={280} revealOpacity={0.18} baseOpacity={0.05} />
 
       {/* Content — left half of the screen */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 md:px-20 py-20">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 md:px-20 pt-24 pb-16 md:py-20">
         <div className="max-w-2xl">
 
           <motion.h2

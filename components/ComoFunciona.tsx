@@ -103,8 +103,28 @@ function StepCard({
   )
 }
 
-/* ── Mobile step card — always expanded, fade-in on scroll ── */
+/* ── Mobile step card — always expanded, fade-in + video plays when in view ── */
 function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: number; t: (es: string, en: string) => string }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.currentTime = 0
+          video.play().catch(() => {})
+        } else {
+          video.pause()
+        }
+      },
+      { threshold: 0.4 }
+    )
+    observer.observe(video)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -115,6 +135,15 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
     >
       <div className="relative h-44 overflow-hidden">
         <Image src={step.img} alt={t(step.es.title, step.en.title)} fill unoptimized className="object-cover object-center" />
+        <video
+          ref={videoRef}
+          loop muted playsInline preload="metadata"
+          poster={step.img}
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        >
+          <source src={`${step.video}.webm`} type="video/webm" />
+          <source src={`${step.video}.mp4`}  type="video/mp4" />
+        </video>
       </div>
       <div className="flex items-start gap-4 px-5 py-4">
         <span className="font-outfit text-xl font-semibold leading-none text-white/25 mt-0.5 flex-shrink-0">

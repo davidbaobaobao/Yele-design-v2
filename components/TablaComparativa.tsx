@@ -122,8 +122,8 @@ export default function TablaComparativa({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
           viewport={{ once: true, margin: '-80px' }}
-          className="overflow-x-auto rounded-2xl border border-black/[0.06]"
         >
+        <div className="overflow-x-auto rounded-2xl border border-black/[0.06]">
           <table className="w-full min-w-[600px]">
             <thead>
               <tr>
@@ -183,6 +183,19 @@ export default function TablaComparativa({
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile scroll hint */}
+        <motion.div
+          className="md:hidden flex items-center justify-center gap-2 mt-4"
+          animate={{ x: [0, -7, 0] }}
+          transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M19 12H5M5 12l7 7M5 12l7-7" />
+          </svg>
+          <span className="font-manrope text-xs text-[#9CA3AF]">Desliza para explorar</span>
+        </motion.div>
         </motion.div>
 
       </div>

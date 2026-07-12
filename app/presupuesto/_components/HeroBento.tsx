@@ -86,6 +86,11 @@ export default function HeroBento() {
           50%       { transform: translateY(7px); opacity: 0.55; }
         }
 
+        /* Mobile: shift video to show purple animated area */
+        @media (max-width: 767px) {
+          .hero-vid { object-position: 72% center; }
+        }
+
         @keyframes sparkleMain {
           0%   { transform: rotate(0deg)   scale(1);    opacity: 0.8; }
           50%  { transform: rotate(180deg) scale(1.22); opacity: 1;   }
@@ -105,11 +110,11 @@ export default function HeroBento() {
         }
       `}</style>
 
-      <section className="relative h-screen overflow-hidden">
+      <section className="relative h-[100dvh] md:h-screen overflow-hidden">
 
         {/* Video: object-cover crops on small windows, zooms/expands on large */}
         <video
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover hero-vid"
           autoPlay muted loop playsInline
           poster="/media/main_hero/poster_hq.jpg"
           aria-hidden="true"
