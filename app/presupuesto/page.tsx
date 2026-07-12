@@ -100,14 +100,6 @@ export default function PresupuestoPage() {
 
         {/* ── 5 · PORTFOLIO ────────────────────────────────────── */}
         <section className="md:min-h-screen md:flex md:flex-col md:justify-center md:overflow-hidden md:py-10">
-          <div className="hidden md:block max-w-6xl mx-auto px-6 mb-6">
-            <h2
-              className="font-outfit font-semibold text-[#1D1D1F] tracking-tight"
-              style={{ fontSize: 'clamp(26px, 3.5vw, 48px)' }}
-            >
-              Así puede lucir tu página web
-            </h2>
-          </div>
           <Showcase noHeader noBg fullScreen />
         </section>
 
