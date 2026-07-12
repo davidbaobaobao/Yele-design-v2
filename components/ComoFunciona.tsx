@@ -229,17 +229,12 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
             transition={{ duration: 0.55, ease: 'easeOut' }}
             viewport={{ once: true }}
           >
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
-              {t('Cómo funciona', 'How it works')}
-            </span>
             <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-5 leading-tight">
-              {t('Cuatro pasos.', 'Four steps.')}
+              {t('CÓMO FUNCIONA', 'HOW IT WORKS')}
             </h2>
             <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-sm">
-              {t(
-                'Sin reuniones interminables. Sin presupuestos sorpresa.',
-                'No endless meetings. No surprise costs.'
-              )}
+              {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
+              {t('Sin presupuesto sorpresa.', 'No surprise costs.')}
             </p>
 
             {/* Progress pills */}

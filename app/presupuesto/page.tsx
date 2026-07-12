@@ -6,12 +6,12 @@ import ShowcaseFeatureCards from './_components/ShowcaseFeatureCards'
 import ComoFunciona from '@/components/ComoFunciona'
 import Showcase from '@/components/Showcase'
 import Testimonios from '@/components/Testimonios'
-import Precios from '@/components/Precios'
 import type { FAQItem } from '@/components/FAQClient'
 import { WAButton, RegistroButton, WA_LINK } from './_components/CTAButtons'
 import ClarityScript from '@/components/ClarityScript'
 import HeroBento from './_components/HeroBento'
 import ScrollBrake from './_components/ScrollBrake'
+import PrecioCard from './_components/PrecioCard'
 
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
 const ContactForm      = dynamic(() => import('@/components/ContactForm'))
@@ -94,7 +94,7 @@ export default function PresupuestoPage() {
         <ComoFunciona noBg />
 
         {/* ── 4 · PRECIO ───────────────────────────────────────── */}
-        <Precios singlePlan="starter" noBg />
+        <PrecioCard />
 
         {/* ── 5 · PORTFOLIO ────────────────────────────────────── */}
         <div className="max-w-6xl mx-auto px-6 pt-10 pb-1">
