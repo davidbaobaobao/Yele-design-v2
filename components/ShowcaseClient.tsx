@@ -41,7 +41,8 @@ function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
   ]
 }
 
-const CARD_W_DESKTOP = 'calc((100vw - 48px) / 3.5)'
+const CARD_W_DESKTOP      = 'calc((100vw - 48px) / 3.5)'
+const CARD_W_DESKTOP_BIG  = 'calc((100vw - 48px) / 2.2)'
 const CARD_W_MOBILE = 'calc(100vw - 16px)'
 
 const ROW1_START = '0vw'
@@ -49,15 +50,16 @@ const ROW1_END   = '-14.3vw'
 const ROW2_START = '0vw'
 const ROW2_END   = '10vw'
 
-function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue<string> }) {
+function ScrollRow({ cards, xMotion, big }: { cards: CardData[]; xMotion: MotionValue<string>; big?: boolean }) {
+  const cardW = big ? CARD_W_DESKTOP_BIG : CARD_W_DESKTOP
   return (
     <div className="overflow-hidden">
       <motion.div className="flex gap-4 w-max" style={{ x: xMotion }}>
         {cards.map((card, i) => (
           <div
             key={`${card.key}-${i}`}
-            style={{ width: CARD_W_DESKTOP }}
-            className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group cursor-default"
+            style={{ width: cardW }}
+            className={`flex-shrink-0 relative rounded-2xl overflow-hidden group cursor-default ${big ? 'aspect-[3/2]' : 'aspect-video'}`}
           >
             <Image
               src={card.image}
@@ -146,7 +148,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
   )
 }
 
-export default function ShowcaseClient({ projects, noHeader, noBg }: { projects: ShowcaseProject[]; noHeader?: boolean; noBg?: boolean }) {
+export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen }: { projects: ShowcaseProject[]; noHeader?: boolean; noBg?: boolean; fullScreen?: boolean }) {
   const { t } = useLang()
   const [rows, setRows] = useState<[CardData[], CardData[]] | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
@@ -191,7 +193,7 @@ export default function ShowcaseClient({ projects, noHeader, noBg }: { projects:
   return (
     <section ref={sectionRef} id={noHeader ? undefined : 'trabajos'} className={noBg ? '' : 'bg-white'}>
       {/* Desktop */}
-      <div className={`hidden md:block ${noHeader ? 'py-10' : 'py-32'}`}>
+      <div className={`hidden md:block ${noHeader ? (fullScreen ? 'py-4' : 'py-10') : 'py-32'}`}>
         {!noHeader && (
           <div className="max-w-6xl mx-auto px-6 mb-12">
             {heading}
@@ -202,8 +204,8 @@ export default function ShowcaseClient({ projects, noHeader, noBg }: { projects:
           <div className={`pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l ${noBg ? 'from-white' : 'from-[#F5F5F7]'} to-transparent`} />
           {rows ? (
             <>
-              <ScrollRow cards={rows[0]} xMotion={row1X} />
-              <ScrollRow cards={rows[1]} xMotion={row2X} />
+              <ScrollRow cards={rows[0]} xMotion={row1X} big={fullScreen} />
+              <ScrollRow cards={rows[1]} xMotion={row2X} big={fullScreen} />
             </>
           ) : (
             <>
@@ -212,8 +214,8 @@ export default function ShowcaseClient({ projects, noHeader, noBg }: { projects:
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div
                       key={i}
-                      style={{ width: CARD_W_DESKTOP }}
-                      className="flex-shrink-0 aspect-video rounded-2xl bg-black/[0.06]"
+                      style={{ width: fullScreen ? CARD_W_DESKTOP_BIG : CARD_W_DESKTOP }}
+                      className={`flex-shrink-0 rounded-2xl bg-black/[0.06] ${fullScreen ? 'aspect-[3/2]' : 'aspect-video'}`}
                     />
                   ))}
                 </div>

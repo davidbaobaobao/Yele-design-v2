@@ -97,15 +97,17 @@ export default function PresupuestoPage() {
         <PrecioCard />
 
         {/* ── 5 · PORTFOLIO ────────────────────────────────────── */}
-        <div className="max-w-6xl mx-auto px-6 pt-10 pb-1">
-          <h2
-            className="font-outfit font-semibold text-[#1D1D1F] tracking-tight"
-            style={{ fontSize: 'clamp(22px, 3vw, 38px)' }}
-          >
-            Así puede lucir tu página web
-          </h2>
-        </div>
-        <Showcase noHeader noBg />
+        <section className="min-h-screen flex flex-col justify-center overflow-hidden py-10">
+          <div className="max-w-6xl mx-auto px-6 mb-6">
+            <h2
+              className="font-outfit font-semibold text-[#1D1D1F] tracking-tight"
+              style={{ fontSize: 'clamp(26px, 3.5vw, 48px)' }}
+            >
+              Así puede lucir tu página web
+            </h2>
+          </div>
+          <Showcase noHeader noBg fullScreen />
+        </section>
 
         {/* ── 6 · DIFERENCIADOR ────────────────────────────────── */}
         <DiferenciaSection />
