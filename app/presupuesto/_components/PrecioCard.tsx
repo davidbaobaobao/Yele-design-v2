@@ -75,7 +75,7 @@ export default function PrecioCard() {
             locked   = false
             snapping = false
             window.removeEventListener('wheel', preventScroll)
-          }, 2000)
+          }, 750)
         }
       } else if (!entry.isIntersecting) {
         snapping = false
@@ -96,10 +96,9 @@ export default function PrecioCard() {
       id="precios"
       className="relative min-h-screen flex items-center overflow-hidden py-16"
     >
-      {/* Desktop video: precios2_hero, original position */}
       <video
         ref={videoBgRef}
-        className="absolute inset-0 w-full h-full object-cover hidden md:block"
+        className="absolute inset-0 w-full h-full object-cover"
         autoPlay muted loop playsInline
         poster="/media/precios/precios2_poster.jpg"
         aria-hidden="true"
@@ -107,20 +106,7 @@ export default function PrecioCard() {
         <source src="/media/precios/precios2_hero.webm" type="video/webm" />
         <source src="/media/precios/precios2_hero.mp4"  type="video/mp4" />
       </video>
-      {/* Mobile video: hero_hq shifted to match hero crop */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover md:hidden"
-        style={{ objectPosition: 'calc(50% + 250px) calc(50% + 200px)' }}
-        autoPlay muted loop playsInline
-        poster="/media/main_hero/poster_hq.jpg"
-        aria-hidden="true"
-      >
-        <source src="/media/main_hero/hero_hq.webm" type="video/webm" />
-        <source src="/media/main_hero/hero_hq.mp4"  type="video/mp4" />
-      </video>
-      {/* Desktop: dark overlay; Mobile: lighter so video reads bright */}
-      <div className="absolute inset-0 hidden md:block bg-black/40" aria-hidden="true" />
-      <div className="absolute inset-0 md:hidden bg-white/20" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
 

@@ -1,21 +1,89 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useRef, useCallback, useEffect } from 'react'
+import { motion, useMotionValue, useMotionTemplate } from 'framer-motion'
 
 export default function DiferenciaSection() {
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const videoRef   = useRef<HTMLVideoElement>(null)
+
   useEffect(() => { videoRef.current?.play().catch(() => {}) }, [])
 
-  return (
-    <section className="relative min-h-screen flex items-start md:items-center overflow-hidden">
+  /* ── Desktop spotlight ── */
+  const mouseX  = useMotionValue(-2000)
+  const mouseY  = useMotionValue(-2000)
+  const scrimBg = useMotionTemplate`radial-gradient(720px circle at ${mouseX}px ${mouseY}px, rgba(10,10,15,0.02) 0%, rgba(10,10,15,0.42) 52%, rgba(10,10,15,0.78) 85%)`
 
-      {/* Background video — mobile: shifted 150px down + right; desktop: original */}
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (window.innerWidth < 768) return
+    const rect = sectionRef.current?.getBoundingClientRect()
+    if (!rect) return
+    mouseX.set(e.clientX - rect.left)
+    mouseY.set(e.clientY - rect.top)
+  }, [mouseX, mouseY])
+
+  const handleMouseLeave = useCallback(() => {
+    mouseX.set(-2000)
+    mouseY.set(-2000)
+  }, [mouseX, mouseY])
+
+  /* ── Auto-snap on scroll entry + 750ms lock ── */
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    let snapping = false
+    let locked   = false
+    let lockTimer: ReturnType<typeof setTimeout>
+
+    function preventScroll(e: WheelEvent) {
+      if (locked) e.preventDefault()
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !snapping) {
+        const { top, bottom } = el.getBoundingClientRect()
+        const vh = window.innerHeight
+        const ratio = (Math.min(bottom, vh) - Math.max(top, 0)) / vh
+
+        if (ratio < 0.88) {
+          snapping = true
+          locked   = true
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          window.addEventListener('wheel', preventScroll, { passive: false })
+          clearTimeout(lockTimer)
+          lockTimer = setTimeout(() => {
+            locked   = false
+            snapping = false
+            window.removeEventListener('wheel', preventScroll)
+          }, 750)
+        }
+      } else if (!entry.isIntersecting) {
+        snapping = false
+      }
+    }, { threshold: 0.12 })
+
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+      clearTimeout(lockTimer)
+      window.removeEventListener('wheel', preventScroll)
+    }
+  }, [])
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative min-h-screen flex items-start md:items-center overflow-hidden"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Mobile: position video so purple elements are visible; no translateY shift */}
       <style>{`
         @media (max-width: 767px) {
-          .dif-vid { transform: translateY(150px); object-position: right bottom; }
+          .dif-vid { object-position: right bottom; }
         }
       `}</style>
+
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover dif-vid"
@@ -26,6 +94,13 @@ export default function DiferenciaSection() {
         <source src="/media/diferencia/orbital2_hero.mp4"  type="video/mp4" />
         <source src="/media/diferencia/orbital2_hero.webm" type="video/webm" />
       </video>
+
+      {/* Desktop mouse-tracking spotlight scrim */}
+      <motion.div
+        className="absolute inset-0 hidden md:block"
+        style={{ background: scrimBg }}
+        aria-hidden="true"
+      />
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-5 md:px-20 pt-24 pb-16 md:py-20">
