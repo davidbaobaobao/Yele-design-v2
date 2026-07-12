@@ -17,9 +17,8 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
   const ref      = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  // Mobile: autoplay video when card enters viewport
+  // Autoplay when card enters viewport (all screen sizes)
   useEffect(() => {
-    if (window.innerWidth >= 768) return
     const v = videoRef.current
     if (!v) return
     const observer = new IntersectionObserver(
@@ -27,7 +26,7 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
         if (entry.isIntersecting) { v.play().catch(() => {}) }
         else { v.pause() }
       },
-      { threshold: 0.35 }
+      { threshold: 0.25 }
     )
     observer.observe(v)
     return () => observer.disconnect()
@@ -37,41 +36,30 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const imageY = useTransform(scrollYProgress, [0, 1], ['8%', '-8%'])
 
-  // Mouse-follow 3D tilt
-  const rawX  = useMotionValue(0)
-  const rawY  = useMotionValue(0)
+  // Mouse-follow 3D tilt (desktop hover effect)
+  const rawX    = useMotionValue(0)
+  const rawY    = useMotionValue(0)
   const rotateX = useSpring(rawX, { stiffness: 280, damping: 22 })
   const rotateY = useSpring(rawY, { stiffness: 280, damping: 22 })
   const scale   = useSpring(useMotionValue(1), { stiffness: 280, damping: 22 })
-
-  function onMouseEnter() {
-    videoRef.current?.play().catch(() => {})
-  }
 
   function onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const el = ref.current
     if (!el) return
     const { left, top, width, height } = el.getBoundingClientRect()
-    const x = (e.clientX - left) / width  - 0.5
-    const y = (e.clientY - top)  / height - 0.5
-    rawX.set(y * -10)
-    rawY.set(x *  10)
+    rawX.set(((e.clientY - top)  / height - 0.5) * -10)
+    rawY.set(((e.clientX - left) / width  - 0.5) *  10)
     scale.set(1.025)
   }
 
   function onMouseLeave() {
-    rawX.set(0)
-    rawY.set(0)
-    scale.set(1)
-    const v = videoRef.current
-    if (v) { v.pause(); v.currentTime = 0 }
+    rawX.set(0); rawY.set(0); scale.set(1)
   }
 
   return (
     <div style={{ perspective: '900px' }}>
       <motion.div
         ref={ref}
-        onMouseEnter={onMouseEnter}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         initial={{ opacity: 0, y: 32 }}
@@ -85,47 +73,39 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
                    hover:shadow-[0_28px_72px_rgba(0,0,0,0.22),0_4px_16px_rgba(0,0,0,0.1)]
                    transition-shadow duration-300"
       >
-        {/* Image + video layer — both inside the same parallax wrapper */}
         <div className="relative h-44 md:h-52 overflow-hidden bg-[#0a0a0a]">
           <motion.div
             style={{ y: imageY }}
             className="absolute inset-x-0 top-[-10%] bottom-[-10%]"
           >
-            {/* Static image — fades out on hover */}
+            {/* Static image — shows as poster until video plays */}
             <Image
               src={img}
               alt={title}
               fill
               unoptimized
               sizes="(max-width: 640px) 95vw, 33vw"
-              className="object-cover object-center transition-opacity duration-500 group-hover:opacity-0"
+              className="object-cover object-center"
             />
 
-            {/* Video — same crop/zoom as image, fades in on hover */}
+            {/* Video — loops automatically on load */}
             <video
               ref={videoRef}
-              loop
-              muted
-              playsInline
+              loop muted autoPlay playsInline
               preload="metadata"
               poster={img}
-              className="absolute inset-0 w-full h-full object-cover object-center
-                         opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              className="absolute inset-0 w-full h-full object-cover object-center"
             >
               <source src={`${video}.webm`} type="video/webm" />
               <source src={`${video}.mp4`}  type="video/mp4" />
             </video>
           </motion.div>
 
-          {/* Bottom gradient */}
-          <div className="absolute inset-x-0 bottom-0 h-24
-                          bg-gradient-to-t from-black/65 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/65 to-transparent pointer-events-none" />
         </div>
 
-        {/* Text */}
         <div className="px-5 pt-5 pb-5">
-          <h3 className="font-outfit font-semibold text-[#1D1D1F] text-[15px]
-                         leading-tight tracking-tight mb-1.5">
+          <h3 className="font-outfit font-semibold text-[#1D1D1F] text-[15px] leading-tight tracking-tight mb-1.5">
             {title}
           </h3>
           <p className="font-manrope text-[13px] text-[#6B7280] leading-relaxed">
