@@ -37,12 +37,11 @@ const steps = [
 ]
 
 /* ── Timings ── */
-const ANIM_MS = 340   // collapse / expand animation
-const HOLD_MS = 750   // lock after each card expand
+const ANIM_MS = 340
+const HOLD_MS = 750
+const IMG_H   = 400
 
-/* ── Card image height ── */
-const IMG_H = 400
-
+/* ── Desktop step card (one expanded at a time) ── */
 function StepCard({
   step, expanded, onClick, t,
 }: {
@@ -74,23 +73,13 @@ function StepCard({
           : 'bg-white border border-black/[0.07] shadow-sm cursor-pointer hover:shadow-md'
       }`}
     >
-      {/* Image + video (animated height) */}
       <motion.div
         animate={{ height: expanded ? IMG_H : 0 }}
-        transition={{
-          duration: ANIM_MS / 1000,
-          ease: expanded ? [0.16, 1, 0.3, 1] : [0.4, 0, 0.6, 1],
-        }}
+        transition={{ duration: ANIM_MS / 1000, ease: expanded ? [0.16, 1, 0.3, 1] : [0.4, 0, 0.6, 1] }}
         className="relative overflow-hidden"
       >
         <div className="relative" style={{ height: IMG_H }}>
-          <Image
-            src={step.img}
-            alt={t(step.es.title, step.en.title)}
-            fill
-            unoptimized
-            className="object-cover object-center"
-          />
+          <Image src={step.img} alt={t(step.es.title, step.en.title)} fill unoptimized className="object-cover object-center" />
           <video
             ref={videoRef}
             loop muted playsInline preload="metadata"
@@ -102,25 +91,45 @@ function StepCard({
           </video>
         </div>
       </motion.div>
-
-      {/* Text label */}
       <div className="flex items-center gap-4 px-5 py-4">
-        <span
-          className={`font-outfit text-2xl font-semibold leading-none transition-colors duration-500 ${
-            expanded ? 'text-white/25' : 'text-[#6B7280]/30'
-          }`}
-        >
+        <span className={`font-outfit text-2xl font-semibold leading-none transition-colors duration-500 ${expanded ? 'text-white/25' : 'text-[#6B7280]/30'}`}>
           {step.num}
         </span>
-        <h3
-          className={`font-outfit font-semibold text-base leading-snug transition-colors duration-500 ${
-            expanded ? 'text-white' : 'text-[#1D1D1F]'
-          }`}
-        >
+        <h3 className={`font-outfit font-semibold text-base leading-snug transition-colors duration-500 ${expanded ? 'text-white' : 'text-[#1D1D1F]'}`}>
           {t(step.es.title, step.en.title)}
         </h3>
       </div>
     </div>
+  )
+}
+
+/* ── Mobile step card — always expanded, fade-in on scroll ── */
+function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: number; t: (es: string, en: string) => string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: 'easeOut' }}
+      viewport={{ once: true, margin: '-20px' }}
+      className="rounded-2xl overflow-hidden bg-[#1D1D1F] shadow-[0_12px_40px_rgba(0,0,0,0.18)]"
+    >
+      <div className="relative h-44 overflow-hidden">
+        <Image src={step.img} alt={t(step.es.title, step.en.title)} fill unoptimized className="object-cover object-center" />
+      </div>
+      <div className="flex items-start gap-4 px-5 py-4">
+        <span className="font-outfit text-xl font-semibold leading-none text-white/25 mt-0.5 flex-shrink-0">
+          {step.num}
+        </span>
+        <div>
+          <h3 className="font-outfit font-semibold text-base text-white leading-snug">
+            {t(step.es.title, step.en.title)}
+          </h3>
+          <p className="font-manrope text-sm text-white/60 mt-1.5 leading-relaxed">
+            {t(step.es.desc, step.en.desc)}
+          </p>
+        </div>
+      </div>
+    </motion.div>
   )
 }
 
@@ -134,7 +143,6 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
   const displayRef = useRef(0)
   const lockedRef  = useRef(false)
 
-  /* ── Section-in-view check ── */
   function sectionIsActive() {
     const el = sectionRef.current
     if (!el) return false
@@ -143,10 +151,9 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
     return (Math.min(bottom, vh) - Math.max(top, 0)) / vh > 0.55
   }
 
-  /* ── Click handler: collapse current → expand clicked ── */
   function handleCardClick(i: number) {
     if (lockedRef.current) return
-    if (displayRef.current === i) return // already expanded, ignore
+    if (displayRef.current === i) return
 
     lockedRef.current = true
     setDisplayCard(-1)
@@ -193,13 +200,15 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
     return () => window.removeEventListener('wheel', onWheel)
   }, [])
 
-  /* ── Auto-snap section to viewport on entry ── */
+  /* ── Auto-snap (desktop only) ── */
   useEffect(() => {
     const el = sectionRef.current
     if (!el) return
     let snapping = false
 
     const observer = new IntersectionObserver(([entry]) => {
+      if (window.innerWidth < 768) return
+
       if (entry.isIntersecting && !snapping) {
         const { top, bottom } = el.getBoundingClientRect()
         const vh = window.innerHeight
@@ -230,27 +239,25 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
     <section
       ref={sectionRef}
       id="como-funciona"
-      className={`md:h-screen flex items-center py-14 md:py-0 ${noBg ? '' : 'bg-[#F5F5F7]'}`}
+      className={`md:h-screen md:flex md:items-center ${noBg ? '' : 'bg-[#F5F5F7]'}`}
     >
-      <div className="max-w-7xl mx-auto px-6 w-full">
-        <div className="grid md:grid-cols-2 gap-10 md:gap-20 items-center">
+      {/* ── Desktop layout ── */}
+      <div className="hidden md:block max-w-7xl mx-auto px-6 w-full py-0">
+        <div className="grid grid-cols-2 gap-20 items-center">
 
-          {/* Left: heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: 'easeOut' }}
             viewport={{ once: true }}
           >
-            <h2 className="font-outfit font-semibold text-5xl md:text-6xl xl:text-7xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-outfit font-semibold text-6xl xl:text-7xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
               {t('CÓMO FUNCIONA', 'HOW IT WORKS')}
             </h2>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-sm">
               {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
               {t('Sin presupuesto sorpresa.', 'No surprise costs.')}
             </p>
-
-            {/* Progress pills */}
             <div className="flex gap-2 mt-8">
               {steps.map((s, i) => (
                 <motion.div
@@ -266,7 +273,6 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
             </div>
           </motion.div>
 
-          {/* Right: 4 step cards */}
           <div className="flex flex-col gap-3">
             {steps.map((step, i) => (
               <StepCard
@@ -281,6 +287,31 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
 
         </div>
       </div>
+
+      {/* ── Mobile layout — all cards expanded with fade-in ── */}
+      <div className="md:hidden px-4 py-12 w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          viewport={{ once: true }}
+          className="mb-8"
+        >
+          <h2 className="font-outfit font-semibold text-4xl text-[#1D1D1F] tracking-tight mb-3 leading-tight">
+            {t('CÓMO FUNCIONA', 'HOW IT WORKS')}
+          </h2>
+          <p className="font-manrope text-[#6B7280] text-base leading-relaxed">
+            {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
+            {t('Sin presupuesto sorpresa.', 'No surprise costs.')}
+          </p>
+        </motion.div>
+        <div className="flex flex-col gap-4">
+          {steps.map((step, i) => (
+            <MobileStepCard key={step.num} step={step} index={i} t={t} />
+          ))}
+        </div>
+      </div>
+
     </section>
   )
 }

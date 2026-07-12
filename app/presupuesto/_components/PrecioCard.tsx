@@ -98,7 +98,9 @@ export default function PrecioCard() {
         <source src="/media/precios/precios2_hero.webm" type="video/webm" />
         <source src="/media/precios/precios2_hero.mp4"  type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+      {/* Desktop: dark overlay; Mobile: lighter so video reads bright */}
+      <div className="absolute inset-0 hidden md:block bg-black/40" aria-hidden="true" />
+      <div className="absolute inset-0 md:hidden bg-white/20" aria-hidden="true" />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
 

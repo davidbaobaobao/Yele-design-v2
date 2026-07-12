@@ -125,10 +125,10 @@ export default function HeroBento() {
           aria-hidden="true"
         />
 
-        {/* ── Card — fixed 670 px wide, vertically centred, right-anchored ── */}
+        {/* ── Desktop card — hidden on mobile ── */}
         <div
           ref={cardRef}
-          className="absolute right-0 z-20"
+          className="hidden md:block absolute right-0 z-20"
           style={{ top: '50%', transform: 'translateY(-50%)', width: 670 }}
         >
           {/* Card shell */}
@@ -152,7 +152,6 @@ export default function HeroBento() {
               }}
               aria-hidden="true"
             >
-              {/* Sparkle icon from user SVG: big outline star + small filled dot */}
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   className="hero-sparkle-main"
@@ -181,7 +180,7 @@ export default function HeroBento() {
               </span>
             </div>
 
-            {/* ── Black content box ── exact reference: padding 56 24 40 24 */}
+            {/* ── Black content box ── */}
             <div style={{ background: '#000000', padding: '56px 24px 40px 24px' }}>
               <h1
                 className="font-archivo"
@@ -198,39 +197,21 @@ export default function HeroBento() {
                 Web<br />
                 Profesional
               </h1>
-
-              {/* Subtitle — Inter 400, 22 px, mt 32, ml 20 */}
               <p
                 className="font-manrope"
-                style={{
-                  marginTop: 32,
-                  marginLeft: 20,
-                  fontWeight: 400,
-                  fontSize: 22,
-                  letterSpacing: '0.01em',
-                  color: '#ffffff',
-                }}
+                style={{ marginTop: 32, marginLeft: 20, fontWeight: 400, fontSize: 22, letterSpacing: '0.01em', color: '#ffffff' }}
               >
                 Tu agencia de diseño web · Sin complicaciones
               </p>
-
-              {/* Price — Inter 600, 22 px, mt 8, ml 20 */}
               <p
                 className="font-manrope"
-                style={{
-                  marginTop: 8,
-                  marginLeft: 20,
-                  fontWeight: 600,
-                  fontSize: 22,
-                  letterSpacing: '0.01em',
-                  color: '#ffffff',
-                }}
+                style={{ marginTop: 8, marginLeft: 20, fontWeight: 600, fontSize: 22, letterSpacing: '0.01em', color: '#ffffff' }}
               >
                 Desde 49€/mes
               </p>
             </div>
 
-            {/* ── White marquee box ── exact reference: padding 22 0 */}
+            {/* ── White marquee box ── */}
             <div style={{ background: '#ffffff', padding: '22px 0', overflow: 'hidden' }}>
               <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
                 {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
@@ -238,12 +219,7 @@ export default function HeroBento() {
                     <Icon />
                     <span
                       className="font-manrope"
-                      style={{
-                        fontWeight: 600,
-                        fontSize: 18,
-                        color: '#0a0a0a',
-                        whiteSpace: 'nowrap',
-                      }}
+                      style={{ fontWeight: 600, fontSize: 18, color: '#0a0a0a', whiteSpace: 'nowrap' }}
                     >
                       {label}
                     </span>
@@ -256,8 +232,67 @@ export default function HeroBento() {
           </div>
         </div>
 
-        {/* ── Pulsing scroll arrow — bottom-centre ── */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
+        {/* ── Mobile text overlay — hidden on md+ ── */}
+        <div className="md:hidden absolute inset-0 z-20 flex flex-col justify-center px-7 pb-24">
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.52) 100%)' }}
+            aria-hidden="true"
+          />
+          <div className="relative">
+            <h1
+              className="font-archivo text-white"
+              style={{ fontWeight: 500, fontSize: 52, lineHeight: 0.98, letterSpacing: '-0.02em' }}
+            >
+              Diseño<br />Web<br />Profesional
+            </h1>
+            <p className="font-manrope text-white/80 mt-4 text-base leading-relaxed">
+              Tu agencia de diseño web · Sin complicaciones
+            </p>
+            <p className="font-manrope text-white font-semibold mt-1.5 text-base">
+              Desde 49€/mes
+            </p>
+          </div>
+        </div>
+
+        {/* ── Mobile bottom: horizontal orange badge + marquee strip ── */}
+        <div className="md:hidden absolute bottom-0 inset-x-0 z-20">
+          {/* Orange badge */}
+          <div
+            style={{
+              background: '#e2482f',
+              padding: '13px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path className="hero-sparkle-main" d="M12 3L13.6 8.4L19 10L13.6 11.6L12 17L10.4 11.6L5 10L10.4 8.4L12 3Z" stroke="#ffffff" strokeWidth="1.6" strokeLinejoin="round" />
+            </svg>
+            <span style={{ fontFamily: 'var(--font-manrope), sans-serif', fontWeight: 600, fontSize: 15, color: '#ffffff', whiteSpace: 'nowrap' }}>
+              Primer mes <span style={{ fontWeight: 800 }}>gratis</span>
+            </span>
+          </div>
+          {/* Marquee strip */}
+          <div style={{ background: '#ffffff', padding: '13px 0', overflow: 'hidden' }}>
+            <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
+              {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
+                <div key={i} className="flex items-center shrink-0" style={{ gap: 8, padding: '0 16px' }}>
+                  <Icon />
+                  <span className="font-manrope" style={{ fontWeight: 600, fontSize: 14, color: '#0a0a0a', whiteSpace: 'nowrap' }}>
+                    {label}
+                  </span>
+                  <span style={{ color: '#D1D5DB', marginLeft: 6, fontSize: 10 }} aria-hidden="true">·</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Pulsing scroll arrow — desktop only ── */}
+        <div className="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
           <button
             onClick={() => document.getElementById('showcase-cards')?.scrollIntoView({ behavior: 'smooth' })}
             aria-label="Ver ejemplos de webs"
