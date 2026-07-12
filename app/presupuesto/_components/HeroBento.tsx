@@ -86,23 +86,21 @@ export default function HeroBento() {
           50%       { transform: translateY(7px); opacity: 0.55; }
         }
 
-        @keyframes badgeStarBig {
+        @keyframes sparkleMain {
           0%, 100% { transform: scale(1)    rotate(0deg);  opacity: 0.85; }
-          50%       { transform: scale(1.18) rotate(45deg); opacity: 1;    }
+          50%       { transform: scale(1.15) rotate(20deg); opacity: 1;    }
         }
-        @keyframes badgeStarSmall {
-          0%, 100% { transform: scale(1)    rotate(0deg);  opacity: 1;    }
-          50%       { transform: scale(1.35) rotate(-45deg); opacity: 0.7; }
+        @keyframes sparkleDot {
+          0%, 100% { opacity: 1;   transform: scale(1);    }
+          50%       { opacity: 0.5; transform: scale(0.75); }
         }
-        .hero-badge-star-big {
-          animation: badgeStarBig 2.8s ease-in-out infinite;
-          transform-origin: center;
-          flex-shrink: 0;
+        .hero-sparkle-main {
+          animation: sparkleMain 2.8s ease-in-out infinite;
+          transform-origin: 12px 10px;
         }
-        .hero-badge-star-small {
-          animation: badgeStarSmall 2.8s ease-in-out infinite 1.4s;
-          transform-origin: center;
-          flex-shrink: 0;
+        .hero-sparkle-dot {
+          animation: sparkleDot 2.8s ease-in-out infinite 1.4s;
+          transform-origin: 19px 17.5px;
         }
       `}</style>
 
@@ -153,17 +151,16 @@ export default function HeroBento() {
               }}
               aria-hidden="true"
             >
-              {/* Big sparkle — outline only */}
-              <svg className="hero-badge-star-big" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              {/* Sparkle icon from user SVG: big outline star + small filled dot */}
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
-                  d="M12 2C12 2 12.8 7.6 14.8 9.6C16.8 11.6 22 12 22 12C22 12 16.8 12.4 14.8 14.4C12.8 16.4 12 22 12 22C12 22 11.2 16.4 9.2 14.4C7.2 12.4 2 12 2 12C2 12 7.2 11.6 9.2 9.6C11.2 7.6 12 2 12 2Z"
-                  stroke="#ffffff" strokeWidth="1.5" strokeLinejoin="round"
+                  className="hero-sparkle-main"
+                  d="M12 3L13.6 8.4L19 10L13.6 11.6L12 17L10.4 11.6L5 10L10.4 8.4L12 3Z"
+                  stroke="#ffffff" strokeWidth="1.6" strokeLinejoin="round"
                 />
-              </svg>
-              {/* Small sparkle — solid fill */}
-              <svg className="hero-badge-star-small" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
-                  d="M12 2C12 2 12.8 7.6 14.8 9.6C16.8 11.6 22 12 22 12C22 12 16.8 12.4 14.8 14.4C12.8 16.4 12 22 12 22C12 22 11.2 16.4 9.2 14.4C7.2 12.4 2 12 2 12C2 12 7.2 11.6 9.2 9.6C11.2 7.6 12 2 12 2Z"
+                  className="hero-sparkle-dot"
+                  d="M19 14.5L19.7 17L22 17.5L19.7 18L19 20.5L18.3 18L16 17.5L18.3 17L19 14.5Z"
                   fill="#ffffff"
                 />
               </svg>
