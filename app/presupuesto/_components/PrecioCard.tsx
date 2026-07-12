@@ -157,26 +157,21 @@ export default function PrecioCard() {
                 <span className="font-manrope text-sm text-[#6B7280] mb-1.5">/mes</span>
               </div>
 
-              {/* Animated pill */}
-              <div className="relative">
-                {/* Single slow ring */}
-                <motion.span
-                  className="absolute inset-0 rounded-full pointer-events-none"
-                  style={{ background: ORANGE }}
-                  animate={{ scale: [1, 1.45], opacity: [0.3, 0] }}
-                  transition={{ repeat: Infinity, duration: 2.8, ease: 'easeOut' }}
-                  aria-hidden="true"
-                />
-                {/* Pill itself — very gentle breathe */}
-                <motion.span
-                  style={{ background: ORANGE }}
-                  animate={{ opacity: [1, 0.82, 1] }}
-                  transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
-                  className="relative font-manrope font-semibold text-sm text-white px-4 py-2 rounded-full block"
-                >
-                  Primer mes gratuito
-                </motion.span>
-              </div>
+              {/* Pill — slow ambient glow */}
+              <motion.span
+                style={{ background: ORANGE }}
+                animate={{
+                  boxShadow: [
+                    '0 0 0px 0px rgba(226,72,47,0)',
+                    '0 0 14px 4px rgba(226,72,47,0.28)',
+                    '0 0 0px 0px rgba(226,72,47,0)',
+                  ],
+                }}
+                transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
+                className="font-manrope font-semibold text-sm text-white px-4 py-2 rounded-full block"
+              >
+                Primer mes gratuito
+              </motion.span>
             </div>
 
             {/* Features */}
