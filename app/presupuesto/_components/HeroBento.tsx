@@ -142,7 +142,7 @@ export default function HeroBento() {
                 right: 0,
                 width: 70,
                 height: 220,
-                background: '#7C3AED',
+                background: '#e2482f',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
