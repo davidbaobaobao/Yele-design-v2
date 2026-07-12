@@ -2,7 +2,6 @@
 
 import { useRef, useCallback, useEffect } from 'react'
 import { motion, useMotionValue, useMotionTemplate } from 'framer-motion'
-import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 
 export default function DiferenciaSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -12,8 +11,8 @@ export default function DiferenciaSection() {
 
   useEffect(() => { videoRef.current?.play().catch(() => {}) }, [])
 
-  /* Dynamic scrim — nearly transparent where cursor is, dark at edges */
-  const scrimBg = useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(10,10,15,0.05) 0%, rgba(10,10,15,0.72) 65%)`
+  /* Diffused spotlight — soft falloff, no hard edge */
+  const scrimBg = useMotionTemplate`radial-gradient(720px circle at ${mouseX}px ${mouseY}px, rgba(10,10,15,0.02) 0%, rgba(10,10,15,0.42) 52%, rgba(10,10,15,0.78) 85%)`
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const rect = sectionRef.current?.getBoundingClientRect()
@@ -53,9 +52,6 @@ export default function DiferenciaSection() {
         style={{ background: scrimBg }}
         aria-hidden="true"
       />
-
-      {/* Subtle grid overlay — original 40px cell size */}
-      <InfiniteGrid revealRadius={280} revealOpacity={0.18} baseOpacity={0.05} />
 
       {/* Content — left half of the screen */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-5 md:px-20 pt-24 pb-16 md:py-20">
