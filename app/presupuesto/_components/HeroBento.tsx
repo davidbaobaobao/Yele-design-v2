@@ -177,7 +177,7 @@ export default function HeroBento() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                Primer mes gratis
+                Primer mes <span style={{ fontWeight: 800 }}>gratis</span>
               </span>
             </div>
 
