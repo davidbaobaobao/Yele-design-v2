@@ -70,14 +70,14 @@ const plans = [
     },
   },
   {
-    key: 'business',
+    key: 'enterprise',
     monthly: '€119',
     annual: '€1.190',
     annualNote: { es: 'o €1.190/año — ahorras €238', en: 'or €1,190/year — save €238' },
     badge: null as { es: string; en: string } | null,
     highlighted: false,
     es: {
-      name: 'Business',
+      name: 'Enterprise',
       desc: 'Para negocios que necesitan más. Pagos, reservas e integraciones.',
       features: [
         'Todo lo de Pro',
@@ -88,7 +88,7 @@ const plans = [
       ],
     },
     en: {
-      name: 'Business',
+      name: 'Enterprise',
       desc: 'For businesses that need more. Payments, bookings and integrations.',
       features: [
         'Everything in Pro',

@@ -43,8 +43,8 @@ const PLANS = [
     highlighted: true,
   },
   {
-    id: 'business',
-    name: 'Business',
+    id: 'enterprise',
+    name: 'Enterprise',
     desc: 'Para negocios con necesidades específicas: tienda, reservas, multiidioma.',
     monthlyPrice: 119,
     annualMonthly: 99.17,

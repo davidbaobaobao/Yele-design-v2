@@ -9,9 +9,9 @@ const PRICE_IDS: Record<string, Record<string, string>> = {
     monthly: process.env.STRIPE_PRICE_PRO_MONTHLY!,
     annual: process.env.STRIPE_PRICE_PRO_ANNUAL!,
   },
-  business: {
-    monthly: process.env.STRIPE_PRICE_BUSINESS_MONTHLY!,
-    annual: process.env.STRIPE_PRICE_BUSINESS_ANNUAL!,
+  enterprise: {
+    monthly: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY!,
+    annual: process.env.STRIPE_PRICE_ENTERPRISE_ANNUAL!,
   },
 }
 
