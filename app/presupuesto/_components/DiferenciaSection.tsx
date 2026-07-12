@@ -1,43 +1,20 @@
 'use client'
 
-import { useRef, useCallback, useEffect } from 'react'
-import { motion, useMotionValue, useMotionTemplate } from 'framer-motion'
+import { useRef, useEffect } from 'react'
+import { motion } from 'framer-motion'
 
 export default function DiferenciaSection() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const videoRef   = useRef<HTMLVideoElement>(null)
-  const mouseX = useMotionValue(-2000)
-  const mouseY = useMotionValue(-2000)
-
+  const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => { videoRef.current?.play().catch(() => {}) }, [])
 
-  /* Diffused spotlight — soft falloff, no hard edge */
-  const scrimBg = useMotionTemplate`radial-gradient(720px circle at ${mouseX}px ${mouseY}px, rgba(10,10,15,0.02) 0%, rgba(10,10,15,0.42) 52%, rgba(10,10,15,0.78) 85%)`
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    const rect = sectionRef.current?.getBoundingClientRect()
-    if (!rect) return
-    mouseX.set(e.clientX - rect.left)
-    mouseY.set(e.clientY - rect.top)
-  }, [mouseX, mouseY])
-
-  const handleMouseLeave = useCallback(() => {
-    mouseX.set(-2000)
-    mouseY.set(-2000)
-  }, [mouseX, mouseY])
-
   return (
-    <section
-      ref={sectionRef}
-      className="relative min-h-screen flex items-start md:items-center overflow-hidden"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
+    <section className="relative min-h-screen flex items-start md:items-center overflow-hidden">
 
-      {/* Background video — shifted down on mobile so purple elements are visible at bottom */}
+      {/* Background video — shifted 150px down, no mask */}
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover object-right-bottom md:object-center"
+        style={{ transform: 'translateY(150px)' }}
         autoPlay muted loop playsInline
         poster="/media/diferencia/orbital2_poster.jpg"
         aria-hidden="true"
@@ -46,14 +23,7 @@ export default function DiferenciaSection() {
         <source src="/media/diferencia/orbital2_hero.webm" type="video/webm" />
       </video>
 
-      {/* Spotlight scrim — lighter under cursor, dark elsewhere */}
-      <motion.div
-        className="absolute inset-0"
-        style={{ background: scrimBg }}
-        aria-hidden="true"
-      />
-
-      {/* Content — left half of the screen */}
+      {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-5 md:px-20 pt-24 pb-16 md:py-20">
         <div className="max-w-2xl">
 

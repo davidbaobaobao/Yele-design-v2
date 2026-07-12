@@ -86,9 +86,9 @@ export default function HeroBento() {
           50%       { transform: translateY(7px); opacity: 0.55; }
         }
 
-        /* Mobile: shift video right+down to reveal animated elements */
+        /* Mobile: shift video 300px right + 200px down from center */
         @media (max-width: 767px) {
-          .hero-vid { object-position: 85% 62%; }
+          .hero-vid { object-position: calc(50% + 300px) calc(50% + 200px); }
         }
 
         @keyframes sparkleMain {

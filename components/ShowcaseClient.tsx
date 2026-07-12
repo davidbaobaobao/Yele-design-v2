@@ -112,6 +112,12 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
   return (
     <div ref={wrapperRef} style={{ height: wrapperH }}>
       <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+        <h2
+          className="font-outfit font-semibold text-[#1D1D1F] tracking-tight px-4 mb-3 flex-shrink-0"
+          style={{ fontSize: 'clamp(20px, 5.5vw, 28px)' }}
+        >
+          Tu página puede verse así
+        </h2>
         <div className="relative space-y-3">
           <div className="pointer-events-none absolute inset-y-0 left-0 w-8 z-10 bg-gradient-to-r from-white to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-white to-transparent" />

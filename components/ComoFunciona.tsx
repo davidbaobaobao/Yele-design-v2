@@ -285,7 +285,8 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
             </h2>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-sm">
               {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
-              {t('Sin presupuesto sorpresa.', 'No surprise costs.')}
+              {t('Sin presupuesto sorpresa.', 'No surprise costs.')}<br />
+              {t('Nos encargamos de todo.', 'We handle everything.')}
             </p>
             <div className="flex gap-2 mt-8">
               {steps.map((s, i) => (
