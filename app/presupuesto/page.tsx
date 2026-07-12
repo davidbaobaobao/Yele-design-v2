@@ -105,7 +105,7 @@ export default function PresupuestoPage() {
               className="font-outfit font-semibold text-[#1D1D1F] tracking-tight"
               style={{ fontSize: 'clamp(26px, 3.5vw, 48px)' }}
             >
-              Tu página puede verse así
+              Así puede lucir tu página web
             </h2>
           </div>
           <Showcase noHeader noBg fullScreen />

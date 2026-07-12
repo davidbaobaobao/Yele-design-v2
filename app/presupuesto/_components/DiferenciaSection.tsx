@@ -10,11 +10,15 @@ export default function DiferenciaSection() {
   return (
     <section className="relative min-h-screen flex items-start md:items-center overflow-hidden">
 
-      {/* Background video — shifted 150px down, no mask */}
+      {/* Background video — mobile: shifted 150px down + right; desktop: original */}
+      <style>{`
+        @media (max-width: 767px) {
+          .dif-vid { transform: translateY(150px); object-position: right bottom; }
+        }
+      `}</style>
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover object-right-bottom md:object-center"
-        style={{ transform: 'translateY(150px)' }}
+        className="absolute inset-0 w-full h-full object-cover dif-vid"
         autoPlay muted loop playsInline
         poster="/media/diferencia/orbital2_poster.jpg"
         aria-hidden="true"

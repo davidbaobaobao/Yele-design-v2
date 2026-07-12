@@ -96,18 +96,21 @@ export default function PrecioCard() {
       id="precios"
       className="relative min-h-screen flex items-center overflow-hidden py-16"
     >
-      {/* Background video — same as hero, 50px left of hero's crop */}
-      <style>{`
-        @media (max-width: 767px) {
-          .precios-vid { object-position: calc(50% + 250px) calc(50% + 200px); }
-        }
-        @media (min-width: 768px) {
-          .precios-vid { object-position: calc(50% - 50px) 50%; }
-        }
-      `}</style>
+      {/* Desktop video: precios2_hero, original position */}
       <video
         ref={videoBgRef}
-        className="absolute inset-0 w-full h-full object-cover precios-vid"
+        className="absolute inset-0 w-full h-full object-cover hidden md:block"
+        autoPlay muted loop playsInline
+        poster="/media/precios/precios2_poster.jpg"
+        aria-hidden="true"
+      >
+        <source src="/media/precios/precios2_hero.webm" type="video/webm" />
+        <source src="/media/precios/precios2_hero.mp4"  type="video/mp4" />
+      </video>
+      {/* Mobile video: hero_hq shifted to match hero crop */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover md:hidden"
+        style={{ objectPosition: 'calc(50% + 250px) calc(50% + 200px)' }}
         autoPlay muted loop playsInline
         poster="/media/main_hero/poster_hq.jpg"
         aria-hidden="true"
