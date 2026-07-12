@@ -28,7 +28,8 @@ export default function PrecioCard() {
   const rotateY = useTransform(smoothX, [-0.5, 0.5], [-4, 4])
   const spotX   = useTransform(smoothX, [-0.5, 0.5], [0, 100])
   const spotY   = useTransform(smoothY, [-0.5, 0.5], [0, 100])
-  const spotBg  = useMotionTemplate`radial-gradient(circle at ${spotX}% ${spotY}%, rgba(255,255,255,0.12) 0%, transparent 55%)`
+  /* Spotlight is stronger on the gradient card so it shows against the shaded bg */
+  const spotBg  = useMotionTemplate`radial-gradient(circle at ${spotX}% ${spotY}%, rgba(255,255,255,0.55) 0%, transparent 60%)`
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = cardRef.current?.getBoundingClientRect()
@@ -87,17 +88,17 @@ export default function PrecioCard() {
       id="precios"
       className="relative min-h-screen flex items-center overflow-hidden py-16"
     >
-      {/* Background video */}
+      {/* Background video — switched to precios2 */}
       <video
         className="absolute inset-0 w-full h-full object-cover"
         autoPlay muted loop playsInline
-        poster="/media/precios/bg_poster.jpg"
+        poster="/media/precios/precios2_poster.jpg"
         aria-hidden="true"
       >
-        <source src="/media/precios/bg.webm" type="video/webm" />
-        <source src="/media/precios/bg.mp4"  type="video/mp4" />
+        <source src="/media/precios/precios2_hero.webm" type="video/webm" />
+        <source src="/media/precios/precios2_hero.mp4"  type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-black/35" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
 
@@ -109,7 +110,8 @@ export default function PrecioCard() {
           viewport={{ once: true, margin: '-80px' }}
           className="text-center mb-10"
         >
-          <span className="font-manrope text-sm font-semibold tracking-[0.18em] uppercase text-white/70 mb-4 block">
+          {/* "Precios" label — larger */}
+          <span className="font-manrope text-xl font-bold tracking-[0.2em] uppercase text-white/80 mb-5 block">
             Precios
           </span>
           <h2
@@ -124,37 +126,65 @@ export default function PrecioCard() {
         <div className="max-w-md mx-auto">
           <motion.div
             ref={cardRef}
-            style={{ rotateX, rotateY, transformPerspective: 1000 }}
+            style={{
+              rotateX,
+              rotateY,
+              transformPerspective: 1000,
+              background: 'linear-gradient(155deg, #ffffff 0%, #dde0eb 100%)',
+            }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.12, ease: 'easeOut' }}
             viewport={{ once: true, margin: '-80px' }}
-            className="relative bg-[#F5F5F7] text-[#1D1D1F] rounded-3xl p-10 cursor-default
-                       shadow-[0_24px_64px_rgba(0,0,0,0.32)] ring-1 ring-black/[0.07]"
+            className="relative rounded-3xl p-10 cursor-default
+                       shadow-[0_28px_72px_rgba(0,0,0,0.4)] ring-1 ring-white/20"
           >
-            {/* Spotlight overlay */}
+            {/* Mouse-follow spotlight — more visible on gradient */}
             <motion.div
               className="absolute inset-0 rounded-3xl pointer-events-none"
               style={{ background: spotBg }}
               aria-hidden="true"
             />
 
-            {/* Price + orange pill inline */}
-            <div className="flex items-center gap-3 flex-wrap mb-8">
+            {/* Price + animated orange pill */}
+            <div className="flex items-center gap-4 flex-wrap mb-8">
               <div className="flex items-end gap-1">
-                <span className="font-outfit font-semibold text-6xl tracking-tight leading-none">
+                <span className="font-outfit font-semibold text-6xl tracking-tight leading-none text-[#1D1D1F]">
                   49€
                 </span>
                 <span className="font-manrope text-sm text-[#6B7280] mb-1.5">/mes</span>
               </div>
-              <span
-                style={{ background: ORANGE }}
-                className="font-manrope font-semibold text-xs text-white px-3 py-1.5 rounded-full"
-              >
-                Primer mes gratuito
-              </span>
+
+              {/* Notification-style animated pill */}
+              <div className="relative">
+                {/* Expanding ping ring */}
+                <motion.span
+                  className="absolute inset-0 rounded-full pointer-events-none"
+                  style={{ background: ORANGE }}
+                  animate={{ scale: [1, 1.65], opacity: [0.55, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.6, ease: 'easeOut' }}
+                  aria-hidden="true"
+                />
+                {/* Second ring, offset */}
+                <motion.span
+                  className="absolute inset-0 rounded-full pointer-events-none"
+                  style={{ background: ORANGE }}
+                  animate={{ scale: [1, 1.65], opacity: [0.35, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.6, ease: 'easeOut', delay: 0.5 }}
+                  aria-hidden="true"
+                />
+                {/* Pill itself — subtle scale pulse */}
+                <motion.span
+                  style={{ background: ORANGE }}
+                  animate={{ scale: [1, 1.04, 1] }}
+                  transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
+                  className="relative font-manrope font-bold text-sm text-white px-4 py-2 rounded-full block"
+                >
+                  Primer mes gratuito
+                </motion.span>
+              </div>
             </div>
 
             {/* Features */}
@@ -177,7 +207,8 @@ export default function PrecioCard() {
             </a>
           </motion.div>
 
-          <p className="text-center font-manrope text-sm text-white/60 mt-6">
+          {/* Footer note — bold and visible */}
+          <p className="text-center font-manrope text-sm font-semibold text-white mt-6">
             Sin permanencia. Cancela cuando quieras.
           </p>
         </div>
