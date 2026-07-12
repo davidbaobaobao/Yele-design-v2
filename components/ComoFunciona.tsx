@@ -101,22 +101,55 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
     return () => window.removeEventListener('wheel', onWheel)
   }, [])
 
-  /* ── On first entry: card 0 shown; brief lock prevents accidental skip ── */
+  /* ── Auto-snap section to fill the viewport on entry ── */
   useEffect(() => {
     const el = sectionRef.current
     if (!el) return
+
+    let snapping = false
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          // Brief lock when entering so the first card has time to render
+        if (entry.isIntersecting && !snapping) {
+          const { top, bottom } = el.getBoundingClientRect()
+          const vh = window.innerHeight
+          const visible = Math.min(bottom, vh) - Math.max(top, 0)
+
+          // If section doesn't yet fill the viewport, snap it into place
+          if (visible / vh < 0.88) {
+            snapping = true
+            lockedRef.current = true
+
+            // Reset to card 0 each time we enter
+            setDisplayCard(0)
+            setActiveCard(0)
+            displayRef.current = 0
+
+            // Smooth-scroll so section top aligns with viewport top
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+            // Release lock after scroll + brief pause
+            setTimeout(() => {
+              snapping = false
+              lockedRef.current = false
+            }, 950)
+          } else {
+            // Already filling viewport — just lock briefly
+            lockedRef.current = true
+            setTimeout(() => { lockedRef.current = false }, 600)
+          }
+        } else if (!entry.isIntersecting) {
+          snapping = false
           lockedRef.current = true
-          setTimeout(() => { lockedRef.current = false }, 700)
-        } else {
-          lockedRef.current = true // lock while out of view
+          // Reset card for next entry
+          setDisplayCard(0)
+          setActiveCard(0)
+          displayRef.current = 0
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.12 }  // fire when section first peeks into view
     )
+
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
