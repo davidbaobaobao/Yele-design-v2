@@ -20,7 +20,7 @@ export default function TestimoniosClient({ testimonials, noBg }: { testimonials
   }, [])
 
   return (
-    <section className={`py-24 md:py-32 ${noBg ? '' : 'bg-white'} overflow-hidden`}>
+    <section className={`pt-24 md:pt-32 pb-8 md:pb-10 ${noBg ? '' : 'bg-white'} overflow-hidden`}>
       <div className="max-w-6xl mx-auto px-6 mb-12">
         <motion.div
           initial={{ opacity: 0, y: 24 }}

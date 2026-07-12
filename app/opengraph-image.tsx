@@ -53,7 +53,7 @@ export default async function Image() {
             lineHeight: 1.4,
           }}
         >
-          Diseño profesional para PYMEs y autónomos en España. Desde €29/mes.
+          Diseño profesional para PYMEs y autónomos en España. Desde €49/mes.
         </div>
         <div
           style={{

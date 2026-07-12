@@ -18,16 +18,16 @@ const ContactForm      = dynamic(() => import('@/components/ContactForm'))
 const FAQClient        = dynamic(() => import('@/components/FAQClient'))
 
 export const metadata: Metadata = {
-  title: 'Diseño web profesional desde 29€/mes | Agencia de diseño web | Yele',
+  title: 'Diseño web profesional desde 49€/mes | Agencia de diseño web | Yele',
   description:
-    'Diseño web profesional a medida desde 29€/mes. Tu agencia de diseño web sin pago inicial ni permanencia. Página web para tu negocio lista en 3-5 días.',
+    'Diseño web profesional a medida desde 49€/mes. Tu agencia de diseño web sin pago inicial ni permanencia. Página web para tu negocio lista en 3-5 días.',
   robots: { index: true, follow: true },
   alternates: { canonical: 'https://yele.design/presupuesto' },
 }
 
 const LP_FAQS: FAQItem[] = [
   {
-    question: '¿Qué incluye el precio de 29€/mes?',
+    question: '¿Qué incluye el precio de 49€/mes?',
     answer: 'Diseño personalizado a medida, dominio, hosting, SSL, mantenimiento, soporte y cambios de contenido. Sin coste extra ni facturas sorpresa.',
   },
   {

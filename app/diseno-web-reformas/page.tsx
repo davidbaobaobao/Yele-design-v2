@@ -11,14 +11,14 @@ import type { FAQItem } from '@/components/FAQClient'
 export const metadata: Metadata = {
   title: 'Diseño web para reformas — gana más presupuestos | Yele',
   description:
-    'Web profesional para empresas de reformas lista en 1 semana. Enseña tus proyectos, gana presupuestos y consigue clientes directos sin comisión. Desde 29€/mes.',
+    'Web profesional para empresas de reformas lista en 1 semana. Enseña tus proyectos, gana presupuestos y consigue clientes directos sin comisión. Desde 49€/mes.',
   alternates: {
     canonical: 'https://yele.design/diseno-web-reformas',
   },
   openGraph: {
     title: 'Diseño web para reformas — gana más presupuestos | Yele',
     description:
-      'Enseña tu galería de proyectos y gana presupuestos sin pagar comisión. Lista en 1 semana, desde 29€/mes, sin permanencia.',
+      'Enseña tu galería de proyectos y gana presupuestos sin pagar comisión. Lista en 1 semana, desde 49€/mes, sin permanencia.',
     url: 'https://yele.design/diseno-web-reformas',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Diseño web para empresas de reformas — Yele' }],
   },
@@ -42,7 +42,7 @@ const FAQS: FAQItem[] = [
   },
   {
     question: '¿Cuánto tarda y cuánto cuesta?',
-    answer: 'Lista en 1 semana, desde 29€/mes, sin pago inicial ni permanencia.',
+    answer: 'Lista en 1 semana, desde 49€/mes, sin pago inicial ni permanencia.',
   },
 ]
 
@@ -108,12 +108,12 @@ export default function ReformasPage() {
               Diseño web para empresas de reformas
               <span className="mt-4 block">
                 <span className="inline-flex font-manrope text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
-                  Desde 29€/mes
+                  Desde 49€/mes
                 </span>
               </span>
             </h1>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
-              Quien va a gastarse miles de euros en reformar su casa investiga mucho antes de decidir. Si no ve tu trabajo, elige a otro. Enseña tus proyectos con una web profesional lista en 1 semana. Desde 29€/mes, sin pago inicial, sin permanencia.
+              Quien va a gastarse miles de euros en reformar su casa investiga mucho antes de decidir. Si no ve tu trabajo, elige a otro. Enseña tus proyectos con una web profesional lista en 1 semana. Desde 49€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
               href="/registro"

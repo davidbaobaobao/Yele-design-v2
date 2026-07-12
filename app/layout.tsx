@@ -30,12 +30,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://yele.design'),
 
   title: {
-    default: 'Desde 29€/mes. Tu página web profesional, sin complicaciones',
+    default: 'Desde 49€/mes. Tu página web profesional, sin complicaciones',
     template: '%s | Yele',
   },
 
   description:
-    'Diseño web profesional para PYMEs y autónomos españoles. Entrega en 1 semana, mantenimiento incluido, desde €29/mes. Sin pago inicial, sin permanencia.',
+    'Diseño web profesional para PYMEs y autónomos españoles. Entrega en 1 semana, mantenimiento incluido, desde €49/mes. Sin pago inicial, sin permanencia.',
 
   authors: [{ name: 'Yele', url: 'https://yele.design' }],
   creator: 'Yele',
@@ -47,9 +47,9 @@ export const metadata: Metadata = {
     alternateLocale: 'en_GB',
     url: 'https://yele.design',
     siteName: 'Yele',
-    title: 'Desde 29€/mes. Tu página web profesional, sin complicaciones',
+    title: 'Desde 49€/mes. Tu página web profesional, sin complicaciones',
     description:
-      'Diseño web profesional para PYMEs y autónomos españoles. Desde €29/mes. Sin pago inicial.',
+      'Diseño web profesional para PYMEs y autónomos españoles. Desde €49/mes. Sin pago inicial.',
     images: [
       {
         url: '/opengraph-image',
@@ -62,9 +62,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Desde 29€/mes. Tu página web profesional, sin complicaciones',
+    title: 'Desde 49€/mes. Tu página web profesional, sin complicaciones',
     description:
-      'Diseño web profesional para PYMEs y autónomos españoles. Desde €29/mes.',
+      'Diseño web profesional para PYMEs y autónomos españoles. Desde €49/mes.',
     images: ['/opengraph-image'],
   },
 
@@ -124,7 +124,7 @@ const schemaOrg = {
       name: 'Diseño web por suscripción',
       provider: { '@id': 'https://yele.design/#organization' },
       description:
-        'Diseño y mantenimiento de páginas web profesionales para PYMEs y autónomos en España. Entrega en 1 semana, desde €29/mes.',
+        'Diseño y mantenimiento de páginas web profesionales para PYMEs y autónomos en España. Entrega en 1 semana, desde €49/mes.',
       areaServed: { '@type': 'Country', name: 'España' },
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
@@ -133,20 +133,6 @@ const schemaOrg = {
           {
             '@type': 'Offer',
             name: 'Plan Básica',
-            price: '29',
-            priceCurrency: 'EUR',
-            priceSpecification: {
-              '@type': 'UnitPriceSpecification',
-              price: '29',
-              priceCurrency: 'EUR',
-              unitText: 'MONTH',
-            },
-            description:
-              'Web hasta 5 secciones, diseño personalizado, mobile-first, mantenimiento incluido',
-          },
-          {
-            '@type': 'Offer',
-            name: 'Plan Profesional',
             price: '49',
             priceCurrency: 'EUR',
             priceSpecification: {
@@ -156,16 +142,30 @@ const schemaOrg = {
               unitText: 'MONTH',
             },
             description:
+              'Web hasta 5 secciones, diseño personalizado, mobile-first, mantenimiento incluido',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Plan Profesional',
+            price: '69',
+            priceCurrency: 'EUR',
+            priceSpecification: {
+              '@type': 'UnitPriceSpecification',
+              price: '69',
+              priceCurrency: 'EUR',
+              unitText: 'MONTH',
+            },
+            description:
               'Web hasta 10 secciones, blog, SEO local, cambios prioritarios en 24h',
           },
           {
             '@type': 'Offer',
             name: 'Plan Avanzada',
-            price: '89',
+            price: '119',
             priceCurrency: 'EUR',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
-              price: '89',
+              price: '119',
               priceCurrency: 'EUR',
               unitText: 'MONTH',
             },

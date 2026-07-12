@@ -50,7 +50,7 @@ Hosting compartido + dominio ≈ **5-12 €/mes**, pero necesitas instalar y man
 
 ## Opción 5: Diseño web por suscripción (el modelo Yele)
 
-Pagas una cuota mensual —desde **29 €/mes**— y recibes una web profesional hecha a medida, con mantenimiento, hosting y SSL incluidos. Sin pago inicial, sin permanencia.
+Pagas una cuota mensual —desde **49 €/mes**— y recibes una web profesional hecha a medida, con mantenimiento, hosting y SSL incluidos. Sin pago inicial, sin permanencia.
 
 **Lo bueno**: coste predecible, web lista en 1 semana, alguien responsable siempre detrás.
 **Lo malo**: no eres el propietario del código (aunque sí de tu dominio y contenido).
@@ -63,7 +63,7 @@ Pagas una cuota mensual —desde **29 €/mes**— y recibes una web profesional
 | Freelancer | 800–2.500 € | Variable | 3–8 semanas |
 | Wix/Squarespace | 0 € | 13–45 €/mes | 1–4 semanas (tú) |
 | WordPress auto | 0 € | 5–15 €/mes | 2–6 semanas (tú) |
-| Suscripción Yele | 0 € | desde 29 €/mes | 1 semana |
+| Suscripción Yele | 0 € | desde 49 €/mes | 1 semana |
 
 ## ¿Qué conviene a un autónomo?
 
@@ -121,7 +121,7 @@ Esto no requiere publicidad de pago. Requiere una web bien construida con las pa
 
 Un fontanero autónomo en una ciudad mediana factura entre 800 y 1.500 € por semana. Si la web te genera **dos llamadas adicionales a la semana** —algo perfectamente alcanzable—, estás generando entre 3.000 y 6.000 € más al mes.
 
-Una suscripción web de 29 €/mes se amortiza con la primera llamada del mes.
+Una suscripción web de 49 €/mes se amortiza con la primera llamada del mes.
 
 ## Conclusión
 
@@ -178,7 +178,7 @@ Una web desarrollada a medida —ya sea por agencia, freelancer o servicio de su
 **El coste total no es tan diferente**
 Squarespace Business: 23 €/mes × 12 = 276 €/año. Más las horas que tú dedicas a configurarlo y mantenerlo.
 
-Una suscripción web profesional desde 29 €/mes incluye todo: diseño, desarrollo, hosting, SSL, mantenimiento y cambios recurrentes. Y el resultado es muy superior.
+Una suscripción web profesional desde 49 €/mes incluye todo: diseño, desarrollo, hosting, SSL, mantenimiento y cambios recurrentes. Y el resultado es muy superior.
 
 ## La conclusión honesta
 
@@ -417,7 +417,7 @@ La pregunta no es "¿puedo hacerlo?", sino "¿es la mejor inversión de mi tiemp
 
 ## El modelo de suscripción como solución
 
-Por eso el modelo de suscripción web tiene tanto sentido para negocios locales. Por una cuota mensual fija —como la de Yele, desde 29 €/mes— tienes todo el mantenimiento cubierto: técnico, de contenido y de SEO. Sin sorpresas, sin facturas inesperadas, con alguien que conoce tu web respondiendo cuando algo no va bien.
+Por eso el modelo de suscripción web tiene tanto sentido para negocios locales. Por una cuota mensual fija —como la de Yele, desde 49 €/mes— tienes todo el mantenimiento cubierto: técnico, de contenido y de SEO. Sin sorpresas, sin facturas inesperadas, con alguien que conoce tu web respondiendo cuando algo no va bien.
 
 El mantenimiento no es un extra: es lo que hace que la inversión inicial en tu web tenga sentido a largo plazo.`,
   },
@@ -491,7 +491,7 @@ Las academias tienen picos de búsqueda muy claros: septiembre (vuelta al cole),
 
 Una academia mediana en una ciudad de 50.000 habitantes, con buena web y buen SEO, puede esperar entre 15 y 40 nuevas matrículas atribuibles a búsquedas orgánicas al año. Con una cuota media de 80 €/mes y un alumno que se queda de media 8 meses, eso representa entre 9.600 y 25.600 € adicionales de facturación anual.
 
-Una inversión de 29-49 €/mes en la web tiene un retorno difícil de igualar con cualquier otra acción de marketing.`,
+Una inversión de 49-69 €/mes en la web tiene un retorno difícil de igualar con cualquier otra acción de marketing.`,
   },
   {
     slug: 'velocidad-web-afecta-ventas-negocio-local',
@@ -614,7 +614,7 @@ Un cliente satisfecho llama de media **2-3 veces al año** y refiere a 1 persona
 
 Los fontaneros con web bien hecha y posicionada en Google reciben el doble de llamadas directas que los que solo tienen ficha de Google Maps. Esa diferencia tiene un impacto directo en la facturación: **2 trabajos adicionales a la semana a 85€** son más de 700€ al mes extra — sin pagar comisión por ninguno.
 
-Una web desde 29€/mes se amortiza en el primer trabajo del mes.
+Una web desde 49€/mes se amortiza en el primer trabajo del mes.
 
 ## La ventana de oportunidad
 
@@ -684,7 +684,7 @@ No todas las webs sirven. Para que la tuya traiga trabajo de verdad, tiene que t
 
 Cada día, alguien de tu zona escribe "fontanero" en Google con una avería entre manos. La pregunta es sencilla: ¿te encuentra a ti o a tu competencia?
 
-En **Yele** hacemos webs profesionales para fontaneros, listas en 1 semana, desde 29€/mes, sin pago inicial y sin permanencia. Tú nos cuentas tu negocio y nosotros la construimos y la mantenemos —tú nunca tocas código.
+En **Yele** hacemos webs profesionales para fontaneros, listas en 1 semana, desde 49€/mes, sin pago inicial y sin permanencia. Tú nos cuentas tu negocio y nosotros la construimos y la mantenemos —tú nunca tocas código.
 
 **[Descubre nuestro diseño web para fontaneros](/diseno-web-fontaneros)** y empieza a coger los trabajos que ahora se te escapan.`,
   },

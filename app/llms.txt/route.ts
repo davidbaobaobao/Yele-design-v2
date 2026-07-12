@@ -20,9 +20,9 @@ No hay coste de setup, no hay permanencia, no se requieren conocimientos técnic
 
 ## Precios
 
-- Plan Básica: €29/mes — web hasta 5 secciones, cambios en 48h
-- Plan Profesional: €49/mes — web hasta 10 secciones, blog, SEO, cambios en 24h
-- Plan Avanzada: €89/mes — funcionalidades a medida, tienda, reservas, cambios en 12h
+- Plan Básica: €49/mes — web hasta 5 secciones, cambios en 48h
+- Plan Profesional: €69/mes — web hasta 10 secciones, blog, SEO, cambios en 24h
+- Plan Avanzada: €119/mes — funcionalidades a medida, tienda, reservas, cambios en 12h
 
 Sin pago inicial. Sin permanencia. Cancelación en cualquier momento.
 

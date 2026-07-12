@@ -11,14 +11,14 @@ import type { FAQItem } from '@/components/FAQClient'
 export const metadata: Metadata = {
   title: 'Diseño web para fontaneros | Yele',
   description:
-    'Web profesional para fontaneros lista en 1 semana. Aparece en Google cuando te buscan en tu zona. Sin pago inicial, desde 29€/mes, sin permanencia.',
+    'Web profesional para fontaneros lista en 1 semana. Aparece en Google cuando te buscan en tu zona. Sin pago inicial, desde 49€/mes, sin permanencia.',
   alternates: {
     canonical: 'https://yele.design/diseno-web-fontaneros',
   },
   openGraph: {
     title: 'Diseño web para fontaneros | Yele',
     description:
-      'Web profesional para fontaneros lista en 1 semana. Sin pago inicial, desde 29€/mes, sin permanencia.',
+      'Web profesional para fontaneros lista en 1 semana. Sin pago inicial, desde 49€/mes, sin permanencia.',
     url: 'https://yele.design/diseno-web-fontaneros',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Diseño web para fontaneros — Yele' }],
   },
@@ -42,7 +42,7 @@ const FAQS: FAQItem[] = [
   },
   {
     question: '¿Cuánto tarda y cuánto cuesta?',
-    answer: 'Lista en 1 semana, desde 29€/mes, sin pago inicial y sin permanencia.',
+    answer: 'Lista en 1 semana, desde 49€/mes, sin pago inicial y sin permanencia.',
   },
 ]
 
@@ -87,7 +87,7 @@ export default function FontanerosPage() {
               Diseño web para fontaneros
             </h1>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
-              Tu web profesional lista en 1 semana. Aparece en Google cuando alguien de tu zona busca un fontanero — y consigue trabajos nuevos sin pagar comisión por cada cliente. Desde 29€/mes, sin pago inicial, sin permanencia.
+              Tu web profesional lista en 1 semana. Aparece en Google cuando alguien de tu zona busca un fontanero — y consigue trabajos nuevos sin pagar comisión por cada cliente. Desde 49€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
               href="/registro"

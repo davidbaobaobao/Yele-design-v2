@@ -28,7 +28,7 @@ export default function Hero() {
           {...slideUp(0)}
         >
           <span className="block">{t('Tu web lista en 1 semana.', 'Your website ready in 1 week.')}</span>
-          <span className="block text-[#6B7280]">{t('Por 29€ al mes.', 'For €29/month.')}</span>
+          <span className="block text-[#6B7280]">{t('Por 49€ al mes.', 'For €49/month.')}</span>
           <span className="block">{t('Sin complicaciones.', 'No hassle.')}</span>
         </motion.h1>
 

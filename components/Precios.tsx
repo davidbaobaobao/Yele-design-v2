@@ -10,8 +10,8 @@ const plans = [
   {
     key: 'starter',
     monthly: `€${PLAN_PRICES.starter.monthly}`,
-    annual: '€299',
-    annualNote: { es: 'o €299/año — ahorras €49', en: 'or €299/year — save €49' },
+    annual: '€499',
+    annualNote: { es: 'o €499/año — ahorras €89', en: 'or €499/year — save €89' },
     badge: null as { es: string; en: string } | null,
     highlighted: false,
     es: {
@@ -39,9 +39,9 @@ const plans = [
   },
   {
     key: 'pro',
-    monthly: '€49',
-    annual: '€499',
-    annualNote: { es: 'o €499/año — ahorras €89', en: 'or €499/year — save €89' },
+    monthly: '€69',
+    annual: '€699',
+    annualNote: { es: 'o €699/año — ahorras €129', en: 'or €699/year — save €129' },
     badge: { es: 'Más elegido', en: 'Most popular' },
     highlighted: true,
     es: {
@@ -71,9 +71,9 @@ const plans = [
   },
   {
     key: 'business',
-    monthly: '€89',
-    annual: '€899',
-    annualNote: { es: 'o €899/año — ahorras €169', en: 'or €899/year — save €169' },
+    monthly: '€119',
+    annual: '€1.190',
+    annualNote: { es: 'o €1.190/año — ahorras €238', en: 'or €1,190/year — save €238' },
     badge: null as { es: string; en: string } | null,
     highlighted: false,
     es: {

@@ -10,14 +10,14 @@ import type { FAQItem } from '@/components/FAQClient'
 export const metadata: Metadata = {
   title: 'Diseño web para mudanzas — más presupuestos directos | Yele',
   description:
-    'Web profesional para empresas de mudanzas lista en 1 semana. Formulario de presupuesto, zona de cobertura y confianza para que el cliente te elija a ti. Desde 29€/mes.',
+    'Web profesional para empresas de mudanzas lista en 1 semana. Formulario de presupuesto, zona de cobertura y confianza para que el cliente te elija a ti. Desde 49€/mes.',
   alternates: {
     canonical: 'https://yele.design/diseno-web-mudanzas',
   },
   openGraph: {
     title: 'Diseño web para mudanzas — más presupuestos directos | Yele',
     description:
-      'Consigue más presupuestos directos sin intermediarios. Web lista en 1 semana, desde 29€/mes, sin pago inicial ni permanencia.',
+      'Consigue más presupuestos directos sin intermediarios. Web lista en 1 semana, desde 49€/mes, sin pago inicial ni permanencia.',
     url: 'https://yele.design/diseno-web-mudanzas',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Diseño web para empresas de mudanzas — Yele' }],
   },
@@ -41,7 +41,7 @@ const FAQS: FAQItem[] = [
   },
   {
     question: '¿Cuánto tarda y cuánto cuesta?',
-    answer: 'Lista en 1 semana, desde 29€/mes, sin pago inicial ni permanencia.',
+    answer: 'Lista en 1 semana, desde 49€/mes, sin pago inicial ni permanencia.',
   },
 ]
 
@@ -126,12 +126,12 @@ export default function MudanzasPage() {
               Diseño web para empresas de mudanzas
               <span className="mt-4 block">
                 <span className="inline-flex font-manrope text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
-                  Desde 29€/mes
+                  Desde 49€/mes
                 </span>
               </span>
             </h1>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
-              Quien se muda pide presupuesto a varias empresas el mismo día y elige rápido. Si no te encuentra fácil en Google ni puede pedirte presupuesto sin esfuerzo, ni entras en la lista. Web profesional lista en 1 semana. Desde 29€/mes, sin pago inicial, sin permanencia.
+              Quien se muda pide presupuesto a varias empresas el mismo día y elige rápido. Si no te encuentra fácil en Google ni puede pedirte presupuesto sin esfuerzo, ni entras en la lista. Web profesional lista en 1 semana. Desde 49€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
               href="/registro"

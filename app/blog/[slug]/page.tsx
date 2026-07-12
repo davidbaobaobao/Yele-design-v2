@@ -16,19 +16,19 @@ const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string;
   'web-clinica-dental-como-atraer-pacientes': {
     href: '/diseno-web-clinicas-dentales',
     heading: '¿Tienes una clínica dental y quieres más pacientes?',
-    body: 'Diseñamos webs para clínicas dentales que transmiten confianza, muestran tus tratamientos y convierten visitas en citas. Desde 29 €/mes.',
+    body: 'Diseñamos webs para clínicas dentales que transmiten confianza, muestran tus tratamientos y convierten visitas en citas. Desde 49 €/mes.',
     button: 'Ver diseño web para clínicas dentales →',
   },
   'como-una-web-impulsa-tu-negocio-de-fontaneria': {
     href: '/diseno-web-fontaneros',
     heading: '¿Eres fontanero y buscas una web que traiga trabajo?',
-    body: 'Webs para fontaneros con teléfono visible, zona de cobertura y SEO local. Listas en 1 semana, desde 29 €/mes, sin pago inicial.',
+    body: 'Webs para fontaneros con teléfono visible, zona de cobertura y SEO local. Listas en 1 semana, desde 49 €/mes, sin pago inicial.',
     button: 'Ver diseño web para fontaneros →',
   },
   'fontanero-en-espana-numeros-y-estadisticas': {
     href: '/diseno-web-fontaneros',
     heading: '¿Eres fontanero y quieres captar esas búsquedas?',
-    body: 'Diseñamos tu web con los cinco elementos que convierten búsquedas en llamadas. Lista en 1 semana, desde 29 €/mes, sin pago inicial.',
+    body: 'Diseñamos tu web con los cinco elementos que convierten búsquedas en llamadas. Lista en 1 semana, desde 49 €/mes, sin pago inicial.',
     button: 'Ver diseño web para fontaneros →',
   },
 }
@@ -293,7 +293,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className="bg-[#1D1D1F] rounded-2xl p-8 md:p-10">
             <p className="font-manrope text-xs font-medium text-[#6B7280] uppercase tracking-wide mb-3">Yele</p>
             <h2 className="font-outfit font-semibold text-2xl text-white mb-3 leading-snug">
-              Tu web lista en 1 semana.<br />Desde 29 €/mes, sin permanencia.
+              Tu web lista en 1 semana.<br />Desde 49 €/mes, sin permanencia.
             </h2>
             <p className="font-manrope text-[#6B7280] text-sm leading-relaxed mb-6">
               Diseño profesional, hosting, SSL y mantenimiento incluidos. Sin pago inicial.

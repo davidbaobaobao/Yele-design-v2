@@ -10,14 +10,14 @@ import type { FAQItem } from '@/components/FAQClient'
 export const metadata: Metadata = {
   title: 'Diseño web para electricistas — más clientes desde Google | Yele',
   description:
-    'Web profesional para electricistas lista en 1 semana. Aparece en Google cuando te buscan en tu zona. Sin pago inicial, desde 29€/mes, sin permanencia.',
+    'Web profesional para electricistas lista en 1 semana. Aparece en Google cuando te buscan en tu zona. Sin pago inicial, desde 49€/mes, sin permanencia.',
   alternates: {
     canonical: 'https://yele.design/diseno-web-electricistas',
   },
   openGraph: {
     title: 'Diseño web para electricistas — más clientes desde Google | Yele',
     description:
-      'Web profesional para electricistas lista en 1 semana. Sin pago inicial, desde 29€/mes, sin permanencia.',
+      'Web profesional para electricistas lista en 1 semana. Sin pago inicial, desde 49€/mes, sin permanencia.',
     url: 'https://yele.design/diseno-web-electricistas',
     images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Diseño web para electricistas — Yele' }],
   },
@@ -41,7 +41,7 @@ const FAQS: FAQItem[] = [
   },
   {
     question: '¿Cuánto tarda y cuánto cuesta?',
-    answer: 'Lista en 1 semana, desde 29€/mes, sin pago inicial ni permanencia.',
+    answer: 'Lista en 1 semana, desde 49€/mes, sin pago inicial ni permanencia.',
   },
 ]
 
@@ -86,12 +86,12 @@ export default function ElectricistasPage() {
               Diseño web para electricistas
               <span className="mt-4 block">
                 <span className="inline-flex font-manrope text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
-                  Desde 29€/mes
+                  Desde 49€/mes
                 </span>
               </span>
             </h1>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
-              Cuando a alguien se le va la luz o le salta el cuadro, busca un electricista en Google y llama al primero que le da confianza. Aparece tú — con una web profesional lista en 1 semana. Desde 29€/mes, sin pago inicial, sin permanencia.
+              Cuando a alguien se le va la luz o le salta el cuadro, busca un electricista en Google y llama al primero que le da confianza. Aparece tú — con una web profesional lista en 1 semana. Desde 49€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
               href="/registro"

@@ -15,9 +15,9 @@ const rows = [
   {
     es: 'Coste',
     en: 'Cost',
-    yele: { es: 'Desde 29€ al mes', en: 'From €29/month' },
+    yele: { es: '49€ al mes', en: '€49/month' },
     agency: { es: '1000€–6000€', en: '€1,000–€6,000' },
-    diy: { es: 'Desde 20€ al mes + tu tiempo', en: 'From €20/month + your time' },
+    diy: { es: '30-60€ al mes + tu tiempo', en: '€30-60/month + your time' },
   },
   {
     es: 'Mantenimiento incluido',
@@ -52,7 +52,7 @@ const rows = [
     en: 'No lock-in',
     yele: true,
     agency: false,
-    diy: true,
+    diy: false,
   },
 ]
 
@@ -101,7 +101,7 @@ export default function TablaComparativa({
   const { t } = useLang()
 
   return (
-    <section className={`py-24 md:py-32 ${noBg ? '' : 'bg-white'}`}>
+    <section className={`pt-10 md:pt-14 pb-24 md:pb-32 ${noBg ? '' : 'bg-white'}`}>
       <div className="max-w-6xl mx-auto px-6">
 
         <motion.div
