@@ -12,6 +12,7 @@ import ClarityScript from '@/components/ClarityScript'
 import HeroBento from './_components/HeroBento'
 import ScrollBrake from './_components/ScrollBrake'
 import PrecioCard from './_components/PrecioCard'
+import FinaleSection from './_components/FinaleSection'
 
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
 const ContactForm      = dynamic(() => import('@/components/ContactForm'))
@@ -128,6 +129,9 @@ export default function PresupuestoPage() {
 
         {/* ── 10 · FAQ ─────────────────────────────────────────── */}
         <FAQClient faqs={LP_FAQS} noBg />
+
+        {/* ── 11 · FINALE ──────────────────────────────────────── */}
+        <FinaleSection />
 
       </main>
 
