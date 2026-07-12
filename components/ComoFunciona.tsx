@@ -41,7 +41,7 @@ const ANIM_MS = 340   // collapse / expand animation
 const HOLD_MS = 750   // lock after each card expand
 
 /* ── Card image height ── */
-const IMG_H = 260
+const IMG_H = 400
 
 function StepCard({
   step, expanded, onClick, t,
@@ -104,16 +104,16 @@ function StepCard({
       </motion.div>
 
       {/* Text label */}
-      <div className="flex items-center gap-3 px-4 py-3">
+      <div className="flex items-center gap-4 px-5 py-4">
         <span
-          className={`font-outfit text-xl font-semibold leading-none transition-colors duration-500 ${
+          className={`font-outfit text-2xl font-semibold leading-none transition-colors duration-500 ${
             expanded ? 'text-white/25' : 'text-[#6B7280]/30'
           }`}
         >
           {step.num}
         </span>
         <h3
-          className={`font-outfit font-semibold text-[15px] leading-snug transition-colors duration-500 ${
+          className={`font-outfit font-semibold text-base leading-snug transition-colors duration-500 ${
             expanded ? 'text-white' : 'text-[#1D1D1F]'
           }`}
         >
@@ -232,8 +232,8 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
       id="como-funciona"
       className={`md:h-screen flex items-center py-14 md:py-0 ${noBg ? '' : 'bg-[#F5F5F7]'}`}
     >
-      <div className="max-w-6xl mx-auto px-6 w-full">
-        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-6 w-full">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-20 items-center">
 
           {/* Left: heading */}
           <motion.div
@@ -242,10 +242,10 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
             transition={{ duration: 0.55, ease: 'easeOut' }}
             viewport={{ once: true }}
           >
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-5 leading-tight">
+            <h2 className="font-outfit font-semibold text-5xl md:text-6xl xl:text-7xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
               {t('CÓMO FUNCIONA', 'HOW IT WORKS')}
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-sm">
+            <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-sm">
               {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
               {t('Sin presupuesto sorpresa.', 'No surprise costs.')}
             </p>
@@ -267,7 +267,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
           </motion.div>
 
           {/* Right: 4 step cards */}
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-3">
             {steps.map((step, i) => (
               <StepCard
                 key={step.num}
