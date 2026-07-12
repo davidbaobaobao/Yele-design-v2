@@ -9,6 +9,7 @@ interface InfiniteGridProps {
   baseOpacity?: number
   revealOpacity?: number
   revealRadius?: number
+  cellSize?: number
 }
 
 export function InfiniteGrid({
@@ -16,6 +17,7 @@ export function InfiniteGrid({
   baseOpacity = 0.08,
   revealOpacity = 0.45,
   revealRadius = 280,
+  cellSize = 40,
 }: InfiniteGridProps) {
   const uid = useId().replace(/:/g, "_")
   const containerRef = useRef<HTMLDivElement>(null)
@@ -56,8 +58,8 @@ export function InfiniteGrid({
   }, [mouseX, mouseY])
 
   useAnimationFrame(() => {
-    gridOffsetX.set((gridOffsetX.get() + 0.5) % 40)
-    gridOffsetY.set((gridOffsetY.get() + 0.5) % 40)
+    gridOffsetX.set((gridOffsetX.get() + 0.5) % cellSize)
+    gridOffsetY.set((gridOffsetY.get() + 0.5) % cellSize)
   })
 
   const maskImage = useMotionTemplate`radial-gradient(${revealRadius}px circle at ${springX}px ${springY}px, black, transparent)`
@@ -72,7 +74,7 @@ export function InfiniteGrid({
         className="absolute inset-0"
         style={{ opacity: baseOpacity, filter: "blur(3px)" }}
       >
-        <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} patternId={`${uid}_base`} />
+        <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} patternId={`${uid}_base`} cellSize={cellSize} />
       </div>
 
       {/* Cursor reveal layer */}
@@ -80,7 +82,7 @@ export function InfiniteGrid({
         className="absolute inset-0"
         style={{ maskImage, WebkitMaskImage: maskImage, opacity: revealOpacity, filter: "blur(1px)" }}
       >
-        <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} patternId={`${uid}_reveal`} />
+        <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} patternId={`${uid}_reveal`} cellSize={cellSize} />
       </motion.div>
     </div>
   )
@@ -90,24 +92,26 @@ function GridPattern({
   offsetX,
   offsetY,
   patternId,
+  cellSize,
 }: {
   offsetX: ReturnType<typeof useMotionValue<number>>
   offsetY: ReturnType<typeof useMotionValue<number>>
   patternId: string
+  cellSize: number
 }) {
   return (
     <svg className="w-full h-full">
       <defs>
         <motion.pattern
           id={patternId}
-          width="40"
-          height="40"
+          width={cellSize}
+          height={cellSize}
           patternUnits="userSpaceOnUse"
           x={offsetX}
           y={offsetY}
         >
           <path
-            d="M 40 0 L 0 0 0 40"
+            d={`M ${cellSize} 0 L 0 0 0 ${cellSize}`}
             fill="none"
             stroke="currentColor"
             strokeWidth="1"

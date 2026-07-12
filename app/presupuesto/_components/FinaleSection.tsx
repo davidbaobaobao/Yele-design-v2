@@ -29,8 +29,8 @@ export default function FinaleSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true }}
-          className="font-outfit font-extrabold text-white tracking-tight leading-none mb-10"
-          style={{ fontSize: 'clamp(52px, 9vw, 130px)' }}
+          className="font-outfit font-light text-white tracking-tight leading-none mb-10"
+          style={{ fontSize: 'clamp(40px, 7vw, 100px)' }}
         >
           Crea tu página web
         </motion.h2>

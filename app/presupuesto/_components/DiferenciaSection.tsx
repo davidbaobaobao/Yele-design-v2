@@ -22,7 +22,7 @@ export default function DiferenciaSection() {
       <div className="absolute inset-0 bg-[#0a0a0f]/60" aria-hidden="true" />
 
       {/* Grid mouse-reveal — attaches to parent section */}
-      <InfiniteGrid revealRadius={320} revealOpacity={0.5} />
+      <InfiniteGrid revealRadius={300} revealOpacity={0.2} baseOpacity={0.04} cellSize={22} />
 
       {/* Content — left half of the screen */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-12 md:px-20 py-20">
