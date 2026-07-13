@@ -21,9 +21,10 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    v.muted = true
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) { v.play().catch(() => {}) }
+        if (entry.isIntersecting) { v.muted = true; v.play().catch(() => {}) }
         else { v.pause() }
       },
       { threshold: 0.25 }

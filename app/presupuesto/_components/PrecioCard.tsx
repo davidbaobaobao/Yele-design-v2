@@ -20,8 +20,13 @@ export default function PrecioCard() {
   const cardRef     = useRef<HTMLDivElement>(null)
   const videoBgRef  = useRef<HTMLVideoElement>(null)
 
-  /* ── Force video play on mount (needed on mobile) ── */
-  useEffect(() => { videoBgRef.current?.play().catch(() => {}) }, [])
+  /* ── Force video play on mount — muted must be set via DOM for iOS ── */
+  useEffect(() => {
+    const v = videoBgRef.current
+    if (!v) return
+    v.muted = true
+    v.play().catch(() => {})
+  }, [])
 
   /* ── Scroll-based card parallax (mobile) ── */
   const { scrollYProgress: secScroll } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })

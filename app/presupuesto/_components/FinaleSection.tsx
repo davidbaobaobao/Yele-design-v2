@@ -6,7 +6,12 @@ import { RegistroButton } from './CTAButtons'
 
 export default function FinaleSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  useEffect(() => { videoRef.current?.play().catch(() => {}) }, [])
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = true
+    v.play().catch(() => {})
+  }, [])
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">

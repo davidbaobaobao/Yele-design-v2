@@ -55,7 +55,8 @@ const ITEMS = [
 const MARQUEE_ITEMS = [...ITEMS, ...ITEMS]
 
 export default function HeroBento() {
-  const cardRef = useRef<HTMLDivElement>(null)
+  const cardRef  = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const card = cardRef.current
@@ -66,6 +67,14 @@ export default function HeroBento() {
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  /* ── iOS autoplay: React's muted prop doesn't set the DOM attribute ── */
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = true
+    v.play().catch(() => {})
   }, [])
 
   return (
@@ -114,6 +123,7 @@ export default function HeroBento() {
 
         {/* Video: object-cover crops on small windows, zooms/expands on large */}
         <video
+          ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover hero-vid"
           autoPlay muted loop playsInline
           poster="/media/main_hero/poster_hq.jpg"

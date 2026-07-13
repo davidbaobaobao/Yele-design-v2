@@ -56,6 +56,7 @@ function StepCard({
     const v = videoRef.current
     if (!v) return
     if (expanded) {
+      v.muted = true
       v.currentTime = 0
       v.play().catch(() => {})
     } else {
@@ -110,9 +111,11 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+    video.muted = true
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          video.muted = true
           video.currentTime = 0
           video.play().catch(() => {})
         } else {

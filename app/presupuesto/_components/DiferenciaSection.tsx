@@ -7,7 +7,12 @@ export default function DiferenciaSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef   = useRef<HTMLVideoElement>(null)
 
-  useEffect(() => { videoRef.current?.play().catch(() => {}) }, [])
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = true
+    v.play().catch(() => {})
+  }, [])
 
   /* ── Desktop spotlight ── */
   const mouseX  = useMotionValue(-2000)
