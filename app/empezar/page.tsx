@@ -204,9 +204,8 @@ export default function EmpezarPage() {
     }
     if (s === 3) {
       if (!formData.descripcion.trim()) e.descripcion = 'Campo obligatorio'
-      if (!formData.servicios.trim()) e.servicios = 'Campo obligatorio'
     }
-    if (s === 5) {
+    if (s === 4) {
       if (!formData.rgpd) e.rgpd = 'Debes aceptar la política de privacidad'
     }
     setErrors(e)
@@ -223,7 +222,7 @@ export default function EmpezarPage() {
   }
 
   async function handleSubmit() {
-    if (!validateStep(5)) return
+    if (!validateStep(4)) return
     setLoading(true)
     setSubmitError('')
     const { data: { session } } = await supabase.auth.getSession()
@@ -237,14 +236,26 @@ export default function EmpezarPage() {
     })
     if (response.ok) {
       const result = await response.json()
-      router.push(`/elegir-plan?client_id=${result.clientId ?? ''}`)
+      const clientId = result.clientId ?? ''
+      const checkoutRes = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: 'starter', billing: 'monthly', clientId }),
+      })
+      const { url, error: checkoutError } = await checkoutRes.json()
+      if (checkoutError || !url) {
+        setSubmitError(checkoutError || 'Error al iniciar el pago. Por favor, inténtalo de nuevo.')
+        setLoading(false)
+        return
+      }
+      window.location.href = url
     } else {
       setSubmitError('Error al enviar. Por favor inténtalo de nuevo o escríbenos a info@yele.design')
       setLoading(false)
     }
   }
 
-  const progress = (step / 5) * 100
+  const progress = (step / 4) * 100
 
   return (
     <div className="min-h-screen bg-white px-6 py-12">
@@ -276,12 +287,12 @@ export default function EmpezarPage() {
               </svg>
             </button>
 
-            <span className="font-manrope text-xs text-[#6B7280]">Paso {step} de 5</span>
+            <span className="font-manrope text-xs text-[#6B7280]">Paso {step} de 4</span>
 
             <button
               type="button"
               onClick={nextStep}
-              disabled={step === 5}
+              disabled={step === 4}
               className="w-7 h-7 flex items-center justify-center rounded-lg text-[#6B7280] hover:text-[#1D1D1F] hover:bg-black/[0.05] transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               aria-label="Siguiente paso"
             >
@@ -303,8 +314,7 @@ export default function EmpezarPage() {
         {step === 1 && <Step1 formData={formData} set={set} errors={errors} />}
         {step === 2 && <Step2 formData={formData} set={set} errors={errors} />}
         {step === 3 && <Step3 formData={formData} set={set} errors={errors} />}
-        {step === 4 && <Step4 formData={formData} set={set} errors={errors} />}
-        {step === 5 && <Step5 formData={formData} set={set} errors={errors} />}
+        {step === 4 && <Step5 formData={formData} set={set} errors={errors} />}
 
         {/* Bottom navigation */}
         <div className="flex items-center justify-between mt-8">
@@ -318,7 +328,7 @@ export default function EmpezarPage() {
             </Link>
           )}
 
-          {step < 5 ? (
+          {step < 4 ? (
             <button
               type="button"
               onClick={nextStep}
@@ -502,8 +512,8 @@ function Step3({ formData, set, errors }: StepProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">El negocio</h2>
-        <p className="font-manrope text-sm text-[#6B7280]">Cuéntanos qué haces y cómo lo haces.</p>
+        <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">El negocio y tu web</h2>
+        <p className="font-manrope text-sm text-[#6B7280]">Cuéntanos qué haces y el estilo que te gusta.</p>
       </div>
 
       <Field label="Describe tu negocio en pocas palabras" required error={errors.descripcion}>
@@ -512,21 +522,35 @@ function Step3({ formData, set, errors }: StepProps) {
           value={formData.descripcion} onChange={e => set('descripcion', e.target.value)} />
       </Field>
 
-      <Field label="Servicios principales" required error={errors.servicios}>
-        <textarea className={`${inputClass} resize-none`} rows={3}
-          placeholder="ej. Corte de pelo, tinte, peinados..."
-          value={formData.servicios} onChange={e => set('servicios', e.target.value)} />
-      </Field>
-
-      <Field label="Precio medio o desde" error={errors.precio_medio}>
-        <input type="text" className={inputClass} placeholder="ej. Desde €15"
-          value={formData.precio_medio} onChange={e => set('precio_medio', e.target.value)} />
-      </Field>
-
-      <Field label="Horario de apertura" error={errors.horario}>
-        <input type="text" className={inputClass} placeholder="ej. Lunes a viernes 9:00–20:00"
-          value={formData.horario} onChange={e => set('horario', e.target.value)} />
-      </Field>
+      {/* Estilo visual card grid */}
+      <div>
+        <label className={labelClass}>Estilo visual preferido</label>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          {ESTILOS.map(e => {
+            const selected = formData.estilo_visual === e.id
+            return (
+              <button key={e.id} type="button" onClick={() => set('estilo_visual', e.id)}
+                className={`flex flex-col items-start gap-2 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  selected
+                    ? 'border-[#1D1D1F] bg-[#1D1D1F] text-white'
+                    : 'border-black/[0.10] hover:border-black/25 text-[#1D1D1F]'
+                }`}>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  selected ? 'bg-white/10' : 'bg-black/[0.05]'
+                }`}>
+                  <Icon d={e.icon} size={16} />
+                </div>
+                <div>
+                  <p className="font-manrope font-semibold text-xs">{e.label}</p>
+                  <p className={`font-manrope text-[10px] leading-tight mt-0.5 ${selected ? 'text-white/60' : 'text-[#6B7280]'}`}>
+                    {e.desc}
+                  </p>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
