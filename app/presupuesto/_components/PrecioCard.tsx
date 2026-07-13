@@ -20,10 +20,12 @@ export default function PrecioCard() {
   const cardRef     = useRef<HTMLDivElement>(null)
   const videoBgRef  = useRef<HTMLVideoElement>(null)
 
-  /* ── Force video play on mount — muted must be set via DOM for iOS ── */
+  /* ── iOS autoplay: set DOM muted + webkit-playsinline attributes via ref ── */
   useEffect(() => {
     const v = videoBgRef.current
     if (!v) return
+    v.setAttribute('playsinline', '')
+    v.setAttribute('webkit-playsinline', '')
     v.muted = true
     v.play().catch(() => {})
   }, [])
@@ -109,8 +111,8 @@ export default function PrecioCard() {
         poster="/media/precios/precios2_poster.jpg"
         aria-hidden="true"
       >
-        <source src="/media/precios/precios2_hero.webm" type="video/webm" />
         <source src="/media/precios/precios2_hero.mp4"  type="video/mp4" />
+        <source src="/media/precios/precios2_hero.webm" type="video/webm" />
       </video>
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 

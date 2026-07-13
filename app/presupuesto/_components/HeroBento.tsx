@@ -69,10 +69,12 @@ export default function HeroBento() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  /* ── iOS autoplay: React's muted prop doesn't set the DOM attribute ── */
+  /* ── iOS autoplay: set DOM muted + webkit-playsinline attributes via ref ── */
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    v.setAttribute('playsinline', '')
+    v.setAttribute('webkit-playsinline', '')
     v.muted = true
     v.play().catch(() => {})
   }, [])
@@ -129,8 +131,8 @@ export default function HeroBento() {
           poster="/media/main_hero/poster_hq.jpg"
           aria-hidden="true"
         >
-          <source src="/media/main_hero/hero_hq.webm" type="video/webm" />
           <source src="/media/main_hero/hero_hq.mp4"  type="video/mp4" />
+          <source src="/media/main_hero/hero_hq.webm" type="video/webm" />
         </video>
 
         {/* Top vignette for nav legibility */}

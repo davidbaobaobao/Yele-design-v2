@@ -10,6 +10,8 @@ export default function DiferenciaSection() {
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    v.setAttribute('playsinline', '')
+    v.setAttribute('webkit-playsinline', '')
     v.muted = true
     v.play().catch(() => {})
   }, [])

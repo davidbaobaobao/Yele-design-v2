@@ -43,7 +43,7 @@ function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
 
 const CARD_W_DESKTOP         = 'calc((100vw - 48px) / 3.5)'
 const CARD_W_DESKTOP_BIG     = 'calc((100vw - 48px) / 2.2)'
-const CARD_W_DESKTOP_GALLERY = 'calc((100vw - 48px) / 3.2)'
+const CARD_W_DESKTOP_GALLERY = 'calc((100vw - 48px) / 3.0)'
 const CARD_W_MOBILE = 'calc(100vw - 16px)'
 
 const ROW1_START = '0vw'
@@ -89,7 +89,7 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
 
   useEffect(() => {
     const compute = () => {
-      const cardW  = (window.innerWidth - 48) / 3.2
+      const cardW  = (window.innerWidth - 48) / 3.0
       const travel = 4 * (cardW + 16)
       travelMV.set(travel)
       // 1.5× wrapper height → horizontal speed is 2/3 of scroll speed

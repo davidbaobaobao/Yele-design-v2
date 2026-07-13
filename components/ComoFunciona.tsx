@@ -55,6 +55,8 @@ function StepCard({
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    v.setAttribute('playsinline', '')
+    v.setAttribute('webkit-playsinline', '')
     if (expanded) {
       v.muted = true
       v.currentTime = 0
@@ -87,8 +89,8 @@ function StepCard({
             poster={step.img}
             className="absolute inset-0 w-full h-full object-cover object-center"
           >
-            <source src={`${step.video}.webm`} type="video/webm" />
             <source src={`${step.video}.mp4`}  type="video/mp4" />
+            <source src={`${step.video}.webm`} type="video/webm" />
           </video>
         </div>
       </motion.div>
@@ -111,6 +113,8 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+    video.setAttribute('playsinline', '')
+    video.setAttribute('webkit-playsinline', '')
     video.muted = true
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -144,8 +148,8 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
           poster={step.img}
           className="absolute inset-0 w-full h-full object-cover object-center"
         >
-          <source src={`${step.video}.webm`} type="video/webm" />
           <source src={`${step.video}.mp4`}  type="video/mp4" />
+          <source src={`${step.video}.webm`} type="video/webm" />
         </video>
       </div>
       <div className="flex items-start gap-4 px-5 py-4">

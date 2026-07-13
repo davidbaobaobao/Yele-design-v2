@@ -21,6 +21,8 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    v.setAttribute('playsinline', '')
+    v.setAttribute('webkit-playsinline', '')
     v.muted = true
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -97,8 +99,8 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
               poster={img}
               className="absolute inset-0 w-full h-full object-cover object-center"
             >
-              <source src={`${video}.webm`} type="video/webm" />
               <source src={`${video}.mp4`}  type="video/mp4" />
+              <source src={`${video}.webm`} type="video/webm" />
             </video>
           </motion.div>
 
