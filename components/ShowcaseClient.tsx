@@ -41,8 +41,9 @@ function buildRows(projects: ShowcaseProject[]): [CardData[], CardData[]] {
   ]
 }
 
-const CARD_W_DESKTOP      = 'calc((100vw - 48px) / 3.5)'
-const CARD_W_DESKTOP_BIG  = 'calc((100vw - 48px) / 2.2)'
+const CARD_W_DESKTOP         = 'calc((100vw - 48px) / 3.5)'
+const CARD_W_DESKTOP_BIG     = 'calc((100vw - 48px) / 2.2)'
+const CARD_W_DESKTOP_GALLERY = 'calc((100vw - 48px) / 3.2)'
 const CARD_W_MOBILE = 'calc(100vw - 16px)'
 
 const ROW1_START = '0vw'
@@ -88,10 +89,11 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
 
   useEffect(() => {
     const compute = () => {
-      const cardW  = (window.innerWidth - 48) / 2.2
+      const cardW  = (window.innerWidth - 48) / 3.2
       const travel = 4 * (cardW + 16)
       travelMV.set(travel)
-      setWrapperH(`${window.innerHeight + travel}px`)
+      // 1.5× wrapper height → horizontal speed is 2/3 of scroll speed
+      setWrapperH(`${window.innerHeight + travel * 1.5}px`)
     }
     compute()
     window.addEventListener('resize', compute)
@@ -119,14 +121,14 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
                 {rowCards.map((card, i) => (
                   <div
                     key={`${card.key}-${i}`}
-                    style={{ width: CARD_W_DESKTOP_BIG }}
-                    className="flex-shrink-0 aspect-[3/2] relative rounded-2xl overflow-hidden group cursor-default"
+                    style={{ width: CARD_W_DESKTOP_GALLERY }}
+                    className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group cursor-default"
                   >
                     <Image
                       src={card.image}
                       alt={`Web de ${card.project.name} — Yele`}
                       fill
-                      sizes="45vw"
+                      sizes="32vw"
                       quality={75}
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
