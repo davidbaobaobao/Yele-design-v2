@@ -1,42 +1,39 @@
 import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
-import Hero from '@/components/Hero'
-import ShowcaseHero from '@/components/ShowcaseHero'
-import Beneficios from '@/components/Beneficios'
-import Showcase from '@/components/Showcase'
-import Precios from '@/components/Precios'
-import ShowcaseLarge from '@/components/ShowcaseLarge'
+import HeroBento from '@/app/presupuesto/_components/HeroBento'
+import ShowcaseFeatureCards from '@/app/presupuesto/_components/ShowcaseFeatureCards'
 import ComoFunciona from '@/components/ComoFunciona'
+import PreciosIndexSection from '@/components/PreciosIndexSection'
+import Showcase from '@/components/Showcase'
+import DiferenciaSection from '@/app/presupuesto/_components/DiferenciaSection'
+import FinaleSection from '@/app/presupuesto/_components/FinaleSection'
 import Footer from '@/components/Footer'
 import WhatsAppButton from '@/components/WhatsAppButton'
-import SandHelixBackground from '@/components/SandHelixBackground'
 
-// Below-fold client components — defer their JS until needed
+const Testimonios      = dynamic(() => import('@/components/Testimonios'))
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
 const CTASection       = dynamic(() => import('@/components/CTASection'))
-const Testimonios      = dynamic(() => import('@/components/Testimonios'))
-const FAQ              = dynamic(() => import('@/components/FAQ'))
 const ContactForm      = dynamic(() => import('@/components/ContactForm'))
+const FAQ              = dynamic(() => import('@/components/FAQ'))
 const Noticias         = dynamic(() => import('@/components/Noticias'))
 
 export default function Home() {
   return (
     <>
-      <SandHelixBackground />
-      <Navigation />
+      <Navigation heroIsDark />
       <main id="main-content">
-        <Hero />
-        <ShowcaseHero noBg />
-        <Beneficios sectionClassName="pt-12 pb-24 md:pt-16 md:pb-32" />
-        <Showcase noBg />
+        <HeroBento />
+        <ShowcaseFeatureCards />
         <ComoFunciona noBg />
-        <Precios noBg />
-        <ShowcaseLarge />
+        <PreciosIndexSection />
+        <Showcase noHeader noBg fullScreen />
+        <DiferenciaSection />
+        <Testimonios noBg />
         <TablaComparativa />
         <CTASection />
-        <Testimonios noBg />
-        <FAQ noBg />
         <ContactForm />
+        <FAQ noBg />
+        <FinaleSection />
         <Noticias />
       </main>
       <Footer />

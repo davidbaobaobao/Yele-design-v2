@@ -17,7 +17,7 @@ export default function CondicionesUso() {
           <h1 className="font-outfit font-semibold text-4xl text-[#1D1D1F] tracking-tight mb-3">
             Condiciones de Uso
           </h1>
-          <p className="font-manrope text-[#6B7280] text-sm mb-12">Última actualización: mayo de 2026</p>
+          <p className="font-manrope text-[#6B7280] text-sm mb-12">Última actualización: julio de 2026</p>
 
           <div className="font-manrope text-[#1D1D1F] space-y-10 leading-relaxed">
 
@@ -86,8 +86,11 @@ export default function CondicionesUso() {
               <p className="text-[#6B7280] mb-3">
                 Los contenidos aportados por el cliente (textos, imágenes, logotipos, etc.) son y seguirán siendo propiedad del cliente. El cliente garantiza que dispone de los derechos necesarios para su uso.
               </p>
-              <p className="text-[#6B7280]">
+              <p className="text-[#6B7280] mb-3">
                 El diseño, el código y los desarrollos técnicos realizados por Yele son propiedad de Yele durante la vigencia de la suscripción. Tras la cancelación, el cliente podrá solicitar la exportación de sus contenidos, pero no del código fuente desarrollado por Yele.
+              </p>
+              <p className="text-[#6B7280]">
+                <strong className="text-[#1D1D1F] font-medium">Dominio:</strong> Si el dominio es registrado y gestionado por Yele como parte del servicio, Yele mantiene la titularidad del mismo durante la vigencia de la suscripción. En caso de cancelación, el dominio no se transfiere automáticamente al cliente. Si el cliente desea retener el dominio, deberá solicitarlo expresamente antes de la baja, pudiendo estar sujeto al coste de transferencia vigente. Si el cliente aporta su propio dominio, éste seguirá siendo propiedad del cliente en todo momento.
               </p>
             </section>
 

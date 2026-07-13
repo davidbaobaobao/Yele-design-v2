@@ -44,7 +44,8 @@ export default function FinaleSection() {
           className="font-outfit font-light text-white tracking-tight leading-none mb-10"
           style={{ fontSize: 'clamp(40px, 7vw, 100px)' }}
         >
-          Crea tu página web
+          Pide tu página web<br />
+          <span style={{ fontWeight: 700 }}>Ahora</span>
         </motion.h2>
 
         <motion.div

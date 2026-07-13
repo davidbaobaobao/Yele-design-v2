@@ -93,7 +93,7 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
       const travel = 4 * (cardW + 16)
       travelMV.set(travel)
       // 1.5× wrapper height → horizontal speed is 2/3 of scroll speed
-      setWrapperH(`${window.innerHeight + travel * 1.5}px`)
+      setWrapperH(`${window.innerHeight + travel * 3.0}px`)
     }
     compute()
     window.addEventListener('resize', compute)

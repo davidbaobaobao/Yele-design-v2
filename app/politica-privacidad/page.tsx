@@ -13,9 +13,11 @@ export default function PoliticaPrivacidad() {
       <Navigation />
       <main id="main-content" className="pt-[72px]">
         <div className="max-w-[720px] mx-auto px-6 py-20">
-          <h1 className="font-outfit font-semibold text-4xl text-[#1D1D1F] tracking-tight mb-10">
+          <p className="font-manrope text-xs text-[#6B7280] mb-4 uppercase tracking-[0.12em]">Legal</p>
+          <h1 className="font-outfit font-semibold text-4xl text-[#1D1D1F] tracking-tight mb-3">
             Política de Privacidad
           </h1>
+          <p className="font-manrope text-[#6B7280] text-sm mb-12">Última actualización: julio de 2026</p>
 
           <div className="font-manrope text-[#1D1D1F] space-y-8 leading-relaxed">
             <section>
@@ -45,10 +47,21 @@ export default function PoliticaPrivacidad() {
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">Destinatarios</h2>
-              <p className="text-[#6B7280]">
-                Los datos no se cederán a terceros salvo obligación legal. Podemos utilizar proveedores de servicios técnicos (como servicios de alojamiento web) que actúan como encargados del tratamiento bajo acuerdos de confidencialidad y cumpliendo el RGPD.
+              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">Destinatarios y encargados del tratamiento</h2>
+              <p className="text-[#6B7280] mb-3">
+                Los datos no se cederán a terceros salvo obligación legal. Utilizamos los siguientes proveedores técnicos, que actúan como encargados del tratamiento bajo acuerdos de protección de datos conformes al RGPD:
               </p>
+              <ul className="list-disc list-inside space-y-2 text-[#6B7280] ml-2">
+                <li>
+                  <span className="text-[#1D1D1F] font-medium">Stripe, Inc.</span> — procesamiento de pagos y gestión de suscripciones. Certificación PCI-DSS nivel 1. Los datos de tarjeta son gestionados íntegramente por Stripe y nunca son almacenados por Yele.
+                </li>
+                <li>
+                  <span className="text-[#1D1D1F] font-medium">Supabase, Inc.</span> — almacenamiento de datos de usuario y autenticación. Los datos se alojan en servidores dentro de la Unión Europea.
+                </li>
+                <li>
+                  <span className="text-[#1D1D1F] font-medium">Vercel, Inc.</span> — alojamiento y entrega del sitio web.
+                </li>
+              </ul>
             </section>
 
             <section>

@@ -19,7 +19,7 @@ export default function DiferenciaSection() {
   /* ── Desktop spotlight ── */
   const mouseX  = useMotionValue(-2000)
   const mouseY  = useMotionValue(-2000)
-  const scrimBg = useMotionTemplate`radial-gradient(720px circle at ${mouseX}px ${mouseY}px, rgba(10,10,15,0.02) 0%, rgba(10,10,15,0.42) 52%, rgba(10,10,15,0.78) 85%)`
+  const scrimBg = useMotionTemplate`radial-gradient(432px circle at ${mouseX}px ${mouseY}px, rgba(10,10,15,0.02) 0%, rgba(10,10,15,0.42) 52%, rgba(10,10,15,0.78) 85%)`
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     if (window.innerWidth < 768) return
