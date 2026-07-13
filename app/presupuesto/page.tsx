@@ -99,9 +99,7 @@ export default function PresupuestoPage() {
         <PrecioCard />
 
         {/* ── 5 · PORTFOLIO ────────────────────────────────────── */}
-        <section className="md:min-h-screen md:flex md:flex-col md:justify-center md:overflow-hidden md:py-10">
-          <Showcase noHeader noBg fullScreen />
-        </section>
+        <Showcase noHeader noBg fullScreen />
 
         {/* ── 6 · DIFERENCIADOR ────────────────────────────────── */}
         <DiferenciaSection />

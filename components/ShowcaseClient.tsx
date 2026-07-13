@@ -80,6 +80,72 @@ function ScrollRow({ cards, xMotion, big }: { cards: CardData[]; xMotion: Motion
   )
 }
 
+/* ── Desktop sticky-scroll gallery (fullScreen mode) ── */
+function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?: boolean }) {
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const travelMV   = useMotionValue(0)
+  const [wrapperH, setWrapperH] = useState('250vh')
+
+  useEffect(() => {
+    const compute = () => {
+      const cardW  = (window.innerWidth - 48) / 2.2
+      const travel = 4 * (cardW + 16)
+      travelMV.set(travel)
+      setWrapperH(`${window.innerHeight + travel}px`)
+    }
+    compute()
+    window.addEventListener('resize', compute)
+    return () => window.removeEventListener('resize', compute)
+  }, [travelMV])
+
+  const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ['start start', 'end end'] })
+  const x  = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t))
+  const x2 = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t) - t * 0.08)
+
+  const gradFrom = noBg ? 'from-white' : 'from-[#F5F5F7]'
+
+  return (
+    <div ref={wrapperRef} style={{ height: wrapperH }}>
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+        <div className="relative space-y-4">
+          <div className={`pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r ${gradFrom} to-transparent`} />
+          <div className={`pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l ${gradFrom} to-transparent`} />
+          {rows.map((rowCards, rowIdx) => (
+            <div key={rowIdx} className="overflow-visible">
+              <motion.div
+                className="flex gap-4 w-max"
+                style={{ x: rowIdx === 1 ? x2 : x, paddingLeft: '24px' }}
+              >
+                {rowCards.map((card, i) => (
+                  <div
+                    key={`${card.key}-${i}`}
+                    style={{ width: CARD_W_DESKTOP_BIG }}
+                    className="flex-shrink-0 aspect-[3/2] relative rounded-2xl overflow-hidden group cursor-default"
+                  >
+                    <Image
+                      src={card.image}
+                      alt={`Web de ${card.project.name} — Yele`}
+                      fill
+                      sizes="45vw"
+                      quality={75}
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <p className="absolute bottom-3 left-3 right-3 font-outfit font-medium text-white text-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 truncate">
+                      {card.project.name}
+                    </p>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Mobile sticky-scroll gallery ── */
 function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const travelMV = useMotionValue(0)
@@ -89,7 +155,6 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
     const compute = () => {
       const cardW = window.innerWidth - 16
       const gap   = 12
-      // enough travel to bring the last of 5 cards fully into view
       const travel = 4 * (cardW + gap)
       travelMV.set(travel)
       setWrapperH(`${window.innerHeight + travel}px`)
@@ -192,39 +257,48 @@ export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen }:
     </Link>
   )
 
+  const gradFrom = noBg ? 'from-white' : 'from-[#F5F5F7]'
+
   return (
     <section ref={sectionRef} id={noHeader ? undefined : 'trabajos'} className={noBg ? '' : 'bg-white'}>
       {/* Desktop */}
-      <div className={`hidden md:block ${noHeader ? (fullScreen ? 'py-4' : 'py-10') : 'py-32'}`}>
+      <div className={`hidden md:block ${noHeader ? (fullScreen ? '' : 'py-10') : 'py-32'}`}>
         {!noHeader && (
           <div className="max-w-6xl mx-auto px-6 mb-12">
             {heading}
           </div>
         )}
-        <div className="relative space-y-4 overflow-hidden">
-          <div className={`pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r ${noBg ? 'from-white' : 'from-[#F5F5F7]'} to-transparent`} />
-          <div className={`pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l ${noBg ? 'from-white' : 'from-[#F5F5F7]'} to-transparent`} />
-          {rows ? (
-            <>
-              <ScrollRow cards={rows[0]} xMotion={row1X} big={fullScreen} />
-              <ScrollRow cards={rows[1]} xMotion={row2X} big={fullScreen} />
-            </>
-          ) : (
-            <>
-              {[0, 1].map(row => (
-                <div key={row} className="flex gap-4">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div
-                      key={i}
-                      style={{ width: fullScreen ? CARD_W_DESKTOP_BIG : CARD_W_DESKTOP }}
-                      className={`flex-shrink-0 rounded-2xl bg-black/[0.06] ${fullScreen ? 'aspect-[3/2]' : 'aspect-video'}`}
-                    />
-                  ))}
-                </div>
-              ))}
-            </>
-          )}
-        </div>
+
+        {/* Sticky horizontal scroll on fullScreen; parallax on regular */}
+        {fullScreen && rows ? (
+          <DesktopGallery rows={rows} noBg={noBg} />
+        ) : (
+          <div className="relative space-y-4 overflow-hidden">
+            <div className={`pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r ${gradFrom} to-transparent`} />
+            <div className={`pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l ${gradFrom} to-transparent`} />
+            {rows ? (
+              <>
+                <ScrollRow cards={rows[0]} xMotion={row1X} big={fullScreen} />
+                <ScrollRow cards={rows[1]} xMotion={row2X} big={fullScreen} />
+              </>
+            ) : (
+              <>
+                {[0, 1].map(row => (
+                  <div key={row} className="flex gap-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div
+                        key={i}
+                        style={{ width: fullScreen ? CARD_W_DESKTOP_BIG : CARD_W_DESKTOP }}
+                        className={`flex-shrink-0 rounded-2xl bg-black/[0.06] ${fullScreen ? 'aspect-[3/2]' : 'aspect-video'}`}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        )}
+
         {!noHeader && (
           <div className="max-w-6xl mx-auto px-6 mt-8 text-center">
             {seeAllLink}

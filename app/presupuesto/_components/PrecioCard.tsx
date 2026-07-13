@@ -60,6 +60,7 @@ export default function PrecioCard() {
     }
 
     const observer = new IntersectionObserver(([entry]) => {
+      if (window.innerWidth < 768) return
       if (entry.isIntersecting && !snapping) {
         const { top, bottom } = el.getBoundingClientRect()
         const vh = window.innerHeight
