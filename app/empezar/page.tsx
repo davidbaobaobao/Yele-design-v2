@@ -556,62 +556,6 @@ function Step3({ formData, set, errors }: StepProps) {
 }
 
 /* ─────────────────────────────────────────────
-   Step 4 — La web
-───────────────────────────────────────────── */
-function Step4({ formData, set, errors }: StepProps) {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">La web</h2>
-        <p className="font-manrope text-sm text-[#6B7280]">Configuremos tu proyecto.</p>
-      </div>
-
-      <RadioGroup label="¿Tiene logo?" options={['Sí', 'No', 'En proceso']}
-        value={formData.tiene_logo} onChange={v => set('tiene_logo', v)} />
-
-      <RadioGroup label="¿Tiene fotos profesionales?" options={['Sí', 'No', 'Las haré pronto']}
-        value={formData.tiene_fotos} onChange={v => set('tiene_fotos', v)} />
-
-      <Field label="Referencias visuales" error={errors.referencias}>
-        <input type="text" className={inputClass}
-          placeholder="URLs de webs que le gusten..."
-          value={formData.referencias} onChange={e => set('referencias', e.target.value)} />
-      </Field>
-
-      {/* Estilo visual card grid */}
-      <div>
-        <label className={labelClass}>Estilo visual preferido</label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-          {ESTILOS.map(e => {
-            const selected = formData.estilo_visual === e.id
-            return (
-              <button key={e.id} type="button" onClick={() => set('estilo_visual', e.id)}
-                className={`flex flex-col items-start gap-2 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
-                  selected
-                    ? 'border-[#1D1D1F] bg-[#1D1D1F] text-white'
-                    : 'border-black/[0.10] hover:border-black/25 text-[#1D1D1F]'
-                }`}>
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                  selected ? 'bg-white/10' : 'bg-black/[0.05]'
-                }`}>
-                  <Icon d={e.icon} size={16} />
-                </div>
-                <div>
-                  <p className="font-manrope font-semibold text-xs">{e.label}</p>
-                  <p className={`font-manrope text-[10px] leading-tight mt-0.5 ${selected ? 'text-white/60' : 'text-[#6B7280]'}`}>
-                    {e.desc}
-                  </p>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ─────────────────────────────────────────────
    Step 5 — Últimos detalles
 ───────────────────────────────────────────── */
 function Step5({ formData, set, errors }: StepProps) {
