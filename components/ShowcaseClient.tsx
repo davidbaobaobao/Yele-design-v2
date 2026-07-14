@@ -16,7 +16,12 @@ function parseImages(raw: unknown): string[] {
 }
 
 function shuffle<T>(arr: T[]): T[] {
-  return [...arr].sort(() => Math.random() - 0.5)
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
 }
 
 type CardData = { project: ShowcaseProject; image: string; key: string }
@@ -89,16 +94,36 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
 
   useEffect(() => {
     const compute = () => {
-      const cardW  = (window.innerWidth - 48) / 3.0
-      const travel = 4 * (cardW + 16)
+      const vw     = window.innerWidth
+      const cardW  = (vw - 48) / 3.0
+      // Exact travel to reveal the last card at the right edge (5 cards × width + 4 gaps + 24px paddingLeft − viewport)
+      const travel = Math.max(0, 5 * cardW + 88 - vw)
       travelMV.set(travel)
-      // 1.5× wrapper height → horizontal speed is 2/3 of scroll speed
-      setWrapperH(`${window.innerHeight + travel * 3.0}px`)
+      // 2.5× travel → comfortable scroll speed with no dead space after animation
+      setWrapperH(`${window.innerHeight + travel * 2.5}px`)
     }
     compute()
     window.addEventListener('resize', compute)
     return () => window.removeEventListener('resize', compute)
   }, [travelMV])
+
+  // Prevent fast trackpad/wheel flicks from jumping past the section
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+    const MAX_DELTA = 80
+    function onWheel(e: WheelEvent) {
+      const rect = wrapper.getBoundingClientRect()
+      // Only active while the sticky animation is running (wrapper straddles the viewport)
+      if (rect.top > 0 || rect.bottom < window.innerHeight) return
+      if (Math.abs(e.deltaY) > MAX_DELTA) {
+        e.preventDefault()
+        window.scrollBy({ top: Math.sign(e.deltaY) * MAX_DELTA })
+      }
+    }
+    window.addEventListener('wheel', onWheel, { passive: false })
+    return () => window.removeEventListener('wheel', onWheel)
+  }, [])
 
   const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ['start start', 'end end'] })
   const x  = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t))
