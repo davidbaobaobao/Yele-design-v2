@@ -11,6 +11,111 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'porque-creamos-yele',
+    titleEs: 'Por qué creamos Yele',
+    excerptEs: 'Sin web pierdes clientes cada semana (y ni te enteras). Muchos autónomos y pequeños negocios en España lo descubren demasiado tarde.',
+    date: '2026-07-14',
+    readTime: 8,
+    category: 'Yele',
+    image: '/blog/images/porque-creamos-yele/hero.jpg',
+    contentEs: `Muchos autónomos y pequeños negocios en España pierden clientes cada semana. Y ni se enteran.
+
+No hay una alarma que suene cuando pasa. Nadie te llama para decirte "oye, iba a contratarte, pero no te encontré". Simplemente no llega la llamada. El cliente se va con otro, y tú sigues pensando que "el mes está flojo".
+
+La verdad incómoda es esta: hoy, no tener web no te hace pasar desapercibido. Te hace parecer menos serio de lo que eres.
+
+En este artículo te explico exactamente cómo estás perdiendo clientes sin darte cuenta, por qué tantos autónomos lo van posponiendo, y qué alternativa real existe hoy para tener una web profesional sin el sablazo de siempre.
+
+## Cómo pierdes clientes sin tener web (aunque seas el mejor en lo tuyo)
+
+El problema no es tu trabajo. Probablemente eres excelente en lo que haces. El problema es lo que pasa antes de que un cliente potencial llegue a comprobarlo.
+
+### 1. Te buscan en Google antes de llamarte
+
+Cuando alguien necesita un fontanero, un electricista, un fisio o un profesional de reformas, ¿qué es lo primero que hace? Coge el móvil y busca en Google. Si tú no apareces, no existes para esa persona. Le aparecerá tu competencia, y a ellos llamará.
+
+No hace falta ser el primero de Google. Pero sí necesitas existir cuando alguien busca lo que ofreces en tu zona.
+
+![Ejemplo de tienda online en MacBook con diseño profesional](/blog/images/porque-creamos-yele/mockup-laptop.jpg)
+
+### 2. Verifican quién eres antes de confiar en ti
+
+Esto es todavía más común y menos evidente. Un conocido le recomienda tus servicios a alguien. Le da tu nombre. ¿Y qué hace esa persona antes de llamarte? Te busca online para comprobar que eres de fiar.
+
+Si no encuentra nada —o solo un perfil de Instagram a medias, sin información clara de tus servicios ni forma de contactarte— la recomendación pierde fuerza. Ya has perdido puntos, no porque no seas bueno, sino porque no diste la imagen de un profesional establecido.
+
+Aquí es donde una web trabaja por ti: convierte una recomendación en una decisión. "Me lo recomendaron y encima tiene una web seria, con sus servicios claros" cierra la venta antes de que descuelgues el teléfono.
+
+![Diseño web para cosmética en tablet con look editorial](/blog/images/porque-creamos-yele/mockup-tablet.jpg)
+
+### 3. Dependes de plataformas que se quedan con tu cliente
+
+Muchos negocios se apoyan en agregadores: TheFork, Doctoralia, portales de reformas, redes sociales. Te traen clientes, sí. Pero te cobran comisión, y ese cliente es suyo, no tuyo. El día que dejas de pagar, desapareces.
+
+Tu web es tuya. Las reservas y los contactos entran directos, sin comisiones, y te encuentran cuando buscan justo lo que ofreces en tu zona. Una cosa no quita la otra: puedes seguir en las plataformas y además tener tu propio canal que no depende de nadie.
+
+## Por qué lo vas dejando (y no es culpa tuya)
+
+Si tener web es tan importante, ¿por qué tantos autónomos no la tienen? La respuesta no es que no la quieran. Es que el camino tradicional es un muro:
+
+- **El precio.** Una agencia de diseño web te pide fácilmente entre 1.000€ y 3.000€ por adelantado. Para un autónomo que está empezando o que va mes a mes, es un desembolso difícil de justificar.
+- **El tiempo.** Tres reuniones, briefings, revisiones… y dos meses después la web sigue "casi lista".
+- **El compromiso.** Pagas todo por adelantado sin saber si el resultado te va a gustar.
+
+Así que lo vas dejando. Y dejándolo. "Ya lo haré el mes que viene." Hasta que pasa un año y sigues sin web, perdiendo clientes cada semana.
+
+El problema nunca fue la web. Fue el modelo de comprarla.
+
+![Diseño web para marca de skincare en móvil](/blog/images/porque-creamos-yele/mockup-mobile-1.jpg)
+
+## La alternativa: diseño web por suscripción para autónomos y PYMEs
+
+En Yele cambiamos el modelo. En lugar de un pago enorme por adelantado y meses de espera, ofrecemos diseño web por suscripción pensado específicamente para autónomos y pequeños negocios en España:
+
+- Desde **49€/mes** — el coste de unos cafés a la semana.
+- **Sin pago inicial** — empiezas sin soltar 1.500€ de golpe.
+- **Sin permanencia** — si no te convence, te vas cuando quieras.
+- Tu web **online en 1 semana** — no en dos meses.
+
+Sin el sablazo de la agencia. Sin comprometerte a nada. Una web profesional, con tus servicios claros, tu información de contacto y optimizada para que te encuentren en Google.
+
+Porque tener una web profesional no debería ser un lujo reservado a las empresas grandes. Debería ser lo normal para cualquier profesional que se toma en serio su negocio.
+
+![Diseño web premium para cosmética natural en móvil](/blog/images/porque-creamos-yele/mockup-mobile-2.jpg)
+
+## Preguntas frecuentes
+
+### ¿Necesito de verdad una web si ya tengo Instagram o Google Maps?
+
+Sí. Instagram y Google Maps son un buen complemento, pero no sustituyen a una web. En redes no controlas el algoritmo ni la imagen que proyectas, y muchos clientes potenciales —sobre todo los de más edad o los que buscan un servicio serio— esperan encontrar una web con tu información completa. La web es el sitio que es 100% tuyo y que refuerza tu credibilidad.
+
+### ¿Cuánto cuesta hacer una página web para un autónomo?
+
+Con una agencia tradicional, entre 800€ y 2.000€ por adelantado, más el mantenimiento. Con un modelo de suscripción como el de Yele, empiezas desde 49€/mes, sin pago inicial y sin permanencia, con la web incluida y mantenida.
+
+### ¿Y si dejo de pagar? ¿Me quitan la web?
+
+Es una duda razonable. Con la suscripción, mientras seas cliente tu web está online, alojada y mantenida. Sin permanencia significa que puedes cancelar cuando quieras, sin penalizaciones. La idea es que te quedes porque te aporta valor, no porque estés atado por un contrato.
+
+### ¿Cuánto tarda en estar lista?
+
+En 1 semana, frente a las semanas o meses de una agencia tradicional.
+
+### ¿Sirve para mi sector?
+
+Funciona especialmente bien para negocios de servicios y profesionales que dependen de que los encuentren y confíen en ellos: fontaneros, electricistas, reformas, fisios, cosméticas, tiendas, y en general cualquier autónomo o PYME que quiera dar una imagen profesional online.
+
+![Detalle de producto en móvil — experiencia de usuario cuidada](/blog/images/porque-creamos-yele/mockup-detalle.jpg)
+
+## No dejes que la próxima llamada se la lleve otro
+
+Cada semana que pasa sin una web profesional es una semana de clientes que te buscan y no te encuentran, o que te comprueban y no ven nada. No hace falta que sea perfecta. Solo que exista y dé la talla.
+
+Si eres autónomo o tienes un negocio y llevas tiempo posponiéndolo, hoy hay una forma de hacerlo sin riesgo y sin gastarte una fortuna.
+
+**[Descubre cómo en yele.design](/empezar)** — tu web profesional desde 49€/mes, sin pago inicial y sin permanencia.`,
+  },
+  {
     slug: 'cuanto-cuesta-pagina-web-autonomo-espana',
     titleEs: '¿Cuánto cuesta una página web para autónomos en España?',
     excerptEs: 'Agencias, freelancers, Wix, suscripción mensual… analizamos todas las opciones con precios reales para que elijas sin sorpresas.',

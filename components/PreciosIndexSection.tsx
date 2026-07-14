@@ -123,7 +123,7 @@ function PricingCard({ plan, index }: { plan: typeof plans[0]; index: number }) 
           style={{ originX: 0 }}
           aria-hidden="true"
         />
-        <span className="relative z-10">Empezar</span>
+        <span className="relative z-10">Empezar por 0€</span>
       </motion.a>
     </motion.div>
   )
