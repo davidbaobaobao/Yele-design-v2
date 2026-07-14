@@ -16,6 +16,9 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
     const v = ref.current
     if (!v) return
 
+    // React JSX `muted` sets the DOM *property* but never writes the HTML *attribute*.
+    // iOS Safari checks the attribute for autoplay eligibility — so we must set it explicitly.
+    v.setAttribute('muted', '')
     v.setAttribute('playsinline', '')
     v.setAttribute('webkit-playsinline', '')
     v.muted = true

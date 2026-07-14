@@ -55,6 +55,7 @@ function StepCard({
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    v.setAttribute('muted', '')
     v.setAttribute('playsinline', '')
     v.setAttribute('webkit-playsinline', '')
     if (expanded) {
@@ -113,6 +114,7 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+    video.setAttribute('muted', '')
     video.setAttribute('playsinline', '')
     video.setAttribute('webkit-playsinline', '')
     video.muted = true

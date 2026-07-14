@@ -21,6 +21,7 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    v.setAttribute('muted', '')
     v.setAttribute('playsinline', '')
     v.setAttribute('webkit-playsinline', '')
     v.muted = true
