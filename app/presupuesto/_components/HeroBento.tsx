@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
+import Image from 'next/image'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 /* ── Marquee SVG icons (stroke, 20×20) ── */
@@ -126,7 +127,18 @@ export default function HeroBento() {
 
       <section className="relative h-[100dvh] md:h-screen overflow-hidden">
 
-        {/* Video: object-cover crops on small windows, zooms/expands on large */}
+        {/* Poster — priority-preloaded image visible immediately before video buffers */}
+        <Image
+          src="/media/main_hero/poster_hq.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover hero-vid"
+          aria-hidden="true"
+        />
+
+        {/* Video — overlays the poster once it starts playing */}
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover hero-vid"
