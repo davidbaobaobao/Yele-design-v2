@@ -115,7 +115,7 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
     function onWheel(e: WheelEvent) {
       // Never run on mobile — avoids any interaction with iOS scroll/media behaviour
       if (window.innerWidth < 768) return
-      const rect = wrapper.getBoundingClientRect()
+      const rect = wrapper!.getBoundingClientRect()
       // Only active while the sticky animation is running (wrapper straddles the viewport)
       if (rect.top > 0 || rect.bottom < window.innerHeight) return
       if (Math.abs(e.deltaY) > MAX_DELTA) {
