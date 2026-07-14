@@ -100,7 +100,7 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
       const travel = Math.max(0, 5 * cardW + 88 - vw)
       travelMV.set(travel)
       // 2.5× travel → comfortable scroll speed with no dead space after animation
-      setWrapperH(`${window.innerHeight + travel * 1.0}px`)
+      setWrapperH(`${window.innerHeight + travel * 0.75}px`)
     }
     compute()
     window.addEventListener('resize', compute)

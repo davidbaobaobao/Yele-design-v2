@@ -71,13 +71,13 @@ export default function HeroBento() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Desktop: swap to HQ source after mount (mobile keeps the lighter hero.mp4)
+  // Mobile: swap down to lighter source (desktop keeps hero_hq.mp4 from HTML)
   useEffect(() => {
     const v = videoRef.current
-    if (!v || window.innerWidth < 768) return
+    if (!v || window.innerWidth >= 768) return
     const sources = v.querySelectorAll('source')
-    ;(sources[0] as HTMLSourceElement).src = '/media/main_hero/hero_hq.mp4'
-    ;(sources[1] as HTMLSourceElement).src = '/media/main_hero/hero_hq.webm'
+    ;(sources[0] as HTMLSourceElement).src = '/media/main_hero/hero.mp4'
+    ;(sources[1] as HTMLSourceElement).src = '/media/main_hero/hero.webm'
     v.load()
   }, [])
 
@@ -125,14 +125,15 @@ export default function HeroBento() {
         }
       `}</style>
 
-      <section className="relative h-[100dvh] md:h-screen overflow-hidden">
+      <section className="relative h-[100dvh] md:h-screen overflow-hidden bg-black">
 
-        {/* Poster — priority-preloaded image visible immediately before video buffers */}
+        {/* Poster — priority-preloaded, unoptimized so it hits CDN directly without optimizer delay */}
         <Image
           src="/media/main_hero/poster_hq.jpg"
           alt=""
           fill
           priority
+          unoptimized
           sizes="100vw"
           className="object-cover hero-vid"
           aria-hidden="true"
@@ -146,8 +147,8 @@ export default function HeroBento() {
           poster="/media/main_hero/poster_hq.jpg"
           aria-hidden="true"
         >
-          <source src="/media/main_hero/hero.mp4"  type="video/mp4" />
-          <source src="/media/main_hero/hero.webm" type="video/webm" />
+          <source src="/media/main_hero/hero_hq.mp4"  type="video/mp4" />
+          <source src="/media/main_hero/hero_hq.webm" type="video/webm" />
         </video>
 
         {/* Top vignette for nav legibility */}
