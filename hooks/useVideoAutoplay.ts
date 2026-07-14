@@ -2,50 +2,44 @@
 
 import { useEffect, type RefObject } from 'react'
 
-/**
- * Reliable iOS autoplay for muted background videos.
- * - Sets playsinline + webkit-playsinline via DOM (JSX alone is not enough on iOS)
- * - Forces muted + defaultMuted via DOM (prevents unmuting on load())
- * - Calls play() explicitly (JSX `autoPlay` is not reliable on iOS Safari/Chrome)
- * - Retries on canplay event (covers iOS slow-load / cold start)
- * - Resumes after tab visibility change (iOS pauses videos when app backgrounds)
- * - Resumes on pageshow (iOS PWA / back-forward cache restore)
- */
 export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
   useEffect(() => {
     const v = ref.current
     if (!v) return
 
-    // React JSX `muted` sets the DOM *property* but never writes the HTML *attribute*.
-    // iOS Safari checks the attribute for autoplay eligibility — so we must set it explicitly.
+    // iOS Safari checks HTML attributes (not DOM properties) for autoplay eligibility.
+    // React's muted/autoPlay props set DOM properties only — so we must setAttribute here.
     v.setAttribute('muted', '')
+    v.setAttribute('autoplay', '')
     v.setAttribute('playsinline', '')
     v.setAttribute('webkit-playsinline', '')
     v.muted = true
-    // defaultMuted keeps the video muted even if load() is called internally
     ;(v as HTMLVideoElement & { defaultMuted?: boolean }).defaultMuted = true
 
-    const tryPlay = () => {
-      v.muted = true
-      v.play().catch(() => {})
+    const play = () => {
+      if (v.paused) { v.muted = true; v.play().catch(() => {}) }
     }
 
-    // Try immediately, on canplay, and after short delays (iOS needs time to buffer)
-    tryPlay()
-    v.addEventListener('canplay', tryPlay, { once: true })
-    const t1 = setTimeout(tryPlay, 300)
-    const t2 = setTimeout(tryPlay, 1500)
+    play()
+    v.addEventListener('canplay', play, { once: true })
+    v.addEventListener('loadeddata', play, { once: true })
 
-    const onVisibility = () => { if (!document.hidden) tryPlay() }
-    const onPageShow = (e: PageTransitionEvent) => { if (e.persisted) tryPlay() }
+    // Retry when video scrolls into view (handles off-screen step-card videos)
+    const observer = new IntersectionObserver(
+      (entries) => { entries.forEach(e => { if (e.isIntersecting) play() }) },
+      { threshold: 0.01 }
+    )
+    observer.observe(v)
 
+    const onVisibility = () => { if (!document.hidden) play() }
+    const onPageShow = (e: PageTransitionEvent) => { if (e.persisted) play() }
     document.addEventListener('visibilitychange', onVisibility)
     window.addEventListener('pageshow', onPageShow)
 
     return () => {
-      clearTimeout(t1)
-      clearTimeout(t2)
-      v.removeEventListener('canplay', tryPlay)
+      v.removeEventListener('canplay', play)
+      v.removeEventListener('loadeddata', play)
+      observer.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pageshow', onPageShow as EventListener)
     }
