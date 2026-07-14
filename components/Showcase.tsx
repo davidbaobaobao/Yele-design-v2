@@ -1,7 +1,4 @@
-import { supabase } from '@/lib/supabase'
 import ShowcaseClient from './ShowcaseClient'
-
-export const revalidate = 60
 
 export type ShowcaseProject = {
   id: string
@@ -11,26 +8,19 @@ export type ShowcaseProject = {
   additional_images: unknown
 }
 
-const FALLBACK: ShowcaseProject[] = [
-  { id: '1', name: 'El Taller · Cerámica, Gràcia',         description: 'Estudio de cerámica artesanal',  main_image: 'https://images.pexels.com/photos/32212371/pexels-photo-32212371.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', additional_images: [] },
-  { id: '2', name: 'Bar Zuriñe · Tapas, Barcelona',        description: 'Bar de tapas tradicional',       main_image: 'https://images.pexels.com/photos/21327986/pexels-photo-21327986.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', additional_images: [] },
-  { id: '3', name: 'Estudio Noa · Yoga, Madrid',           description: 'Estudio de yoga y meditación',  main_image: 'https://images.pexels.com/photos/4327023/pexels-photo-4327023.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',   additional_images: [] },
-  { id: '4', name: 'Despacho Ferrer · Abogados, Valencia', description: 'Despacho de abogados',          main_image: 'https://images.unsplash.com/photo-1635845080335-dcfe06a0fcf1?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',  additional_images: [] },
-  { id: '5', name: 'Txema · Fontanero, Bilbao',            description: 'Fontanero autónomo',            main_image: 'https://images.unsplash.com/photo-1649769069590-268b0b994462?crop=entropy&cs=srgb&fm=jpg&ixlib=rb-4.1.0&q=85',   additional_images: [] },
+const PROJECTS: ShowcaseProject[] = [
+  { id: '1',  name: 'Arquitectura · Barcelona',       description: null, additional_images: [], main_image: '/media/carouselmedia/Brutalist_concrete_arches_fog_2K_202607141213.jpeg' },
+  { id: '2',  name: 'Diseño Editorial · Madrid',      description: null, additional_images: [], main_image: '/media/carouselmedia/Chrome_sculpture_website_page_il…_202607141657.jpeg' },
+  { id: '3',  name: 'Granada Turismo · Granada',      description: null, additional_images: [], main_image: '/media/carouselmedia/Granada_landscape_with_typography_2K_202607141213.jpeg' },
+  { id: '4',  name: 'Startup Tech · Valencia',        description: null, additional_images: [], main_image: '/media/carouselmedia/MacBook_between_rock_formations_2K_202607141240.jpeg' },
+  { id: '5',  name: 'Estudio Creativo · Sevilla',     description: null, additional_images: [], main_image: '/media/carouselmedia/MacBook_on_pedestal_studio_202607141739.jpeg' },
+  { id: '6',  name: 'Consultora Digital · Bilbao',    description: null, additional_images: [], main_image: '/media/carouselmedia/MacBook_on_rock_studio_202607141759.jpeg' },
+  { id: '7',  name: 'Agencia de Viajes · Málaga',     description: null, additional_images: [], main_image: '/media/carouselmedia/MacBook_on_rocks_studio_2K_202607141323.jpeg' },
+  { id: '8',  name: 'App de Eventos · Zaragoza',      description: null, additional_images: [], main_image: '/media/carouselmedia/UI_mockup_screens_event_app_202607141621.jpeg' },
+  { id: '9',  name: 'Plataforma SaaS · Madrid',       description: null, additional_images: [], main_image: '/media/carouselmedia/Web_hero_mockup_rounded_card_202607141215.jpeg' },
+  { id: '10', name: 'Portfolio Digital · Barcelona',  description: null, additional_images: [], main_image: '/media/carouselmedia/image.png_202607141751.jpeg' },
 ]
 
-export default async function Showcase({ noHeader, noBg, fullScreen }: { noHeader?: boolean; noBg?: boolean; fullScreen?: boolean } = {}) {
-  let projects = FALLBACK
-  try {
-    const { data } = await supabase
-      .from('showcase_projects')
-      .select('id, name, main_image, description, additional_images')
-      .eq('visible', true)
-      .order('sort_order', { ascending: true })
-    if (data && data.length > 0) projects = data
-  } catch {
-    // falls back to FALLBACK
-  }
-
-  return <ShowcaseClient projects={projects} noHeader={noHeader} noBg={noBg} fullScreen={fullScreen} />
+export default function Showcase({ noHeader, noBg, fullScreen }: { noHeader?: boolean; noBg?: boolean; fullScreen?: boolean } = {}) {
+  return <ShowcaseClient projects={PROJECTS} noHeader={noHeader} noBg={noBg} fullScreen={fullScreen} />
 }
