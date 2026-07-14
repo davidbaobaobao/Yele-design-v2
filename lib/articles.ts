@@ -17,7 +17,7 @@ export const articles: Article[] = [
     date: '2026-07-14',
     readTime: 8,
     category: 'Yele',
-    image: '/blog/images/porque-creamos-yele/hero.jpg',
+    image: '/blog/images/porque-creamos-yele/hero.jpeg',
     contentEs: `Muchos autónomos y pequeños negocios en España pierden clientes cada semana. Y ni se enteran.
 
 No hay una alarma que suene cuando pasa. Nadie te llama para decirte "oye, iba a contratarte, pero no te encontré". Simplemente no llega la llamada. El cliente se va con otro, y tú sigues pensando que "el mes está flojo".
@@ -36,7 +36,7 @@ Cuando alguien necesita un fontanero, un electricista, un fisio o un profesional
 
 No hace falta ser el primero de Google. Pero sí necesitas existir cuando alguien busca lo que ofreces en tu zona.
 
-![Ejemplo de tienda online en MacBook con diseño profesional](/blog/images/porque-creamos-yele/mockup-laptop.jpg)
+![Ejemplo de tienda online en MacBook con diseño profesional](/blog/images/porque-creamos-yele/mockup-laptop.jpeg)
 
 ### 2. Verifican quién eres antes de confiar en ti
 
@@ -46,7 +46,7 @@ Si no encuentra nada —o solo un perfil de Instagram a medias, sin información
 
 Aquí es donde una web trabaja por ti: convierte una recomendación en una decisión. "Me lo recomendaron y encima tiene una web seria, con sus servicios claros" cierra la venta antes de que descuelgues el teléfono.
 
-![Diseño web para cosmética en tablet con look editorial](/blog/images/porque-creamos-yele/mockup-tablet.jpg)
+![Diseño web para cosmética en tablet con look editorial](/blog/images/porque-creamos-yele/mockup-tablet.jpeg)
 
 ### 3. Dependes de plataformas que se quedan con tu cliente
 
@@ -66,7 +66,7 @@ Así que lo vas dejando. Y dejándolo. "Ya lo haré el mes que viene." Hasta que
 
 El problema nunca fue la web. Fue el modelo de comprarla.
 
-![Diseño web para marca de skincare en móvil](/blog/images/porque-creamos-yele/mockup-mobile-1.jpg)
+![Diseño web para marca de skincare en móvil](/blog/images/porque-creamos-yele/mockup-mobile-1.jpeg)
 
 ## La alternativa: diseño web por suscripción para autónomos y PYMEs
 
@@ -81,7 +81,7 @@ Sin el sablazo de la agencia. Sin comprometerte a nada. Una web profesional, con
 
 Porque tener una web profesional no debería ser un lujo reservado a las empresas grandes. Debería ser lo normal para cualquier profesional que se toma en serio su negocio.
 
-![Diseño web premium para cosmética natural en móvil](/blog/images/porque-creamos-yele/mockup-mobile-2.jpg)
+![Diseño web premium para cosmética natural en móvil](/blog/images/porque-creamos-yele/mockup-mobile-2.jpeg)
 
 ## Preguntas frecuentes
 
@@ -105,7 +105,7 @@ En 1 semana, frente a las semanas o meses de una agencia tradicional.
 
 Funciona especialmente bien para negocios de servicios y profesionales que dependen de que los encuentren y confíen en ellos: fontaneros, electricistas, reformas, fisios, cosméticas, tiendas, y en general cualquier autónomo o PYME que quiera dar una imagen profesional online.
 
-![Detalle de producto en móvil — experiencia de usuario cuidada](/blog/images/porque-creamos-yele/mockup-detalle.jpg)
+![Detalle de producto en móvil — experiencia de usuario cuidada](/blog/images/porque-creamos-yele/mockup-detalle.jpeg)
 
 ## No dejes que la próxima llamada se la lleve otro
 
