@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 /* ── Marquee SVG icons (stroke, 20×20) ── */
