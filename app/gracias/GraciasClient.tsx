@@ -15,7 +15,7 @@ export default function GraciasClient() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(window as any).gtag?.('event', 'conversion', {
       send_to: 'AW-18281072925/AH2nCP-4p8ocEJ2SjI1E',
-      value: 29.0,
+      value: 49.0,
       currency: 'EUR',
       transaction_id: sessionId,
     })
