@@ -1,20 +1,14 @@
 'use client'
 
 import { useRef, useCallback, useEffect } from 'react'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useMotionTemplate } from 'framer-motion'
 
 export default function DiferenciaSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef   = useRef<HTMLVideoElement>(null)
 
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.setAttribute('playsinline', '')
-    v.setAttribute('webkit-playsinline', '')
-    v.muted = true
-    v.play().catch(() => {})
-  }, [])
+  useVideoAutoplay(videoRef)
 
   /* ── Desktop spotlight ── */
   const mouseX  = useMotionValue(-2000)

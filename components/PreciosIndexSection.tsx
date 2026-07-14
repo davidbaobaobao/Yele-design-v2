@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { PLAN_PRICES } from '@/lib/plan-prices'
@@ -132,15 +133,7 @@ function PricingCard({ plan, index }: { plan: typeof plans[0]; index: number }) 
 export default function PreciosIndexSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.setAttribute('playsinline', '')
-    v.setAttribute('webkit-playsinline', '')
-    v.muted = true
-    v.play().catch(() => {})
-  }, [])
+  useVideoAutoplay(videoRef)
 
   useEffect(() => {
     const el = sectionRef.current

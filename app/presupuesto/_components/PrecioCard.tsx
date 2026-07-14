@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll } from 'framer-motion'
 import { Check } from 'lucide-react'
 
@@ -20,15 +21,7 @@ export default function PrecioCard() {
   const cardRef     = useRef<HTMLDivElement>(null)
   const videoBgRef  = useRef<HTMLVideoElement>(null)
 
-  /* ── iOS autoplay: set DOM muted + webkit-playsinline attributes via ref ── */
-  useEffect(() => {
-    const v = videoBgRef.current
-    if (!v) return
-    v.setAttribute('playsinline', '')
-    v.setAttribute('webkit-playsinline', '')
-    v.muted = true
-    v.play().catch(() => {})
-  }, [])
+  useVideoAutoplay(videoBgRef)
 
   /* ── Scroll-based card parallax (mobile) ── */
   const { scrollYProgress: secScroll } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })

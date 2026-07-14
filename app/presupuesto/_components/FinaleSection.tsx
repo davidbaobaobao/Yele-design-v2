@@ -1,19 +1,13 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion } from 'framer-motion'
 import { RegistroButton } from './CTAButtons'
 
 export default function FinaleSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.setAttribute('playsinline', '')
-    v.setAttribute('webkit-playsinline', '')
-    v.muted = true
-    v.play().catch(() => {})
-  }, [])
+  useVideoAutoplay(videoRef)
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">

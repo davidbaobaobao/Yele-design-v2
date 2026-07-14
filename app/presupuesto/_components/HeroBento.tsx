@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 /* ── Marquee SVG icons (stroke, 20×20) ── */
 function IcoClock() {
@@ -69,15 +70,7 @@ export default function HeroBento() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  /* ── iOS autoplay: set DOM muted + webkit-playsinline attributes via ref ── */
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    v.setAttribute('playsinline', '')
-    v.setAttribute('webkit-playsinline', '')
-    v.muted = true
-    v.play().catch(() => {})
-  }, [])
+  useVideoAutoplay(videoRef)
 
   return (
     <>
