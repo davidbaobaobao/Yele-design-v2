@@ -70,6 +70,16 @@ export default function HeroBento() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Desktop: swap to HQ source after mount (mobile keeps the lighter hero.mp4)
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v || window.innerWidth < 768) return
+    const sources = v.querySelectorAll('source')
+    ;(sources[0] as HTMLSourceElement).src = '/media/main_hero/hero_hq.mp4'
+    ;(sources[1] as HTMLSourceElement).src = '/media/main_hero/hero_hq.webm'
+    v.load()
+  }, [])
+
   useVideoAutoplay(videoRef)
 
   return (
