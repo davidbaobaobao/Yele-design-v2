@@ -120,12 +120,12 @@ export default function HeroBento() {
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover hero-vid"
-          autoPlay muted loop playsInline
+          autoPlay muted loop playsInline preload="auto"
           poster="/media/main_hero/poster_hq.jpg"
           aria-hidden="true"
         >
-          <source src="/media/main_hero/hero_hq.mp4"  type="video/mp4" />
-          <source src="/media/main_hero/hero_hq.webm" type="video/webm" />
+          <source src="/media/main_hero/hero.mp4"  type="video/mp4" />
+          <source src="/media/main_hero/hero.webm" type="video/webm" />
         </video>
 
         {/* Top vignette for nav legibility */}

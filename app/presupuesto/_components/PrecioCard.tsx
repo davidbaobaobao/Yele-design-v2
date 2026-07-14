@@ -100,7 +100,7 @@ export default function PrecioCard() {
       <video
         ref={videoBgRef}
         className="absolute inset-0 w-full h-full object-cover"
-        autoPlay muted loop playsInline
+        autoPlay muted loop playsInline preload="auto"
         poster="/media/precios/precios2_poster.jpg"
         aria-hidden="true"
       >

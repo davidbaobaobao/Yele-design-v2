@@ -157,6 +157,7 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
                       fill
                       sizes="32vw"
                       quality={75}
+                      loading="eager"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -227,6 +228,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
                       fill
                       sizes="95vw"
                       quality={75}
+                      loading="eager"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

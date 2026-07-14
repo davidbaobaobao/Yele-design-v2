@@ -30,9 +30,11 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
       v.play().catch(() => {})
     }
 
-    // Try immediately, then retry when enough data is buffered (iOS cold start)
+    // Try immediately, on canplay, and after short delays (iOS needs time to buffer)
     tryPlay()
     v.addEventListener('canplay', tryPlay, { once: true })
+    const t1 = setTimeout(tryPlay, 300)
+    const t2 = setTimeout(tryPlay, 1500)
 
     const onVisibility = () => { if (!document.hidden) tryPlay() }
     const onPageShow = (e: PageTransitionEvent) => { if (e.persisted) tryPlay() }
@@ -41,6 +43,8 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
     window.addEventListener('pageshow', onPageShow)
 
     return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
       v.removeEventListener('canplay', tryPlay)
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pageshow', onPageShow as EventListener)
