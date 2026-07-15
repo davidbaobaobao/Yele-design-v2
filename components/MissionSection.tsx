@@ -11,36 +11,55 @@ export default function MissionSection() {
   }
 
   return (
-    <section className="bg-white px-6 md:px-16 lg:px-28 py-14 md:py-20">
-      <div className="max-w-5xl">
+    <section className="bg-white px-6 md:px-16 py-20 md:py-[120px]">
+      <div className="max-w-[820px]">
 
-        {/* Heading — sized and weighted to match reference */}
+        {/* Heading — exact specs from reference: 700 weight, 56px, -0.01em tracking */}
         <h2
-          className="font-outfit font-semibold leading-[1.12] tracking-tight mb-5"
-          style={{ fontSize: 'clamp(24px, 3.2vw, 46px)' }}
+          className="font-outfit m-0 mb-7"
+          style={{
+            fontSize: 'clamp(28px, 3.8vw, 56px)',
+            lineHeight: 1.12,
+            fontWeight: 700,
+            letterSpacing: '-0.01em',
+            color: '#000000',
+          }}
         >
           {t('Diseño web de', 'We deliver')}{' '}
-          <span className="inline bg-[#1D1D1F] text-white px-1.5 py-0.5">
+          <span style={{ color: '#ffffff', backgroundColor: '#000000' }} className="px-1">
             {t('última generación', 'state-of-the-art')}
-          </span>{' '}
+          </span>
+          {/* Force line break after highlight on desktop; flows inline on mobile */}
+          <br className="hidden md:block" />
           {t('como servicio', 'website design')}{' '}
-          <span className="text-[#ABABAB]">
-            {t('de suscripción para tu negocio.', 'subscription service for your business.')}
+          <span style={{ color: '#898484' }}>
+            {t('de suscripción', 'subscription service')}{' '}
+            <br className="hidden md:block" />
+            {t('para tu negocio.', 'for your business.')}
           </span>
         </h2>
 
-        {/* Subtitle */}
-        <p className="font-manrope text-[#9CA3AF] text-sm mb-7">
+        {/* Subtitle — 22px, #5c5c5c */}
+        <p
+          className="font-manrope m-0 mb-6"
+          style={{
+            fontSize: 'clamp(15px, 1.5vw, 22px)',
+            lineHeight: 1.5,
+            fontWeight: 400,
+            color: '#5c5c5c',
+          }}
+        >
           {t(
             'Una web que nunca deja de mejorar, sin barreras de entrada.',
             'A website that never stops improving, with zero entry barriers.'
           )}
         </p>
 
-        {/* GET STARTED ↓ */}
+        {/* GET STARTED ↓ — 14px, 0.04em tracking, underline */}
         <button
           onClick={scrollToFeatures}
-          className="flex items-center gap-1.5 font-manrope font-medium text-[11px] tracking-[0.2em] uppercase text-[#1D1D1F] border-b border-[#1D1D1F] pb-px hover:text-[#e2482f] hover:border-[#e2482f] transition-colors duration-200"
+          className="inline-flex items-center gap-2 font-manrope font-semibold uppercase text-[#111111] border-b border-[#111111] pb-1 hover:text-[#e2482f] hover:border-[#e2482f] transition-colors duration-200"
+          style={{ fontSize: '14px', letterSpacing: '0.04em' }}
         >
           {t('Empezar', 'Get Started')}
           <motion.span
