@@ -20,8 +20,8 @@ export default function MissionSection() {
           style={{
             fontSize: 'clamp(28px, 3.8vw, 56px)',
             lineHeight: 1.12,
-            fontWeight: 700,
-            letterSpacing: '-0.01em',
+            fontWeight: 800,
+            letterSpacing: '-0.02em',
             color: '#000000',
           }}
         >
@@ -43,10 +43,11 @@ export default function MissionSection() {
         <p
           className="font-manrope m-0 mb-6"
           style={{
-            fontSize: 'clamp(15px, 1.5vw, 22px)',
-            lineHeight: 1.5,
+            fontSize: 'clamp(14px, 1.1vw, 18px)',
+            lineHeight: 1.6,
             fontWeight: 400,
             color: '#5c5c5c',
+            maxWidth: '620px',
           }}
         >
           {t(
