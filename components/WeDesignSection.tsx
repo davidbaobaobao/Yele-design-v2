@@ -57,7 +57,7 @@ export default function WeDesignSection() {
             </span>
             <br />
             <span style={{ color: '#898484' }}>
-              {t('diseños extraordinarios', 'Stunning layouts')}
+              {t('tu visión', 'your vision')}
             </span>
           </h2>
         </div>
