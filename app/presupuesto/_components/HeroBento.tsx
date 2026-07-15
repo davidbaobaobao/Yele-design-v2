@@ -71,13 +71,13 @@ export default function HeroBento() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Mobile: swap down to lighter source (desktop keeps hero_hq.mp4 from HTML)
+  // Mobile: swap down to lighter source (desktop keeps hero_hq from HTML)
   useEffect(() => {
     const v = videoRef.current
     if (!v || window.innerWidth >= 768) return
     const sources = v.querySelectorAll('source')
-    ;(sources[0] as HTMLSourceElement).src = '/media/main_hero/hero.mp4'
-    ;(sources[1] as HTMLSourceElement).src = '/media/main_hero/hero.webm'
+    ;(sources[0] as HTMLSourceElement).src = '/media/main_hero/hero.webm'
+    ;(sources[1] as HTMLSourceElement).src = '/media/main_hero/hero.mp4'
     v.load()
   }, [])
 
@@ -147,8 +147,8 @@ export default function HeroBento() {
           poster="/media/main_hero/poster_hq.jpg"
           aria-hidden="true"
         >
-          <source src="/media/main_hero/hero_hq.mp4"  type="video/mp4" />
           <source src="/media/main_hero/hero_hq.webm" type="video/webm" />
+          <source src="/media/main_hero/hero_hq.mp4"  type="video/mp4" />
         </video>
 
         {/* Top vignette for nav legibility */}
