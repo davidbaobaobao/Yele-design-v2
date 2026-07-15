@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
 import HeroBento from '@/app/presupuesto/_components/HeroBento'
 import MissionSection from '@/components/MissionSection'
+import WeDesignSection from '@/components/WeDesignSection'
 import ShowcaseFeatureCards from '@/app/presupuesto/_components/ShowcaseFeatureCards'
 import ComoFunciona from '@/components/ComoFunciona'
 import PreciosIndexSection from '@/components/PreciosIndexSection'
@@ -46,6 +47,7 @@ export default function Home() {
       <main id="main-content">
         <HeroBento />
         <MissionSection />
+        <WeDesignSection />
         <ShowcaseFeatureCards />
         <ComoFunciona noBg />
         <PreciosIndexSection />
