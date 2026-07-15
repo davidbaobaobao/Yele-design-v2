@@ -16,12 +16,13 @@ export default function MissionSection() {
 
         {/* Heading — exact specs from reference: 700 weight, 56px, -0.01em tracking */}
         <h2
-          className="font-outfit m-0 mb-7"
+          className="m-0 mb-7"
           style={{
+            fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
             fontSize: 'clamp(28px, 3.8vw, 56px)',
             lineHeight: 1.12,
-            fontWeight: 800,
-            letterSpacing: '-0.02em',
+            fontWeight: 700,
+            letterSpacing: '-0.01em',
             color: '#000000',
           }}
         >
