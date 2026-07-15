@@ -11,7 +11,7 @@ import DiferenciaSection from '@/app/presupuesto/_components/DiferenciaSection'
 import FinaleSection from '@/app/presupuesto/_components/FinaleSection'
 import Footer from '@/components/Footer'
 import WhatsAppButton from '@/components/WhatsAppButton'
-import { EnLangProvider } from '@/components/LangProvider'
+import { EsLangProvider } from '@/components/LangProvider'
 
 const Testimonios      = dynamic(() => import('@/components/Testimonios'))
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
@@ -21,27 +21,27 @@ const FAQ              = dynamic(() => import('@/components/FAQ'))
 const Noticias         = dynamic(() => import('@/components/Noticias'))
 
 export const metadata: Metadata = {
-  title: 'Professional website design from €49/mo | Yele',
+  title: 'Diseño web profesional desde 49€/mes | Yele',
   description:
-    'Professional website design for SMBs and freelancers. Live in 1 week, maintenance included, from €49/mo. No setup fee, no commitment.',
+    'Diseño web profesional para PYMEs y autónomos. Entrega en 1 semana, mantenimiento incluido, desde €49/mes. Sin pago inicial, sin permanencia.',
   alternates: {
-    canonical: 'https://yele.design',
-    languages: { es: 'https://yele.design/es' },
+    canonical: 'https://yele.design/es',
+    languages: { en: 'https://yele.design' },
   },
   openGraph: {
     type: 'website',
-    locale: 'en_GB',
-    url: 'https://yele.design',
+    locale: 'es_ES',
+    url: 'https://yele.design/es',
     siteName: 'Yele',
-    title: 'Professional website design from €49/mo | Yele',
+    title: 'Diseño web profesional desde 49€/mes | Yele',
     description:
-      'Professional website design for SMBs and freelancers. Live in 1 week, from €49/mo. No setup fee.',
+      'Diseño web profesional para PYMEs y autónomos. Desde €49/mes. Sin pago inicial.',
   },
 }
 
-export default function Home() {
+export default function EsHome() {
   return (
-    <EnLangProvider>
+    <EsLangProvider>
       <Navigation heroIsDark />
       <main id="main-content">
         <HeroBento />
@@ -61,6 +61,6 @@ export default function Home() {
       </main>
       <Footer />
       <WhatsAppButton />
-    </EnLangProvider>
+    </EsLangProvider>
   )
 }

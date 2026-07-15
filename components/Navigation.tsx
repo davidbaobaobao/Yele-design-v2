@@ -11,6 +11,8 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
   const { lang, toggleLang, t } = useLang()
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const isHomePage = pathname === '/' || pathname === '/es'
+  const langHref   = pathname === '/' ? '/es' : '/'
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
     setOpen(false)
     if (href.startsWith('/')) {
       window.location.href = href
-    } else if (pathname === '/') {
+    } else if (isHomePage) {
       document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
     } else {
       window.location.href = `/${href}`
@@ -83,15 +85,27 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={toggleLang}
-              className={`font-manrope text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none px-2.5 py-1 rounded-lg ${
-                isDark ? 'text-white/60 hover:text-white bg-white/10' : 'text-[#6B7280] hover:text-[#1D1D1F] bg-[#F2F2F5]'
-              }`}
-              aria-label={`Cambiar a ${lang === 'es' ? 'inglés' : 'español'}`}
-            >
-              {lang === 'es' ? 'EN' : 'ES'}
-            </button>
+            {isHomePage ? (
+              <Link
+                href={langHref}
+                className={`font-manrope text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none px-2.5 py-1 rounded-lg ${
+                  isDark ? 'text-white/60 hover:text-white bg-white/10' : 'text-[#6B7280] hover:text-[#1D1D1F] bg-[#F2F2F5]'
+                }`}
+                aria-label={pathname === '/' ? 'Versión en español' : 'English version'}
+              >
+                {pathname === '/' ? 'ES' : 'EN'}
+              </Link>
+            ) : (
+              <button
+                onClick={toggleLang}
+                className={`font-manrope text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none px-2.5 py-1 rounded-lg ${
+                  isDark ? 'text-white/60 hover:text-white bg-white/10' : 'text-[#6B7280] hover:text-[#1D1D1F] bg-[#F2F2F5]'
+                }`}
+                aria-label={`Cambiar a ${lang === 'es' ? 'inglés' : 'español'}`}
+              >
+                {lang === 'es' ? 'EN' : 'ES'}
+              </button>
+            )}
 
             <a
               href="https://app.yele.design/login"
@@ -146,9 +160,15 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
               </button>
             ))}
             <div className="flex items-center gap-3 pt-3">
-              <button onClick={toggleLang} className="font-manrope text-xs text-[#6B7280] cursor-pointer">
-                {lang === 'es' ? 'EN' : 'ES'}
-              </button>
+              {isHomePage ? (
+                <Link href={langHref} className="font-manrope text-xs text-[#6B7280] cursor-pointer">
+                  {pathname === '/' ? 'ES' : 'EN'}
+                </Link>
+              ) : (
+                <button onClick={toggleLang} className="font-manrope text-xs text-[#6B7280] cursor-pointer">
+                  {lang === 'es' ? 'EN' : 'ES'}
+                </button>
+              )}
               <a
                 href="https://app.yele.design/login"
                 className="font-manrope text-sm text-[#6B7280] cursor-pointer"
