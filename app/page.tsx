@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
 import HeroBento from '@/app/presupuesto/_components/HeroBento'
+import MissionSection from '@/components/MissionSection'
 import ShowcaseFeatureCards from '@/app/presupuesto/_components/ShowcaseFeatureCards'
 import ComoFunciona from '@/components/ComoFunciona'
 import PreciosIndexSection from '@/components/PreciosIndexSection'
@@ -23,6 +24,7 @@ export default function Home() {
       <Navigation heroIsDark />
       <main id="main-content">
         <HeroBento />
+        <MissionSection />
         <ShowcaseFeatureCards />
         <ComoFunciona noBg />
         <PreciosIndexSection />
