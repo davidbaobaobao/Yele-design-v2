@@ -37,8 +37,11 @@ export default function WeDesignSection() {
         <source src="/media/wedesign/wedesign_hq.mp4" type="video/mp4" />
       </video>
 
+      {/* Gradient — smooths white MissionSection → video transition */}
+      <div className="absolute top-0 left-0 right-0 h-52 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+
       {/* Text — left half, right-aligned, vertically centered */}
-      <div className="absolute inset-0 flex items-center">
+      <div className="absolute inset-0 flex items-center z-20">
         <div className="w-full md:w-1/2 px-6 md:pl-16 md:pr-12 lg:pr-20 text-left md:text-right">
 
           {/* Main heading */}
