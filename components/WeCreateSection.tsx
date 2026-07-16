@@ -32,12 +32,7 @@ export default function WeCreateSection() {
         <source src="/media/we%20create/bgvideo_hq.mp4" type="video/mp4" />
       </video>
 
-      {/*
-        NO z-index on this container — critical for mix-blend-mode to composite
-        against the video below rather than against an isolated stacking context.
-        DOM order (after video) already guarantees it renders on top.
-      */}
-      <div className="absolute inset-0 flex items-center">
+      <div className="absolute inset-0 flex items-center z-20">
         <div className="w-full md:w-1/2 px-6 md:pl-16 md:pr-12 lg:pr-20 text-left md:text-right">
 
           <h2
@@ -59,17 +54,7 @@ export default function WeCreateSection() {
               mix-blend-mode: color → takes hue+saturation from gradient, luminance from video.
               Result: the video's motion and texture show through the text in purple tones.
             */}
-            <span
-              style={{
-                display: 'inline-block',
-                background: 'linear-gradient(135deg, #3b0764 0%, #7c3aed 35%, #a855f7 60%, #c026d3 85%, #6d28d9 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                color: 'transparent',
-                mixBlendMode: 'color',
-              }}
-            >
+            <span style={{ color: 'rgba(255, 255, 255, 0.75)' }}>
               {t('todo el contenido que necesitas', 'Any content you need')}
             </span>
           </h2>
