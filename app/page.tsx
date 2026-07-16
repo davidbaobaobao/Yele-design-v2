@@ -60,10 +60,10 @@ export default function Home() {
         <WeImproveSection />
         <WeHelpSection />
         <VideoSnapController />
-        <ShowcaseFeatureCards />
         <ComoFunciona noBg />
-        <PreciosIndexSection />
         <Showcase noHeader noBg fullScreen />
+        <PreciosIndexSection />
+        <ShowcaseFeatureCards />
         <DiferenciaSection />
         <Testimonios noBg />
         <TablaComparativa />

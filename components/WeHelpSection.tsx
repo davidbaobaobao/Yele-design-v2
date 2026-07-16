@@ -50,7 +50,7 @@ export default function WeHelpSection() {
           <h2
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-              fontSize: 'clamp(24px, 2.8vw, 42px)',
+              fontSize: 'clamp(30px, 3.8vw, 58px)',
               lineHeight: 1.0,
               fontWeight: 700,
               letterSpacing: '-0.01em',
@@ -69,7 +69,7 @@ export default function WeHelpSection() {
           <p
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-              fontSize: 'clamp(11px, 1vw, 14px)',
+              fontSize: 'clamp(13px, 1.3vw, 18px)',
               lineHeight: 1.7,
               fontWeight: 400,
               color: '#555555',
