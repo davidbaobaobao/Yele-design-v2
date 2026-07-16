@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { useLang } from '@/context/LanguageContext'
 
-export default function WeEnsureSection() {
+export default function WeHelpSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
   useVideoAutoplay(videoRef)
   const { t } = useLang()
@@ -15,7 +15,7 @@ export default function WeEnsureSection() {
     <section data-snap-section className="relative w-full min-h-screen overflow-hidden">
 
       <Image
-        src="/media/weensure/weensure_poster.jpg"
+        src="/media/wehelp/wehelp_poster.jpg"
         alt=""
         fill
         priority
@@ -34,8 +34,8 @@ export default function WeEnsureSection() {
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="/media/weensure/weensure_hq.webm" type="video/webm" />
-        <source src="/media/weensure/weensure_hq.mp4" type="video/mp4" />
+        <source src="/media/wehelp/wehelp_hq.webm" type="video/webm" />
+        <source src="/media/wehelp/wehelp_hq.mp4" type="video/mp4" />
       </video>
 
       <div className="absolute inset-0 flex items-center z-20">
@@ -57,12 +57,12 @@ export default function WeEnsureSection() {
               margin: '0 0 16px 0',
             }}
           >
-            <span style={{ color: '#ffffff' }}>
-              {t('Garantizamos', 'We ensure')}
+            <span style={{ color: '#000000' }}>
+              {t('Ayudamos a', 'We help')}
             </span>
             <br />
-            <span style={{ color: 'rgba(255, 255, 255, 0.55)' }}>
-              {t('máximo rendimiento', 'peak performance')}
+            <span style={{ color: '#898484' }}>
+              {t('llegar más lejos', 'you reach further')}
             </span>
           </h2>
 
@@ -72,13 +72,13 @@ export default function WeEnsureSection() {
               fontSize: 'clamp(11px, 1vw, 14px)',
               lineHeight: 1.7,
               fontWeight: 400,
-              color: 'rgba(255, 255, 255, 0.55)',
+              color: '#555555',
               margin: 0,
             }}
           >
             {t(
-              'Siempre online. Siempre fiable.',
-              'Always online. Always reliable.'
+              'SEO, anuncios, IA, automatización y mucho más.',
+              'SEO, ads, AI calling, automation, and beyond.'
             )}
           </p>
 

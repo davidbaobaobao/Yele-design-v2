@@ -8,6 +8,8 @@ import WeCreateSection from '@/components/WeCreateSection'
 import WeDeliverSection from '@/components/WeDeliverSection'
 import WeEnsureSection from '@/components/WeEnsureSection'
 import WeImproveSection from '@/components/WeImproveSection'
+import WeHelpSection from '@/components/WeHelpSection'
+import VideoSnapController from '@/components/VideoSnapController'
 import ShowcaseFeatureCards from '@/app/presupuesto/_components/ShowcaseFeatureCards'
 import ComoFunciona from '@/components/ComoFunciona'
 import PreciosIndexSection from '@/components/PreciosIndexSection'
@@ -56,6 +58,8 @@ export default function EsHome() {
         <WeDeliverSection />
         <WeEnsureSection />
         <WeImproveSection />
+        <WeHelpSection />
+        <VideoSnapController />
         <ShowcaseFeatureCards />
         <ComoFunciona noBg />
         <PreciosIndexSection />

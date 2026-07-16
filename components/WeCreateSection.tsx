@@ -1,5 +1,6 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useLang } from '@/context/LanguageContext'
 
@@ -7,7 +8,7 @@ export default function WeCreateSection() {
   const { t } = useLang()
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden">
+    <section data-snap-section className="relative w-full min-h-screen overflow-hidden">
 
       <Image
         src="/media/we%20create/bgvideo_poster.jpg"
@@ -33,7 +34,13 @@ export default function WeCreateSection() {
       </video>
 
       <div className="absolute inset-0 flex items-center z-20">
-        <div className="w-full md:w-1/2 px-6 md:pl-16 md:pr-12 lg:pr-20 text-left md:text-right">
+        <motion.div
+          className="w-full md:w-1/2 px-6 md:pl-16 md:pr-12 lg:pr-20 text-left md:text-right"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease: 'easeOut', delay: 0.15 }}
+          viewport={{ once: true, amount: 0.5 }}
+        >
 
           <h2
             style={{
@@ -45,16 +52,11 @@ export default function WeCreateSection() {
               margin: '0 0 20px 0',
             }}
           >
-            <span style={{ color: '#000000' }}>
+            <span style={{ color: '#ffffff' }}>
               {t('Creamos', 'We create')}
             </span>
             <br />
-            {/*
-              background-clip: text → purple gradient only visible through letter shapes.
-              mix-blend-mode: color → takes hue+saturation from gradient, luminance from video.
-              Result: the video's motion and texture show through the text in purple tones.
-            */}
-            <span style={{ color: 'rgba(255, 255, 255, 0.75)' }}>
+            <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
               {t('todo el contenido que necesitas', 'Any content you need')}
             </span>
           </h2>
@@ -65,7 +67,7 @@ export default function WeCreateSection() {
               fontSize: 'clamp(11px, 1vw, 14px)',
               lineHeight: 1.7,
               fontWeight: 400,
-              color: '#555555',
+              color: 'rgba(255, 255, 255, 0.5)',
             }}
           >
             <p style={{ margin: 0 }}>{t('De fotografía y vídeo', 'From photography and video')}</p>
@@ -73,7 +75,7 @@ export default function WeCreateSection() {
             <p style={{ margin: 0 }}>{t('Para que tu web sea impactante y llamativa.', 'So your website looks stunning and eye-catching.')}</p>
           </div>
 
-        </div>
+        </motion.div>
       </div>
 
     </section>

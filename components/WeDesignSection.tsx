@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { useLang } from '@/context/LanguageContext'
@@ -11,7 +12,7 @@ export default function WeDesignSection() {
   const { t } = useLang()
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden">
+    <section data-snap-section className="relative w-full min-h-screen overflow-hidden">
 
       <Image
         src="/media/wedesign/wedesign_poster.jpg"
@@ -40,11 +41,15 @@ export default function WeDesignSection() {
       {/* Gradient — smooths white MissionSection → video transition */}
       <div className="absolute top-0 left-0 right-0 h-52 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
 
-      {/* Text — left half, right-aligned, vertically centered */}
       <div className="absolute inset-0 flex items-center z-20">
-        <div className="w-full md:w-1/2 px-6 md:pl-16 md:pr-12 lg:pr-20 text-left md:text-right">
+        <motion.div
+          className="w-full md:w-1/2 px-6 md:pl-16 md:pr-12 lg:pr-20 text-left md:text-right"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease: 'easeOut', delay: 0.15 }}
+          viewport={{ once: true, amount: 0.5 }}
+        >
 
-          {/* Main heading */}
           <h2
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
@@ -64,7 +69,6 @@ export default function WeDesignSection() {
             </span>
           </h2>
 
-          {/* 3 smaller descriptor lines */}
           <div
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
@@ -72,7 +76,6 @@ export default function WeDesignSection() {
               lineHeight: 1.7,
               fontWeight: 400,
               color: '#555555',
-              letterSpacing: '0',
             }}
           >
             <p style={{ margin: 0 }}>{t('De webs que impactan visualmente', 'From bold statement websites')}</p>
@@ -80,7 +83,7 @@ export default function WeDesignSection() {
             <p style={{ margin: 0 }}>{t('y todo lo que hay entre medias.', 'and everything in between.')}</p>
           </div>
 
-        </div>
+        </motion.div>
       </div>
 
     </section>
