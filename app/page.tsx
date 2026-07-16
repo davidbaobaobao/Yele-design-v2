@@ -7,6 +7,7 @@ import WeDesignSection from '@/components/WeDesignSection'
 import WeCreateSection from '@/components/WeCreateSection'
 import WeDeliverSection from '@/components/WeDeliverSection'
 import WeEnsureSection from '@/components/WeEnsureSection'
+import WeImproveSection from '@/components/WeImproveSection'
 import ShowcaseFeatureCards from '@/app/presupuesto/_components/ShowcaseFeatureCards'
 import ComoFunciona from '@/components/ComoFunciona'
 import PreciosIndexSection from '@/components/PreciosIndexSection'
@@ -54,6 +55,7 @@ export default function Home() {
         <WeCreateSection />
         <WeDeliverSection />
         <WeEnsureSection />
+        <WeImproveSection />
         <ShowcaseFeatureCards />
         <ComoFunciona noBg />
         <PreciosIndexSection />
