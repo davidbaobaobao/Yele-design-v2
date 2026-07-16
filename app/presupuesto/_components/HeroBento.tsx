@@ -3,6 +3,7 @@
 import { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
+import { useLang } from '@/context/LanguageContext'
 
 /* ── Marquee SVG icons (stroke, 20×20) ── */
 function IcoClock() {
@@ -59,6 +60,7 @@ const MARQUEE_ITEMS = [...ITEMS, ...ITEMS]
 export default function HeroBento() {
   const cardRef  = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const { t } = useLang()
 
   useEffect(() => {
     const card = cardRef.current
@@ -226,21 +228,21 @@ export default function HeroBento() {
                   marginLeft: 20,
                 }}
               >
-                Diseño<br />
                 Web<br />
-                Profesional
+                {t('Diseño', 'Design')}<br />
+                {t('Reimaginado', 'Reimagined')}
               </h1>
               <p
                 className="font-manrope"
                 style={{ marginTop: 32, marginLeft: 20, fontWeight: 400, fontSize: 22, letterSpacing: '0.01em', color: '#ffffff' }}
               >
-                Tu agencia de diseño web · Sin complicaciones
+                {t('Tu agencia de diseño web · Sin complicaciones', 'Your Web design agency · Hassle-free')}
               </p>
               <p
                 className="font-manrope"
                 style={{ marginTop: 8, marginLeft: 20, fontWeight: 600, fontSize: 22, letterSpacing: '0.01em', color: '#ffffff' }}
               >
-                Desde 49€/mes
+                {t('Desde 99€/mes', 'From $99/month')}
               </p>
             </div>
 
@@ -277,13 +279,13 @@ export default function HeroBento() {
               className="font-archivo text-white"
               style={{ fontWeight: 500, fontSize: 52, lineHeight: 0.98, letterSpacing: '-0.02em' }}
             >
-              Diseño<br />Web<br />Profesional
+              Web<br />{t('Diseño', 'Design')}<br />{t('Reimaginado', 'Reimagined')}
             </h1>
             <p className="font-manrope text-white/80 mt-4 text-base leading-relaxed">
-              Tu agencia de diseño web · Sin complicaciones
+              {t('Tu agencia de diseño web · Sin complicaciones', 'Your Web design agency · Hassle-free')}
             </p>
             <p className="font-manrope text-white font-semibold mt-1.5 text-base">
-              Desde 49€/mes
+              {t('Desde 99€/mes', 'From $99/month')}
             </p>
           </div>
         </div>
