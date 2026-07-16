@@ -29,17 +29,17 @@ export default function MissionSection() {
     document.getElementById('showcase-cards')?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const headingStyle: React.CSSProperties = {
+  const headingStyle = {
     fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-    fontSize: 'clamp(40px, 5vw, 72px)',
-    lineHeight: 1.08,
+    fontSize: 'clamp(48px, 6vw, 90px)',
+    lineHeight: 1.05,
     fontWeight: 700,
     letterSpacing: '-0.02em',
-    margin: '0 0 32px 0',
+    margin: '0 0 40px 0',
   }
 
   return (
-    <section ref={sectionRef} className="bg-white px-6 md:px-16 py-20 md:py-[120px]">
+    <section ref={sectionRef} className="bg-white px-6 md:px-12 py-20 md:py-[120px]">
 
       {/* Heading — grey base + scroll-driven black fill left→right */}
       <div style={{ position: 'relative' }}>
@@ -50,11 +50,11 @@ export default function MissionSection() {
           <span style={{ color: '#c8c8c8', backgroundColor: '#ffffff' }} className="px-1">
             {t('última generación', 'state-of-the-art')}
           </span>
-          <br className="hidden md:block" />
+          <br />
           {t('como servicio', 'website design')}{' '}
           <span style={{ color: '#c8c8c8' }}>
             {t('de suscripción', 'subscription service')}{' '}
-            <br className="hidden md:block" />
+            <br />
             {t('para tu negocio.', 'for your business.')}
           </span>
         </h2>
@@ -77,11 +77,11 @@ export default function MissionSection() {
           <span style={{ color: '#ffffff', backgroundColor: '#000000' }} className="px-1">
             {t('última generación', 'state-of-the-art')}
           </span>
-          <br className="hidden md:block" />
+          <br />
           {t('como servicio', 'website design')}{' '}
           <span style={{ color: '#898484' }}>
             {t('de suscripción', 'subscription service')}{' '}
-            <br className="hidden md:block" />
+            <br />
             {t('para tu negocio.', 'for your business.')}
           </span>
         </h2>
