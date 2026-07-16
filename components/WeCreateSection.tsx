@@ -32,11 +32,14 @@ export default function WeCreateSection() {
         <source src="/media/we%20create/bgvideo_hq.mp4" type="video/mp4" />
       </video>
 
-      {/* Text — left half, right-aligned, vertically centered */}
-      <div className="absolute inset-0 flex items-center z-20">
+      {/*
+        NO z-index on this container — critical for mix-blend-mode to composite
+        against the video below rather than against an isolated stacking context.
+        DOM order (after video) already guarantees it renders on top.
+      */}
+      <div className="absolute inset-0 flex items-center">
         <div className="w-full md:w-1/2 px-6 md:pl-16 md:pr-12 lg:pr-20 text-left md:text-right">
 
-          {/* Main heading */}
           <h2
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
@@ -51,13 +54,26 @@ export default function WeCreateSection() {
               {t('Creamos', 'We create')}
             </span>
             <br />
-            {/* mix-blend-mode: difference → text shows complementary colors of the video behind it */}
-            <span style={{ color: '#ffffff', mixBlendMode: 'difference', display: 'inline-block' }}>
+            {/*
+              background-clip: text → purple gradient only visible through letter shapes.
+              mix-blend-mode: color → takes hue+saturation from gradient, luminance from video.
+              Result: the video's motion and texture show through the text in purple tones.
+            */}
+            <span
+              style={{
+                display: 'inline-block',
+                background: 'linear-gradient(135deg, #3b0764 0%, #7c3aed 35%, #a855f7 60%, #c026d3 85%, #6d28d9 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                color: 'transparent',
+                mixBlendMode: 'color',
+              }}
+            >
               {t('todo el contenido que necesitas', 'Any content you need')}
             </span>
           </h2>
 
-          {/* 3 smaller descriptor lines */}
           <div
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
@@ -65,7 +81,6 @@ export default function WeCreateSection() {
               lineHeight: 1.7,
               fontWeight: 400,
               color: '#555555',
-              letterSpacing: '0',
             }}
           >
             <p style={{ margin: 0 }}>{t('De fotografía y vídeo', 'From photography and video')}</p>
