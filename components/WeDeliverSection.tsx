@@ -14,7 +14,7 @@ export default function WeDeliverSection() {
     <section className="relative w-full min-h-screen overflow-hidden">
 
       <Image
-        src="/media/wedeliver/wedeliver_poster.jpg"
+        src="/media/wedeliver/wedeliver2_poster.jpg"
         alt=""
         fill
         priority
@@ -33,8 +33,8 @@ export default function WeDeliverSection() {
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="/media/wedeliver/wedeliver_hq.webm" type="video/webm" />
-        <source src="/media/wedeliver/wedeliver_hq.mp4" type="video/mp4" />
+        <source src="/media/wedeliver/wedeliver2_hq.webm" type="video/webm" />
+        <source src="/media/wedeliver/wedeliver2_hq.mp4" type="video/mp4" />
       </video>
 
       {/* Text — left half, right-aligned, vertically centered */}
