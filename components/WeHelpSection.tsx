@@ -15,7 +15,7 @@ export default function WeHelpSection() {
     <section data-snap-section className="relative w-full min-h-screen overflow-hidden">
 
       <Image
-        src="/media/wehelp/wehelpinitial.jpeg"
+        src="/media/wehelp/wehelp2initial_hq.jpg"
         alt=""
         fill
         priority
