@@ -10,10 +10,10 @@ export default function MissionSection() {
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
   const o2 = useRef<HTMLDivElement>(null)
+  const o3 = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const overlays = [o0.current, o1.current, o2.current]
-    const N = 3
+    const overlays = [o0.current, o1.current, o2.current, o3.current]
 
     const onScroll = () => {
       const el = sectionRef.current
@@ -25,9 +25,9 @@ export default function MissionSection() {
 
       overlays.forEach((overlay, i) => {
         if (!overlay) return
-        // Staggered start (0, 0.20, 0.40), each fills over 0.60 of total progress
-        // so all 3 lines are fully filled by the time total reaches 1.0
-        const lp = Math.min(1, Math.max(0, (total - i * 0.20) / 0.60))
+        // 4 lines: stagger starts at 0, 0.15, 0.30, 0.45 — each fills over 0.55
+        // so line 4 completes exactly at total = 1.0
+        const lp = Math.min(1, Math.max(0, (total - i * 0.15) / 0.55))
         overlay.style.clipPath = `inset(0 ${(1 - lp) * 100}% 0 0)`
       })
     }
@@ -49,14 +49,27 @@ export default function MissionSection() {
     letterSpacing: '-0.02em',
   }
 
+  const line = (grey: string, ref: React.RefObject<HTMLDivElement>, black?: React.ReactNode) => (
+    <div style={{ position: 'relative', marginTop: '0.08em' }}>
+      <div style={{ ...ts, color: '#c8c8c8' }}>{grey}</div>
+      <div
+        ref={ref}
+        aria-hidden="true"
+        style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}
+      >
+        {black ?? grey}
+      </div>
+    </div>
+  )
+
   return (
-    <section ref={sectionRef} className="bg-white" style={{ height: '450vh' }}>
+    <section ref={sectionRef} className="bg-white" style={{ height: '480vh' }}>
       <div
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
         style={{ padding: '0 clamp(24px, 4vw, 64px)' }}
       >
 
-        {/* Line 1 */}
+        {/* Line 1 — first line has no marginTop */}
         <div style={{ position: 'relative' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>
             {t('Diseño web de última generación', 'We deliver state-of-the-art')}
@@ -73,52 +86,23 @@ export default function MissionSection() {
           </div>
         </div>
 
-        {/* Line 2 */}
-        <div style={{ position: 'relative', marginTop: '0.08em' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>
-            {t('como servicio de suscripción', 'website design subscription')}
-          </div>
-          <div
-            ref={o1}
-            aria-hidden="true"
-            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}
-          >
-            {t('como servicio de suscripción', 'website design subscription')}
-          </div>
-        </div>
+        {line(
+          t('como servicio de suscripción', 'website design subscription'),
+          o1
+        )}
 
-        {/* Line 3 */}
-        <div style={{ position: 'relative', marginTop: '0.08em' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>
-            {t('para tu negocio.', 'service for your business.')}
-          </div>
-          <div
-            ref={o2}
-            aria-hidden="true"
-            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}
-          >
-            {t('para tu negocio.', 'service for your business.')}
-          </div>
-        </div>
+        {line(
+          t('para tu negocio.', 'service for your business.'),
+          o2
+        )}
 
-        {/* Subtitle + CTA */}
+        {line(
+          t('Una web que nunca deja de mejorar, sin barreras de entrada.', 'A website that never stops improving, with zero entry barriers.'),
+          o3
+        )}
+
+        {/* CTA */}
         <div style={{ marginTop: 48 }}>
-          <p
-            className="font-manrope"
-            style={{
-              fontSize: 'clamp(14px, 1.1vw, 18px)',
-              lineHeight: 1.6,
-              fontWeight: 400,
-              color: '#5c5c5c',
-              maxWidth: '620px',
-              margin: '0 0 24px 0',
-            }}
-          >
-            {t(
-              'Una web que nunca deja de mejorar, sin barreras de entrada.',
-              'A website that never stops improving, with zero entry barriers.'
-            )}
-          </p>
           <button
             onClick={scrollToFeatures}
             className="inline-flex items-center gap-2 font-manrope font-semibold uppercase text-[#111111] border-b border-[#111111] pb-1 hover:text-[#e2482f] hover:border-[#e2482f] transition-colors duration-200"
