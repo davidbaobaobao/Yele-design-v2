@@ -43,11 +43,10 @@ const IMG_H   = 400
 
 /* ── Desktop step card (one expanded at a time) ── */
 function StepCard({
-  step, expanded, past, onClick, t,
+  step, expanded, onClick, t,
 }: {
   step: typeof steps[0]
   expanded: boolean
-  past: boolean
   onClick: () => void
   t: (es: string, en: string) => string
 }) {
