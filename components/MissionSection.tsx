@@ -6,11 +6,12 @@ import { useLang } from '@/context/LanguageContext'
 const LEFT_PAD = 48
 const FILL     = 0.88
 
-// 4 scroll-progress thresholds — one per line.
+// Section is 200vh → sticky phase is exactly 100vh (one viewport of scroll).
 // progress = (vh - rect.top) / sectionHeight
-// 0.22 ≈ when the section first pins (sticky starts).
-// Each subsequent trigger is spaced ~1 viewport-height of scroll apart.
-const TRIGGERS = [0.22, 0.44, 0.66, 0.88]
+// At 200vh: progress = 0.50 exactly when the section pins (rect.top = 0).
+// Each trigger is 25vh apart so all 4 fire within 75vh of sticky scroll,
+// leaving ~25vh to exit cleanly. No dead scroll between lines.
+const TRIGGERS = [0.50, 0.625, 0.75, 0.875]
 
 export default function MissionSection() {
   const { t } = useLang()
@@ -119,7 +120,7 @@ export default function MissionSection() {
   const l3 = t('para tu negocio.', 'for your business.')
 
   return (
-    <section ref={sectionRef} className="bg-white" style={{ height: '450vh' }}>
+    <section ref={sectionRef} className="bg-white" style={{ height: '200vh' }}>
 
       <span ref={m0} aria-hidden="true" style={measStyle}>{l0}</span>
       <span ref={m1} aria-hidden="true" style={measStyle}>{l1}</span>
