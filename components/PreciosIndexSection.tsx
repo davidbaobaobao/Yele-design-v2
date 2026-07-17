@@ -10,7 +10,7 @@ import { useLang } from '@/context/LanguageContext'
 const plans = [
   {
     key: 'starter',
-    price: `€${PLAN_PRICES.starter.monthly}`,
+    price: `$${PLAN_PRICES.starter.monthly}`,
     badge: null as string | null,
     highlighted: false,
     es: {
@@ -42,7 +42,7 @@ const plans = [
   },
   {
     key: 'pro',
-    price: `€${PLAN_PRICES.pro.monthly}`,
+    price: `$${PLAN_PRICES.pro.monthly}`,
     badge: 'Most popular',
     highlighted: true,
     es: {
@@ -74,7 +74,7 @@ const plans = [
   },
   {
     key: 'frontier',
-    price: `€${PLAN_PRICES.frontier.monthly}`,
+    price: `$${PLAN_PRICES.frontier.monthly}`,
     badge: null as string | null,
     highlighted: false,
     es: {
@@ -169,9 +169,6 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
             {t('/mes', '/mo')}
           </span>
         </div>
-        <p className={`font-manrope text-sm leading-relaxed ${plan.highlighted ? 'text-white/60' : 'text-[#6B7280]'}`}>
-          {t(plan.es.desc, plan.en.desc)}
-        </p>
       </div>
 
       <ul className="relative flex-1 flex flex-col gap-3 mb-8">
@@ -225,25 +222,25 @@ export default function PreciosIndexSection() {
     const observer = new IntersectionObserver(([entry]) => {
       if (window.innerWidth < 768) return
       if (entry.isIntersecting && !snapping) {
-        const { top, bottom } = el.getBoundingClientRect()
-        const vh = window.innerHeight
-        const ratio = (Math.min(bottom, vh) - Math.max(top, 0)) / vh
-        if (ratio < 0.88) {
-          snapping = true
-          locked = true
+        snapping = true
+        locked = true
+        const { top } = el.getBoundingClientRect()
+        if (Math.abs(top) > 20) {
           el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          window.addEventListener('wheel', preventScroll, { passive: false })
-          clearTimeout(lockTimer)
-          lockTimer = setTimeout(() => {
-            locked = false
-            snapping = false
-            window.removeEventListener('wheel', preventScroll)
-          }, 750)
         }
+        window.addEventListener('wheel', preventScroll, { passive: false })
+        clearTimeout(lockTimer)
+        lockTimer = setTimeout(() => {
+          locked = false
+          snapping = false
+          window.removeEventListener('wheel', preventScroll)
+        }, 700)
       } else if (!entry.isIntersecting) {
         snapping = false
+        locked = false
+        window.removeEventListener('wheel', preventScroll)
       }
-    }, { threshold: 0.12 })
+    }, { threshold: 0.3 })
 
     observer.observe(el)
     return () => {
@@ -298,9 +295,18 @@ export default function PreciosIndexSection() {
           ))}
         </div>
 
-        <p className="text-center font-manrope text-sm text-white/50 mt-6">
+        <p className="text-center font-manrope text-sm text-white/80 mt-6">
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
+
+        <div className="text-center mt-5">
+          <a
+            href="#contacto"
+            className="font-manrope text-sm text-white/60 underline underline-offset-4 hover:text-white transition-colors"
+          >
+            {t('Ayúdame a decidir', 'Help me decide')}
+          </a>
+        </div>
       </div>
     </section>
   )

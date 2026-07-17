@@ -3,21 +3,51 @@
 import Image from 'next/image'
 import { useRef, useEffect } from 'react'
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion'
+import { useLang } from '@/context/LanguageContext'
 
 const cards = [
-  { img: '/showcase/barber-01.jpg',   video: '/media/6card/6card1', title: 'Diseño a medida',      desc: 'Sin plantillas. Tu web diseñada desde cero para tu negocio.' },
-  { img: '/showcase/tattoo-01.jpg',   video: '/media/6card/6card2', title: 'Entrega en 1 semana',  desc: 'Tu web publicada en tu dominio en menos de una semana.' },
-  { img: '/showcase/car-01.jpg',      video: '/media/6card/6card3', title: 'Panel de control',     desc: 'Actualiza fácilmente tus servicios, menús, precios o fotos.' },
-  { img: '/showcase/mecanica-01.jpg', video: '/media/6card/6card4', title: 'SEO local optimizado', desc: 'Apareces cuando te buscan. Sin pagar a un especialista aparte.' },
-  { img: '/showcase/archi-01.jpg',    video: '/media/6card/6card5', title: 'Mobile-first',         desc: 'Perfecta en el móvil — donde te busca el 80% de tus clientes.' },
-  { img: '/showcase/studio-01.jpg',   video: '/media/6card/6card6', title: 'Todo incluido',        desc: 'Hosting, dominio, mantenimiento y soporte. Un precio fijo, sin sorpresas.' },
+  {
+    img: '/showcase/barber-01.jpg',
+    video: '/media/6card/6card1',
+    es: { title: 'Diseño a medida',              desc: 'Sin plantillas. Un sitio web construido desde cero para tu negocio.' },
+    en: { title: 'Custom design',                desc: 'No templates. A website built from scratch for your business.' },
+  },
+  {
+    img: '/showcase/tattoo-01.jpg',
+    video: '/media/6card/6card2',
+    es: { title: 'Entrega rápida',               desc: 'Tu web publicada en tu dominio en menos de una semana.' },
+    en: { title: 'Fast delivery',                desc: 'Your site live from one week.' },
+  },
+  {
+    img: '/showcase/car-01.jpg',
+    video: '/media/6card/6card3',
+    es: { title: 'Control fácil del contenido',  desc: 'Actualiza tus servicios, menú, precios o fotos tú mismo, cuando quieras.' },
+    en: { title: 'Easy content control',         desc: 'Update your services, menu, prices, or photos yourself, anytime.' },
+  },
+  {
+    img: '/showcase/mecanica-01.jpg',
+    video: '/media/6card/6card4',
+    es: { title: 'SEO local',                    desc: 'Apareces cuando te buscan.' },
+    en: { title: 'Local SEO',                    desc: 'Show up when people search for you.' },
+  },
+  {
+    img: '/showcase/archi-01.jpg',
+    video: '/media/6card/6card5',
+    es: { title: 'Mobile-first',                 desc: 'Perfecto en el móvil, donde el 80% de tus clientes te encuentran.' },
+    en: { title: 'Mobile-first',                 desc: 'Looks great on mobile, where 80% of your customers find you.' },
+  },
+  {
+    img: '/showcase/studio-01.jpg',
+    video: '/media/6card/6card6',
+    es: { title: 'Todo incluido',                desc: 'Hosting, dominio, mantenimiento, marketing y soporte. Un precio fijo, sin sorpresas.' },
+    en: { title: 'All-in-one',                   desc: 'Hosting, domain, maintenance, marketing and support. One flat price, no surprises.' },
+  },
 ]
 
-function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: number }) {
+function ParallaxCard({ img, video, title, desc, i }: { img: string; video: string; title: string; desc: string; i: number }) {
   const ref      = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  // Autoplay when card enters viewport (all screen sizes)
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
@@ -36,11 +66,9 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
     return () => observer.disconnect()
   }, [])
 
-  // Scroll-based image parallax
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const imageY = useTransform(scrollYProgress, [0, 1], ['8%', '-8%'])
 
-  // Mouse-follow 3D tilt (desktop hover effect)
   const rawX    = useMotionValue(0)
   const rawY    = useMotionValue(0)
   const rotateX = useSpring(rawX, { stiffness: 280, damping: 22 })
@@ -82,7 +110,6 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
             style={{ y: imageY }}
             className="absolute inset-x-0 top-[-10%] bottom-[-10%]"
           >
-            {/* Static image — shows as poster until video plays */}
             <Image
               src={img}
               alt={title}
@@ -91,8 +118,6 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
               sizes="(max-width: 640px) 95vw, 33vw"
               className="object-cover object-center"
             />
-
-            {/* Video — loops automatically on load */}
             <video
               ref={videoRef}
               loop muted autoPlay playsInline
@@ -104,7 +129,6 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
               <source src={`${video}.webm`} type="video/webm" />
             </video>
           </motion.div>
-
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/65 to-transparent pointer-events-none" />
         </div>
 
@@ -122,13 +146,30 @@ function ParallaxCard({ img, video, title, desc, i }: (typeof cards)[0] & { i: n
 }
 
 export default function ShowcaseFeatureCards() {
+  const { t } = useLang()
+
   return (
     <section id="showcase-cards" className="min-h-screen flex flex-col justify-center py-6">
-      <h2 className="sr-only">Características</h2>
       <div className="max-w-6xl mx-auto px-6 w-full">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: 'easeOut' }}
+          viewport={{ once: true, margin: '-60px' }}
+          className="font-outfit font-semibold text-3xl md:text-4xl text-[#1D1D1F] tracking-tight mb-10"
+        >
+          {t('Mantente por delante de la competencia', 'Stay ahead of the competition')}
+        </motion.h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
           {cards.map((card, i) => (
-            <ParallaxCard key={card.title} {...card} i={i} />
+            <ParallaxCard
+              key={card.en.title}
+              img={card.img}
+              video={card.video}
+              title={t(card.es.title, card.en.title)}
+              desc={t(card.es.desc, card.en.desc)}
+              i={i}
+            />
           ))}
         </div>
       </div>

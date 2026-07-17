@@ -128,15 +128,6 @@ export default function MissionSection() {
     maskImage: 'linear-gradient(to right, transparent 0%, transparent 100%)',
   }
 
-  // Noise filter wrapper: the feTurbulence displacement is applied to each overlay's
-  // already-masked content, which displaces pixels near the mask boundary to create
-  // a subtle organic/ink-edge texture rather than a clean geometric line.
-  const noiseWrap: React.CSSProperties = {
-    position: 'absolute',
-    inset: 0,
-    filter: 'url(#mission-noise)',
-  }
-
   const l0pre = t('Diseño web de ', 'We deliver ')
   const l0tag  = t('última generación', 'state-of-the-art')
   const l1     = t('diseño web y marketing', 'website design & marketing')
@@ -146,16 +137,6 @@ export default function MissionSection() {
   return (
     // 300vh = 200vh of scroll range for 4 lines × 50vh each; section releases after all lines fill
     <section ref={sectionRef} className="bg-white" style={{ height: '300vh' }}>
-
-      {/* SVG turbulence filter — displaces pixels near the mask edge for organic ink texture */}
-      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
-        <defs>
-          <filter id="mission-noise" x="-2%" y="-20%" width="104%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.04 0.65" numOctaves="3" seed="8" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
 
       {/* Off-screen measurement spans — m0 mirrors badge span so width matches overlay exactly */}
       <span ref={m0} aria-hidden="true" style={ms}>
@@ -172,15 +153,17 @@ export default function MissionSection() {
       >
         {/* Spinning scroll-hint arrow */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-          <svg
-            className="scroll-arrow-spin"
-            width="26" height="26" viewBox="0 0 24 24"
-            fill="none" stroke="#e2482f" strokeWidth="2.5"
-            strokeLinecap="round" strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M9 6l6 6-6 6" />
-          </svg>
+          <div className="scroll-arrow-bounce">
+            <svg
+              className="scroll-arrow-spin"
+              width="38" height="38" viewBox="0 0 24 24"
+              fill="none" stroke="#e2482f" strokeWidth="2.5"
+              strokeLinecap="round" strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
         </div>
         {/* Line 0 */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
@@ -190,35 +173,29 @@ export default function MissionSection() {
               {l0tag}
             </span>
           </div>
-          <div style={noiseWrap}>
-            <div ref={o0} aria-hidden="true" style={overlayBase}>
-              {l0pre}<span style={BADGE}>{l0tag}</span>
-            </div>
+          <div ref={o0} aria-hidden="true" style={overlayBase}>
+            {l0pre}<span style={BADGE}>{l0tag}</span>
           </div>
         </div>
 
         {/* Line 1 */}
         <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
-          <div style={noiseWrap}>
-            <div ref={o1} aria-hidden="true" style={overlayBase}>{l1}</div>
-          </div>
+          <div ref={o1} aria-hidden="true" style={overlayBase}>{l1}</div>
         </div>
 
-        {/* Line 2 */}
+        {/* Line 2 — orange on reveal */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l2}</div>
-          <div style={noiseWrap}>
-            <div ref={o2} aria-hidden="true" style={overlayBase}>{l2}</div>
+          <div ref={o2} aria-hidden="true" style={overlayBase}>
+            <span className="we-subtitle-orange">{l2}</span>
           </div>
         </div>
 
         {/* Line 3 */}
         <div ref={lw3} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l3}</div>
-          <div style={noiseWrap}>
-            <div ref={o3} aria-hidden="true" style={overlayBase}>{l3}</div>
-          </div>
+          <div ref={o3} aria-hidden="true" style={overlayBase}>{l3}</div>
         </div>
       </div>
     </section>

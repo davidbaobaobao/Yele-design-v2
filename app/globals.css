@@ -64,12 +64,21 @@ html.sand-helix-page body {
   animation: we-subtitle-wave 3.5s ease-in-out infinite;
 }
 
-/* Spinning scroll-hint arrow — used in HeroBento and MissionSection */
+/* Scroll-hint arrow — Y-axis flip + bounce, used in HeroBento and MissionSection */
 @keyframes scroll-arrow-spin {
-  from { transform: rotate(90deg); }
-  to   { transform: rotate(450deg); }
+  from { transform: perspective(300px) rotateY(0deg); }
+  to   { transform: perspective(300px) rotateY(360deg); }
 }
 .scroll-arrow-spin {
   animation: scroll-arrow-spin 2.4s linear infinite;
   transform-origin: center;
+}
+
+@keyframes scroll-arrow-bounce {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.scroll-arrow-bounce {
+  animation: scroll-arrow-bounce 1.8s ease-in-out infinite;
+  display: inline-flex;
 }

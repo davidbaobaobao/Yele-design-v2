@@ -3,10 +3,12 @@
 import { useRef, useCallback, useEffect } from 'react'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useMotionTemplate } from 'framer-motion'
+import { useLang } from '@/context/LanguageContext'
 
 export default function DiferenciaSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef   = useRef<HTMLVideoElement>(null)
+  const { t } = useLang()
 
   useVideoAutoplay(videoRef)
 
@@ -113,10 +115,12 @@ export default function DiferenciaSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
-            className="font-outfit font-extrabold text-white tracking-tight leading-none mb-10 text-left whitespace-nowrap"
+            className="font-outfit font-extrabold tracking-tight leading-none mb-10 text-left"
             style={{ fontSize: 'clamp(32px, 4vw, 58px)' }}
           >
-            LA DIFERENCIA
+            <span className="we-subtitle-orange">
+              {t('La diferencia', 'Find the difference')}
+            </span>
           </motion.h2>
 
           <motion.div
@@ -128,13 +132,20 @@ export default function DiferenciaSection() {
             style={{ fontSize: 'clamp(15px, 1.6vw, 20px)' }}
           >
             <p className="text-white/60">
-              Otras agencias te entregan la web… y se lavan las manos.
+              {t(
+                'Otras agencias te entregan la web… y desaparecen.',
+                'Other agencies deliver your website… then disappear.'
+              )}
             </p>
             <p className="text-white">
-              Nosotros estamos... <strong className="font-bold">Siempre.</strong>
+              {t('Nosotros no. Seguimos aquí.', "We don't. We stick around.")}{' '}
+              <strong className="font-bold">{t('Siempre.', 'Always.')}</strong>
             </p>
             <p className="text-white/60">
-              Mejora constante... Siempre al día.
+              {t(
+                'Mejora constante. Siempre al día.',
+                'Always improving. Always up to date.'
+              )}
             </p>
           </motion.div>
 
@@ -150,7 +161,7 @@ export default function DiferenciaSection() {
               className="font-manrope font-semibold text-base bg-white text-[#1D1D1F]
                          px-8 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
             >
-              Empezar por 0€
+              {t('Empezar gratis', 'Start for free')}
             </a>
             <a
               href="#contacto"
@@ -158,7 +169,7 @@ export default function DiferenciaSection() {
                          border border-white/25 px-8 py-3.5 rounded-xl
                          hover:bg-white/10 transition-colors"
             >
-              Contáctanos
+              {t('Contáctanos', 'Contact us')}
             </a>
           </motion.div>
 

@@ -9,9 +9,9 @@ import { PLAN_PRICES } from '@/lib/plan-prices'
 const plans = [
   {
     key: 'starter',
-    monthly: `€${PLAN_PRICES.starter.monthly}`,
-    annual: '€990',
-    annualNote: { es: 'o €990/año — ahorras €198', en: 'or €990/year — save €198' },
+    monthly: `$${PLAN_PRICES.starter.monthly}`,
+    annual: '$990',
+    annualNote: { es: 'o $990/año — ahorras $198', en: 'or $990/year — save $198' },
     badge: null as { es: string; en: string } | null,
     highlighted: false,
     es: {
@@ -43,9 +43,9 @@ const plans = [
   },
   {
     key: 'pro',
-    monthly: `€${PLAN_PRICES.pro.monthly}`,
-    annual: '€1.690',
-    annualNote: { es: 'o €1.690/año — ahorras €338', en: 'or €1,690/year — save €338' },
+    monthly: `$${PLAN_PRICES.pro.monthly}`,
+    annual: '$1,690',
+    annualNote: { es: 'o $1,690/año — ahorras $338', en: 'or $1,690/year — save $338' },
     badge: { es: 'Más elegido', en: 'Most popular' } as { es: string; en: string } | null,
     highlighted: true,
     es: {
@@ -77,9 +77,9 @@ const plans = [
   },
   {
     key: 'frontier',
-    monthly: `€${PLAN_PRICES.frontier.monthly}`,
-    annual: '€6.990',
-    annualNote: { es: 'o €6.990/año — ahorras €1.398', en: 'or €6,990/year — save €1,398' },
+    monthly: `$${PLAN_PRICES.frontier.monthly}`,
+    annual: '$6,990',
+    annualNote: { es: 'o $6,990/año — ahorras $1,398', en: 'or $6,990/year — save $1,398' },
     badge: null as { es: string; en: string } | null,
     highlighted: false,
     es: {
@@ -198,9 +198,6 @@ function PricingCard({ plan, index, isAnnual, t, withShadow }: {
           </motion.span>
           <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>{isAnnual ? '/año' : '/mes'}</span>
         </div>
-        <p className={`font-manrope text-sm leading-relaxed ${plan.highlighted ? 'text-white/60' : 'text-[#6B7280]'}`}>
-          {t(plan.es.desc, plan.en.desc)}
-        </p>
       </div>
 
       <ul className="relative flex-1 flex flex-col gap-3 mb-8">

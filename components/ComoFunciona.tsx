@@ -43,10 +43,11 @@ const IMG_H   = 400
 
 /* ── Desktop step card (one expanded at a time) ── */
 function StepCard({
-  step, expanded, onClick, t,
+  step, expanded, past, onClick, t,
 }: {
   step: typeof steps[0]
   expanded: boolean
+  past: boolean
   onClick: () => void
   t: (es: string, en: string) => string
 }) {
@@ -71,10 +72,12 @@ function StepCard({
   return (
     <div
       onClick={onClick}
-      className={`rounded-2xl overflow-hidden transition-colors duration-500 ${
+      className={`rounded-2xl overflow-hidden transition-shadow duration-500 ${
         expanded
           ? 'bg-[#1D1D1F] shadow-[0_20px_56px_rgba(0,0,0,0.2)] cursor-default'
-          : 'bg-white border border-black/[0.07] shadow-sm cursor-pointer hover:shadow-md'
+          : past
+            ? 'we-pill-orange shadow-[0_8px_28px_rgba(226,72,47,0.25)] cursor-pointer'
+            : 'bg-white border border-black/[0.07] shadow-sm cursor-pointer hover:shadow-md'
       }`}
     >
       <motion.div
@@ -96,10 +99,10 @@ function StepCard({
         </div>
       </motion.div>
       <div className="flex items-center gap-4 px-5 py-4">
-        <span className={`font-outfit text-2xl font-semibold leading-none transition-colors duration-500 ${expanded ? 'text-white/25' : 'text-[#6B7280]/30'}`}>
+        <span className={`font-outfit text-2xl font-semibold leading-none transition-colors duration-500 ${expanded ? 'text-white/25' : past ? 'text-white/40' : 'text-[#6B7280]/30'}`}>
           {step.num}
         </span>
-        <h3 className={`font-outfit font-semibold text-lg leading-snug transition-colors duration-500 ${expanded ? 'text-white' : 'text-[#1D1D1F]'}`}>
+        <h3 className={`font-outfit font-semibold text-lg leading-snug transition-colors duration-500 ${expanded ? 'text-white' : past ? 'text-white' : 'text-[#1D1D1F]'}`}>
           {t(step.es.title, step.en.title)}
         </h3>
       </div>
@@ -290,7 +293,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
             viewport={{ once: true }}
           >
             <h2 className="font-outfit font-semibold text-6xl xl:text-7xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
-              {t('EL PROCESO', 'THE PROCESS')}<br /><span className="font-extrabold">{t('SIMPLIFICADO', 'SIMPLIFIED')}</span>
+              {t('EL PROCESO', 'THE PROCESS')}<br /><span className="we-subtitle-orange font-extrabold">{t('SIMPLIFICADO', 'SIMPLIFIED')}</span>
             </h2>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-sm">
               {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
@@ -318,6 +321,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
                 key={step.num}
                 step={step}
                 expanded={displayCard === i}
+                past={i < activeCard && displayCard !== i}
                 onClick={() => handleCardClick(i)}
                 t={t}
               />
@@ -337,7 +341,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
           className="mb-8"
         >
           <h2 className="font-outfit font-semibold text-4xl text-[#1D1D1F] tracking-tight mb-3 leading-tight">
-            {t('EL PROCESO', 'THE PROCESS')}<br /><span className="font-extrabold">{t('SIMPLIFICADO', 'SIMPLIFIED')}</span>
+            {t('EL PROCESO', 'THE PROCESS')}<br /><span className="we-subtitle-orange font-extrabold">{t('SIMPLIFICADO', 'SIMPLIFIED')}</span>
           </h2>
           <p className="font-manrope text-[#6B7280] text-base leading-relaxed">
             {t('Sin reuniones interminables.', 'No endless meetings.')}<br />

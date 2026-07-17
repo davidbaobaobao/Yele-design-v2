@@ -40,8 +40,22 @@ export default function WeDesignSection() {
         </video>
       </div>
 
-      {/* Gradient — smooths white MissionSection → video transition */}
+      {/* Gradient fades — top blends with MissionSection, sides blend video into white bg */}
       <div className="absolute top-0 left-0 right-0 h-52 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 bottom-0 left-0 w-40 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 bottom-0 right-0 w-40 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+      {/* Scroll-hint arrow */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30">
+        <div className="scroll-arrow-bounce">
+          <svg className="scroll-arrow-spin" width="38" height="38" viewBox="0 0 24 24"
+            fill="none" stroke="#e2482f" strokeWidth="2.5"
+            strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
+      </div>
 
       <div className="absolute inset-0 flex items-center z-20">
         <motion.div

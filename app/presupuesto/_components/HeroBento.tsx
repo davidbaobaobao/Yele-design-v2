@@ -287,15 +287,17 @@ export default function HeroBento() {
             aria-label="Scroll down"
             className="cursor-pointer bg-transparent border-0 p-0"
           >
-            <svg
-              className="scroll-arrow-spin"
-              width="26" height="26" viewBox="0 0 24 24"
-              fill="none" stroke="#e2482f" strokeWidth="2.5"
-              strokeLinecap="round" strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M9 6l6 6-6 6" />
-            </svg>
+            <div className="scroll-arrow-bounce">
+              <svg
+                className="scroll-arrow-spin"
+                width="38" height="38" viewBox="0 0 24 24"
+                fill="none" stroke="#e2482f" strokeWidth="2.5"
+                strokeLinecap="round" strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </div>
           </button>
         </div>
 
