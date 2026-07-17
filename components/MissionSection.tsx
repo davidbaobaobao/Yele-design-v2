@@ -13,38 +13,34 @@ export default function MissionSection() {
   const lw1 = useRef<HTMLDivElement>(null)
   const lw2 = useRef<HTMLDivElement>(null)
 
-  // Grey base refs — measured for width fitting
-  const lb0 = useRef<HTMLDivElement>(null)
-  const lb1 = useRef<HTMLDivElement>(null)
-  const lb2 = useRef<HTMLDivElement>(null)
+  // Off-screen spans for reliable text-width measurement (not inside overflow:hidden)
+  const m0 = useRef<HTMLSpanElement>(null)
+  const m1 = useRef<HTMLSpanElement>(null)
+  const m2 = useRef<HTMLSpanElement>(null)
 
   // Overlay refs — clip-path animated
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
   const o2 = useRef<HTMLDivElement>(null)
 
-  // Auto-fit each line to fill the sticky container width
+  // Auto-fit each line to full viewport width
   useEffect(() => {
     function fitLines() {
-      const sticky = stickyRef.current
-      if (!sticky) return
-      const cw = sticky.clientWidth
+      // clientWidth excludes scrollbar — matches 100vw block element width
+      const vw = document.documentElement.clientWidth
 
-      const entries = [
-        { wrap: lw0.current, base: lb0.current },
-        { wrap: lw1.current, base: lb1.current },
-        { wrap: lw2.current, base: lb2.current },
-      ]
-
-      entries.forEach(({ wrap, base }) => {
-        if (!wrap || !base) return
-        // Set sentinel size to measure, then scale proportionally
-        wrap.style.fontSize = '100px'
-        const sw = base.scrollWidth // forces sync reflow
-        if (sw > 0) wrap.style.fontSize = `${Math.floor((cw / sw) * 100)}px`
+      ;[
+        [lw0.current, m0.current],
+        [lw1.current, m1.current],
+        [lw2.current, m2.current],
+      ].forEach(([wrap, meas]) => {
+        if (!wrap || !meas) return
+        // getBoundingClientRect on a position:fixed off-screen span = true text width
+        const textW = meas.getBoundingClientRect().width
+        if (textW > 0) wrap.style.fontSize = `${Math.floor((vw / textW) * 100)}px`
       })
 
-      sticky.style.visibility = 'visible'
+      if (stickyRef.current) stickyRef.current.style.visibility = 'visible'
     }
 
     fitLines()
@@ -61,7 +57,6 @@ export default function MissionSection() {
       if (!el) return
       const rect = el.getBoundingClientRect()
       const vh = window.innerHeight
-      // 0 when section top enters viewport bottom, 1 when fully scrolled
       const total = Math.min(1, Math.max(0, (vh - rect.top) / el.offsetHeight))
 
       overlays.forEach((overlay, i) => {
@@ -84,44 +79,62 @@ export default function MissionSection() {
     whiteSpace: 'nowrap' as const,
   }
 
+  // Measurement spans: same font properties at 100px, positioned off-screen
+  const measStyle = {
+    position: 'fixed' as const,
+    left: '-9999px',
+    top: '0',
+    pointerEvents: 'none' as const,
+    visibility: 'hidden' as const,
+    fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
+    fontSize: '100px',
+    fontWeight: 700,
+    letterSpacing: '-0.03em',
+    whiteSpace: 'nowrap' as const,
+  }
+
+  const l1 = t('Diseño web de última generación', 'We deliver state-of-the-art')
+  const l2 = t('como servicio de suscripción', 'website design subscription')
+  const l3 = t('para tu negocio.', 'service for your business.')
+
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '450vh' }}>
+
+      {/* Off-screen measurement spans — fixed position, not inside overflow:hidden */}
+      <span ref={m0} aria-hidden="true" style={measStyle}>{l1}</span>
+      <span ref={m1} aria-hidden="true" style={measStyle}>{l2}</span>
+      <span ref={m2} aria-hidden="true" style={measStyle}>{l3}</span>
+
       <div
         ref={stickyRef}
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
-        style={{ padding: '0 clamp(8px, 1.5vw, 24px)', visibility: 'hidden' }}
+        style={{ visibility: 'hidden' }}
       >
 
         {/* Line 1 */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div ref={lb0} style={{ ...ts, color: '#c8c8c8' }}>
-            {t('Diseño web de última generación', 'We deliver state-of-the-art')}
-          </div>
+          <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
           <div ref={o0} aria-hidden="true"
             style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
-            {t('Diseño web de última generación', 'We deliver state-of-the-art')}
+            {l1}
           </div>
         </div>
 
         {/* Line 2 */}
-        <div ref={lw1} style={{ position: 'relative', overflow: 'hidden', marginTop: '0.04em' }}>
-          <div ref={lb1} style={{ ...ts, color: '#c8c8c8' }}>
-            {t('como servicio de suscripción', 'website design subscription')}
-          </div>
+        <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ ...ts, color: '#c8c8c8' }}>{l2}</div>
           <div ref={o1} aria-hidden="true"
             style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
-            {t('como servicio de suscripción', 'website design subscription')}
+            {l2}
           </div>
         </div>
 
         {/* Line 3 */}
-        <div ref={lw2} style={{ position: 'relative', overflow: 'hidden', marginTop: '0.04em' }}>
-          <div ref={lb2} style={{ ...ts, color: '#c8c8c8' }}>
-            {t('para tu negocio.', 'service for your business.')}
-          </div>
+        <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ ...ts, color: '#c8c8c8' }}>{l3}</div>
           <div ref={o2} aria-hidden="true"
             style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
-            {t('para tu negocio.', 'service for your business.')}
+            {l3}
           </div>
         </div>
 
