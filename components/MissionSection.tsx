@@ -1,26 +1,67 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
 export default function MissionSection() {
   const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
+  const stickyRef  = useRef<HTMLDivElement>(null)
+
+  // Line wrapper refs — fontSize injected by JS
+  const lw0 = useRef<HTMLDivElement>(null)
+  const lw1 = useRef<HTMLDivElement>(null)
+  const lw2 = useRef<HTMLDivElement>(null)
+
+  // Grey base refs — measured for width fitting
+  const lb0 = useRef<HTMLDivElement>(null)
+  const lb1 = useRef<HTMLDivElement>(null)
+  const lb2 = useRef<HTMLDivElement>(null)
+
+  // Overlay refs — clip-path animated
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
   const o2 = useRef<HTMLDivElement>(null)
 
+  // Auto-fit each line to fill the sticky container width
+  useEffect(() => {
+    function fitLines() {
+      const sticky = stickyRef.current
+      if (!sticky) return
+      const cw = sticky.clientWidth
+
+      const entries = [
+        { wrap: lw0.current, base: lb0.current },
+        { wrap: lw1.current, base: lb1.current },
+        { wrap: lw2.current, base: lb2.current },
+      ]
+
+      entries.forEach(({ wrap, base }) => {
+        if (!wrap || !base) return
+        // Set sentinel size to measure, then scale proportionally
+        wrap.style.fontSize = '100px'
+        const sw = base.scrollWidth // forces sync reflow
+        if (sw > 0) wrap.style.fontSize = `${Math.floor((cw / sw) * 100)}px`
+      })
+
+      sticky.style.visibility = 'visible'
+    }
+
+    fitLines()
+    window.addEventListener('resize', fitLines)
+    return () => window.removeEventListener('resize', fitLines)
+  }, [])
+
+  // Scroll-driven clip-path fill — starts as section enters viewport
   useEffect(() => {
     const overlays = [o0.current, o1.current, o2.current]
 
-    const onScroll = () => {
+    function onScroll() {
       const el = sectionRef.current
       if (!el) return
       const rect = el.getBoundingClientRect()
       const vh = window.innerHeight
-      // Progress starts the moment section enters viewport from below (rect.top = vh),
-      // reaches 1 when section leaves viewport at the bottom (end of sticky).
+      // 0 when section top enters viewport bottom, 1 when fully scrolled
       const total = Math.min(1, Math.max(0, (vh - rect.top) / el.offsetHeight))
 
       overlays.forEach((overlay, i) => {
@@ -35,83 +76,53 @@ export default function MissionSection() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  function scrollToFeatures() {
-    document.getElementById('showcase-cards')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   const ts = {
     fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-    fontSize: 'clamp(52px, 6.5vw, 94px)',
-    lineHeight: 1.05,
+    lineHeight: 1.0,
     fontWeight: 700,
-    letterSpacing: '-0.02em',
+    letterSpacing: '-0.03em',
+    whiteSpace: 'nowrap' as const,
   }
 
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '450vh' }}>
       <div
-        className="sticky top-0 h-screen flex flex-col overflow-hidden"
-        style={{ padding: 'clamp(56px, 7vh, 96px) clamp(8px, 1.5vw, 24px) 0' }}
+        ref={stickyRef}
+        className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
+        style={{ padding: '0 clamp(8px, 1.5vw, 24px)', visibility: 'hidden' }}
       >
 
         {/* Line 1 */}
-        <div style={{ position: 'relative' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>
+        <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
+          <div ref={lb0} style={{ ...ts, color: '#c8c8c8' }}>
             {t('Diseño web de última generación', 'We deliver state-of-the-art')}
           </div>
-          <div
-            ref={o0}
-            aria-hidden="true"
-            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}
-          >
-            {t('Diseño web de', 'We deliver')}{' '}
-            <span style={{ color: '#ffffff', backgroundColor: '#000000', padding: '0 6px' }}>
-              {t('última generación', 'state-of-the-art')}
-            </span>
+          <div ref={o0} aria-hidden="true"
+            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
+            {t('Diseño web de última generación', 'We deliver state-of-the-art')}
           </div>
         </div>
 
         {/* Line 2 */}
-        <div style={{ position: 'relative', marginTop: '0.07em' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>
+        <div ref={lw1} style={{ position: 'relative', overflow: 'hidden', marginTop: '0.04em' }}>
+          <div ref={lb1} style={{ ...ts, color: '#c8c8c8' }}>
             {t('como servicio de suscripción', 'website design subscription')}
           </div>
-          <div
-            ref={o1}
-            aria-hidden="true"
-            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}
-          >
+          <div ref={o1} aria-hidden="true"
+            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
             {t('como servicio de suscripción', 'website design subscription')}
           </div>
         </div>
 
         {/* Line 3 */}
-        <div style={{ position: 'relative', marginTop: '0.07em' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>
+        <div ref={lw2} style={{ position: 'relative', overflow: 'hidden', marginTop: '0.04em' }}>
+          <div ref={lb2} style={{ ...ts, color: '#c8c8c8' }}>
             {t('para tu negocio.', 'service for your business.')}
           </div>
-          <div
-            ref={o2}
-            aria-hidden="true"
-            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}
-          >
+          <div ref={o2} aria-hidden="true"
+            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
             {t('para tu negocio.', 'service for your business.')}
           </div>
-        </div>
-
-        {/* Large scroll arrow */}
-        <div style={{ marginTop: 'clamp(32px, 4vh, 56px)' }}>
-          <motion.button
-            onClick={scrollToFeatures}
-            aria-label={t('Bajar', 'Scroll down')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 0 }}
-            animate={{ y: [0, 14, 0] }}
-            transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
-          >
-            <svg width="110" height="74" viewBox="0 0 110 74" aria-hidden="true">
-              <polygon points="0,0 55,68 110,0 86,0 55,44 24,0" fill="#000000" />
-            </svg>
-          </motion.button>
         </div>
 
       </div>
