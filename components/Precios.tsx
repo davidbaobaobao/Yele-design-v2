@@ -235,7 +235,7 @@ function PricingCard({ plan, index, isAnnual, t, withShadow }: {
           style={{ originX: 0 }}
           aria-hidden="true"
         />
-        <span className="relative z-10">{t('Empezar', 'Get started')}</span>
+        <span className="relative z-10">{t('Empezar gratis', 'Start for free')}</span>
       </motion.a>
     </motion.div>
   )
@@ -259,15 +259,9 @@ export default function Precios({ singlePlan, noBg }: { singlePlan?: string; noB
           viewport={{ once: true, margin: '-80px' }}
           className="text-center mb-8"
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+          <h2 className="font-outfit font-semibold text-5xl md:text-6xl text-[#1D1D1F] tracking-tight mb-6">
             {t('Precios', 'Pricing')}
-          </span>
-          <h2 className="font-outfit font-semibold text-5xl md:text-6xl text-[#1D1D1F] tracking-tight mb-4">
-            {t('Sin letra pequeña.', 'No fine print.')}
           </h2>
-          <p className="font-manrope text-[#6B7280] text-lg mb-8">
-            {t('Elige tu plan. Cambia cuando quieras.', 'Choose your plan. Change whenever you want.')}
-          </p>
 
           {/* Toggle — hidden in single-plan mode */}
           {!singlePlan && <div className="inline-flex items-center bg-[#F5F5F7] rounded-xl p-1 gap-1">

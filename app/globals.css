@@ -57,6 +57,13 @@ html.sand-helix-page body {
   animation: we-subtitle-wave 3.5s ease-in-out infinite;
 }
 
+/* Orange gradient pill background — same wave animation as subtitle, applied as solid bg */
+.we-pill-orange {
+  background: linear-gradient(90deg, #e2482f 0%, #ff8247 30%, #ffba82 55%, #ff8247 75%, #e2482f 100%);
+  background-size: 250% auto;
+  animation: we-subtitle-wave 3.5s ease-in-out infinite;
+}
+
 /* Spinning scroll-hint arrow — used in HeroBento and MissionSection */
 @keyframes scroll-arrow-spin {
   from { transform: rotate(90deg); }

@@ -5,8 +5,7 @@ import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { PLAN_PRICES } from '@/lib/plan-prices'
-
-const ORANGE = '#e2482f'
+import { useLang } from '@/context/LanguageContext'
 
 const plans = [
   {
@@ -14,55 +13,103 @@ const plans = [
     price: `€${PLAN_PRICES.starter.monthly}`,
     badge: null as string | null,
     highlighted: false,
-    name: 'Starter',
-    desc: 'Tu primera presencia online. Funcional, profesional y sin complicaciones.',
-    features: [
-      'Web funcional, sin límite de páginas',
-      'Dominio personalizado',
-      'Panel de control, actualiza tu contenido',
-      'SEO on-page e indexación',
-      'Email personalizado',
-      'Creación de contenido multimedia — básico',
-      'Soporte 24/7',
-    ],
+    es: {
+      name: 'Starter',
+      desc: 'Tu primera presencia online. Funcional, profesional y sin complicaciones.',
+      features: [
+        'Web funcional, sin límite de páginas',
+        'Dominio personalizado',
+        'Panel de control, actualiza tu contenido',
+        'SEO on-page e indexación',
+        'Email personalizado',
+        'Creación de contenido multimedia — básico',
+        'Soporte 24/7',
+      ],
+    },
+    en: {
+      name: 'Starter',
+      desc: 'Your first step online. Functional, professional and hassle-free.',
+      features: [
+        'Functional website, no page limit',
+        'Custom domain',
+        'Control panel, update your content',
+        'On-page SEO & indexing',
+        'Custom email',
+        'Media creation — basic',
+        '24/7 support',
+      ],
+    },
   },
   {
     key: 'pro',
     price: `€${PLAN_PRICES.pro.monthly}`,
-    badge: 'Más elegido',
+    badge: 'Most popular',
     highlighted: true,
-    name: 'Pro',
-    desc: 'Todo lo que necesitas para crecer. Branding, pagos y automatización.',
-    features: [
-      'Todo lo de Starter, más:',
-      'Branding',
-      'Sistema de pagos',
-      'Calendario y reservas',
-      'Rediseño periódico de elementos',
-      'Optimización Google Business Profile',
-      'Asistente de chat IA automático',
-    ],
+    es: {
+      name: 'Pro',
+      desc: 'Todo lo que necesitas para crecer. Branding, pagos y automatización.',
+      features: [
+        'Todo lo de Starter, más:',
+        'Branding',
+        'Sistema de pagos',
+        'Calendario y reservas',
+        'Rediseño periódico de elementos',
+        'Optimización Google Business Profile',
+        'Asistente de chat IA automático',
+      ],
+    },
+    en: {
+      name: 'Pro',
+      desc: 'Everything you need to grow. Branding, payments and automation.',
+      features: [
+        'Everything in Starter, plus:',
+        'Branding',
+        'Payment system',
+        'Calendar & reservations',
+        'Periodic redesign of website elements',
+        'Google Business Profile optimization',
+        'AI automatic chat assistant',
+      ],
+    },
   },
   {
     key: 'frontier',
     price: `€${PLAN_PRICES.frontier.monthly}`,
     badge: null as string | null,
     highlighted: false,
-    name: 'Frontier',
-    desc: 'Marketing activo, SEO avanzado y contenido continuo para líderes del sector.',
-    features: [
-      'Todo lo de Pro, más:',
-      'Creación de contenido multimedia — mensual',
-      'Campañas de marketing — mensual',
-      'SEO avanzado backlinks (cloud stacks)',
-      'Generación de artículos y contenido — semanal',
-      'Gestión Google Ads — bajo demanda',
-      'Notas de prensa (1/trimestre)',
-    ],
+    es: {
+      name: 'Frontier',
+      desc: 'Marketing activo, SEO avanzado y contenido continuo para líderes del sector.',
+      features: [
+        'Todo lo de Pro, más:',
+        'Creación de contenido multimedia — mensual',
+        'Campañas de marketing — mensual',
+        'SEO avanzado backlinks (cloud stacks)',
+        'Generación de artículos y contenido — semanal',
+        'Gestión Google Ads — bajo demanda',
+        'Notas de prensa (1/trimestre)',
+      ],
+    },
+    en: {
+      name: 'Frontier',
+      desc: 'Active marketing, advanced SEO and continuous content for industry leaders.',
+      features: [
+        'Everything in Pro, plus:',
+        'Media content creation — monthly',
+        'Marketing campaigns — monthly',
+        'Advanced SEO backlinks (cloud stacks)',
+        'Article and content generation — weekly',
+        'Google Ads management — on demand',
+        'Press releases (1/quarter)',
+      ],
+    },
   },
 ]
 
-function PricingCard({ plan, index }: { plan: typeof plans[0]; index: number }) {
+type Plan = typeof plans[0]
+type TFn = (es: string, en: string) => string
+
+function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) {
   const ref = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -81,6 +128,8 @@ function PricingCard({ plan, index }: { plan: typeof plans[0]; index: number }) 
     mouseY.set((e.clientY - rect.top) / rect.height - 0.5)
   }
   function handleMouseLeave() { mouseX.set(0); mouseY.set(0) }
+
+  const features = t(plan.es.features.join('||'), plan.en.features.join('||')).split('||')
 
   return (
     <motion.div
@@ -112,19 +161,21 @@ function PricingCard({ plan, index }: { plan: typeof plans[0]; index: number }) 
 
       <div className="relative mb-6">
         <p className={`font-manrope text-sm font-medium mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>
-          {plan.name}
+          {t(plan.es.name, plan.en.name)}
         </p>
         <div className="flex items-end gap-1 mb-1">
           <span className="font-outfit font-semibold text-5xl tracking-tight">{plan.price}</span>
-          <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>/mes</span>
+          <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>
+            {t('/mes', '/mo')}
+          </span>
         </div>
         <p className={`font-manrope text-sm leading-relaxed ${plan.highlighted ? 'text-white/60' : 'text-[#6B7280]'}`}>
-          {plan.desc}
+          {t(plan.es.desc, plan.en.desc)}
         </p>
       </div>
 
       <ul className="relative flex-1 flex flex-col gap-3 mb-8">
-        {plan.features.map(feat => (
+        {features.map(feat => (
           <li key={feat} className="flex items-start gap-2.5">
             <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />
             <span className={`font-manrope text-sm ${plan.highlighted ? 'text-white/80' : 'text-[#1D1D1F]'}`}>{feat}</span>
@@ -148,13 +199,14 @@ function PricingCard({ plan, index }: { plan: typeof plans[0]; index: number }) 
           style={{ originX: 0 }}
           aria-hidden="true"
         />
-        <span className="relative z-10">Empezar por 0€</span>
+        <span className="relative z-10">{t('Empezar gratis', 'Start for free')}</span>
       </motion.a>
     </motion.div>
   )
 }
 
 export default function PreciosIndexSection() {
+  const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   useVideoAutoplay(videoRef)
@@ -227,39 +279,27 @@ export default function PreciosIndexSection() {
           viewport={{ once: true, margin: '-80px' }}
           className="text-center mb-10"
         >
-          <span className="font-manrope text-xl font-bold tracking-[0.2em] uppercase text-white/80 mb-5 block">
-            Precios
-          </span>
           <h2
-            className="font-outfit font-semibold text-white tracking-tight mb-5"
+            className="font-outfit font-semibold text-white tracking-tight mb-6"
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}
           >
-            Sin letra pequeña.
+            {t('Precios', 'Pricing')}
           </h2>
-          <motion.span
-            style={{ background: ORANGE, display: 'inline-block' }}
-            animate={{
-              boxShadow: [
-                '0 0 0px 0px rgba(226,72,47,0)',
-                '0 0 14px 4px rgba(226,72,47,0.28)',
-                '0 0 0px 0px rgba(226,72,47,0)',
-              ],
-            }}
-            transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
-            className="font-manrope font-semibold text-sm text-white px-4 py-2 rounded-full"
-          >
-            Primer mes gratuito
-          </motion.span>
+
+          {/* Orange gradient pill — same wave animation as We* subtitles */}
+          <span className="we-pill-orange font-manrope font-semibold text-base text-white px-6 py-3 rounded-full inline-block">
+            {t('Primer mes gratuito', 'First month free')}
+          </span>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 items-stretch">
           {plans.map((plan, i) => (
-            <PricingCard key={plan.key} plan={plan} index={i} />
+            <PricingCard key={plan.key} plan={plan} index={i} t={t} />
           ))}
         </div>
 
         <p className="text-center font-manrope text-sm text-white/50 mt-6">
-          Sin permanencia. Cancela cuando quieras.
+          {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
       </div>
     </section>
