@@ -8,12 +8,13 @@ import { Check } from 'lucide-react'
 const ORANGE = '#e2482f'
 
 const features = [
-  'Diseño Alucinante',
-  'Adaptada a móvil',
-  'Mantenimiento incluido',
-  'Dominio incluido',
-  'Panel de Control',
-  'Soporte continuo 24/7',
+  'Web funcional, sin límite de páginas',
+  'Dominio personalizado',
+  'Panel de control, actualiza tu contenido',
+  'SEO on-page e indexación',
+  'Email personalizado',
+  'Creación de contenido multimedia — básico',
+  'Soporte 24/7',
 ]
 
 export default function PrecioCard() {
@@ -162,7 +163,7 @@ export default function PrecioCard() {
             <div className="flex items-center gap-4 flex-wrap mb-8">
               <div className="flex items-end gap-1">
                 <span className="font-outfit font-semibold text-6xl tracking-tight leading-none text-[#1D1D1F]">
-                  49€
+                  99€
                 </span>
                 <span className="font-manrope text-sm text-[#6B7280] mb-1.5">/mes</span>
               </div>

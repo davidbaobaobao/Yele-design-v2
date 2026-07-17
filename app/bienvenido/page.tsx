@@ -9,7 +9,7 @@ import Link from 'next/link'
 const PLAN_LABELS: Record<string, string> = {
   starter: 'Starter',
   pro: 'Pro',
-  enterprise: 'Enterprise',
+  frontier: 'Frontier',
 }
 
 function BienvenidoContent() {

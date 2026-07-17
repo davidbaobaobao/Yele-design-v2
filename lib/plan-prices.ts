@@ -1,7 +1,7 @@
 // Single source of truth for plan monthly prices (EUR).
 
 export const PLAN_PRICES = {
-  starter:  { monthly: 49,  annualMonthly: 41.58, annualTotal: 499 },
-  pro:      { monthly: 69,  annualMonthly: 58.25, annualTotal: 699 },
-  enterprise: { monthly: 119, annualMonthly: 99.17, annualTotal: 1190 },
+  starter:  { monthly: 99,  annualMonthly: 82.50,  annualTotal: 990  },
+  pro:      { monthly: 169, annualMonthly: 140.83, annualTotal: 1690 },
+  frontier: { monthly: 699, annualMonthly: 582.50, annualTotal: 6990 },
 } as const
