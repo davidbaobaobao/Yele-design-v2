@@ -300,12 +300,12 @@ export default function PreciosIndexSection() {
         </p>
 
         <div className="text-center mt-4">
-          <a
-            href="#contacto"
-            className="font-manrope text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80 transition-colors"
+          <button
+            onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
+            className="font-manrope text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80 transition-colors cursor-pointer"
           >
             {t('Ayúdame a decidir', 'Help me decide')}
-          </a>
+          </button>
         </div>
       </div>
     </section>

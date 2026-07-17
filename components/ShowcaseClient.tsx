@@ -99,8 +99,7 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
       // Exact travel to reveal the last card at the right edge (5 cards × width + 4 gaps + 24px paddingLeft − viewport)
       const travel = Math.max(0, 5 * cardW + 88 - vw)
       travelMV.set(travel)
-      // 2.5× travel → comfortable scroll speed with no dead space after animation
-      setWrapperH(`${window.innerHeight + travel * 0.75}px`)
+      setWrapperH(`${window.innerHeight + travel * 0.56}px`)
     }
     compute()
     window.addEventListener('resize', compute)

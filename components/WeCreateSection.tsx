@@ -67,7 +67,7 @@ export default function WeCreateSection() {
               {t('Creamos', 'We create')}
             </span>
             <br />
-            <span style={{ fontSize: 'clamp(38px, 5vw, 72px)', color: '#ffffff', fontWeight: 700 }}>
+            <span className="we-subtitle-orange" style={{ fontSize: 'clamp(38px, 5vw, 72px)' }}>
               {t('todo el contenido que necesitas', 'Any content you need')}
             </span>
           </h2>
@@ -77,8 +77,8 @@ export default function WeCreateSection() {
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
               fontSize: 'clamp(13px, 1.3vw, 18px)',
               lineHeight: 1.7,
-              fontWeight: 400,
-              color: 'rgba(255, 255, 255, 0.5)',
+              fontWeight: 700,
+              color: '#ffffff',
             }}
           >
             <p style={{ margin: 0 }}>{t('De fotografía y vídeo', 'From photography and video')}</p>

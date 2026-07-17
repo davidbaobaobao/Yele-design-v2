@@ -155,7 +155,7 @@ export default function MissionSection() {
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
           <div className="scroll-arrow-wrap">
             <div className="scroll-arrow-spin">
-              <svg width="36" height="36" viewBox="0 0 120 120" fill="none" stroke="white" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
+              <svg width="52" height="52" viewBox="0 0 120 120" fill="none" stroke="#e2482f" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
                 <polyline points="30,42 60,78 90,42" />
               </svg>
             </div>
