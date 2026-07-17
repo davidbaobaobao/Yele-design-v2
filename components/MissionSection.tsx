@@ -4,12 +4,10 @@ import { useRef, useEffect } from 'react'
 import { useLang } from '@/context/LanguageContext'
 
 const LEFT_PAD = 48
-const FILL     = 0.78   // longest line fills 78% — leaves natural breathing room
+const FILL     = 0.78
+const N        = 4
+const EDGE     = 5   // % — soft gradient transition width at mask edge
 
-// Triggers at 40/50/60/70% of section height — fires well before the end.
-const TRIGGERS = [0.40, 0.50, 0.60, 0.70]
-
-// Badge style: black pill, tight padding & letter-spacing
 const BADGE: React.CSSProperties = {
   backgroundColor: '#000000',
   color: '#ffffff',
@@ -29,7 +27,6 @@ export default function MissionSection() {
   const lw2 = useRef<HTMLDivElement>(null)
   const lw3 = useRef<HTMLDivElement>(null)
 
-  // Off-screen measurement spans
   const m0 = useRef<HTMLSpanElement>(null)
   const m1 = useRef<HTMLSpanElement>(null)
   const m2 = useRef<HTMLSpanElement>(null)
@@ -40,7 +37,7 @@ export default function MissionSection() {
   const o2 = useRef<HTMLDivElement>(null)
   const o3 = useRef<HTMLDivElement>(null)
 
-  // Shared font size — sized so longest line fills FILL fraction of content width
+  // Auto-fit: all lines share the same font size so the longest fills FILL% of content width
   useEffect(() => {
     function fitLines() {
       const contentW = document.documentElement.clientWidth - LEFT_PAD
@@ -58,33 +55,46 @@ export default function MissionSection() {
     return () => window.removeEventListener('resize', fitLines)
   }, [])
 
-  // 4 scroll triggers → each fires a self-playing CSS transition
+  // Scroll-linked fill: directly tracks scroll position with no easing or autoplay.
+  // Each line fills sequentially in reading order. Reversing scroll recedes the fill in reverse.
   useEffect(() => {
     const overlays = [o0.current, o1.current, o2.current, o3.current]
-    const fired = new Set<number>()
+    let rafId: number | null = null
 
-    function onScroll() {
-      const el = sectionRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const vh = window.innerHeight
-      const total = Math.min(1, Math.max(0, (vh - rect.top) / el.offsetHeight))
+    function setMask(el: HTMLDivElement, lp: number) {
+      // lp 0→1 moves the fill point from off-screen-left (-10%) to off-screen-right (110%).
+      // EDGE% soft gradient zone gives an ink-bleed feel at the boundary.
+      const pt = lp * 120 - 10
+      const mask = `linear-gradient(to right, black ${pt - EDGE}%, transparent ${pt + EDGE}%)`
+      el.style.setProperty('-webkit-mask-image', mask)
+      el.style.setProperty('mask-image', mask)
+    }
 
-      TRIGGERS.forEach((threshold, i) => {
-        if (fired.has(i) || total < threshold) return
-        fired.add(i)
-        const ov = overlays[i]
+    function update() {
+      rafId = null
+      const sec = sectionRef.current
+      if (!sec) return
+      const scrolled = -sec.getBoundingClientRect().top
+      const range    = sec.offsetHeight - window.innerHeight
+      const p        = range > 0 ? Math.min(1, Math.max(0, scrolled / range)) : 0
+
+      // Each line occupies 1/N of the total scroll range, sequentially
+      overlays.forEach((ov, i) => {
         if (!ov) return
-        ov.style.clipPath = 'inset(0 100% 0 0)'
-        void ov.getBoundingClientRect()
-        ov.style.transition = 'clip-path 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        ov.style.clipPath = 'inset(0 0% 0 0)'
+        setMask(ov, Math.min(1, Math.max(0, (p - i / N) * N)))
       })
     }
 
+    function onScroll() {
+      if (rafId === null) rafId = requestAnimationFrame(update)
+    }
+
     window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
+    update() // set correct initial state on mount
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (rafId !== null) cancelAnimationFrame(rafId)
+    }
   }, [])
 
   const ts: React.CSSProperties = {
@@ -95,7 +105,6 @@ export default function MissionSection() {
     whiteSpace: 'nowrap',
   }
 
-  // Measurement span base — same font properties at 100px, off-screen
   const ms: React.CSSProperties = {
     position: 'fixed',
     left: '-9999px',
@@ -109,26 +118,46 @@ export default function MissionSection() {
     whiteSpace: 'nowrap',
   }
 
+  // Overlay starts fully masked (transparent). JS sets the real mask on mount via update().
   const overlayBase: React.CSSProperties = {
     ...ts,
     color: '#000',
     position: 'absolute',
     inset: 0,
-    clipPath: 'inset(0 100% 0 0)',
-    transition: 'none',
+    WebkitMaskImage: 'linear-gradient(to right, transparent 0%, transparent 100%)',
+    maskImage: 'linear-gradient(to right, transparent 0%, transparent 100%)',
   }
 
-  // Content strings
-  const l0pre    = t('Diseño web de ', 'We deliver ')
-  const l0tag    = t('última generación', 'state-of-the-art')
-  const l1       = t('diseño web y marketing', 'website design & marketing')
-  const l2       = t('como suscripción', 'subscription service')
-  const l3       = t('para tu negocio.', 'for your business.')
+  // Noise filter wrapper: the feTurbulence displacement is applied to each overlay's
+  // already-masked content, which displaces pixels near the mask boundary to create
+  // a subtle organic/ink-edge texture rather than a clean geometric line.
+  const noiseWrap: React.CSSProperties = {
+    position: 'absolute',
+    inset: 0,
+    filter: 'url(#mission-noise)',
+  }
+
+  const l0pre = t('Diseño web de ', 'We deliver ')
+  const l0tag  = t('última generación', 'state-of-the-art')
+  const l1     = t('diseño web y marketing', 'website design & marketing')
+  const l2     = t('como suscripción', 'subscription service')
+  const l3     = t('para tu negocio.', 'for your business.')
 
   return (
-    <section ref={sectionRef} className="bg-white" style={{ height: '200vh' }}>
+    // 300vh = 200vh of scroll range for 4 lines × 50vh each; section releases after all lines fill
+    <section ref={sectionRef} className="bg-white" style={{ height: '300vh' }}>
 
-      {/* m0 mirrors the badge structure so measured width matches the overlay */}
+      {/* SVG turbulence filter — displaces pixels near the mask edge for organic ink texture */}
+      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
+        <defs>
+          <filter id="mission-noise" x="-2%" y="-20%" width="104%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.04 0.65" numOctaves="3" seed="8" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
+
+      {/* Off-screen measurement spans — m0 mirrors badge span so width matches overlay exactly */}
       <span ref={m0} aria-hidden="true" style={ms}>
         {l0pre}<span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l0tag}</span>
       </span>
@@ -141,9 +170,7 @@ export default function MissionSection() {
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
         style={{ paddingLeft: LEFT_PAD, visibility: 'hidden' }}
       >
-
-        {/* Line 0: both grey and overlay use identical span layout so they align pixel-perfect.
-            Grey: transparent bg, inherits grey. Black overlay: #000 bg, white text. */}
+        {/* Line 0 */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>
             {l0pre}
@@ -151,30 +178,36 @@ export default function MissionSection() {
               {l0tag}
             </span>
           </div>
-          <div ref={o0} aria-hidden="true" style={overlayBase}>
-            {l0pre}
-            <span style={BADGE}>{l0tag}</span>
+          <div style={noiseWrap}>
+            <div ref={o0} aria-hidden="true" style={overlayBase}>
+              {l0pre}<span style={BADGE}>{l0tag}</span>
+            </div>
           </div>
         </div>
 
         {/* Line 1 */}
         <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
-          <div ref={o1} aria-hidden="true" style={overlayBase}>{l1}</div>
+          <div style={noiseWrap}>
+            <div ref={o1} aria-hidden="true" style={overlayBase}>{l1}</div>
+          </div>
         </div>
 
         {/* Line 2 */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l2}</div>
-          <div ref={o2} aria-hidden="true" style={overlayBase}>{l2}</div>
+          <div style={noiseWrap}>
+            <div ref={o2} aria-hidden="true" style={overlayBase}>{l2}</div>
+          </div>
         </div>
 
         {/* Line 3 */}
         <div ref={lw3} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l3}</div>
-          <div ref={o3} aria-hidden="true" style={overlayBase}>{l3}</div>
+          <div style={noiseWrap}>
+            <div ref={o3} aria-hidden="true" style={overlayBase}>{l3}</div>
+          </div>
         </div>
-
       </div>
     </section>
   )
