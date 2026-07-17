@@ -4,14 +4,21 @@ import { useRef, useEffect } from 'react'
 import { useLang } from '@/context/LanguageContext'
 
 const LEFT_PAD = 48
-const FILL     = 0.88
+const FILL     = 0.78   // longest line fills 78% — leaves natural breathing room
 
-// Section is 200vh → sticky phase is exactly 100vh (one viewport of scroll).
-// progress = (vh - rect.top) / sectionHeight
-// At 200vh: progress = 0.50 exactly when the section pins (rect.top = 0).
-// Each trigger is 25vh apart so all 4 fire within 75vh of sticky scroll,
-// leaving ~25vh to exit cleanly. No dead scroll between lines.
+// Section is 200vh → sticky phase is exactly 100vh.
+// 0.50 fires the instant the section pins, each step is 25vh of scroll.
 const TRIGGERS = [0.50, 0.625, 0.75, 0.875]
+
+// Badge style: black pill, tight padding & letter-spacing
+const BADGE: React.CSSProperties = {
+  backgroundColor: '#000000',
+  color: '#ffffff',
+  padding: '0.04em 0.16em',
+  letterSpacing: '-0.05em',
+  display: 'inline-block',
+  lineHeight: 1,
+}
 
 export default function MissionSection() {
   const { t } = useLang()
@@ -23,6 +30,7 @@ export default function MissionSection() {
   const lw2 = useRef<HTMLDivElement>(null)
   const lw3 = useRef<HTMLDivElement>(null)
 
+  // Off-screen measurement spans
   const m0 = useRef<HTMLSpanElement>(null)
   const m1 = useRef<HTMLSpanElement>(null)
   const m2 = useRef<HTMLSpanElement>(null)
@@ -33,7 +41,7 @@ export default function MissionSection() {
   const o2 = useRef<HTMLDivElement>(null)
   const o3 = useRef<HTMLDivElement>(null)
 
-  // Shared font size — longest line drives the size, all lines use it
+  // Shared font size — sized so longest line fills FILL fraction of content width
   useEffect(() => {
     function fitLines() {
       const contentW = document.documentElement.clientWidth - LEFT_PAD
@@ -51,9 +59,7 @@ export default function MissionSection() {
     return () => window.removeEventListener('resize', fitLines)
   }, [])
 
-  // Scroll-trigger animation:
-  // Each line has its own threshold. Once crossed, a CSS transition plays
-  // the fill from left to right at its own pace — does not depend on scroll speed.
+  // 4 scroll triggers → each fires a self-playing CSS transition
   useEffect(() => {
     const overlays = [o0.current, o1.current, o2.current, o3.current]
     const fired = new Set<number>()
@@ -70,8 +76,6 @@ export default function MissionSection() {
         fired.add(i)
         const ov = overlays[i]
         if (!ov) return
-        // Pin starting state, force reflow so browser registers it,
-        // then enable transition and jump to the end state.
         ov.style.clipPath = 'inset(0 100% 0 0)'
         void ov.getBoundingClientRect()
         ov.style.transition = 'clip-path 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
@@ -84,75 +88,89 @@ export default function MissionSection() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const ts = {
+  const ts: React.CSSProperties = {
     fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
     lineHeight: 1.05,
     fontWeight: 700,
     letterSpacing: '-0.025em',
-    whiteSpace: 'nowrap' as const,
+    whiteSpace: 'nowrap',
   }
 
-  const measStyle = {
-    position: 'fixed' as const,
+  // Measurement span base — same font properties at 100px, off-screen
+  const ms: React.CSSProperties = {
+    position: 'fixed',
     left: '-9999px',
     top: '0',
-    pointerEvents: 'none' as const,
-    visibility: 'hidden' as const,
+    pointerEvents: 'none',
+    visibility: 'hidden',
     fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
     fontSize: '100px',
     fontWeight: 700,
     letterSpacing: '-0.025em',
-    whiteSpace: 'nowrap' as const,
+    whiteSpace: 'nowrap',
   }
 
-  const overlayBase = {
+  const overlayBase: React.CSSProperties = {
     ...ts,
     color: '#000',
-    position: 'absolute' as const,
+    position: 'absolute',
     inset: 0,
     clipPath: 'inset(0 100% 0 0)',
-    transition: 'none',   // no accidental transitions before trigger
+    transition: 'none',
   }
 
-  const l0 = t('Diseño web de última generación', 'We deliver state-of-the-art')
-  const l1 = t('diseño web', 'website design')
-  const l2 = t('como suscripción', 'subscription service')
-  const l3 = t('para tu negocio.', 'for your business.')
+  // Content strings
+  const l0plain  = t('Diseño web de última generación', 'We deliver state-of-the-art')
+  const l0pre    = t('Diseño web de ', 'We deliver ')
+  const l0tag    = t('última generación', 'state-of-the-art')
+  const l1       = t('diseño web y marketing', 'website design & marketing')
+  const l2       = t('como suscripción', 'subscription service')
+  const l3       = t('para tu negocio.', 'for your business.')
 
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '200vh' }}>
 
-      <span ref={m0} aria-hidden="true" style={measStyle}>{l0}</span>
-      <span ref={m1} aria-hidden="true" style={measStyle}>{l1}</span>
-      <span ref={m2} aria-hidden="true" style={measStyle}>{l2}</span>
-      <span ref={m3} aria-hidden="true" style={measStyle}>{l3}</span>
+      {/* m0 mirrors the badge structure so measured width matches the overlay */}
+      <span ref={m0} aria-hidden="true" style={ms}>
+        {l0pre}<span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l0tag}</span>
+      </span>
+      <span ref={m1} aria-hidden="true" style={ms}>{l1}</span>
+      <span ref={m2} aria-hidden="true" style={ms}>{l2}</span>
+      <span ref={m3} aria-hidden="true" style={ms}>{l3}</span>
 
       <div
         ref={stickyRef}
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
         style={{ paddingLeft: LEFT_PAD, visibility: 'hidden' }}
       >
+
+        {/* Line 0 — grey base is plain text; overlay reveals badge on "state-of-the-art" */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>{l0}</div>
-          <div ref={o0} aria-hidden="true" style={overlayBase}>{l0}</div>
+          <div style={{ ...ts, color: '#c8c8c8' }}>{l0plain}</div>
+          <div ref={o0} aria-hidden="true" style={overlayBase}>
+            {l0pre}<span style={BADGE}>{l0tag}</span>
+          </div>
         </div>
 
+        {/* Line 1 */}
         <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
           <div ref={o1} aria-hidden="true" style={overlayBase}>{l1}</div>
         </div>
 
+        {/* Line 2 */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l2}</div>
           <div ref={o2} aria-hidden="true" style={overlayBase}>{l2}</div>
         </div>
 
+        {/* Line 3 */}
         <div ref={lw3} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l3}</div>
           <div ref={o3} aria-hidden="true" style={overlayBase}>{l3}</div>
         </div>
-      </div>
 
+      </div>
     </section>
   )
 }
