@@ -291,7 +291,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
             viewport={{ once: true }}
           >
             <h2 className="font-outfit font-semibold text-6xl xl:text-7xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
-              {t('EL PROCESO', 'THE PROCESS')}<br /><span className="we-subtitle-orange">{t('SIMPLIFICADO', 'SIMPLIFIED')}</span>
+              {t('El proceso', 'The process')}<br /><span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>
             </h2>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-sm">
               {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
@@ -339,7 +339,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
           className="mb-8"
         >
           <h2 className="font-outfit font-semibold text-4xl text-[#1D1D1F] tracking-tight mb-3 leading-tight">
-            {t('EL PROCESO', 'THE PROCESS')}<br /><span className="we-subtitle-orange">{t('SIMPLIFICADO', 'SIMPLIFIED')}</span>
+            {t('El proceso', 'The process')}<br /><span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>
           </h2>
           <p className="font-manrope text-[#6B7280] text-base leading-relaxed">
             {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
