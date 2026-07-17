@@ -119,7 +119,6 @@ export default function MissionSection() {
   }
 
   // Content strings
-  const l0plain  = t('Diseño web de última generación', 'We deliver state-of-the-art')
   const l0pre    = t('Diseño web de ', 'We deliver ')
   const l0tag    = t('última generación', 'state-of-the-art')
   const l1       = t('diseño web y marketing', 'website design & marketing')
