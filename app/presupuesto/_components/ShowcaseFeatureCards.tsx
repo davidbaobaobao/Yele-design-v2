@@ -89,7 +89,7 @@ function ParallaxCard({ img, video, title, desc, i }: { img: string; video: stri
   }
 
   return (
-    <div style={{ perspective: '900px' }}>
+    <div style={{ perspective: '900px' }} className="h-full">
       <motion.div
         ref={ref}
         onMouseMove={onMouseMove}
@@ -100,7 +100,7 @@ function ParallaxCard({ img, video, title, desc, i }: { img: string; video: stri
         viewport={{ once: true, margin: '-50px' }}
         style={{ rotateX, rotateY, scale, transformStyle: 'preserve-3d' }}
         className="group bg-white border border-black/[0.07] rounded-3xl overflow-hidden
-                   cursor-default select-none will-change-transform
+                   cursor-default select-none will-change-transform h-full
                    shadow-[0_8px_32px_rgba(0,0,0,0.14),0_2px_8px_rgba(0,0,0,0.08)]
                    hover:shadow-[0_28px_72px_rgba(0,0,0,0.22),0_4px_16px_rgba(0,0,0,0.1)]
                    transition-shadow duration-300"

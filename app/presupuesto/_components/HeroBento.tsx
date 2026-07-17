@@ -127,13 +127,13 @@ export default function HeroBento() {
 
             {/* ── Red promo badge ── exact reference: top 168, right 0, w 70, h 220 */}
             <div
+              className="we-pill-orange"
               style={{
                 position: 'absolute',
                 top: 168,
                 right: 0,
                 width: 70,
                 height: 220,
-                background: '#e2482f',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -249,8 +249,8 @@ export default function HeroBento() {
         <div className="md:hidden absolute bottom-0 inset-x-0 z-20">
           {/* Orange badge */}
           <div
+            className="we-pill-orange"
             style={{
-              background: '#e2482f',
               padding: '13px 20px',
               display: 'flex',
               alignItems: 'center',
@@ -289,7 +289,7 @@ export default function HeroBento() {
           >
             <div className="scroll-arrow-wrap">
               <div className="scroll-arrow-spin">
-                <svg width="36" height="36" viewBox="0 0 120 120" fill="none" stroke="white" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
+                <svg width="52" height="52" viewBox="0 0 120 120" fill="none" stroke="#e2482f" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
                   <polyline points="30,42 60,78 90,42" />
                 </svg>
               </div>

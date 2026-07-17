@@ -4,11 +4,11 @@ import TestimoniosClient from './TestimoniosClient'
 export const revalidate = 60
 
 const FALLBACK = [
-  { author_name: 'Sara M.',    role: 'Instructora de yoga, Madrid',                  body: 'Tenía la web pendiente desde hacía dos años. Con Yele la tuve lista en cuatro días. Ahora mis alumnas me encuentran en Google.',   rating: 5 },
-  { author_name: 'Carlos R.', role: 'Fontanero autónomo, Bilbao',                   body: 'Pensé que tener web era complicado y caro. Por €49 al mes tengo algo que parece de empresa grande.',                              rating: 5 },
-  { author_name: 'Elena T.',  role: 'Propietaria de estudio de cerámica, Gràcia',   body: 'El proceso fue rapidísimo. Me hicieron preguntas concretas, y tres días después tenía una web que realmente me representa.',      rating: 5 },
-  { author_name: 'Miguel A.', role: 'Abogado, Valencia',                             body: 'Necesitaba algo serio, no un template de Wix. Yele entendió eso desde el primer mensaje.',                                       rating: 5 },
-  { author_name: 'David B.',  role: 'Cliente Yele',                                  body: 'Yele es fantástica!',                                                                                                               rating: 5 },
+  { author_name: 'Sara M.',    role: 'Yoga instructor, Madrid',                       body: "I'd been putting my website off for two years. With Yele I had it ready in four days. Now my students find me on Google.",        rating: 5 },
+  { author_name: 'Carlos R.', role: 'Self-employed plumber, Bilbao',                  body: 'I thought having a website was complicated and expensive. For $99 a month I have something that looks like a big company.',       rating: 5 },
+  { author_name: 'Elena T.',  role: 'Ceramics studio owner, Barcelona',               body: 'The process was incredibly fast. They asked the right questions, and three days later I had a site that truly represents me.',     rating: 5 },
+  { author_name: 'Miguel A.', role: 'Lawyer, Valencia',                               body: "I needed something serious, not a Wix template. Yele understood that from the very first message.",                              rating: 5 },
+  { author_name: 'David B.',  role: 'Yele client',                                    body: 'Yele is fantastic!',                                                                                                              rating: 5 },
 ]
 
 export default async function Testimonios({ noBg }: { noBg?: boolean } = {}) {

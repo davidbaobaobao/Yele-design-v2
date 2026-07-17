@@ -78,16 +78,9 @@ html.sand-helix-page body {
   display: inline-flex;
 }
 .scroll-arrow-spin {
-  animation:
-    spinY 2.6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite,
-    we-subtitle-wave 3.5s ease-in-out infinite;
+  animation: spinY 2.6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
   transform-style: preserve-3d;
-  background: linear-gradient(90deg, #e2482f 0%, #ff8247 30%, #ffba82 55%, #ff8247 75%, #e2482f 100%);
-  background-size: 250% auto;
-  border-radius: 50%;
-  width: 54px;
-  height: 54px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 }

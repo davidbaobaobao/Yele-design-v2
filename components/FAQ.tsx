@@ -4,12 +4,12 @@ import FAQClient from './FAQClient'
 export const revalidate = 60
 
 const FALLBACK = [
-  { question: '¿Necesito saber de tecnología?',             answer: 'No. Tú nos dices qué quieres y nosotros lo construimos. Para actualizar contenido tienes un panel sencillo, sin código.' },
-  { question: '¿Cuánto tarda en estar lista mi web?',       answer: 'En menos de 1 semana desde que recibes tu formulario completado. Sin esperas.' },
-  { question: '¿Puedo cancelar cuando quiera?',             answer: 'Sí. Sin permanencia, sin penalizaciones. Si en algún momento no lo necesitas, cancelas y listo.' },
-  { question: '¿Qué pasa si quiero cambiar algo de mi web?', answer: 'Nos escribes y lo cambiamos. Según tu plan, en 12, 24 o 48 horas. Sin presupuestos extra.' },
-  { question: '¿El dominio y el hosting están incluidos?',  answer: 'El hosting sí. El dominio se puede gestionar con nosotros o tú puedes traer el tuyo propio.' },
-  { question: '¿Puedo ver ejemplos de webs que hayáis hecho?', answer: 'Sí, en la sección Trabajos de esta misma página puedes ver proyectos reales.' },
+  { question: 'Do I need any technical knowledge?',          answer: "No. You tell us what you want and we build it. To update content you have a simple panel — no code required." },
+  { question: 'How long until my website is ready?',         answer: 'Under 1 week from when you complete your onboarding form. No waiting around.' },
+  { question: 'Can I cancel at any time?',                   answer: 'Yes. No contract, no penalties. If you ever don\'t need it anymore, just cancel — that\'s it.' },
+  { question: 'What if I want to change something on my site?', answer: 'Message us and we\'ll change it. Depending on your plan, within 12, 24 or 48 hours. No extra charges.' },
+  { question: 'Are the domain and hosting included?',        answer: 'Hosting is included. The domain can be managed with us, or you can bring your own.' },
+  { question: 'Can I see examples of websites you\'ve made?', answer: 'Yes — check out the Portfolio section on this page to see real projects.' },
 ]
 
 export default async function FAQ({ noBg }: { noBg?: boolean } = {}) {

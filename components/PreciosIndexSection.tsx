@@ -295,14 +295,14 @@ export default function PreciosIndexSection() {
           ))}
         </div>
 
-        <p className="text-center font-manrope text-sm text-white/80 mt-6">
+        <p className="text-center font-manrope text-sm font-bold text-white mt-6">
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
 
-        <div className="text-center mt-5">
+        <div className="text-center mt-4">
           <a
             href="#contacto"
-            className="font-manrope text-sm text-white/60 underline underline-offset-4 hover:text-white transition-colors"
+            className="font-manrope text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80 transition-colors"
           >
             {t('Ayúdame a decidir', 'Help me decide')}
           </a>

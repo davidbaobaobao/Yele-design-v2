@@ -6,7 +6,7 @@ import { WebGLShader } from '@/components/ui/web-gl-shader'
 import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 import { useLang } from '@/context/LanguageContext'
 
-const WORDS = ['Complicada', 'Cara', 'Aburrida']
+const WORDS = ['Expensive', 'Ugly', 'Slow', 'Complicated', 'Outdated']
 const TYPING_SPEED = 80
 const ERASING_SPEED = 50
 const SHOW_DURATION = 1000
@@ -82,7 +82,7 @@ export default function Footer() {
             className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10 select-none"
             style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
           >
-            <span className="block">Una página web no es</span>
+            <span className="block">Your website should not be</span>
             <span className="block min-h-[1.1em]">
               {displayText}
               <span
@@ -115,7 +115,7 @@ export default function Footer() {
               <div>
                 <p className="font-outfit font-semibold text-2xl mb-2">Yele</p>
                 <p className="font-manrope text-white/60 text-sm max-w-xs leading-relaxed">
-                  {t('Diseño web para negocios españoles.', 'Web design for Spanish businesses.')}
+                  {t('Diseño web y marketing.', 'Web design and marketing.')}
                 </p>
                 <a
                   href="mailto:info@yele.design"
@@ -157,19 +157,19 @@ export default function Footer() {
                       href="/aviso-legal"
                       className="font-manrope text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
-                      {t('Aviso Legal', 'Legal Notice')}
+                      Legal Notice
                     </a>
                     <a
                       href="/politica-privacidad"
                       className="font-manrope text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
-                      {t('Política de Privacidad', 'Privacy Policy')}
+                      Privacy Policy
                     </a>
                     <a
                       href="/condiciones-uso"
                       className="font-manrope text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
-                      {t('Condiciones de Uso', 'Terms of Use')}
+                      Terms of Use
                     </a>
                   </div>
                 </nav>

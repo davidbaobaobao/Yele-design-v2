@@ -22,7 +22,6 @@ import { EnLangProvider } from '@/components/LangProvider'
 
 const Testimonios      = dynamic(() => import('@/components/Testimonios'))
 const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
-const CTASection       = dynamic(() => import('@/components/CTASection'))
 const ContactForm      = dynamic(() => import('@/components/ContactForm'))
 const FAQ              = dynamic(() => import('@/components/FAQ'))
 const Noticias         = dynamic(() => import('@/components/Noticias'))
@@ -67,7 +66,6 @@ export default function Home() {
         <DiferenciaSection />
         <Testimonios noBg />
         <TablaComparativa />
-        <CTASection />
         <ContactForm />
         <FAQ noBg />
         <FinaleSection />

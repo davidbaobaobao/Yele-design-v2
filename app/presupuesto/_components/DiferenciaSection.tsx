@@ -119,7 +119,7 @@ export default function DiferenciaSection() {
             style={{ fontSize: 'clamp(32px, 4vw, 58px)' }}
           >
             <span className="we-subtitle-orange">
-              {t('La diferencia', 'Find the difference')}
+              {t('LA DIFERENCIA', 'FIND THE DIFFERENCE')}
             </span>
           </motion.h2>
 

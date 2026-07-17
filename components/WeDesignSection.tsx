@@ -40,17 +40,17 @@ export default function WeDesignSection() {
         </video>
       </div>
 
-      {/* Gradient fades — top blends with MissionSection, sides blend video into white bg */}
-      <div className="absolute top-0 left-0 right-0 h-52 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
-      <div className="absolute top-0 bottom-0 left-0 w-40 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-      <div className="absolute top-0 bottom-0 right-0 w-40 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+      {/* Gradient fades — aggressive blend so no visible transition between white and video */}
+      <div className="absolute top-0 left-0 right-0 h-[55%] bg-gradient-to-b from-white via-white/80 to-transparent z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-[55%] bg-gradient-to-t from-white via-white/80 to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 bottom-0 left-0 w-[40%] bg-gradient-to-r from-white via-white/70 to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 bottom-0 right-0 w-[40%] bg-gradient-to-l from-white via-white/70 to-transparent z-10 pointer-events-none" />
 
       {/* Scroll-hint arrow */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30">
         <div className="scroll-arrow-wrap">
           <div className="scroll-arrow-spin">
-            <svg width="36" height="36" viewBox="0 0 120 120" fill="none" stroke="white" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
+            <svg width="52" height="52" viewBox="0 0 120 120" fill="none" stroke="#e2482f" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
               <polyline points="30,42 60,78 90,42" />
             </svg>
           </div>

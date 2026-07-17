@@ -76,7 +76,7 @@ function StepCard({
         expanded
           ? 'bg-[#1D1D1F] shadow-[0_20px_56px_rgba(0,0,0,0.2)] cursor-default'
           : past
-            ? 'we-pill-orange shadow-[0_8px_28px_rgba(226,72,47,0.25)] cursor-pointer'
+            ? 'bg-[#e2482f] shadow-[0_8px_28px_rgba(226,72,47,0.25)] cursor-pointer'
             : 'bg-white border border-black/[0.07] shadow-sm cursor-pointer hover:shadow-md'
       }`}
     >

@@ -28,28 +28,28 @@ export const metadata: Metadata = {
 
 const LP_FAQS: FAQItem[] = [
   {
-    question: '¿Qué incluye el precio de 49€/mes?',
-    answer: 'Diseño personalizado a medida, dominio, hosting, SSL, mantenimiento, soporte y cambios de contenido. Sin coste extra ni facturas sorpresa.',
+    question: "What does the $99/month price include?",
+    answer: 'Custom design, domain, hosting, SSL, maintenance, support and content updates. No hidden fees, no surprise invoices.',
   },
   {
-    question: '¿Qué pasa si quiero cambiar algo de mi web?',
-    answer: 'Puedes cambiarlo tú mismo en nuestro portal o nos escribes y lo cambiamos. Sin coste extra.',
+    question: 'What if I want to change something on my website?',
+    answer: 'You can update it yourself through our portal, or message us and we\'ll do it. No extra charge.',
   },
   {
-    question: '¿Puedo cancelar cuando quiera?',
-    answer: 'Sí. Sin permanencia, sin penalización. Si en algún momento no lo necesitas, cancelas y listo.',
+    question: 'Can I cancel at any time?',
+    answer: 'Yes. No contract, no penalties. If you ever don\'t need it, just cancel — that\'s it.',
   },
   {
-    question: '¿Necesito saber de tecnología?',
-    answer: 'No. Tú nos dices qué quieres y nosotros lo construimos. Para actualizar contenido tienes un panel sencillo, sin código.',
+    question: 'Do I need any technical knowledge?',
+    answer: 'No. You tell us what you want and we build it. For content updates you have a simple panel — no code required.',
   },
   {
-    question: '¿El dominio y el hosting están incluidos?',
-    answer: 'El hosting y Dominio todo incluido. También puedes traer tu dominio.',
+    question: 'Are the domain and hosting included?',
+    answer: 'Yes, hosting and domain are both included. You can also bring your own domain.',
   },
   {
-    question: '¿Cuánto tarda en estar lista mi web?',
-    answer: 'En menos de 1 semana desde que nos das tu contenido. Sin esperas ni reuniones interminables.',
+    question: 'How long until my website is ready?',
+    answer: 'Under 1 week from when you give us your content. No waiting, no endless meetings.',
   },
 ]
 

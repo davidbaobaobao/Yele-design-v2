@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react'
 import { useLang } from '@/context/LanguageContext'
 
 const LEFT_PAD = 48
-const FILL     = 0.78
+const FILL     = 0.68
 const N        = 4
 const EDGE     = 5   // % — soft gradient transition width at mask edge
 

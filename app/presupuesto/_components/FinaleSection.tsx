@@ -38,8 +38,8 @@ export default function FinaleSection() {
           className="font-outfit font-light text-white tracking-tight leading-none mb-10"
           style={{ fontSize: 'clamp(40px, 7vw, 100px)' }}
         >
-          Pide tu página web<br />
-          <span style={{ fontWeight: 700 }}>Ahora</span>
+          Start<br />
+          <span style={{ fontWeight: 700 }}>now</span>
         </motion.h2>
 
         <motion.div
@@ -53,7 +53,7 @@ export default function FinaleSection() {
             className="font-manrope font-semibold text-lg bg-white text-[#1D1D1F]
                        px-10 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
           >
-            Empezar por 0€
+            Start for free
           </RegistroButton>
         </motion.div>
 
