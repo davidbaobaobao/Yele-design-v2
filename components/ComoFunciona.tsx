@@ -318,7 +318,6 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
                 key={step.num}
                 step={step}
                 expanded={displayCard === i}
-                past={i < activeCard && displayCard !== i}
                 onClick={() => handleCardClick(i)}
                 t={t}
               />
