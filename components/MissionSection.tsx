@@ -25,7 +25,9 @@ export default function MissionSection() {
 
       overlays.forEach((overlay, i) => {
         if (!overlay) return
-        const lp = Math.min(1, Math.max(0, (total - i / N) * N))
+        // Staggered start (0, 0.20, 0.40), each fills over 0.60 of total progress
+        // so all 3 lines are fully filled by the time total reaches 1.0
+        const lp = Math.min(1, Math.max(0, (total - i * 0.20) / 0.60))
         overlay.style.clipPath = `inset(0 ${(1 - lp) * 100}% 0 0)`
       })
     }
