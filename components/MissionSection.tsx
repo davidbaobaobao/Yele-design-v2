@@ -170,6 +170,18 @@ export default function MissionSection() {
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
         style={{ paddingLeft: LEFT_PAD, visibility: 'hidden' }}
       >
+        {/* Spinning scroll-hint arrow */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+          <svg
+            className="scroll-arrow-spin"
+            width="26" height="26" viewBox="0 0 24 24"
+            fill="none" stroke="#e2482f" strokeWidth="2.5"
+            strokeLinecap="round" strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </div>
         {/* Line 0 */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>

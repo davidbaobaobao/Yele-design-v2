@@ -15,7 +15,7 @@ export default function WeHelpSection() {
     <section data-snap-section className="relative w-full min-h-screen overflow-hidden">
 
       <Image
-        src="/media/wehelp/wehelp_poster.jpg"
+        src="/media/wehelp/wehelpinitial.jpeg"
         alt=""
         fill
         priority
@@ -61,7 +61,7 @@ export default function WeHelpSection() {
               {t('Ayudamos a', 'We help')}
             </span>
             <br />
-            <span className="we-subtitle-orange">
+            <span className="we-subtitle-orange" style={{ fontSize: 'clamp(38px, 5vw, 72px)' }}>
               {t('llegar más lejos', 'you reach further')}
             </span>
           </h2>

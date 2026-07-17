@@ -14,29 +14,31 @@ export default function WeDesignSection() {
   return (
     <section data-snap-section className="relative w-full min-h-screen overflow-hidden">
 
-      <Image
-        src="/media/wedesign/wedesign_poster.jpg"
-        alt=""
-        fill
-        priority
-        unoptimized
-        sizes="100vw"
-        className="object-cover"
-        aria-hidden="true"
-      />
-
-      <video
-        ref={videoRef}
-        loop
-        muted
-        autoPlay
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="/media/wedesign/wedesign_hq.webm" type="video/webm" />
-        <source src="/media/wedesign/wedesign_hq.mp4" type="video/mp4" />
-      </video>
+      {/* Zoom-out wrapper — scale(0.88) shows more of the scene; section bg clips the edges */}
+      <div className="absolute inset-0" style={{ transform: 'scale(0.88)', transformOrigin: 'center' }}>
+        <Image
+          src="/media/wedesign/wedesign_poster.jpg"
+          alt=""
+          fill
+          priority
+          unoptimized
+          sizes="100vw"
+          className="object-cover"
+          aria-hidden="true"
+        />
+        <video
+          ref={videoRef}
+          loop
+          muted
+          autoPlay
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/media/wedesign/wedesign_hq.webm" type="video/webm" />
+          <source src="/media/wedesign/wedesign_hq.mp4" type="video/mp4" />
+        </video>
+      </div>
 
       {/* Gradient — smooths white MissionSection → video transition */}
       <div className="absolute top-0 left-0 right-0 h-52 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
@@ -64,7 +66,7 @@ export default function WeDesignSection() {
               {t('Diseñamos', 'We design')}
             </span>
             <br />
-            <span className="we-subtitle-orange">
+            <span className="we-subtitle-orange" style={{ fontSize: 'clamp(38px, 5vw, 72px)' }}>
               {t('tu visión', 'your vision')}
             </span>
           </h2>

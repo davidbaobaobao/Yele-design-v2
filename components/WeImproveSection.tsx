@@ -61,7 +61,7 @@ export default function WeImproveSection() {
               {t('Mejoramos', 'We improve')}
             </span>
             <br />
-            <span className="we-subtitle-orange">
+            <span className="we-subtitle-orange" style={{ fontSize: 'clamp(38px, 5vw, 72px)' }}>
               {t('continuamente', 'continuously')}
             </span>
           </h2>

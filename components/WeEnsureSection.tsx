@@ -61,7 +61,7 @@ export default function WeEnsureSection() {
               {t('Garantizamos', 'We ensure')}
             </span>
             <br />
-            <span className="we-subtitle-orange">
+            <span className="we-subtitle-orange" style={{ fontSize: 'clamp(38px, 5vw, 72px)' }}>
               {t('máximo rendimiento', 'peak performance')}
             </span>
           </h2>

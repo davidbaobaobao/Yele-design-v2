@@ -167,7 +167,7 @@ export default function HeroBento() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                Primer mes <span style={{ fontWeight: 800 }}>gratis</span>
+                {t('Primer mes ', 'Start for ')}<span style={{ fontWeight: 800 }}>{t('gratis', 'free')}</span>
               </span>
             </div>
 
@@ -262,7 +262,7 @@ export default function HeroBento() {
               <path className="hero-sparkle-main" d="M12 3L13.6 8.4L19 10L13.6 11.6L12 17L10.4 11.6L5 10L10.4 8.4L12 3Z" stroke="#ffffff" strokeWidth="1.6" strokeLinejoin="round" />
             </svg>
             <span style={{ fontFamily: 'var(--font-manrope), sans-serif', fontWeight: 600, fontSize: 15, color: '#ffffff', whiteSpace: 'nowrap' }}>
-              Primer mes <span style={{ fontWeight: 800 }}>gratis</span>
+              {t('Primer mes ', 'Start for ')}<span style={{ fontWeight: 800 }}>{t('gratis', 'free')}</span>
             </span>
           </div>
           {/* Marquee strip */}
@@ -280,19 +280,22 @@ export default function HeroBento() {
           </div>
         </div>
 
-        {/* ── Pulsing scroll arrow — desktop only ── */}
+        {/* ── Spinning scroll arrow — desktop only ── */}
         <div className="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
           <button
-            onClick={() => document.getElementById('showcase-cards')?.scrollIntoView({ behavior: 'smooth' })}
-            aria-label="Ver ejemplos de webs"
+            onClick={() => window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' })}
+            aria-label="Scroll down"
             className="cursor-pointer bg-transparent border-0 p-0"
-            style={{ animation: 'heroPulse 2s ease-in-out infinite' }}
           >
-            <div className="w-11 h-11 rounded-full border border-white/40 bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </div>
+            <svg
+              className="scroll-arrow-spin"
+              width="26" height="26" viewBox="0 0 24 24"
+              fill="none" stroke="#e2482f" strokeWidth="2.5"
+              strokeLinecap="round" strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
           </button>
         </div>
 

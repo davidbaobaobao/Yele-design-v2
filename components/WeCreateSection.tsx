@@ -56,7 +56,7 @@ export default function WeCreateSection() {
               {t('Creamos', 'We create')}
             </span>
             <br />
-            <span className="we-subtitle-orange">
+            <span className="we-subtitle-orange" style={{ fontSize: 'clamp(38px, 5vw, 72px)' }}>
               {t('todo el contenido que necesitas', 'Any content you need')}
             </span>
           </h2>

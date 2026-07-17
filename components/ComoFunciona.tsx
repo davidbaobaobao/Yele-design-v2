@@ -17,22 +17,22 @@ const steps = [
     num: '02',
     img: '/como-funciona/step-02.jpg',
     video: '/media/como/como2',
-    es: { title: 'Nosotros lo diseñamos', desc: 'En 1 semana tienes un sitio profesional, adaptado a tu sector, con tu contenido real.' },
-    en: { title: 'We design it', desc: 'In 1 week you have a professional site, tailored to your industry, with your real content.' },
+    es: { title: 'Diseñamos y construimos', desc: 'En 1 semana tienes un sitio profesional, adaptado a tu sector, con tu contenido real.' },
+    en: { title: 'We design and build it', desc: 'In 1 week you have a professional site, tailored to your industry, with your real content.' },
   },
   {
     num: '03',
     img: '/como-funciona/step-03.jpg',
     video: '/media/como/como3',
-    es: { title: 'Tu web, en marcha', desc: 'Apruebas, publicamos. Tu web está live y empieza a trabajar por ti desde el primer día.' },
-    en: { title: 'Your website, live', desc: 'You approve, we publish. Your site is live and starts working for you from day one.' },
+    es: { title: 'Tu web en marcha', desc: 'Apruebas, publicamos. Tu web está live y empieza a trabajar por ti desde el primer día.' },
+    en: { title: 'Your website is live', desc: 'You approve, we publish. Your site is live and starts working for you from day one.' },
   },
   {
     num: '04',
     img: '/como-funciona/step-04.jpg',
     video: '/media/como/como4',
-    es: { title: 'Soporte continuo', desc: 'Actualizamos, mantenemos y mejoramos tu web. Tú no tocas código. Nunca.' },
-    en: { title: 'Ongoing support', desc: 'We update, maintain and improve your website. You never touch the code.' },
+    es: { title: 'Soporte y mejora continua', desc: 'Actualizamos, mantenemos y mejoramos tu web. Tú no tocas código. Nunca.' },
+    en: { title: 'Continuous support and improvement', desc: 'We update, maintain and improve your website. You never touch the code.' },
   },
 ]
 
@@ -99,7 +99,7 @@ function StepCard({
         <span className={`font-outfit text-2xl font-semibold leading-none transition-colors duration-500 ${expanded ? 'text-white/25' : 'text-[#6B7280]/30'}`}>
           {step.num}
         </span>
-        <h3 className={`font-outfit font-semibold text-base leading-snug transition-colors duration-500 ${expanded ? 'text-white' : 'text-[#1D1D1F]'}`}>
+        <h3 className={`font-outfit font-semibold text-lg leading-snug transition-colors duration-500 ${expanded ? 'text-white' : 'text-[#1D1D1F]'}`}>
           {t(step.es.title, step.en.title)}
         </h3>
       </div>
@@ -280,8 +280,8 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
       className={`md:h-screen md:flex md:items-center ${noBg ? '' : 'bg-[#F5F5F7]'}`}
     >
       {/* ── Desktop layout ── */}
-      <div className="hidden md:block max-w-7xl mx-auto px-6 w-full py-0">
-        <div className="grid grid-cols-2 gap-20 items-center">
+      <div className="hidden md:block max-w-5xl mx-auto px-6 w-full py-0">
+        <div className="grid grid-cols-2 gap-12 items-center">
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -290,11 +290,11 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
             viewport={{ once: true }}
           >
             <h2 className="font-outfit font-semibold text-6xl xl:text-7xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
-              {t('EL PROCESO', 'THE PROCESS')}<br />{t('SIMPLIFICADO', 'SIMPLIFIED')}
+              {t('EL PROCESO', 'THE PROCESS')}<br /><span className="font-extrabold">{t('SIMPLIFICADO', 'SIMPLIFIED')}</span>
             </h2>
             <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-sm">
               {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
-              {t('Sin presupuesto sorpresa.', 'No surprise costs.')}<br />
+              {t('Sin costes sorpresa.', 'No surprise up-costs.')}<br />
               {t('Nos encargamos de todo.', 'We handle everything.')}
             </p>
             <div className="flex gap-2 mt-8">
@@ -337,7 +337,7 @@ export default function ComoFunciona({ noBg }: { noBg?: boolean } = {}) {
           className="mb-8"
         >
           <h2 className="font-outfit font-semibold text-4xl text-[#1D1D1F] tracking-tight mb-3 leading-tight">
-            {t('EL PROCESO', 'THE PROCESS')}<br />{t('SIMPLIFICADO', 'SIMPLIFIED')}
+            {t('EL PROCESO', 'THE PROCESS')}<br /><span className="font-extrabold">{t('SIMPLIFICADO', 'SIMPLIFIED')}</span>
           </h2>
           <p className="font-manrope text-[#6B7280] text-base leading-relaxed">
             {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
