@@ -5,62 +5,19 @@ import Image from 'next/image'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { useLang } from '@/context/LanguageContext'
 
-/* ── Marquee SVG icons (stroke, 20×20) ── */
-function IcoClock() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3.5 2" />
-    </svg>
-  )
-}
-function IcoCoin() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 6v12M9.5 9.2c0-1.2 1.1-2 2.5-2s2.5.8 2.5 2-1.1 1.6-2.5 2-2.5.8-2.5 2 1.1 2 2.5 2 2.5-.8 2.5-2" />
-    </svg>
-  )
-}
-function IcoNoCard() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3" y="6" width="18" height="13" rx="2" />
-      <path d="M3 10h18" />
-      <line x1="4" y1="21" x2="20" y2="5" />
-    </svg>
-  )
-}
-function IcoDoc() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M6 3h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
-      <path d="M9 13h6M9 16.5h4" />
-    </svg>
-  )
-}
-function IcoUnlock() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="5" y="11" width="14" height="10" rx="2" />
-      <path d="M8 11V7.5a4 4 0 0 1 7.85-1" />
-    </svg>
-  )
-}
-
-const ITEMS = [
-  { label: 'Lista en 1 semana',   Icon: IcoClock  },
-  { label: 'Precio fijo mensual', Icon: IcoCoin   },
-  { label: 'Sin pago inicial',    Icon: IcoNoCard },
-  { label: 'Sin letra pequeña',   Icon: IcoDoc    },
-  { label: 'Sin permanencia',     Icon: IcoUnlock },
-]
-const MARQUEE_ITEMS = [...ITEMS, ...ITEMS]
 
 export default function HeroBento() {
   const cardRef  = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const { t } = useLang()
+
+  const ITEMS = [
+    t('Precio fijo mensual', 'Fixed monthly price'),
+    t('Sin pago inicial',    'No upfront payment'),
+    t('Sin permanencia',     'Cancel anytime'),
+    t('Entrega rápida',      'Fast delivery'),
+  ]
+  const MARQUEE_ITEMS = [...ITEMS, ...ITEMS]
 
   useEffect(() => {
     const card = cardRef.current
@@ -93,10 +50,9 @@ export default function HeroBento() {
           100% { transform: translateX(-50%); }
         }
         .hero-marquee-track {
-          animation: marqueeLeft 14s linear infinite;
+          animation: marqueeLeft 18s linear infinite;
           will-change: transform;
         }
-        .hero-marquee-track:hover { animation-play-state: paused; }
 
         @keyframes heroPulse {
           0%, 100% { transform: translateY(0);   opacity: 1;    }
@@ -249,16 +205,15 @@ export default function HeroBento() {
             {/* ── White marquee box ── */}
             <div style={{ background: '#ffffff', padding: '22px 0', overflow: 'hidden' }}>
               <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
-                {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
-                  <div key={i} className="flex items-center shrink-0" style={{ gap: 12, padding: '0 24px' }}>
-                    <Icon />
+                {MARQUEE_ITEMS.map((label, i) => (
+                  <div key={i} className="flex items-center shrink-0">
                     <span
                       className="font-manrope"
-                      style={{ fontWeight: 600, fontSize: 18, color: '#0a0a0a', whiteSpace: 'nowrap' }}
+                      style={{ fontWeight: 600, fontSize: 18, color: '#0a0a0a', whiteSpace: 'nowrap', padding: '0 32px' }}
                     >
                       {label}
                     </span>
-                    <span style={{ color: '#D1D5DB', marginLeft: 8, fontSize: 12 }} aria-hidden="true">·</span>
+                    <span style={{ color: '#e2482f', fontSize: 18, fontWeight: 600 }} aria-hidden="true">›</span>
                   </div>
                 ))}
               </div>
@@ -313,13 +268,12 @@ export default function HeroBento() {
           {/* Marquee strip */}
           <div style={{ background: '#ffffff', padding: '13px 0', overflow: 'hidden' }}>
             <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
-              {MARQUEE_ITEMS.map(({ label, Icon }, i) => (
-                <div key={i} className="flex items-center shrink-0" style={{ gap: 8, padding: '0 16px' }}>
-                  <Icon />
-                  <span className="font-manrope" style={{ fontWeight: 600, fontSize: 14, color: '#0a0a0a', whiteSpace: 'nowrap' }}>
+              {MARQUEE_ITEMS.map((label, i) => (
+                <div key={i} className="flex items-center shrink-0">
+                  <span className="font-manrope" style={{ fontWeight: 600, fontSize: 14, color: '#0a0a0a', whiteSpace: 'nowrap', padding: '0 22px' }}>
                     {label}
                   </span>
-                  <span style={{ color: '#D1D5DB', marginLeft: 6, fontSize: 10 }} aria-hidden="true">·</span>
+                  <span style={{ color: '#e2482f', fontSize: 14, fontWeight: 600 }} aria-hidden="true">›</span>
                 </div>
               ))}
             </div>
