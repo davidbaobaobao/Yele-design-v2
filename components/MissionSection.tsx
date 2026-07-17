@@ -3,12 +3,17 @@
 import { useRef, useEffect } from 'react'
 import { useLang } from '@/context/LanguageContext'
 
+// Left padding keeps text from the screen edge (matching the reference style).
+// The fit target is vw - LEFT_PAD - RIGHT_MARGIN, which also naturally
+// makes each line ~4-6px smaller than fitting full-width.
+const LEFT_PAD   = 40   // px — left breathing room
+const RIGHT_PAD  = 16   // px — keeps right edge from clipping
+
 export default function MissionSection() {
   const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
   const stickyRef  = useRef<HTMLDivElement>(null)
 
-  // Line wrapper refs — fontSize injected by JS
   const lw0 = useRef<HTMLDivElement>(null)
   const lw1 = useRef<HTMLDivElement>(null)
   const lw2 = useRef<HTMLDivElement>(null)
@@ -20,16 +25,16 @@ export default function MissionSection() {
   const m2 = useRef<HTMLSpanElement>(null)
   const m3 = useRef<HTMLSpanElement>(null)
 
-  // Overlay refs — clip-path animated
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
   const o2 = useRef<HTMLDivElement>(null)
   const o3 = useRef<HTMLDivElement>(null)
 
-  // Auto-fit each line to full viewport width
+  // Auto-fit each line to fill the content area width
   useEffect(() => {
     function fitLines() {
-      const vw = document.documentElement.clientWidth
+      const contentW = document.documentElement.clientWidth - LEFT_PAD - RIGHT_PAD
+
       ;[
         [lw0.current, m0.current],
         [lw1.current, m1.current],
@@ -38,18 +43,18 @@ export default function MissionSection() {
       ].forEach(([wrap, meas]) => {
         if (!wrap || !meas) return
         const textW = meas.getBoundingClientRect().width
-        if (textW > 0) wrap.style.fontSize = `${Math.floor((vw / textW) * 100)}px`
+        if (textW > 0) wrap.style.fontSize = `${Math.floor((contentW / textW) * 100)}px`
       })
+
       if (stickyRef.current) stickyRef.current.style.visibility = 'visible'
     }
+
     fitLines()
     window.addEventListener('resize', fitLines)
     return () => window.removeEventListener('resize', fitLines)
   }, [])
 
-  // Scroll-driven clip-path fill
-  // Each line fills over 0.18 of total progress, staggered by 0.12
-  // → line fills almost instantly once it becomes visible, cascading quickly
+  // Scroll-driven clip-path fill — fast cascade, each line nearly filled on entry
   useEffect(() => {
     const overlays = [o0.current, o1.current, o2.current, o3.current]
 
@@ -93,8 +98,8 @@ export default function MissionSection() {
     whiteSpace: 'nowrap' as const,
   }
 
-  const l0 = t('Diseño web de', 'We deliver state-of-the-art')
-  const l1 = t('última generación', 'website design')
+  const l0 = t('Diseño web de última generación', 'We deliver state-of-the-art')
+  const l1 = t('diseño web', 'website design')
   const l2 = t('como suscripción', 'subscription service')
   const l3 = t('para tu negocio.', 'for your business.')
 
@@ -110,10 +115,9 @@ export default function MissionSection() {
       <div
         ref={stickyRef}
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
-        style={{ visibility: 'hidden' }}
+        style={{ paddingLeft: LEFT_PAD, paddingRight: RIGHT_PAD, visibility: 'hidden' }}
       >
 
-        {/* Line 0 */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l0}</div>
           <div ref={o0} aria-hidden="true"
@@ -122,7 +126,6 @@ export default function MissionSection() {
           </div>
         </div>
 
-        {/* Line 1 */}
         <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
           <div ref={o1} aria-hidden="true"
@@ -131,7 +134,6 @@ export default function MissionSection() {
           </div>
         </div>
 
-        {/* Line 2 */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l2}</div>
           <div ref={o2} aria-hidden="true"
@@ -140,7 +142,6 @@ export default function MissionSection() {
           </div>
         </div>
 
-        {/* Line 3 */}
         <div ref={lw3} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l3}</div>
           <div ref={o3} aria-hidden="true"
