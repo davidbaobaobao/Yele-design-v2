@@ -3,11 +3,11 @@
 import { useRef, useEffect } from 'react'
 import { useLang } from '@/context/LanguageContext'
 
-// Left padding keeps text from the screen edge (matching the reference style).
-// The fit target is vw - LEFT_PAD - RIGHT_MARGIN, which also naturally
-// makes each line ~4-6px smaller than fitting full-width.
-const LEFT_PAD   = 40   // px — left breathing room
-const RIGHT_PAD  = 16   // px — keeps right edge from clipping
+// All lines share the same font size.
+// The longest line fills FILL fraction of the content area — not 100%,
+// matching the reference image where text fills ~88% of the container width.
+const LEFT_PAD = 48
+const FILL     = 0.88
 
 export default function MissionSection() {
   const { t } = useLang()
@@ -19,7 +19,6 @@ export default function MissionSection() {
   const lw2 = useRef<HTMLDivElement>(null)
   const lw3 = useRef<HTMLDivElement>(null)
 
-  // Off-screen spans for reliable text-width measurement
   const m0 = useRef<HTMLSpanElement>(null)
   const m1 = useRef<HTMLSpanElement>(null)
   const m2 = useRef<HTMLSpanElement>(null)
@@ -30,20 +29,22 @@ export default function MissionSection() {
   const o2 = useRef<HTMLDivElement>(null)
   const o3 = useRef<HTMLDivElement>(null)
 
-  // Auto-fit each line to fill the content area width
+  // Fit: find the widest line at 100px, scale so it fills FILL × content width.
+  // Every line uses the same resulting font size.
   useEffect(() => {
     function fitLines() {
-      const contentW = document.documentElement.clientWidth - LEFT_PAD - RIGHT_PAD
+      const contentW = document.documentElement.clientWidth - LEFT_PAD
 
-      ;[
-        [lw0.current, m0.current],
-        [lw1.current, m1.current],
-        [lw2.current, m2.current],
-        [lw3.current, m3.current],
-      ].forEach(([wrap, meas]) => {
-        if (!wrap || !meas) return
-        const textW = meas.getBoundingClientRect().width
-        if (textW > 0) wrap.style.fontSize = `${Math.floor((contentW / textW) * 100)}px`
+      const widths = [m0, m1, m2, m3].map(
+        ref => ref.current?.getBoundingClientRect().width ?? 0
+      )
+      const maxW = Math.max(...widths)
+      if (maxW <= 0) return
+
+      const fs = Math.floor((contentW * FILL / maxW) * 100)
+
+      ;[lw0, lw1, lw2, lw3].forEach(ref => {
+        if (ref.current) ref.current.style.fontSize = `${fs}px`
       })
 
       if (stickyRef.current) stickyRef.current.style.visibility = 'visible'
@@ -54,7 +55,7 @@ export default function MissionSection() {
     return () => window.removeEventListener('resize', fitLines)
   }, [])
 
-  // Scroll-driven clip-path fill — fast cascade, each line nearly filled on entry
+  // Scroll-driven clip-path fill — fast cascade
   useEffect(() => {
     const overlays = [o0.current, o1.current, o2.current, o3.current]
 
@@ -79,9 +80,9 @@ export default function MissionSection() {
 
   const ts = {
     fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-    lineHeight: 1.0,
+    lineHeight: 1.05,
     fontWeight: 700,
-    letterSpacing: '-0.03em',
+    letterSpacing: '-0.025em',
     whiteSpace: 'nowrap' as const,
   }
 
@@ -94,7 +95,7 @@ export default function MissionSection() {
     fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
     fontSize: '100px',
     fontWeight: 700,
-    letterSpacing: '-0.03em',
+    letterSpacing: '-0.025em',
     whiteSpace: 'nowrap' as const,
   }
 
@@ -106,7 +107,6 @@ export default function MissionSection() {
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '450vh' }}>
 
-      {/* Off-screen measurement spans */}
       <span ref={m0} aria-hidden="true" style={measStyle}>{l0}</span>
       <span ref={m1} aria-hidden="true" style={measStyle}>{l1}</span>
       <span ref={m2} aria-hidden="true" style={measStyle}>{l2}</span>
@@ -115,7 +115,7 @@ export default function MissionSection() {
       <div
         ref={stickyRef}
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
-        style={{ paddingLeft: LEFT_PAD, paddingRight: RIGHT_PAD, visibility: 'hidden' }}
+        style={{ paddingLeft: LEFT_PAD, visibility: 'hidden' }}
       >
 
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
