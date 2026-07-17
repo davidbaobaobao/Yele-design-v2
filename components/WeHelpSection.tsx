@@ -40,13 +40,15 @@ export default function WeHelpSection() {
 
       {/* Scroll-hint arrow */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30">
-        <div className="scroll-arrow-wrap">
-          <div className="scroll-arrow-spin">
-            <svg width="52" height="52" viewBox="0 0 120 120" fill="none" stroke="#e2482f" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
-              <polyline points="30,42 60,78 90,42" />
-            </svg>
+        <button onClick={() => window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })} aria-label="Scroll to next section" className="cursor-pointer bg-transparent border-0 p-0">
+          <div className="scroll-arrow-wrap">
+            <div className="scroll-arrow-spin">
+              <svg width="52" height="52" viewBox="0 0 120 120" fill="none" stroke="#e2482f" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
+                <polyline points="30,42 60,78 90,42" />
+              </svg>
+            </div>
           </div>
-        </div>
+        </button>
       </div>
 
       <div className="absolute inset-0 flex items-center z-20">

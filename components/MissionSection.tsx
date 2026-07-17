@@ -4,8 +4,8 @@ import { useRef, useEffect } from 'react'
 import { useLang } from '@/context/LanguageContext'
 
 const LEFT_PAD = 48
-const FILL     = 0.68
-const N        = 6
+const FILL     = 0.74
+const N        = 5
 const EDGE     = 5   // % — soft gradient transition width at mask edge
 
 const BADGE: React.CSSProperties = {
@@ -27,21 +27,30 @@ export default function MissionSection() {
   const lw2 = useRef<HTMLDivElement>(null)
   const lw3 = useRef<HTMLDivElement>(null)
   const lw4 = useRef<HTMLDivElement>(null)
-  const lw5 = useRef<HTMLDivElement>(null)
 
   const m0 = useRef<HTMLSpanElement>(null)
   const m1 = useRef<HTMLSpanElement>(null)
   const m2 = useRef<HTMLSpanElement>(null)
   const m3 = useRef<HTMLSpanElement>(null)
   const m4 = useRef<HTMLSpanElement>(null)
-  const m5 = useRef<HTMLSpanElement>(null)
 
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
   const o2 = useRef<HTMLDivElement>(null)
   const o3 = useRef<HTMLDivElement>(null)
   const o4 = useRef<HTMLDivElement>(null)
-  const o5 = useRef<HTMLDivElement>(null)
+
+  // Responsive section height: fewer scrolls on mobile
+  useEffect(() => {
+    function setHeight() {
+      if (sectionRef.current) {
+        sectionRef.current.style.height = window.innerWidth < 768 ? '240vh' : '360vh'
+      }
+    }
+    setHeight()
+    window.addEventListener('resize', setHeight)
+    return () => window.removeEventListener('resize', setHeight)
+  }, [])
 
   // Auto-fit: all lines share the same font size so the longest fills FILL% of content width
   useEffect(() => {
@@ -49,11 +58,11 @@ export default function MissionSection() {
       const isMobile = window.innerWidth < 768
       const fill = isMobile ? 0.92 : FILL
       const contentW = document.documentElement.clientWidth - LEFT_PAD
-      const widths = [m0, m1, m2, m3, m4, m5].map(r => r.current?.getBoundingClientRect().width ?? 0)
+      const widths = [m0, m1, m2, m3, m4].map(r => r.current?.getBoundingClientRect().width ?? 0)
       const maxW = Math.max(...widths)
       if (maxW <= 0) return
       const fs = Math.floor((contentW * fill / maxW) * 100)
-      ;[lw0, lw1, lw2, lw3, lw4, lw5].forEach(r => {
+      ;[lw0, lw1, lw2, lw3, lw4].forEach(r => {
         if (r.current) r.current.style.fontSize = `${fs}px`
       })
       if (stickyRef.current) stickyRef.current.style.visibility = 'visible'
@@ -63,9 +72,9 @@ export default function MissionSection() {
     return () => window.removeEventListener('resize', fitLines)
   }, [])
 
-  // Scroll-linked fill: directly tracks scroll position with no easing or autoplay.
+  // Scroll-linked fill
   useEffect(() => {
-    const overlays = [o0.current, o1.current, o2.current, o3.current, o4.current, o5.current]
+    const overlays = [o0.current, o1.current, o2.current, o3.current, o4.current]
     let rafId: number | null = null
 
     function setMask(el: HTMLDivElement, lp: number) {
@@ -136,11 +145,16 @@ export default function MissionSection() {
   const l2 = t('Diseño web y', 'Website design &')
   const l3 = t('Marketing', 'Marketing')
   const l4 = t('como suscripción', 'Subscription service')
-  const l5 = t('para tu negocio.', 'for your business.')
+
+  function scrollPast() {
+    const sec = sectionRef.current
+    if (!sec) return
+    const bottom = sec.getBoundingClientRect().bottom + window.scrollY
+    window.scrollTo({ top: bottom, behavior: 'smooth' })
+  }
 
   return (
-    // 400vh = 300vh scroll range for 6 lines × 50vh each
-    <section ref={sectionRef} className="bg-white" style={{ height: '400vh' }}>
+    <section ref={sectionRef} className="bg-white" style={{ height: '360vh' }}>
 
       {/* Off-screen measurement spans */}
       <span ref={m0} aria-hidden="true" style={ms}>{l0}</span>
@@ -150,22 +164,23 @@ export default function MissionSection() {
       <span ref={m2} aria-hidden="true" style={ms}>{l2}</span>
       <span ref={m3} aria-hidden="true" style={ms}>{l3}</span>
       <span ref={m4} aria-hidden="true" style={ms}>{l4}</span>
-      <span ref={m5} aria-hidden="true" style={ms}>{l5}</span>
 
       <div
         ref={stickyRef}
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
         style={{ paddingLeft: LEFT_PAD, visibility: 'hidden' }}
       >
-        {/* Scroll-hint arrow */}
+        {/* Scroll-hint arrow — click skips past the whole section */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-          <div className="scroll-arrow-wrap">
-            <div className="scroll-arrow-spin">
-              <svg width="52" height="52" viewBox="0 0 120 120" fill="none" stroke="#e2482f" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
-                <polyline points="30,42 60,78 90,42" />
-              </svg>
+          <button onClick={scrollPast} aria-label="Scroll to next section" className="cursor-pointer bg-transparent border-0 p-0">
+            <div className="scroll-arrow-wrap">
+              <div className="scroll-arrow-spin">
+                <svg width="52" height="52" viewBox="0 0 120 120" fill="none" stroke="#e2482f" strokeWidth="14" strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
+                  <polyline points="30,42 60,78 90,42" />
+                </svg>
+              </div>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Line 0 */}
@@ -202,12 +217,6 @@ export default function MissionSection() {
           <div ref={o4} aria-hidden="true" style={overlayBase}>
             <span className="we-subtitle-orange">{l4}</span>
           </div>
-        </div>
-
-        {/* Line 5 */}
-        <div ref={lw5} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>{l5}</div>
-          <div ref={o5} aria-hidden="true" style={overlayBase}>{l5}</div>
         </div>
       </div>
     </section>
