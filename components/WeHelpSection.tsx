@@ -61,7 +61,7 @@ export default function WeHelpSection() {
           <h2
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-              fontSize: 'clamp(30px, 3.8vw, 58px)',
+              fontSize: 'clamp(38px, 5vw, 70px)',
               lineHeight: 1.0,
               fontWeight: 700,
               letterSpacing: '-0.01em',
@@ -72,7 +72,7 @@ export default function WeHelpSection() {
               {t('Ayudamos a', 'We help')}
             </span>
             <br />
-            <span className="we-subtitle-orange" style={{ fontSize: 'clamp(38px, 5vw, 72px)' }}>
+            <span className="we-subtitle-orange">
               {t('llegar más lejos', 'you reach further')}
             </span>
           </h2>
@@ -80,7 +80,7 @@ export default function WeHelpSection() {
           <p
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-              fontSize: 'clamp(13px, 1.3vw, 18px)',
+              fontSize: 'clamp(16px, 1.5vw, 20px)',
               lineHeight: 1.7,
               fontWeight: 700,
               color: '#ffffff',

@@ -25,6 +25,7 @@ export default function WeImproveSection() {
         aria-hidden="true"
       />
 
+      <style>{`@media (max-width: 767px) { .improve-media { object-position: 35% center !important; } }`}</style>
       <video
         ref={videoRef}
         loop
@@ -32,7 +33,7 @@ export default function WeImproveSection() {
         autoPlay
         playsInline
         preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover improve-media"
       >
         <source src="/media/weimprove/weimprove_hq.webm" type="video/webm" />
         <source src="/media/weimprove/weimprove_hq.mp4" type="video/mp4" />
@@ -61,7 +62,7 @@ export default function WeImproveSection() {
           <h2
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-              fontSize: 'clamp(30px, 3.8vw, 58px)',
+              fontSize: 'clamp(38px, 5vw, 70px)',
               lineHeight: 1.0,
               fontWeight: 700,
               letterSpacing: '-0.01em',
@@ -72,7 +73,7 @@ export default function WeImproveSection() {
               {t('Mejoramos', 'We improve')}
             </span>
             <br />
-            <span className="we-subtitle-orange" style={{ fontSize: 'clamp(38px, 5vw, 72px)' }}>
+            <span className="we-subtitle-orange">
               {t('continuamente', 'continuously')}
             </span>
           </h2>
@@ -80,7 +81,7 @@ export default function WeImproveSection() {
           <p
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-              fontSize: 'clamp(13px, 1.3vw, 18px)',
+              fontSize: 'clamp(16px, 1.5vw, 20px)',
               lineHeight: 1.7,
               fontWeight: 400,
               color: '#555555',

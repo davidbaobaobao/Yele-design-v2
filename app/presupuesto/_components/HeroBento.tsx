@@ -232,21 +232,21 @@ export default function HeroBento() {
           <div className="relative">
             <h1
               className="font-archivo text-white"
-              style={{ fontWeight: 500, fontSize: 52, lineHeight: 0.98, letterSpacing: '-0.02em' }}
+              style={{ fontWeight: 500, fontSize: 64, lineHeight: 0.98, letterSpacing: '-0.02em' }}
             >
               Web<br />{t('Diseño', 'Design')}<br />{t('Reimaginado', 'Reimagined')}
             </h1>
-            <p className="font-manrope text-white/80 mt-4 text-base leading-relaxed">
+            <p className="font-manrope text-white/80 mt-4 text-lg leading-relaxed">
               {t('Tu agencia de diseño web · Sin complicaciones', 'Your Web design agency · Hassle-free')}
             </p>
-            <p className="font-manrope text-white font-semibold mt-1.5 text-base">
+            <p className="font-manrope text-white font-semibold mt-1.5 text-lg">
               {t('Desde 99€/mes', 'From $99/month')}
             </p>
           </div>
         </div>
 
         {/* ── Mobile bottom: horizontal orange badge + marquee strip ── */}
-        <div className="md:hidden absolute bottom-0 inset-x-0 z-20">
+        <div className="md:hidden absolute bottom-0 inset-x-0 z-[70]">
           {/* Orange badge */}
           <div
             style={{

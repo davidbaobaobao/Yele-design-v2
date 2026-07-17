@@ -155,11 +155,11 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
         </video>
       </div>
       <div className="flex items-start gap-4 px-5 py-4">
-        <span className="font-outfit text-xl font-semibold leading-none text-white/25 mt-0.5 flex-shrink-0">
+        <span className="font-outfit text-2xl font-semibold leading-none text-white/25 mt-0.5 flex-shrink-0">
           {step.num}
         </span>
         <div>
-          <h3 className="font-outfit font-semibold text-base text-white leading-snug">
+          <h3 className="font-outfit font-semibold text-lg text-white leading-snug">
             {t(step.es.title, step.en.title)}
           </h3>
           <p className="font-manrope text-sm text-white/60 mt-1.5 leading-relaxed">

@@ -24,7 +24,7 @@ export default function VideoSnapController() {
             if (entry.isIntersecting && entry.intersectionRatio >= 0.45 && !locked) {
               locked = true
               entry.target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              setTimeout(() => { locked = false }, 750)
+              setTimeout(() => { locked = false }, 375)
             }
           })
         },
