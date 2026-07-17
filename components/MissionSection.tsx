@@ -6,9 +6,8 @@ import { useLang } from '@/context/LanguageContext'
 const LEFT_PAD = 48
 const FILL     = 0.78   // longest line fills 78% — leaves natural breathing room
 
-// Section is 200vh → sticky phase is exactly 100vh.
-// 0.50 fires the instant the section pins, each step is 25vh of scroll.
-const TRIGGERS = [0.50, 0.625, 0.75, 0.875]
+// Triggers at 40/50/60/70% of section height — fires well before the end.
+const TRIGGERS = [0.40, 0.50, 0.60, 0.70]
 
 // Badge style: black pill, tight padding & letter-spacing
 const BADGE: React.CSSProperties = {
@@ -144,11 +143,18 @@ export default function MissionSection() {
         style={{ paddingLeft: LEFT_PAD, visibility: 'hidden' }}
       >
 
-        {/* Line 0 — grey base is plain text; overlay reveals badge on "state-of-the-art" */}
+        {/* Line 0: both grey and overlay use identical span layout so they align pixel-perfect.
+            Grey: transparent bg, inherits grey. Black overlay: #000 bg, white text. */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>{l0plain}</div>
+          <div style={{ ...ts, color: '#c8c8c8' }}>
+            {l0pre}
+            <span style={{ display: 'inline-block', letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>
+              {l0tag}
+            </span>
+          </div>
           <div ref={o0} aria-hidden="true" style={overlayBase}>
-            {l0pre}<span style={BADGE}>{l0tag}</span>
+            {l0pre}
+            <span style={BADGE}>{l0tag}</span>
           </div>
         </div>
 
