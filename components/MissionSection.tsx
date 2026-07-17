@@ -19,8 +19,9 @@ export default function MissionSection() {
       if (!el) return
       const rect = el.getBoundingClientRect()
       const vh = window.innerHeight
-      const scrollable = el.offsetHeight - vh
-      const total = scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0
+      // Progress starts the moment section enters viewport from below (rect.top = vh),
+      // reaches 1 when section leaves viewport at the bottom (end of sticky).
+      const total = Math.min(1, Math.max(0, (vh - rect.top) / el.offsetHeight))
 
       overlays.forEach((overlay, i) => {
         if (!overlay) return
@@ -40,7 +41,7 @@ export default function MissionSection() {
 
   const ts = {
     fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-    fontSize: 'clamp(42px, 5.6vw, 80px)',
+    fontSize: 'clamp(52px, 6.5vw, 94px)',
     lineHeight: 1.05,
     fontWeight: 700,
     letterSpacing: '-0.02em',
@@ -49,8 +50,8 @@ export default function MissionSection() {
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '450vh' }}>
       <div
-        className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
-        style={{ padding: '0 clamp(24px, 4vw, 64px)' }}
+        className="sticky top-0 h-screen flex flex-col overflow-hidden"
+        style={{ padding: 'clamp(56px, 7vh, 96px) clamp(8px, 1.5vw, 24px) 0' }}
       >
 
         {/* Line 1 */}
@@ -71,7 +72,7 @@ export default function MissionSection() {
         </div>
 
         {/* Line 2 */}
-        <div style={{ position: 'relative', marginTop: '0.08em' }}>
+        <div style={{ position: 'relative', marginTop: '0.07em' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>
             {t('como servicio de suscripción', 'website design subscription')}
           </div>
@@ -85,7 +86,7 @@ export default function MissionSection() {
         </div>
 
         {/* Line 3 */}
-        <div style={{ position: 'relative', marginTop: '0.08em' }}>
+        <div style={{ position: 'relative', marginTop: '0.07em' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>
             {t('para tu negocio.', 'service for your business.')}
           </div>
@@ -99,7 +100,7 @@ export default function MissionSection() {
         </div>
 
         {/* Large scroll arrow */}
-        <div style={{ marginTop: 56, display: 'flex' }}>
+        <div style={{ marginTop: 'clamp(32px, 4vh, 56px)' }}>
           <motion.button
             onClick={scrollToFeatures}
             aria-label={t('Bajar', 'Scroll down')}
@@ -107,13 +108,7 @@ export default function MissionSection() {
             animate={{ y: [0, 14, 0] }}
             transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
           >
-            <svg
-              width="110"
-              height="74"
-              viewBox="0 0 110 74"
-              aria-hidden="true"
-            >
-              {/* Bold downward chevron — two solid arms meeting at bottom point */}
+            <svg width="110" height="74" viewBox="0 0 110 74" aria-hidden="true">
               <polygon points="0,0 55,68 110,0 86,0 55,44 24,0" fill="#000000" />
             </svg>
           </motion.button>
