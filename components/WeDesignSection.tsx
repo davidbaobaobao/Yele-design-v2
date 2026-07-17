@@ -64,7 +64,7 @@ export default function WeDesignSection() {
               {t('Diseñamos', 'We design')}
             </span>
             <br />
-            <span style={{ color: '#898484' }}>
+            <span className="we-subtitle-orange">
               {t('tu visión', 'your vision')}
             </span>
           </h2>

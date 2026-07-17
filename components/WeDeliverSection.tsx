@@ -61,7 +61,7 @@ export default function WeDeliverSection() {
               {t('Entregamos', 'We deliver')}
             </span>
             <br />
-            <span style={{ color: '#898484' }}>
+            <span className="we-subtitle-orange">
               {t('Rápido', 'Fast')}
             </span>
           </h2>

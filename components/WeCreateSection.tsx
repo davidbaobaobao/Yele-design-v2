@@ -56,7 +56,7 @@ export default function WeCreateSection() {
               {t('Creamos', 'We create')}
             </span>
             <br />
-            <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+            <span className="we-subtitle-orange">
               {t('todo el contenido que necesitas', 'Any content you need')}
             </span>
           </h2>

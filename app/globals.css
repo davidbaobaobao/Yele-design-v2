@@ -39,3 +39,20 @@ body {
 html.sand-helix-page body {
   background-color: transparent;
 }
+
+/* Orange gradient shimmer for We* section second lines */
+@keyframes we-subtitle-wave {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.we-subtitle-orange {
+  display: inline-block;
+  background: linear-gradient(90deg, #e2482f 0%, #ff8247 30%, #ffba82 55%, #ff8247 75%, #e2482f 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: we-subtitle-wave 3.5s ease-in-out infinite;
+}

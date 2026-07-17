@@ -61,7 +61,7 @@ export default function WeHelpSection() {
               {t('Ayudamos a', 'We help')}
             </span>
             <br />
-            <span style={{ color: '#898484' }}>
+            <span className="we-subtitle-orange">
               {t('llegar más lejos', 'you reach further')}
             </span>
           </h2>
