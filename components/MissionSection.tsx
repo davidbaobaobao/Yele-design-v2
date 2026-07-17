@@ -12,45 +12,46 @@ export default function MissionSection() {
   const lw0 = useRef<HTMLDivElement>(null)
   const lw1 = useRef<HTMLDivElement>(null)
   const lw2 = useRef<HTMLDivElement>(null)
+  const lw3 = useRef<HTMLDivElement>(null)
 
-  // Off-screen spans for reliable text-width measurement (not inside overflow:hidden)
+  // Off-screen spans for reliable text-width measurement
   const m0 = useRef<HTMLSpanElement>(null)
   const m1 = useRef<HTMLSpanElement>(null)
   const m2 = useRef<HTMLSpanElement>(null)
+  const m3 = useRef<HTMLSpanElement>(null)
 
   // Overlay refs — clip-path animated
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
   const o2 = useRef<HTMLDivElement>(null)
+  const o3 = useRef<HTMLDivElement>(null)
 
   // Auto-fit each line to full viewport width
   useEffect(() => {
     function fitLines() {
-      // clientWidth excludes scrollbar — matches 100vw block element width
       const vw = document.documentElement.clientWidth
-
       ;[
         [lw0.current, m0.current],
         [lw1.current, m1.current],
         [lw2.current, m2.current],
+        [lw3.current, m3.current],
       ].forEach(([wrap, meas]) => {
         if (!wrap || !meas) return
-        // getBoundingClientRect on a position:fixed off-screen span = true text width
         const textW = meas.getBoundingClientRect().width
         if (textW > 0) wrap.style.fontSize = `${Math.floor((vw / textW) * 100)}px`
       })
-
       if (stickyRef.current) stickyRef.current.style.visibility = 'visible'
     }
-
     fitLines()
     window.addEventListener('resize', fitLines)
     return () => window.removeEventListener('resize', fitLines)
   }, [])
 
-  // Scroll-driven clip-path fill — starts as section enters viewport
+  // Scroll-driven clip-path fill
+  // Each line fills over 0.18 of total progress, staggered by 0.12
+  // → line fills almost instantly once it becomes visible, cascading quickly
   useEffect(() => {
-    const overlays = [o0.current, o1.current, o2.current]
+    const overlays = [o0.current, o1.current, o2.current, o3.current]
 
     function onScroll() {
       const el = sectionRef.current
@@ -61,7 +62,7 @@ export default function MissionSection() {
 
       overlays.forEach((overlay, i) => {
         if (!overlay) return
-        const lp = Math.min(1, Math.max(0, (total - i * 0.20) / 0.60))
+        const lp = Math.min(1, Math.max(0, (total - i * 0.12) / 0.18))
         overlay.style.clipPath = `inset(0 ${(1 - lp) * 100}% 0 0)`
       })
     }
@@ -79,7 +80,6 @@ export default function MissionSection() {
     whiteSpace: 'nowrap' as const,
   }
 
-  // Measurement spans: same font properties at 100px, positioned off-screen
   const measStyle = {
     position: 'fixed' as const,
     left: '-9999px',
@@ -93,17 +93,19 @@ export default function MissionSection() {
     whiteSpace: 'nowrap' as const,
   }
 
-  const l1 = t('Diseño web de última generación', 'We deliver state-of-the-art')
-  const l2 = t('como servicio de suscripción', 'website design subscription')
-  const l3 = t('para tu negocio.', 'service for your business.')
+  const l0 = t('Diseño web de', 'We deliver state-of-the-art')
+  const l1 = t('última generación', 'website design')
+  const l2 = t('como suscripción', 'subscription service')
+  const l3 = t('para tu negocio.', 'for your business.')
 
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '450vh' }}>
 
-      {/* Off-screen measurement spans — fixed position, not inside overflow:hidden */}
-      <span ref={m0} aria-hidden="true" style={measStyle}>{l1}</span>
-      <span ref={m1} aria-hidden="true" style={measStyle}>{l2}</span>
-      <span ref={m2} aria-hidden="true" style={measStyle}>{l3}</span>
+      {/* Off-screen measurement spans */}
+      <span ref={m0} aria-hidden="true" style={measStyle}>{l0}</span>
+      <span ref={m1} aria-hidden="true" style={measStyle}>{l1}</span>
+      <span ref={m2} aria-hidden="true" style={measStyle}>{l2}</span>
+      <span ref={m3} aria-hidden="true" style={measStyle}>{l3}</span>
 
       <div
         ref={stickyRef}
@@ -111,28 +113,37 @@ export default function MissionSection() {
         style={{ visibility: 'hidden' }}
       >
 
-        {/* Line 1 */}
+        {/* Line 0 */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
+          <div style={{ ...ts, color: '#c8c8c8' }}>{l0}</div>
           <div ref={o0} aria-hidden="true"
+            style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
+            {l0}
+          </div>
+        </div>
+
+        {/* Line 1 */}
+        <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
+          <div ref={o1} aria-hidden="true"
             style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
             {l1}
           </div>
         </div>
 
         {/* Line 2 */}
-        <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
+        <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l2}</div>
-          <div ref={o1} aria-hidden="true"
+          <div ref={o2} aria-hidden="true"
             style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
             {l2}
           </div>
         </div>
 
         {/* Line 3 */}
-        <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
+        <div ref={lw3} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l3}</div>
-          <div ref={o2} aria-hidden="true"
+          <div ref={o3} aria-hidden="true"
             style={{ ...ts, color: '#000', position: 'absolute', inset: 0, clipPath: 'inset(0 100% 0 0)' }}>
             {l3}
           </div>
