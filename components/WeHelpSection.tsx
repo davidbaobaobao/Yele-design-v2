@@ -80,7 +80,7 @@ export default function WeHelpSection() {
           <p
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-              fontSize: 'clamp(16px, 1.5vw, 20px)',
+              fontSize: 'clamp(18px, 1.5vw, 20px)',
               lineHeight: 1.7,
               fontWeight: 700,
               color: '#ffffff',

@@ -25,7 +25,7 @@ export default function WeDeliverSection() {
         aria-hidden="true"
       />
 
-      <style>{`@media (max-width: 767px) { .deliver-media { object-position: 20% center !important; } }`}</style>
+      <style>{`@media (max-width: 767px) { .deliver-media { object-position: 80% center !important; } }`}</style>
       <video
         ref={videoRef}
         loop
@@ -81,7 +81,7 @@ export default function WeDeliverSection() {
           <p
             style={{
               fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-              fontSize: 'clamp(16px, 1.5vw, 20px)',
+              fontSize: 'clamp(18px, 1.5vw, 20px)',
               lineHeight: 1.7,
               fontWeight: 400,
               color: '#555555',

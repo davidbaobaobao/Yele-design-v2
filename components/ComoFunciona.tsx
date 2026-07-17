@@ -162,7 +162,7 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
           <h3 className="font-outfit font-semibold text-lg text-white leading-snug">
             {t(step.es.title, step.en.title)}
           </h3>
-          <p className="font-manrope text-sm text-white/60 mt-1.5 leading-relaxed">
+          <p className="font-manrope text-base text-white/60 mt-1.5 leading-relaxed">
             {t(step.es.desc, step.en.desc)}
           </p>
         </div>

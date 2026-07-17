@@ -46,11 +46,13 @@ export default function MissionSection() {
   // Auto-fit: all lines share the same font size so the longest fills FILL% of content width
   useEffect(() => {
     function fitLines() {
+      const isMobile = window.innerWidth < 768
+      const fill = isMobile ? 0.92 : FILL
       const contentW = document.documentElement.clientWidth - LEFT_PAD
       const widths = [m0, m1, m2, m3, m4, m5].map(r => r.current?.getBoundingClientRect().width ?? 0)
       const maxW = Math.max(...widths)
       if (maxW <= 0) return
-      const fs = Math.floor((contentW * FILL / maxW) * 100)
+      const fs = Math.floor((contentW * fill / maxW) * 100)
       ;[lw0, lw1, lw2, lw3, lw4, lw5].forEach(r => {
         if (r.current) r.current.style.fontSize = `${fs}px`
       })
