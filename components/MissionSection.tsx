@@ -165,7 +165,6 @@ export default function MissionSection() {
     window.scrollTo({ top: bottom, behavior: 'smooth' })
   }
 
-  const subLineWrap: React.CSSProperties = { display: 'block' }
 
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '360vh' }}>
@@ -218,26 +217,18 @@ export default function MissionSection() {
 
         {/* Line 2 — plain black on reveal (no background)
             Mobile: two sub-lines ("Website design" / "& Marketing")
-            Desktop: single inline line */}
+            Desktop: single inline line
+            Note: use <div className="md:hidden"> not <span style={{display:'contents'}}>
+            because inline styles override Tailwind classes (specificity) */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
           {/* Gray (unrevealed) layer */}
           <div style={{ ...ts, color: '#c8c8c8' }}>
-            {/* Mobile: two stacked sub-lines */}
-            <span className="md:hidden" style={{ display: 'contents' }}>
-              <span style={subLineWrap}>{l2m1}</span>
-              <span style={subLineWrap}>{l2m2}</span>
-            </span>
-            {/* Desktop: plain text */}
+            <div className="md:hidden"><div>{l2m1}</div><div>{l2m2}</div></div>
             <span className="hidden md:inline">{l2}</span>
           </div>
           {/* Plain black (revealed) layer */}
           <div ref={o2} aria-hidden="true" style={overlayBase}>
-            {/* Mobile: two stacked plain sub-lines */}
-            <span className="md:hidden" style={{ display: 'contents' }}>
-              <span style={subLineWrap}>{l2m1}</span>
-              <span style={subLineWrap}>{l2m2}</span>
-            </span>
-            {/* Desktop: plain black text */}
+            <div className="md:hidden"><div>{l2m1}</div><div>{l2m2}</div></div>
             <span className="hidden md:inline">{l2}</span>
           </div>
         </div>
