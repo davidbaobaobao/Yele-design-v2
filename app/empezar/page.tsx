@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import ClarityScript from '@/components/ClarityScript'
@@ -24,6 +24,7 @@ type FormData = {
 export default function EmpezarPage() {
   const supabase = createClientComponentClient()
   const [loading, setLoading] = useState(false)
+  const [autoCheckout, setAutoCheckout] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
   const [formData, setFormData] = useState<FormData>({
@@ -35,6 +36,29 @@ export default function EmpezarPage() {
     descripcion: '',
     rgpd: false,
   })
+
+  useEffect(() => {
+    const submitted = sessionStorage.getItem('yele_submitted')
+    const plan = sessionStorage.getItem('yele_plan')
+    if (submitted === 'true' && plan) {
+      setAutoCheckout(true)
+      const clientId = sessionStorage.getItem('yele_clientId') ?? ''
+      fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: plan, billing: 'monthly', clientId }),
+      })
+        .then(r => r.json())
+        .then(({ url }) => {
+          if (url) {
+            sessionStorage.removeItem('yele_submitted')
+            sessionStorage.removeItem('yele_plan')
+            sessionStorage.removeItem('yele_clientId')
+            window.location.href = url
+          }
+        })
+    }
+  }, [])
 
   function set(key: keyof FormData, value: string | boolean) {
     setFormData(prev => ({ ...prev, [key]: value }))
@@ -75,22 +99,39 @@ export default function EmpezarPage() {
 
     const result = await response.json()
     const clientId = result.clientId ?? ''
-    const selectedPlan = sessionStorage.getItem('yele_plan') || 'starter-es'
+    const selectedPlan = sessionStorage.getItem('yele_plan')
 
-    const checkoutRes = await fetch('/api/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ planId: selectedPlan, billing: 'monthly', clientId }),
-    })
-
-    const { url, error: checkoutError } = await checkoutRes.json()
-    if (checkoutError || !url) {
-      setSubmitError(checkoutError || 'Payment setup failed. Please try again.')
-      setLoading(false)
-      return
+    if (selectedPlan) {
+      // Plan pre-selected (ES flow or user came from pricing) → go straight to Stripe
+      const checkoutRes = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: selectedPlan, billing: 'monthly', clientId }),
+      })
+      const { url, error: checkoutError } = await checkoutRes.json()
+      if (checkoutError || !url) {
+        setSubmitError(checkoutError || 'Payment setup failed. Please try again.')
+        setLoading(false)
+        return
+      }
+      window.location.href = url
+    } else {
+      // No plan yet (EN generic CTA flow) → store intake result and send to pricing
+      sessionStorage.setItem('yele_clientId', clientId)
+      sessionStorage.setItem('yele_submitted', 'true')
+      window.location.href = '/#precios'
     }
+  }
 
-    window.location.href = url
+  if (autoCheckout) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center px-6">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[#1D1D1F] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="font-manrope text-sm text-[#6B7280]">Setting up your subscription…</p>
+        </div>
+      </div>
+    )
   }
 
   return (

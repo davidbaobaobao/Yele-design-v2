@@ -149,14 +149,10 @@ function buildEmailHtml(data: Record<string, unknown>): string {
 }
 
 function buildConfirmationHtml(data: Record<string, unknown>): string {
-  const nombre = typeof data.nombre_negocio === 'string' ? data.nombre_negocio : ''
+  const nombre = typeof data.nombre_negocio === 'string' && data.nombre_negocio
+    ? data.nombre_negocio
+    : typeof data.nombre_contacto === 'string' ? data.nombre_contacto : ''
   const contacto = typeof data.nombre_contacto === 'string' ? data.nombre_contacto.split(' ')[0] : ''
-  const telefono = data.telefono
-  const email = data.email
-
-  const contactLine = telefono
-    ? `por teléfono al ${telefono}`
-    : `por email a ${email}`
 
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
@@ -167,23 +163,22 @@ function buildConfirmationHtml(data: Record<string, unknown>): string {
     <span style="color:#34C759;font-size:20px;font-weight:700;">.design</span>
   </div>
   <div style="padding:32px;">
-    <h1 style="margin:0 0 16px;font-size:24px;color:#1D1D1F;font-family:Georgia,serif;font-weight:400;">Hemos recibido tu solicitud.</h1>
+    <h1 style="margin:0 0 16px;font-size:24px;color:#1D1D1F;font-family:Georgia,serif;font-weight:400;">We received your request.</h1>
     <p style="font-size:15px;color:#3D3D3D;line-height:1.65;margin:0 0 20px;">
-      Hola${contacto ? ', ' + contacto : ''}. Gracias por confiar en Yele Studio para crear la web de <strong>${nombre}</strong>. Ya estamos trabajando en ello.
+      Hi${contacto ? ' ' + contacto : ''}. Thanks for choosing Yele Studio to build your website${nombre ? ' for <strong>' + nombre + '</strong>' : ''}. We&apos;re on it.
     </p>
     <div style="background:#F5F5F7;border-radius:8px;padding:20px;margin:0 0 24px;">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:10px;">Próximos pasos</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:10px;">Next steps</div>
       <div style="font-size:14px;color:#1D1D1F;line-height:1.7;">
-        <div style="margin-bottom:8px;">① Revisamos tu solicitud en las próximas horas</div>
-        <div style="margin-bottom:8px;">② Nos ponemos en contacto ${contactLine}</div>
-        <div>③ Tu web estará lista en 1 semana</div>
+        <div style="margin-bottom:8px;">① Explain more about your business and goals at <a href="https://yele.design/survey" style="color:#1D1D1F;text-decoration:underline;">yele.design/survey</a></div>
+        <div>② We will contact you as soon as we receive your information.</div>
       </div>
     </div>
     <p style="font-size:13px;color:#6B7280;line-height:1.6;margin:0 0 28px;">
-      ¿Tienes alguna pregunta? Responde a este email o escríbenos a <a href="mailto:info@yele.design" style="color:#1D1D1F;">info@yele.design</a>
+      Any questions? Reply to this email or reach us at <a href="mailto:info@yele.design" style="color:#1D1D1F;">info@yele.design</a>
     </p>
-    <a href="https://app.yele.design" style="display:inline-block;background:#1D1D1F;color:#FFFFFF;font-weight:700;font-size:13px;padding:14px 28px;text-decoration:none;border-radius:8px;">
-      Acceder a mi panel →
+    <a href="https://yele.design/survey" style="display:inline-block;background:#1D1D1F;color:#FFFFFF;font-weight:700;font-size:13px;padding:14px 28px;text-decoration:none;border-radius:8px;">
+      Provide my business info →
     </a>
   </div>
   <div style="background:#F5F5F7;padding:14px 32px;font-size:11px;color:#6B7280;border-top:1px solid #E5E5E5;">

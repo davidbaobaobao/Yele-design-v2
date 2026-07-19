@@ -197,7 +197,7 @@ export default function PrecioCard() {
 
             {/* CTA */}
             <a
-              href="/registro?plan=starter"
+              href="/registro?plan=starter-es"
               className="relative block text-center font-manrope font-semibold text-sm py-4 rounded-xl
                          bg-[#1D1D1F] text-white hover:bg-black transition-colors"
             >

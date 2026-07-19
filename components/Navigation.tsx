@@ -116,7 +116,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
             </a>
 
             <Link
-              href={t('/presupuesto#precios', '/#precios')}
+              href={t('/presupuesto#precios', '/registro')}
               prefetch={false}
               className={`flex items-center gap-1.5 font-manrope text-sm font-medium px-4 py-2 rounded-xl transition-colors active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC] ${
                 isDark ? 'bg-white text-[#1D1D1F] hover:bg-[#F5F5F7]' : 'bg-[#1D1D1F] text-white hover:bg-black'
@@ -176,7 +176,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 {t('Ingresar', 'Log in')}
               </a>
               <Link
-                href={t('/presupuesto#precios', '/#precios')}
+                href={t('/presupuesto#precios', '/registro')}
                 prefetch={false}
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-1.5 font-manrope text-sm font-medium bg-[#1D1D1F] text-white px-4 py-2 rounded-xl cursor-pointer"

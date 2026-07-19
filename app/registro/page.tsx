@@ -25,6 +25,13 @@ function PlanSaver() {
 
 export default function RegistroPage() {
   const supabase = createClientComponentClient()
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.replace('/empezar')
+    })
+  }, [supabase])
+
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
