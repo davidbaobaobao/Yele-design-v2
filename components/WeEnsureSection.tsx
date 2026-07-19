@@ -15,7 +15,7 @@ export default function WeEnsureSection() {
     <section data-snap-section className="relative w-full min-h-screen overflow-hidden">
 
       <Image
-        src="/media/weensure/weensure_poster.jpg"
+        src="/media/weensure/weensure_poster.webp"
         alt=""
         fill
         sizes="100vw"

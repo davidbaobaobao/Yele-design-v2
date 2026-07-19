@@ -4,26 +4,27 @@ import Navigation from '@/components/Navigation'
 import HeroBento from '@/app/presupuesto/_components/HeroBento'
 import MissionSection from '@/components/MissionSection'
 import WeDesignSection from '@/components/WeDesignSection'
-import WeCreateSection from '@/components/WeCreateSection'
-import WeDeliverSection from '@/components/WeDeliverSection'
-import WeEnsureSection from '@/components/WeEnsureSection'
-import WeImproveSection from '@/components/WeImproveSection'
-import WeHelpSection from '@/components/WeHelpSection'
-import VideoSnapController from '@/components/VideoSnapController'
-import ShowcaseFeatureCards from '@/app/presupuesto/_components/ShowcaseFeatureCards'
-import ComoFunciona from '@/components/ComoFunciona'
-import PreciosIndexSection from '@/components/PreciosIndexSection'
-import Showcase from '@/components/Showcase'
-import DiferenciaSection from '@/app/presupuesto/_components/DiferenciaSection'
-import FinaleSection from '@/app/presupuesto/_components/FinaleSection'
-import Footer from '@/components/Footer'
-import WhatsAppButton from '@/components/WhatsAppButton'
 import { EnLangProvider } from '@/components/LangProvider'
 
-const Testimonios      = dynamic(() => import('@/components/Testimonios'))
-const TablaComparativa = dynamic(() => import('@/components/TablaComparativa'))
-const ContactForm      = dynamic(() => import('@/components/ContactForm'))
-const FAQ              = dynamic(() => import('@/components/FAQ'))
+// Below-fold sections — code-split into separate chunks to reduce initial JS
+const WeCreateSection      = dynamic(() => import('@/components/WeCreateSection'))
+const WeDeliverSection     = dynamic(() => import('@/components/WeDeliverSection'))
+const WeEnsureSection      = dynamic(() => import('@/components/WeEnsureSection'))
+const WeImproveSection     = dynamic(() => import('@/components/WeImproveSection'))
+const WeHelpSection        = dynamic(() => import('@/components/WeHelpSection'))
+const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
+const ComoFunciona         = dynamic(() => import('@/components/ComoFunciona'))
+const Showcase             = dynamic(() => import('@/components/Showcase'))
+const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
+const ShowcaseFeatureCards = dynamic(() => import('@/app/presupuesto/_components/ShowcaseFeatureCards'))
+const DiferenciaSection    = dynamic(() => import('@/app/presupuesto/_components/DiferenciaSection'))
+const Testimonios          = dynamic(() => import('@/components/Testimonios'))
+const TablaComparativa     = dynamic(() => import('@/components/TablaComparativa'))
+const ContactForm          = dynamic(() => import('@/components/ContactForm'))
+const FAQ                  = dynamic(() => import('@/components/FAQ'))
+const FinaleSection        = dynamic(() => import('@/app/presupuesto/_components/FinaleSection'))
+const Footer               = dynamic(() => import('@/components/Footer'))
+const WhatsAppButton       = dynamic(() => import('@/components/WhatsAppButton'))
 
 export const metadata: Metadata = {
   title: 'Professional website design from $99/mo | Yele',
