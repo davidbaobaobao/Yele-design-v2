@@ -10,7 +10,7 @@ import { useLang } from '@/context/LanguageContext'
 const plans = [
   {
     key: 'starter',
-    price: `$${PLAN_PRICES.starter.monthly}`,
+    price: PLAN_PRICES.starter.monthly,
     badge: null as string | null,
     highlighted: false,
     es: {
@@ -42,7 +42,7 @@ const plans = [
   },
   {
     key: 'pro',
-    price: `$${PLAN_PRICES.pro.monthly}`,
+    price: PLAN_PRICES.pro.monthly,
     badge: 'Most popular',
     highlighted: true,
     es: {
@@ -74,7 +74,7 @@ const plans = [
   },
   {
     key: 'frontier',
-    price: `$${PLAN_PRICES.frontier.monthly}`,
+    price: PLAN_PRICES.frontier.monthly,
     badge: null as string | null,
     highlighted: false,
     es: {
@@ -106,7 +106,7 @@ const plans = [
   },
 ]
 
-type Plan = typeof plans[0]
+type Plan = Omit<typeof plans[0], 'price'> & { price: number }
 type TFn = (es: string, en: string) => string
 
 function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) {
@@ -164,9 +164,12 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
           {t(plan.es.name, plan.en.name)}
         </p>
         <div className="flex items-end gap-1 mb-1">
+          <span className={`font-manrope text-2xl font-semibold mb-1 ${plan.highlighted ? 'text-white/60' : 'text-[#6B7280]'}`}>
+            {t('', '$')}
+          </span>
           <span className="font-outfit font-semibold text-5xl tracking-tight">{plan.price}</span>
           <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>
-            {t('/mes', '/mo')}
+            {t(' €/mes', '/mo')}
           </span>
         </div>
       </div>

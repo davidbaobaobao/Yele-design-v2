@@ -15,7 +15,7 @@ const rows = [
   {
     es: 'Coste',
     en: 'Cost',
-    yele: { es: '$99 al mes', en: '$99/month' },
+    yele: { es: '49 €/mes', en: '$49/month' },
     agency: { es: '$3.000–$20.000', en: '$3,000–$20,000' },
     diy: { es: '$30-300/mes + tu tiempo', en: '$30-300/month + your time' },
   },

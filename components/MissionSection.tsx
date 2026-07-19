@@ -5,7 +5,7 @@ import { useLang } from '@/context/LanguageContext'
 
 const LEFT_PAD = 48
 const FILL     = 0.59
-const N        = 5
+const N        = 4
 const EDGE     = 5   // % — soft gradient transition width at mask edge
 
 const BADGE: React.CSSProperties = {
@@ -26,19 +26,16 @@ export default function MissionSection() {
   const lw1 = useRef<HTMLDivElement>(null)
   const lw2 = useRef<HTMLDivElement>(null)
   const lw3 = useRef<HTMLDivElement>(null)
-  const lw4 = useRef<HTMLDivElement>(null)
 
   const m0 = useRef<HTMLSpanElement>(null)
   const m1 = useRef<HTMLSpanElement>(null)
   const m2 = useRef<HTMLSpanElement>(null)
   const m3 = useRef<HTMLSpanElement>(null)
-  const m4 = useRef<HTMLSpanElement>(null)
 
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
   const o2 = useRef<HTMLDivElement>(null)
   const o3 = useRef<HTMLDivElement>(null)
-  const o4 = useRef<HTMLDivElement>(null)
 
   // Responsive section height: fewer scrolls on mobile
   useEffect(() => {
@@ -58,11 +55,11 @@ export default function MissionSection() {
       const isMobile = window.innerWidth < 768
       const fill = isMobile ? 0.74 : FILL
       const contentW = document.documentElement.clientWidth - LEFT_PAD
-      const widths = [m0, m1, m2, m3, m4].map(r => r.current?.getBoundingClientRect().width ?? 0)
+      const widths = [m0, m1, m2, m3].map(r => r.current?.getBoundingClientRect().width ?? 0)
       const maxW = Math.max(...widths)
       if (maxW <= 0) return
       const fs = Math.floor((contentW * fill / maxW) * 100)
-      ;[lw0, lw1, lw2, lw3, lw4].forEach(r => {
+      ;[lw0, lw1, lw2, lw3].forEach(r => {
         if (r.current) r.current.style.fontSize = `${fs}px`
       })
       if (stickyRef.current) stickyRef.current.style.visibility = 'visible'
@@ -74,7 +71,7 @@ export default function MissionSection() {
 
   // Scroll-linked fill
   useEffect(() => {
-    const overlays = [o0.current, o1.current, o2.current, o3.current, o4.current]
+    const overlays = [o0.current, o1.current, o2.current, o3.current]
     let rafId: number | null = null
 
     function setMask(el: HTMLDivElement, lp: number) {
@@ -141,10 +138,9 @@ export default function MissionSection() {
   }
 
   const l0 = t('Entregamos', 'We deliver')
-  const l1 = t('De última generación', 'State-of-the-art')
-  const l2 = t('Diseño web y', 'Website design &')
-  const l3 = t('Marketing', 'Marketing')
-  const l4 = t('como suscripción', 'Subscription service')
+  const l1 = t('Diseño web y Marketing', 'Website design & Marketing')
+  const l2 = t('De última generación', 'State-of-the-art')
+  const l3 = t('por suscripción', 'Subscription service')
 
   function scrollPast() {
     const sec = sectionRef.current
@@ -158,12 +154,11 @@ export default function MissionSection() {
 
       {/* Off-screen measurement spans */}
       <span ref={m0} aria-hidden="true" style={ms}>{l0}</span>
-      <span ref={m1} aria-hidden="true" style={ms}>
-        <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l1}</span>
+      <span ref={m1} aria-hidden="true" style={ms}>{l1}</span>
+      <span ref={m2} aria-hidden="true" style={ms}>
+        <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l2}</span>
       </span>
-      <span ref={m2} aria-hidden="true" style={ms}>{l2}</span>
       <span ref={m3} aria-hidden="true" style={ms}>{l3}</span>
-      <span ref={m4} aria-hidden="true" style={ms}>{l4}</span>
 
       <div
         ref={stickyRef}
@@ -183,39 +178,33 @@ export default function MissionSection() {
           </button>
         </div>
 
-        {/* Line 0 */}
+        {/* Line 0 — plain */}
         <div ref={lw0} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l0}</div>
           <div ref={o0} aria-hidden="true" style={overlayBase}>{l0}</div>
         </div>
 
-        {/* Line 1 — badge on reveal */}
+        {/* Line 1 — plain */}
         <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>
-            <span style={{ display: 'inline-block', letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>{l1}</span>
-          </div>
-          <div ref={o1} aria-hidden="true" style={overlayBase}>
-            <span style={BADGE}>{l1}</span>
-          </div>
+          <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
+          <div ref={o1} aria-hidden="true" style={overlayBase}>{l1}</div>
         </div>
 
-        {/* Line 2 */}
+        {/* Line 2 — badge on reveal */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>{l2}</div>
-          <div ref={o2} aria-hidden="true" style={overlayBase}>{l2}</div>
+          <div style={{ ...ts, color: '#c8c8c8' }}>
+            <span style={{ display: 'inline-block', letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>{l2}</span>
+          </div>
+          <div ref={o2} aria-hidden="true" style={overlayBase}>
+            <span style={BADGE}>{l2}</span>
+          </div>
         </div>
 
-        {/* Line 3 */}
+        {/* Line 3 — orange on reveal */}
         <div ref={lw3} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>{l3}</div>
-          <div ref={o3} aria-hidden="true" style={overlayBase}>{l3}</div>
-        </div>
-
-        {/* Line 4 — orange on reveal */}
-        <div ref={lw4} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>{l4}</div>
-          <div ref={o4} aria-hidden="true" style={overlayBase}>
-            <span className="we-subtitle-orange">{l4}</span>
+          <div ref={o3} aria-hidden="true" style={overlayBase}>
+            <span className="we-subtitle-orange">{l3}</span>
           </div>
         </div>
       </div>

@@ -3,10 +3,11 @@
 import { useRef } from 'react'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion } from 'framer-motion'
-import { RegistroButton } from './CTAButtons'
+import { useLang } from '@/context/LanguageContext'
 
 export default function FinaleSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const { t } = useLang()
   useVideoAutoplay(videoRef)
 
   return (
@@ -38,8 +39,8 @@ export default function FinaleSection() {
           className="font-outfit font-light text-white tracking-tight leading-none mb-10"
           style={{ fontSize: 'clamp(40px, 7vw, 100px)' }}
         >
-          Start<br />
-          <span style={{ fontWeight: 700 }}>now</span>
+          {t('Empieza', 'Start')}<br />
+          <span style={{ fontWeight: 700 }}>{t('ahora', 'now')}</span>
         </motion.h2>
 
         <motion.div
@@ -48,13 +49,13 @@ export default function FinaleSection() {
           transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
           viewport={{ once: true }}
         >
-          <RegistroButton
-            href="/registro?plan=starter"
+          <a
+            href="/empezar"
             className="font-manrope font-semibold text-lg bg-white text-[#1D1D1F]
                        px-10 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
           >
-            Start for free
-          </RegistroButton>
+            {t('Empezar por 0€', 'Start for free')}
+          </a>
         </motion.div>
 
       </div>
