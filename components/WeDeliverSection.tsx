@@ -30,7 +30,7 @@ export default function WeDeliverSection() {
         muted
         autoPlay
         playsInline
-        preload="none"
+        preload="metadata"
         className="absolute inset-0 w-full h-full object-cover deliver-media"
       >
         <source src="/media/wedeliver/wedeliver2_hq.webm" type="video/webm" />

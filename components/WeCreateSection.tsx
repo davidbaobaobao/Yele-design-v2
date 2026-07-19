@@ -1,10 +1,14 @@
 'use client'
 
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { useLang } from '@/context/LanguageContext'
 
 export default function WeCreateSection() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  useVideoAutoplay(videoRef)
   const { t } = useLang()
 
   return (
@@ -20,11 +24,12 @@ export default function WeCreateSection() {
       />
 
       <video
+        ref={videoRef}
         loop
         muted
         autoPlay
         playsInline
-        preload="none"
+        preload="metadata"
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/media/we%20create/bgvideo_hq.webm" type="video/webm" />

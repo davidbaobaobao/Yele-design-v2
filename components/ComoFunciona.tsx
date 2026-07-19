@@ -66,6 +66,10 @@ function StepCard({
       v.pause()
       v.currentTime = 0
     }
+    // iOS Safari sometimes ignores `loop` — restart manually on ended.
+    const onEnded = () => { if (v && expanded) { v.currentTime = 0; v.play().catch(() => {}) } }
+    v.addEventListener('ended', onEnded)
+    return () => v.removeEventListener('ended', onEnded)
   }, [expanded])
 
   return (
@@ -86,7 +90,7 @@ function StepCard({
           <Image src={step.img} alt={t(step.es.title, step.en.title)} fill sizes="50vw" className="object-cover object-center" />
           <video
             ref={videoRef}
-            loop muted playsInline preload="none"
+            loop muted playsInline preload="metadata"
             poster={step.img}
             className="absolute inset-0 w-full h-full object-cover object-center"
           >
@@ -131,7 +135,13 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
       { threshold: 0.4 }
     )
     observer.observe(video)
-    return () => observer.disconnect()
+    // iOS Safari sometimes ignores `loop` — restart manually on ended.
+    const onEnded = () => { video.currentTime = 0; video.play().catch(() => {}) }
+    video.addEventListener('ended', onEnded)
+    return () => {
+      observer.disconnect()
+      video.removeEventListener('ended', onEnded)
+    }
   }, [])
 
   return (
@@ -146,7 +156,7 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
         <Image src={step.img} alt={t(step.es.title, step.en.title)} fill sizes="92vw" className="object-cover object-center" />
         <video
           ref={videoRef}
-          loop muted playsInline preload="none"
+          loop muted playsInline preload="metadata"
           poster={step.img}
           className="absolute inset-0 w-full h-full object-cover object-center"
         >

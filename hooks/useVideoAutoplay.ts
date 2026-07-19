@@ -18,8 +18,10 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
     function play() {
       if (!v || !v.paused) return
       v.muted = true
+      // iOS Safari sometimes ignores `loop` and fires `ended` instead of restarting.
+      // Reset currentTime so replay begins from the start.
+      if (v.ended) v.currentTime = 0
       // If the video was set to preload="none", kick off loading first.
-      // networkState === NETWORK_EMPTY means the browser hasn't fetched anything yet.
       if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) {
         v.load()
       }
@@ -28,10 +30,17 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
 
     // Immediate attempt (works when already in viewport)
     play()
-    v.addEventListener('canplay',     play, { once: true })
-    v.addEventListener('loadeddata',  play, { once: true })
+    v.addEventListener('canplay',       play, { once: true })
+    v.addEventListener('loadeddata',    play, { once: true })
     // Extra retry for Safari which sometimes fires neither event reliably
     v.addEventListener('loadedmetadata', play, { once: true })
+
+    // iOS Safari often ignores the `loop` attribute and stops at the end.
+    // Manually restart on every `ended` event to guarantee looping.
+    v.addEventListener('ended', play)
+
+    // Recover from stalled state (network hiccup or iOS background resource limits).
+    v.addEventListener('stalled', play)
 
     // Retry whenever the video enters the viewport — handles deferred preload="none" videos
     // and recovers from background-tab pausing on iOS.
@@ -53,9 +62,11 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
 
     return () => {
       if (!v) return
-      v.removeEventListener('canplay',       play)
-      v.removeEventListener('loadeddata',    play)
+      v.removeEventListener('canplay',        play)
+      v.removeEventListener('loadeddata',     play)
       v.removeEventListener('loadedmetadata', play)
+      v.removeEventListener('ended',          play)
+      v.removeEventListener('stalled',        play)
       observer.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pageshow', onPageShow as EventListener)
