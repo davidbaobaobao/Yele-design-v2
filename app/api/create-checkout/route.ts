@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       metadata: { clientId: clientId ?? '', planId, billing },
       subscription_data: {
         metadata: { clientId: clientId ?? '', planId, billing },
-        ...(planId.endsWith('-es') ? { trial_period_days: 30 } : {}),
+        trial_period_days: 30,
       },
       locale: 'es',
       allow_promotion_codes: true,

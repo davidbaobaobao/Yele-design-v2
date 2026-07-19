@@ -116,13 +116,13 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
             </a>
 
             <Link
-              href={t('/registro?plan=starter-es', '/registro?plan=starter')}
+              href={t('/presupuesto#precios', '/#precios')}
               prefetch={false}
               className={`flex items-center gap-1.5 font-manrope text-sm font-medium px-4 py-2 rounded-xl transition-colors active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC] ${
                 isDark ? 'bg-white text-[#1D1D1F] hover:bg-[#F5F5F7]' : 'bg-[#1D1D1F] text-white hover:bg-black'
               }`}
             >
-              {t('Empezar por 0€', 'Try for free')}
+              {t('Empezar gratis', 'Start for free')}
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                 <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -176,12 +176,12 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 {t('Ingresar', 'Log in')}
               </a>
               <Link
-                href={t('/registro?plan=starter-es', '/registro?plan=starter')}
+                href={t('/presupuesto#precios', '/#precios')}
                 prefetch={false}
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-1.5 font-manrope text-sm font-medium bg-[#1D1D1F] text-white px-4 py-2 rounded-xl cursor-pointer"
               >
-                {t('Empezar por 0€', 'Try for free')}
+                {t('Empezar gratis', 'Start for free')}
               </Link>
             </div>
           </motion.div>
