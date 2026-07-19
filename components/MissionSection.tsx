@@ -166,27 +166,20 @@ export default function MissionSection() {
   }
 
   const subLineWrap: React.CSSProperties = { display: 'block' }
-  const subLineInner: React.CSSProperties = {
-    display: 'inline-block',
-    letterSpacing: '-0.05em',
-    padding: '0.04em 0.16em',
-    lineHeight: 1,
-  }
 
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '360vh' }}>
 
       {/* Off-screen measurement spans */}
       <span ref={m0} aria-hidden="true" style={ms}>{l0}</span>
-      <span ref={m1} aria-hidden="true" style={ms}>{l1}</span>
-      {/* Desktop l2 measurement (full line) */}
-      <span ref={m2} aria-hidden="true" style={ms}>
-        <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l2}</span>
+      {/* l1 now has badge padding — measure with it so font-size accounts for the inset */}
+      <span ref={m1} aria-hidden="true" style={ms}>
+        <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l1}</span>
       </span>
-      {/* Mobile l2 measurement (first sub-line only — shorter, gives bigger font) */}
-      <span ref={m2m} aria-hidden="true" style={ms}>
-        <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l2m1}</span>
-      </span>
+      {/* l2 is now plain text — measure without badge padding */}
+      <span ref={m2} aria-hidden="true" style={ms}>{l2}</span>
+      {/* Mobile l2 measurement (first sub-line, plain) */}
+      <span ref={m2m} aria-hidden="true" style={ms}>{l2m1}</span>
       <span ref={m3} aria-hidden="true" style={ms}>{l3}</span>
 
       <div
@@ -213,13 +206,17 @@ export default function MissionSection() {
           <div ref={o0} aria-hidden="true" style={overlayBase}>{l0}</div>
         </div>
 
-        {/* Line 1 — plain */}
+        {/* Line 1 — badge on reveal (white text, black bg) */}
         <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>{l1}</div>
-          <div ref={o1} aria-hidden="true" style={overlayBase}>{l1}</div>
+          <div style={{ ...ts, color: '#c8c8c8' }}>
+            <span style={{ display: 'inline-block', letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>{l1}</span>
+          </div>
+          <div ref={o1} aria-hidden="true" style={overlayBase}>
+            <span style={BADGE}>{l1}</span>
+          </div>
         </div>
 
-        {/* Line 2 — badge on reveal
+        {/* Line 2 — plain black on reveal (no background)
             Mobile: two sub-lines ("Website design" / "& Marketing")
             Desktop: single inline line */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
@@ -227,23 +224,21 @@ export default function MissionSection() {
           <div style={{ ...ts, color: '#c8c8c8' }}>
             {/* Mobile: two stacked sub-lines */}
             <span className="md:hidden" style={{ display: 'contents' }}>
-              <span style={subLineWrap}><span style={subLineInner}>{l2m1}</span></span>
-              <span style={subLineWrap}><span style={subLineInner}>{l2m2}</span></span>
+              <span style={subLineWrap}>{l2m1}</span>
+              <span style={subLineWrap}>{l2m2}</span>
             </span>
-            {/* Desktop: single inline line */}
-            <span className="hidden md:inline-block" style={{ letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>{l2}</span>
+            {/* Desktop: plain text */}
+            <span className="hidden md:inline">{l2}</span>
           </div>
-          {/* Black badge (revealed) layer */}
+          {/* Plain black (revealed) layer */}
           <div ref={o2} aria-hidden="true" style={overlayBase}>
-            {/* Mobile: two stacked badge sub-lines */}
+            {/* Mobile: two stacked plain sub-lines */}
             <span className="md:hidden" style={{ display: 'contents' }}>
-              <span style={subLineWrap}><span style={BADGE}>{l2m1}</span></span>
-              <span style={subLineWrap}><span style={BADGE}>{l2m2}</span></span>
+              <span style={subLineWrap}>{l2m1}</span>
+              <span style={subLineWrap}>{l2m2}</span>
             </span>
-            {/* Desktop: single badge */}
-            <span className="hidden md:inline-block">
-              <span style={BADGE}>{l2}</span>
-            </span>
+            {/* Desktop: plain black text */}
+            <span className="hidden md:inline">{l2}</span>
           </div>
         </div>
 
