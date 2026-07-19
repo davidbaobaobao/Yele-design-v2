@@ -68,7 +68,7 @@ export default function RegistroPage() {
   if (sent) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-6">
-        <h1 className="sr-only">Pide tu web</h1>
+        <h1 className="sr-only">Create your account</h1>
         <motion.div
           className="max-w-md w-full text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -81,17 +81,17 @@ export default function RegistroPage() {
             </svg>
           </div>
           <h2 className="font-outfit font-semibold text-3xl text-[#1D1D1F] mb-3">
-            Revisa tu email
+            Check your email
           </h2>
           <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-8">
-            Te hemos enviado un enlace mágico a <strong className="text-[#1D1D1F]">{email}</strong>. Haz clic en él para continuar.
+            We sent a magic link to <strong className="text-[#1D1D1F]">{email}</strong>. Click it to continue.
           </p>
           <button
             type="button"
             onClick={() => setSent(false)}
             className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors cursor-pointer"
           >
-            ← Usar otro email
+            ← Use a different email
           </button>
         </motion.div>
       </div>
@@ -102,7 +102,7 @@ export default function RegistroPage() {
     <div className="min-h-screen bg-white flex items-center justify-center px-6">
       <Suspense fallback={null}><PlanSaver /></Suspense>
       <ClarityScript />
-      <h1 className="sr-only">Pide tu web</h1>
+      <h1 className="sr-only">Create your account</h1>
       <div className="max-w-md w-full">
         {/* Logo */}
         <motion.div
@@ -125,10 +125,10 @@ export default function RegistroPage() {
           transition={{ duration: 0.5, delay: 0.05 } as Transition}
         >
           <h2 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-2">
-            Crea tu cuenta
+            Create your account
           </h2>
           <p className="font-manrope text-[#6B7280] text-base">
-            Empieza a construir tu web hoy.
+            Start building your website today.
           </p>
         </motion.div>
 
@@ -150,13 +150,13 @@ export default function RegistroPage() {
               <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
               <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
             </svg>
-            Continuar con Google
+            Continue with Google
           </button>
 
           {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-black/[0.07]" />
-            <span className="font-manrope text-xs text-[#6B7280]">o</span>
+            <span className="font-manrope text-xs text-[#6B7280]">or</span>
             <div className="flex-1 h-px bg-black/[0.07]" />
           </div>
 
@@ -168,7 +168,7 @@ export default function RegistroPage() {
             <input
               id="email"
               type="email"
-              placeholder="tu@email.com"
+              placeholder="you@email.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleEmailLink()}
@@ -183,7 +183,7 @@ export default function RegistroPage() {
             disabled={loading || !email}
             className="w-full flex items-center justify-center gap-2 font-manrope font-medium text-sm bg-[#1D1D1F] text-white rounded-xl px-5 py-3.5 hover:bg-black transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
           >
-            {loading ? 'Enviando…' : 'Continuar con email'}
+            {loading ? 'Sending…' : 'Continue with email'}
           </button>
 
           {error && (
@@ -197,13 +197,13 @@ export default function RegistroPage() {
           {...fadeUp}
           transition={{ duration: 0.5, delay: 0.15 } as Transition}
         >
-          Al continuar aceptas nuestros{' '}
+          By continuing you agree to our{' '}
           <Link href="/aviso-legal" className="underline hover:text-[#1D1D1F] transition-colors">
-            Términos de servicio
+            Terms of service
           </Link>{' '}
-          y{' '}
+          and{' '}
           <Link href="/politica-privacidad" className="underline hover:text-[#1D1D1F] transition-colors">
-            Política de privacidad
+            Privacy policy
           </Link>.
         </motion.p>
 
@@ -216,7 +216,7 @@ export default function RegistroPage() {
             href="/"
             className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors"
           >
-            ← Volver al inicio
+            ← Back to home
           </Link>
         </motion.div>
       </div>

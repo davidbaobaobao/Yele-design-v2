@@ -41,23 +41,40 @@ export default function GraciasClient() {
         </div>
 
         <h1 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-3">
-          ¡Solicitud enviada!
+          You&apos;re in!
         </h1>
-        <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-3">
-          Hemos recibido toda tu información. En breve nos ponemos en contacto contigo.
+        <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-8">
+          Your free month has started. Here&apos;s what to do next.
         </p>
-        <p className="font-manrope text-[#6B7280] text-sm leading-relaxed mb-8">
-          Mientras tanto, puedes acceder a tu panel para ver el estado de tu web.
-        </p>
+
+        {/* Next steps */}
+        <div className="bg-[#F5F5F7] rounded-2xl p-6 text-left mb-8">
+          <p className="font-manrope text-xs font-semibold uppercase tracking-widest text-[#6B7280] mb-4">Next steps</p>
+          <div className="space-y-4">
+            <div className="flex gap-3">
+              <span className="font-outfit font-semibold text-[#1D1D1F] text-sm flex-shrink-0">①</span>
+              <p className="font-manrope text-sm text-[#1D1D1F] leading-relaxed">
+                Explain more about your business and goals at{' '}
+                <a href="https://yele.design/survey" className="underline hover:text-[#6B7280] transition-colors">
+                  yele.design/survey
+                </a>
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <span className="font-outfit font-semibold text-[#1D1D1F] text-sm flex-shrink-0">②</span>
+              <p className="font-manrope text-sm text-[#1D1D1F] leading-relaxed">
+                We will contact you as soon as we receive your information.
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div className="flex flex-col gap-3">
           <a
-            href="https://app.yele.design"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/survey"
             className="inline-flex items-center justify-center gap-2 font-manrope font-medium text-sm bg-[#1D1D1F] text-white px-6 py-3.5 rounded-xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
           >
-            Ir a mi panel
+            Start now
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
               <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -67,7 +84,7 @@ export default function GraciasClient() {
             href="/"
             className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors py-2"
           >
-            Volver al inicio
+            ← Back to home
           </Link>
         </div>
       </div>
