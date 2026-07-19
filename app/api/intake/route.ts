@@ -20,23 +20,22 @@ export async function POST(request: Request) {
       userId = user?.id ?? null
     }
 
+    const baseName = (data.nombre_negocio || data.nombre_contacto || 'client')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+
     const { data: client, error: dbError } = await supabaseAdmin
       .from('clients')
       .insert({
         user_id: userId,
-        business_name: data.nombre_negocio,
-        slug:
-          data.nombre_negocio
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '') +
-          '-' +
-          Date.now(),
-        industry_type: data.sector,
+        business_name: data.nombre_negocio || data.nombre_contacto || null,
+        slug: baseName + '-' + Date.now(),
+        industry_type: data.sector || null,
         plan: data.plan?.toLowerCase() || 'profesional',
         status: 'intake_pending',
-        preferred_contact: data.canal_contacto,
+        preferred_contact: data.canal_contacto || null,
         whatsapp_number: data.whatsapp || null,
         intake_data: data,
       })
@@ -52,7 +51,7 @@ export async function POST(request: Request) {
     await resend.emails.send({
       from: 'Yele Studio <info@yele.design>',
       to: [process.env.STUDIO_EMAIL!, process.env.OWNER_EMAIL!],
-      subject: `Nueva solicitud — ${data.nombre_negocio} (${data.sector})`,
+      subject: `Nueva solicitud — ${data.nombre_negocio || data.nombre_contacto}${data.sector ? ` (${data.sector})` : ''}`,
       html: emailHtml,
     })
 
@@ -98,8 +97,8 @@ function buildEmailHtml(data: Record<string, unknown>): string {
     <span style="color:#6B7280;font-size:12px;margin-left:12px;">Nueva solicitud</span>
   </div>
   <div style="padding:28px 32px 8px;">
-    <h1 style="margin:0;font-size:26px;color:#1D1D1F;font-family:Georgia,serif;font-weight:400;letter-spacing:-0.02em;">${data.nombre_negocio}</h1>
-    <p style="margin:6px 0 0;font-size:14px;color:#6B7280;">${data.sector} · ${data.ciudad}</p>
+    <h1 style="margin:0;font-size:26px;color:#1D1D1F;font-family:Georgia,serif;font-weight:400;letter-spacing:-0.02em;">${data.nombre_negocio || data.nombre_contacto}</h1>
+    <p style="margin:6px 0 0;font-size:14px;color:#6B7280;">${[data.sector, data.ciudad].filter(Boolean).join(' · ')}</p>
   </div>
   <div style="padding:16px 32px 32px;">
     ${section('Información del negocio',
@@ -152,17 +151,12 @@ function buildEmailHtml(data: Record<string, unknown>): string {
 function buildConfirmationHtml(data: Record<string, unknown>): string {
   const nombre = typeof data.nombre_negocio === 'string' ? data.nombre_negocio : ''
   const contacto = typeof data.nombre_contacto === 'string' ? data.nombre_contacto.split(' ')[0] : ''
-  const canal = data.canal_contacto
-  const whatsapp = data.whatsapp
   const telefono = data.telefono
   const email = data.email
 
-  const contactLine =
-    canal === 'WhatsApp' && whatsapp
-      ? `por WhatsApp al ${whatsapp}`
-      : canal === 'Teléfono' && telefono
-      ? `por teléfono al ${telefono}`
-      : `por email a ${email}`
+  const contactLine = telefono
+    ? `por teléfono al ${telefono}`
+    : `por email a ${email}`
 
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
