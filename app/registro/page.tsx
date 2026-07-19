@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { motion, type Transition } from 'framer-motion'
@@ -14,15 +14,18 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 }
 
-export default function RegistroPage() {
-  const supabase = createClientComponentClient()
+function PlanSaver() {
   const searchParams = useSearchParams()
-  const [email, setEmail] = useState('')
-
   useEffect(() => {
     const plan = searchParams.get('plan')
     if (plan) sessionStorage.setItem('yele_plan', plan)
   }, [searchParams])
+  return null
+}
+
+export default function RegistroPage() {
+  const supabase = createClientComponentClient()
+  const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -88,6 +91,7 @@ export default function RegistroPage() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6">
+      <Suspense fallback={null}><PlanSaver /></Suspense>
       <ClarityScript />
       <h1 className="sr-only">Pide tu web</h1>
       <div className="max-w-md w-full">
