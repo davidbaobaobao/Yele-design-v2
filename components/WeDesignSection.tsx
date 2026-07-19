@@ -17,7 +17,7 @@ export default function WeDesignSection() {
       {/* Zoom-out wrapper — scale(0.88) shows more of the scene; section bg clips the edges */}
       <div className="absolute inset-0" style={{ transform: 'scale(0.88)', transformOrigin: 'center' }}>
         <Image
-          src="/media/wedesign/wedesign_poster.jpg"
+          src="/media/wedesign/wedesign_poster.webp"
           alt=""
           fill
           priority

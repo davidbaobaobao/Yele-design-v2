@@ -2,7 +2,8 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { motion, type Transition } from 'framer-motion'
 import Link from 'next/link'
@@ -15,7 +16,13 @@ const fadeUp = {
 
 export default function RegistroPage() {
   const supabase = createClientComponentClient()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
+
+  useEffect(() => {
+    const plan = searchParams.get('plan')
+    if (plan) sessionStorage.setItem('yele_plan', plan)
+  }, [searchParams])
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')

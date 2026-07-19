@@ -26,9 +26,9 @@ const ContactForm      = dynamic(() => import('@/components/ContactForm'))
 const FAQ              = dynamic(() => import('@/components/FAQ'))
 
 export const metadata: Metadata = {
-  title: 'Professional website design from €49/mo | Yele',
+  title: 'Professional website design from $99/mo | Yele',
   description:
-    'Professional website design for SMBs and freelancers. Live in 1 week, maintenance included, from €49/mo. No setup fee, no commitment.',
+    'Professional website design for SMBs and freelancers. Live in 1 week, maintenance included, from $99/mo. No setup fee, no commitment.',
   alternates: {
     canonical: 'https://yele.design',
     languages: { es: 'https://yele.design/es' },
@@ -38,9 +38,9 @@ export const metadata: Metadata = {
     locale: 'en_GB',
     url: 'https://yele.design',
     siteName: 'Yele',
-    title: 'Professional website design from €49/mo | Yele',
+    title: 'Professional website design from $99/mo | Yele',
     description:
-      'Professional website design for SMBs and freelancers. Live in 1 week, from €49/mo. No setup fee.',
+      'Professional website design for SMBs and freelancers. Live in 1 week, from $99/mo. No setup fee.',
   },
 }
 

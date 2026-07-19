@@ -4,13 +4,14 @@ import { useRef, useEffect } from 'react'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
 import { Check } from 'lucide-react'
-import { PLAN_PRICES } from '@/lib/plan-prices'
+import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
 
 const plans = [
   {
     key: 'starter',
-    price: PLAN_PRICES.starter.monthly,
+    priceEs: PLAN_PRICES.starter.monthly,
+    priceEn: PLAN_PRICES_USD.starter.monthly,
     badge: null as string | null,
     highlighted: false,
     es: {
@@ -42,7 +43,8 @@ const plans = [
   },
   {
     key: 'pro',
-    price: PLAN_PRICES.pro.monthly,
+    priceEs: PLAN_PRICES.pro.monthly,
+    priceEn: PLAN_PRICES_USD.pro.monthly,
     badge: 'Most popular',
     highlighted: true,
     es: {
@@ -74,7 +76,8 @@ const plans = [
   },
   {
     key: 'frontier',
-    price: PLAN_PRICES.frontier.monthly,
+    priceEs: PLAN_PRICES.frontier.monthly,
+    priceEn: PLAN_PRICES_USD.frontier.monthly,
     badge: null as string | null,
     highlighted: false,
     es: {
@@ -106,7 +109,7 @@ const plans = [
   },
 ]
 
-type Plan = Omit<typeof plans[0], 'price'> & { price: number }
+type Plan = typeof plans[0]
 type TFn = (es: string, en: string) => string
 
 function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) {
@@ -167,7 +170,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
           <span className={`font-manrope text-2xl font-semibold mb-1 ${plan.highlighted ? 'text-white/60' : 'text-[#6B7280]'}`}>
             {t('', '$')}
           </span>
-          <span className="font-outfit font-semibold text-5xl tracking-tight">{plan.price}</span>
+          <span className="font-outfit font-semibold text-5xl tracking-tight">{t(String(plan.priceEs), String(plan.priceEn))}</span>
           <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>
             {t(' €/mes', '/mo')}
           </span>
@@ -184,7 +187,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
       </ul>
 
       <motion.a
-        href={`/registro?plan=${plan.key}`}
+        href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)}
         className={`relative overflow-hidden block text-center font-manrope font-medium text-sm py-3.5 rounded-xl cursor-pointer ${
           plan.highlighted ? 'bg-white text-[#1D1D1F]' : 'bg-[#1D1D1F] text-white'
         }`}

@@ -237,10 +237,11 @@ export default function EmpezarPage() {
     if (response.ok) {
       const result = await response.json()
       const clientId = result.clientId ?? ''
-      const checkoutRes = await fetch('/api/create-checkout', {
+      const selectedPlan = sessionStorage.getItem('yele_plan') || 'starter-es'
+    const checkoutRes = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: 'starter', billing: 'monthly', clientId }),
+        body: JSON.stringify({ planId: selectedPlan, billing: 'monthly', clientId }),
       })
       const { url, error: checkoutError } = await checkoutRes.json()
       if (checkoutError || !url) {

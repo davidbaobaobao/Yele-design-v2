@@ -132,7 +132,7 @@ const schemaOrg = {
         itemListElement: [
           {
             '@type': 'Offer',
-            name: 'Plan Básica',
+            name: 'Starter',
             price: '49',
             priceCurrency: 'EUR',
             priceSpecification: {
@@ -142,35 +142,35 @@ const schemaOrg = {
               unitText: 'MONTH',
             },
             description:
-              'Web hasta 5 secciones, diseño personalizado, mobile-first, mantenimiento incluido',
+              'Web funcional, dominio personalizado, panel de control, SEO on-page, email personalizado, soporte 24/7',
           },
           {
             '@type': 'Offer',
-            name: 'Plan Profesional',
-            price: '69',
+            name: 'Pro',
+            price: '79',
             priceCurrency: 'EUR',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
-              price: '69',
+              price: '79',
               priceCurrency: 'EUR',
               unitText: 'MONTH',
             },
             description:
-              'Web hasta 10 secciones, blog, SEO local, cambios prioritarios en 24h',
+              'Branding, sistema de pagos, calendario y reservas, Google Business Profile, asistente de chat IA',
           },
           {
             '@type': 'Offer',
-            name: 'Plan Avanzada',
-            price: '119',
+            name: 'Frontier',
+            price: '599',
             priceCurrency: 'EUR',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
-              price: '119',
+              price: '599',
               priceCurrency: 'EUR',
               unitText: 'MONTH',
             },
             description:
-              'Funcionalidades a medida, tienda online, reservas, soporte prioritario',
+              'Marketing activo mensual, SEO avanzado backlinks, contenido semanal, Google Ads, notas de prensa',
           },
         ],
       },
@@ -235,9 +235,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className={`${outfit.variable} ${manrope.variable} ${archivo.variable}`}>
       <head>
-        {/* Preconnect to external image CDNs used on blog pages */}
-        <link rel="preconnect" href="https://images.pexels.com" />
-        <link rel="dns-prefetch" href="https://images.pexels.com" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}

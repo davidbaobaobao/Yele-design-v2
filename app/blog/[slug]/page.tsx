@@ -299,7 +299,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               Professional design, hosting, SSL and maintenance included. No setup fee.
             </p>
             <Link
-              href="/empezar"
+              href="/registro?plan=starter"
               className="inline-flex items-center gap-2 font-manrope text-sm font-medium bg-white text-[#1D1D1F] px-5 py-2.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
             >
               Get my website

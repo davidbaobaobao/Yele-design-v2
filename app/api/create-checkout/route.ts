@@ -3,15 +3,21 @@ import Stripe from 'stripe'
 const PRICE_IDS: Record<string, Record<string, string>> = {
   starter: {
     monthly: process.env.STRIPE_PRICE_STARTER_MONTHLY!,
-    annual: process.env.STRIPE_PRICE_STARTER_ANNUAL!,
   },
   pro: {
     monthly: process.env.STRIPE_PRICE_PRO_MONTHLY!,
-    annual: process.env.STRIPE_PRICE_PRO_ANNUAL!,
   },
   frontier: {
     monthly: process.env.STRIPE_PRICE_FRONTIER_MONTHLY!,
-    annual: process.env.STRIPE_PRICE_FRONTIER_ANNUAL!,
+  },
+  'starter-es': {
+    monthly: process.env.STRIPE_PRICE_STARTER_ES_MONTHLY!,
+  },
+  'pro-es': {
+    monthly: process.env.STRIPE_PRICE_PRO_ES_MONTHLY!,
+  },
+  'frontier-es': {
+    monthly: process.env.STRIPE_PRICE_FRONTIER_ES_MONTHLY!,
   },
 }
 
@@ -37,7 +43,7 @@ export async function POST(request: Request) {
       metadata: { clientId: clientId ?? '', planId, billing },
       subscription_data: {
         metadata: { clientId: clientId ?? '', planId, billing },
-        ...(planId === 'starter' ? { trial_period_days: 30 } : {}),
+        ...(planId.endsWith('-es') ? { trial_period_days: 30 } : {}),
       },
       locale: 'es',
       allow_promotion_codes: true,
