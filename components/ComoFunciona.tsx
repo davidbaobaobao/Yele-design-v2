@@ -83,7 +83,7 @@ function StepCard({
         className="relative overflow-hidden"
       >
         <div className="relative" style={{ height: IMG_H }}>
-          <Image src={step.img} alt={t(step.es.title, step.en.title)} fill unoptimized className="object-cover object-center" />
+          <Image src={step.img} alt={t(step.es.title, step.en.title)} fill sizes="50vw" className="object-cover object-center" />
           <video
             ref={videoRef}
             loop muted playsInline preload="metadata"
@@ -143,7 +143,7 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
       className="rounded-2xl overflow-hidden bg-[#1D1D1F] shadow-[0_12px_40px_rgba(0,0,0,0.18)]"
     >
       <div className="relative h-44 overflow-hidden">
-        <Image src={step.img} alt={t(step.es.title, step.en.title)} fill unoptimized className="object-cover object-center" />
+        <Image src={step.img} alt={t(step.es.title, step.en.title)} fill sizes="92vw" className="object-cover object-center" />
         <video
           ref={videoRef}
           loop muted playsInline preload="metadata"

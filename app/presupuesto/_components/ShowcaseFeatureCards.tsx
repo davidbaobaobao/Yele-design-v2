@@ -114,8 +114,7 @@ function ParallaxCard({ img, video, title, desc, i }: { img: string; video: stri
               src={img}
               alt={title}
               fill
-              unoptimized
-              sizes="(max-width: 640px) 95vw, 33vw"
+              sizes="(max-width: 767px) 48vw, 33vw"
               className="object-cover object-center"
             />
             <video

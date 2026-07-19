@@ -51,10 +51,12 @@ export default function MissionSection() {
 
   // Auto-fit: all lines share the same font size so the longest fills FILL% of content width
   useEffect(() => {
+    let rafId: number
     function fitLines() {
       const isMobile = window.innerWidth < 768
       const fill = isMobile ? 0.74 : FILL
       const contentW = document.documentElement.clientWidth - LEFT_PAD
+      // Batch all reads before any writes to prevent forced reflow
       const widths = [m0, m1, m2, m3].map(r => r.current?.getBoundingClientRect().width ?? 0)
       const maxW = Math.max(...widths)
       if (maxW <= 0) return
@@ -64,9 +66,16 @@ export default function MissionSection() {
       })
       if (stickyRef.current) stickyRef.current.style.visibility = 'visible'
     }
-    fitLines()
-    window.addEventListener('resize', fitLines)
-    return () => window.removeEventListener('resize', fitLines)
+    function scheduleFitLines() {
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(fitLines)
+    }
+    scheduleFitLines()
+    window.addEventListener('resize', scheduleFitLines)
+    return () => {
+      window.removeEventListener('resize', scheduleFitLines)
+      cancelAnimationFrame(rafId)
+    }
   }, [])
 
   // Scroll-linked fill

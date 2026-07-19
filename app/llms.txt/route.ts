@@ -20,9 +20,9 @@ No hay coste de setup, no hay permanencia, no se requieren conocimientos técnic
 
 ## Precios
 
-- Plan Básica: €49/mes — web hasta 5 secciones, cambios en 48h
-- Plan Profesional: €69/mes — web hasta 10 secciones, blog, SEO, cambios en 24h
-- Plan Avanzada: €119/mes — funcionalidades a medida, tienda, reservas, cambios en 12h
+- [Plan Starter](https://yele.design/presupuesto): €49/mes — web funcional, panel de control, SEO, email, soporte 24/7
+- [Plan Pro](https://yele.design/presupuesto): €79/mes — branding, pagos, reservas, Google Business, chat IA
+- [Plan Frontier](https://yele.design/presupuesto): €599/mes — marketing activo, SEO avanzado, contenido semanal, Google Ads
 
 Sin pago inicial. Sin permanencia. Cancelación en cualquier momento.
 
@@ -45,15 +45,15 @@ Sitios con PageSpeed 85+ en móvil, CLS < 0.1, LCP < 2.5s.
 
 ## Contacto
 
-Web: https://yele.design
-Email: info@yele.design
-Empezar: https://yele.design (formulario de onboarding directo)
+- Web: [yele.design](https://yele.design)
+- Email: info@yele.design
+- Empezar ahora: [Formulario de onboarding](https://yele.design/empezar)
 
 ## Ejemplos de clientes
 
 Negocios reales en España: estudios de cerámica, bares de tapas,
 estudios de yoga, despachos de abogados, fontaneros autónomos.
-Ver portfolio: https://yele.design/ejemplos
+[Ver portfolio de trabajos](https://yele.design/ejemplos)
 `
 
   return new NextResponse(content, {
