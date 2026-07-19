@@ -34,8 +34,11 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
     setOpen(false)
     if (href.startsWith('/')) {
       window.location.href = href
-    } else if (isHomePage) {
-      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
+      return
+    }
+    const el = document.querySelector(href)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
     } else {
       window.location.href = `/${href}`
     }

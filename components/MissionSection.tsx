@@ -27,10 +27,12 @@ export default function MissionSection() {
   const lw2 = useRef<HTMLDivElement>(null)
   const lw3 = useRef<HTMLDivElement>(null)
 
-  const m0 = useRef<HTMLSpanElement>(null)
-  const m1 = useRef<HTMLSpanElement>(null)
-  const m2 = useRef<HTMLSpanElement>(null)
-  const m3 = useRef<HTMLSpanElement>(null)
+  const m0  = useRef<HTMLSpanElement>(null)
+  const m1  = useRef<HTMLSpanElement>(null)
+  const m2  = useRef<HTMLSpanElement>(null)
+  // Mobile-only measurement: first sub-line of l2 only (shorter → bigger font)
+  const m2m = useRef<HTMLSpanElement>(null)
+  const m3  = useRef<HTMLSpanElement>(null)
 
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
@@ -54,10 +56,12 @@ export default function MissionSection() {
     let rafId: number
     function fitLines() {
       const isMobile = window.innerWidth < 768
-      const fill = isMobile ? 0.74 : FILL
+      // Mobile: higher fill + measure only the first sub-line of l2 so the font is larger
+      const fill = isMobile ? 0.88 : FILL
       const contentW = document.documentElement.clientWidth - LEFT_PAD
+      const measureRefs = isMobile ? [m0, m1, m2m, m3] : [m0, m1, m2, m3]
       // Batch all reads before any writes to prevent forced reflow
-      const widths = [m0, m1, m2, m3].map(r => r.current?.getBoundingClientRect().width ?? 0)
+      const widths = measureRefs.map(r => r.current?.getBoundingClientRect().width ?? 0)
       const maxW = Math.max(...widths)
       if (maxW <= 0) return
       const fs = Math.floor((contentW * fill / maxW) * 100)
@@ -147,8 +151,11 @@ export default function MissionSection() {
   }
 
   const l0 = t('Entregamos', 'We deliver')
-  const l1 = t('Diseño web y Marketing', 'Website design & Marketing')
-  const l2 = t('De última generación', 'State-of-the-art')
+  const l1 = t('De última generación', 'State-of-the-art')
+  const l2 = t('Diseño web y Marketing', 'Website design & Marketing')
+  // Mobile sub-lines for l2
+  const l2m1 = t('Diseño web', 'Website design')
+  const l2m2 = t('y Marketing', '& Marketing')
   const l3 = t('por suscripción', 'Subscription service')
 
   function scrollPast() {
@@ -158,14 +165,27 @@ export default function MissionSection() {
     window.scrollTo({ top: bottom, behavior: 'smooth' })
   }
 
+  const subLineWrap: React.CSSProperties = { display: 'block' }
+  const subLineInner: React.CSSProperties = {
+    display: 'inline-block',
+    letterSpacing: '-0.05em',
+    padding: '0.04em 0.16em',
+    lineHeight: 1,
+  }
+
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '360vh' }}>
 
       {/* Off-screen measurement spans */}
       <span ref={m0} aria-hidden="true" style={ms}>{l0}</span>
       <span ref={m1} aria-hidden="true" style={ms}>{l1}</span>
+      {/* Desktop l2 measurement (full line) */}
       <span ref={m2} aria-hidden="true" style={ms}>
         <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l2}</span>
+      </span>
+      {/* Mobile l2 measurement (first sub-line only — shorter, gives bigger font) */}
+      <span ref={m2m} aria-hidden="true" style={ms}>
+        <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l2m1}</span>
       </span>
       <span ref={m3} aria-hidden="true" style={ms}>{l3}</span>
 
@@ -199,13 +219,31 @@ export default function MissionSection() {
           <div ref={o1} aria-hidden="true" style={overlayBase}>{l1}</div>
         </div>
 
-        {/* Line 2 — badge on reveal */}
+        {/* Line 2 — badge on reveal
+            Mobile: two sub-lines ("Website design" / "& Marketing")
+            Desktop: single inline line */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* Gray (unrevealed) layer */}
           <div style={{ ...ts, color: '#c8c8c8' }}>
-            <span style={{ display: 'inline-block', letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>{l2}</span>
+            {/* Mobile: two stacked sub-lines */}
+            <span className="md:hidden" style={{ display: 'contents' }}>
+              <span style={subLineWrap}><span style={subLineInner}>{l2m1}</span></span>
+              <span style={subLineWrap}><span style={subLineInner}>{l2m2}</span></span>
+            </span>
+            {/* Desktop: single inline line */}
+            <span className="hidden md:inline-block" style={{ letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>{l2}</span>
           </div>
+          {/* Black badge (revealed) layer */}
           <div ref={o2} aria-hidden="true" style={overlayBase}>
-            <span style={BADGE}>{l2}</span>
+            {/* Mobile: two stacked badge sub-lines */}
+            <span className="md:hidden" style={{ display: 'contents' }}>
+              <span style={subLineWrap}><span style={BADGE}>{l2m1}</span></span>
+              <span style={subLineWrap}><span style={BADGE}>{l2m2}</span></span>
+            </span>
+            {/* Desktop: single badge */}
+            <span className="hidden md:inline-block">
+              <span style={BADGE}>{l2}</span>
+            </span>
           </div>
         </div>
 

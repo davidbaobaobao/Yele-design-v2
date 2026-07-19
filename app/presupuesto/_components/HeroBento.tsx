@@ -159,7 +159,7 @@ export default function HeroBento() {
                 className="font-manrope"
                 style={{ marginTop: 8, marginLeft: 20, fontWeight: 600, fontSize: 22, letterSpacing: '0.01em', color: '#ffffff' }}
               >
-                {t('Desde 49 €/mes', 'From $49/month')}
+                {t('Desde 49 €/mes', 'From $99/month')}
               </p>
             </div>
 
@@ -201,7 +201,7 @@ export default function HeroBento() {
               {t('Tu agencia de diseño web · Sin complicaciones', 'Your Web design agency · Hassle-free')}
             </p>
             <p className="font-manrope text-white font-semibold mt-1.5 text-lg">
-              {t('Desde 49 €/mes', 'From $49/month')}
+              {t('Desde 49 €/mes', 'From $99/month')}
             </p>
           </div>
         </div>
