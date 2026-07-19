@@ -5,7 +5,13 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import ClarityScript from '@/components/ClarityScript'
 
-export default function GraciasClient() {
+export default function GraciasClient({
+  conversionValue,
+  conversionCurrency,
+}: {
+  conversionValue: number
+  conversionCurrency: string
+}) {
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -15,11 +21,11 @@ export default function GraciasClient() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(window as any).gtag?.('event', 'conversion', {
       send_to: 'AW-18281072925/AH2nCP-4p8ocEJ2SjI1E',
-      value: 49.0,
-      currency: 'EUR',
+      value: conversionValue,
+      currency: conversionCurrency,
       transaction_id: sessionId,
     })
-  }, [searchParams])
+  }, [searchParams, conversionValue, conversionCurrency])
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6">
