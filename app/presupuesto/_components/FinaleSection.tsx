@@ -17,7 +17,7 @@ export default function FinaleSection() {
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
-        autoPlay muted loop playsInline preload="metadata"
+        autoPlay muted loop playsInline preload="none"
         poster="/media/finale/finale_poster.jpg"
         aria-hidden="true"
       >

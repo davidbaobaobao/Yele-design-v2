@@ -16,39 +16,50 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
     ;(v as HTMLVideoElement & { defaultMuted?: boolean }).defaultMuted = true
 
     function play() {
-      if (!v || !v.paused) return
+      if (!v || (!v.paused && !v.ended)) return
       v.muted = true
-      // iOS Safari sometimes ignores `loop` and fires `ended` instead of restarting.
-      // Reset currentTime so replay begins from the start.
       if (v.ended) v.currentTime = 0
-      // If the video was set to preload="none", kick off loading first.
+      // For preload="none" videos: kick off network load first.
       if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) {
         v.load()
       }
-      v.play().catch(() => {})
+      // iOS Safari can reject play() when data isn't buffered yet.
+      // Retry once after a short delay so the load has time to start.
+      v.play().catch(() => {
+        setTimeout(() => {
+          if (v && (v.paused || v.ended)) {
+            v.muted = true
+            v.play().catch(() => {})
+          }
+        }, 300)
+      })
     }
 
-    // Immediate attempt (works when already in viewport)
+    // Immediate attempt (works when video is already in viewport and cached)
     play()
-    v.addEventListener('canplay',       play, { once: true })
-    v.addEventListener('loadeddata',    play, { once: true })
-    // Extra retry for Safari which sometimes fires neither event reliably
+    v.addEventListener('canplay',        play, { once: true })
+    v.addEventListener('loadeddata',     play, { once: true })
+    // Extra retry — Safari sometimes fires neither event reliably
     v.addEventListener('loadedmetadata', play, { once: true })
 
-    // iOS Safari often ignores the `loop` attribute and stops at the end.
-    // Manually restart on every `ended` event to guarantee looping.
+    // iOS Safari often ignores the `loop` attribute and fires `ended` instead.
+    // Restart manually on every loop boundary to guarantee continuous play.
     v.addEventListener('ended', play)
 
-    // Recover from stalled state (network hiccup or iOS background resource limits).
-    v.addEventListener('stalled', play)
-
-    // Retry whenever the video enters the viewport — handles deferred preload="none" videos
-    // and recovers from background-tab pausing on iOS.
+    // Play when entering viewport; PAUSE when leaving.
+    // Critical on iOS: only one muted video can truly play at a time.
+    // Without pausing off-screen videos, iOS silently stops them all.
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(e => { if (e.isIntersecting) play() })
+      entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            play()
+          } else if (v && !v.paused) {
+            v.pause()
+          }
+        })
       },
-      { threshold: 0.01 }
+      { threshold: 0.5 }
     )
     observer.observe(v)
 
@@ -66,7 +77,6 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
       v.removeEventListener('loadeddata',     play)
       v.removeEventListener('loadedmetadata', play)
       v.removeEventListener('ended',          play)
-      v.removeEventListener('stalled',        play)
       observer.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pageshow', onPageShow as EventListener)

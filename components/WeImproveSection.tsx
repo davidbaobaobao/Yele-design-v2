@@ -30,7 +30,7 @@ export default function WeImproveSection() {
         muted
         autoPlay
         playsInline
-        preload="metadata"
+        preload="none"
         className="absolute inset-0 w-full h-full object-cover improve-media"
       >
         <source src="/media/weimprove/weimprove_hq.webm" type="video/webm" />

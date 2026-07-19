@@ -84,7 +84,7 @@ export default function DiferenciaSection() {
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover dif-vid"
-        autoPlay muted loop playsInline preload="metadata"
+        autoPlay muted loop playsInline preload="none"
         poster="/media/diferencia/orbital2_poster.jpg"
         aria-hidden="true"
       >
