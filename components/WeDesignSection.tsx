@@ -32,7 +32,7 @@ export default function WeDesignSection() {
           muted
           autoPlay
           playsInline
-          preload="auto"
+          preload="metadata"
           className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/media/wedesign/wedesign_hq.webm" type="video/webm" />

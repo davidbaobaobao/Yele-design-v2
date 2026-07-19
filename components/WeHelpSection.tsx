@@ -31,7 +31,7 @@ export default function WeHelpSection() {
         muted
         autoPlay
         playsInline
-        preload="auto"
+        preload="none"
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/media/wehelp/wehelp_hq.webm" type="video/webm" />

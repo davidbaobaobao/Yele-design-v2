@@ -44,45 +44,6 @@ export default function HeroBento() {
 
   return (
     <>
-      <style>{`
-        @keyframes marqueeLeft {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .hero-marquee-track {
-          animation: marqueeLeft 18s linear infinite;
-          will-change: transform;
-        }
-
-        @keyframes heroPulse {
-          0%, 100% { transform: translateY(0);   opacity: 1;    }
-          50%       { transform: translateY(7px); opacity: 0.55; }
-        }
-
-        /* Mobile: keep video cropped to purple animated area */
-        @media (max-width: 767px) {
-          .hero-vid { object-position: 85% 62%; }
-        }
-
-        @keyframes sparkleMain {
-          0%   { transform: rotate(0deg)   scale(1);    opacity: 0.8; }
-          50%  { transform: rotate(180deg) scale(1.22); opacity: 1;   }
-          100% { transform: rotate(360deg) scale(1);    opacity: 0.8; }
-        }
-        @keyframes sparkleDot {
-          0%, 100% { transform: scale(1);    opacity: 1;   }
-          50%       { transform: scale(1.5);  opacity: 0.6; }
-        }
-        .hero-sparkle-main {
-          animation: sparkleMain 3s ease-in-out infinite;
-          transform-origin: 12px 10px;
-        }
-        .hero-sparkle-dot {
-          animation: sparkleDot 3s ease-in-out infinite 1.5s;
-          transform-origin: 19px 17.5px;
-        }
-      `}</style>
-
       <section className="relative h-[100dvh] md:h-screen overflow-hidden bg-black">
 
         {/* Poster — priority-preloaded, unoptimized so it hits CDN directly without optimizer delay */}

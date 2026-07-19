@@ -7,8 +7,7 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
     const v = ref.current
     if (!v) return
 
-    // iOS Safari checks HTML attributes (not DOM properties) for autoplay eligibility.
-    // React's muted/autoPlay props set DOM properties only — so we must setAttribute here.
+    // iOS Safari requires these as HTML attributes (not just DOM properties).
     v.setAttribute('muted', '')
     v.setAttribute('autoplay', '')
     v.setAttribute('playsinline', '')
@@ -16,29 +15,47 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
     v.muted = true
     ;(v as HTMLVideoElement & { defaultMuted?: boolean }).defaultMuted = true
 
-    const play = () => {
-      if (v.paused) { v.muted = true; v.play().catch(() => {}) }
+    function play() {
+      if (!v || !v.paused) return
+      v.muted = true
+      // If the video was set to preload="none", kick off loading first.
+      // networkState === NETWORK_EMPTY means the browser hasn't fetched anything yet.
+      if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+        v.load()
+      }
+      v.play().catch(() => {})
     }
 
+    // Immediate attempt (works when already in viewport)
     play()
-    v.addEventListener('canplay', play, { once: true })
-    v.addEventListener('loadeddata', play, { once: true })
+    v.addEventListener('canplay',     play, { once: true })
+    v.addEventListener('loadeddata',  play, { once: true })
+    // Extra retry for Safari which sometimes fires neither event reliably
+    v.addEventListener('loadedmetadata', play, { once: true })
 
-    // Retry when video scrolls into view (handles off-screen step-card videos)
+    // Retry whenever the video enters the viewport — handles deferred preload="none" videos
+    // and recovers from background-tab pausing on iOS.
     const observer = new IntersectionObserver(
-      (entries) => { entries.forEach(e => { if (e.isIntersecting) play() }) },
+      (entries) => {
+        entries.forEach(e => { if (e.isIntersecting) play() })
+      },
       { threshold: 0.01 }
     )
     observer.observe(v)
 
+    // Recover from iOS background-tab suspend
     const onVisibility = () => { if (!document.hidden) play() }
+    // Recover from bfcache restore (Safari back-swipe)
     const onPageShow = (e: PageTransitionEvent) => { if (e.persisted) play() }
+
     document.addEventListener('visibilitychange', onVisibility)
     window.addEventListener('pageshow', onPageShow)
 
     return () => {
-      v.removeEventListener('canplay', play)
-      v.removeEventListener('loadeddata', play)
+      if (!v) return
+      v.removeEventListener('canplay',       play)
+      v.removeEventListener('loadeddata',    play)
+      v.removeEventListener('loadedmetadata', play)
       observer.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pageshow', onPageShow as EventListener)

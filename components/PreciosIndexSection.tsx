@@ -262,7 +262,7 @@ export default function PreciosIndexSection() {
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
-        autoPlay muted loop playsInline preload="auto"
+        autoPlay muted loop playsInline preload="none"
         poster="/media/precios/precios2_poster.jpg"
         aria-hidden="true"
       >

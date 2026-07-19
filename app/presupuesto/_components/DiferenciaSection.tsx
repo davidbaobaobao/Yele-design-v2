@@ -81,17 +81,10 @@ export default function DiferenciaSection() {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Mobile: position video so purple elements are visible; no translateY shift */}
-      <style>{`
-        @media (max-width: 767px) {
-          .dif-vid { object-position: right bottom; }
-        }
-      `}</style>
-
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover dif-vid"
-        autoPlay muted loop playsInline preload="auto"
+        autoPlay muted loop playsInline preload="none"
         poster="/media/diferencia/orbital2_poster.jpg"
         aria-hidden="true"
       >

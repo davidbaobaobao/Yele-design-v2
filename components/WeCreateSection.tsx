@@ -26,7 +26,7 @@ export default function WeCreateSection() {
         muted
         autoPlay
         playsInline
-        preload="auto"
+        preload="none"
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/media/we%20create/bgvideo_hq.webm" type="video/webm" />
