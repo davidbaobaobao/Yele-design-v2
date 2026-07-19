@@ -112,7 +112,7 @@ export default function EmpezarPage() {
             Tell us about your business
           </h2>
           <p className="font-manrope text-sm text-[#6B7280]">
-            We'll set everything up for you. Takes less than 2 minutes.
+            We&apos;ll set everything up for you. Takes less than 2 minutes.
           </p>
         </div>
 
