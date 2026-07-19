@@ -16,6 +16,7 @@ const USD_PLANS = [
     key: 'starter',
     name: 'Starter',
     price: 99,
+    currency: '$',
     description: 'Perfect for small businesses getting their first professional website.',
     features: ['Professional website', 'Custom domain', 'Content management panel', 'On-page SEO', '24/7 support'],
   },
@@ -23,6 +24,7 @@ const USD_PLANS = [
     key: 'pro',
     name: 'Pro',
     price: 169,
+    currency: '$',
     description: 'For growing businesses that need more presence and features.',
     features: ['Everything in Starter', 'Unlimited pages', 'Custom email', 'Priority support', 'Advanced SEO'],
     highlight: true,
@@ -31,8 +33,37 @@ const USD_PLANS = [
     key: 'frontier',
     name: 'Frontier',
     price: 699,
+    currency: '$',
     description: 'Full-service for ambitious brands that want the best.',
     features: ['Everything in Pro', 'Custom animations', 'Multimedia content creation', 'Dedicated account manager', 'Monthly strategy calls'],
+  },
+]
+
+const ES_PLANS = [
+  {
+    key: 'starter-es',
+    name: 'Starter',
+    price: 49,
+    currency: '€',
+    description: 'Ideal para pequeños negocios que quieren su primera web profesional.',
+    features: ['Web profesional', 'Dominio personalizado', 'Panel de control', 'SEO on-page', 'Soporte 24/7'],
+  },
+  {
+    key: 'pro-es',
+    name: 'Pro',
+    price: 79,
+    currency: '€',
+    description: 'Para negocios en crecimiento que necesitan más presencia y funcionalidades.',
+    features: ['Todo lo de Starter', 'Páginas ilimitadas', 'Email personalizado', 'Soporte prioritario', 'SEO avanzado'],
+    highlight: true,
+  },
+  {
+    key: 'frontier-es',
+    name: 'Frontier',
+    price: 599,
+    currency: '€',
+    description: 'Servicio completo para marcas ambiciosas que quieren lo mejor.',
+    features: ['Todo lo de Pro', 'Animaciones personalizadas', 'Creación multimedia', 'Gestor de cuenta dedicado', 'Llamadas mensuales de estrategia'],
   },
 ]
 
@@ -49,6 +80,7 @@ type FormData = {
 export default function EmpezarPage() {
   const supabase = createClientComponentClient()
   const [step, setStep] = useState<'form' | 'pricing' | 'checkout'>('form')
+  const [lang, setLang] = useState<'en' | 'es'>('en')
   const [clientId, setClientId] = useState('')
   const [loading, setLoading] = useState(false)
   const [planLoading, setPlanLoading] = useState<string | null>(null)
@@ -63,6 +95,10 @@ export default function EmpezarPage() {
     descripcion: '',
     rgpd: false,
   })
+
+  useEffect(() => {
+    if (sessionStorage.getItem('yele_lang') === 'es') setLang('es')
+  }, [])
 
   // Returning user: already submitted form + picked a plan → auto-checkout
   useEffect(() => {
@@ -82,6 +118,7 @@ export default function EmpezarPage() {
             sessionStorage.removeItem('yele_submitted')
             sessionStorage.removeItem('yele_plan')
             sessionStorage.removeItem('yele_clientId')
+            sessionStorage.removeItem('yele_lang')
             window.location.href = url
           }
         })
@@ -190,17 +227,21 @@ export default function EmpezarPage() {
           </Link>
 
           <div className="mb-10">
-            <p className="font-manrope text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">Step 2 of 2</p>
+            <p className="font-manrope text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">
+              {lang === 'es' ? 'Paso 2 de 2' : 'Step 2 of 2'}
+            </p>
             <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">
-              Choose your plan
+              {lang === 'es' ? 'Elige tu plan' : 'Choose your plan'}
             </h2>
             <p className="font-manrope text-sm text-[#6B7280]">
-              First month free — no charge today. Cancel anytime.
+              {lang === 'es'
+                ? 'Primer mes gratis — sin cargo hoy. Cancela cuando quieras.'
+                : 'First month free — no charge today. Cancel anytime.'}
             </p>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4">
-            {USD_PLANS.map(plan => (
+            {(lang === 'es' ? ES_PLANS : USD_PLANS).map(plan => (
               <div
                 key={plan.key}
                 className={`relative rounded-2xl border p-6 flex flex-col ${
@@ -222,7 +263,7 @@ export default function EmpezarPage() {
                 </p>
                 <div className="mb-5">
                   <span className={`font-outfit font-bold text-3xl ${plan.highlight ? 'text-white' : 'text-[#1D1D1F]'}`}>
-                    ${plan.price}
+                    {plan.currency}{plan.price}
                   </span>
                   <span className={`font-manrope text-xs ml-1 ${plan.highlight ? 'text-white/50' : 'text-[#6B7280]'}`}>/mo</span>
                 </div>
@@ -253,7 +294,9 @@ export default function EmpezarPage() {
           </div>
 
           <p className="text-center font-manrope text-xs text-[#6B7280] mt-8">
-            All plans include a free 1-month trial. No credit card charged today.
+            {lang === 'es'
+              ? 'Todos los planes incluyen 1 mes gratis. Sin cargo hoy.'
+              : 'All plans include a free 1-month trial. No credit card charged today.'}
           </p>
         </div>
       </div>

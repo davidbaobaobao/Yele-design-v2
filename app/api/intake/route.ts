@@ -30,11 +30,15 @@ export async function POST(request: Request) {
       .from('clients')
       .insert({
         user_id: userId,
-        business_name: data.nombre_negocio || data.nombre_contacto || null,
+        business_name: data.nombre_negocio || data.nombre_contacto || 'New client',
         slug: baseName + '-' + Date.now(),
-        industry_type: data.sector || null,
-        plan: data.plan?.toLowerCase() || 'profesional',
+        industry_type: data.sector || 'General',
+        plan: 'basica',
         status: 'intake_pending',
+        city: data.ciudad || null,
+        phone: data.telefono || null,
+        email: data.email || null,
+        description: data.descripcion || null,
         preferred_contact: data.canal_contacto || null,
         whatsapp_number: data.whatsapp || null,
         intake_data: data,
@@ -60,7 +64,7 @@ export async function POST(request: Request) {
         from: 'Yele Studio <info@yele.design>',
         to: data.email,
         replyTo: 'info@yele.design',
-        subject: `Hemos recibido tu solicitud — ${data.nombre_negocio}`,
+        subject: `We received your request — ${data.nombre_negocio || data.nombre_contacto}`,
         html: buildConfirmationHtml(data),
       })
     }

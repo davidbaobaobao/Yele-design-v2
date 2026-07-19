@@ -50,7 +50,7 @@ export default function FinaleSection() {
           viewport={{ once: true }}
         >
           <a
-            href={t('/presupuesto#precios', '/#precios')}
+            href={t('/registro?lang=es', '/registro')}
             className="font-manrope font-semibold text-lg bg-white text-[#1D1D1F]
                        px-10 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
           >

@@ -18,7 +18,9 @@ function PlanSaver() {
   const searchParams = useSearchParams()
   useEffect(() => {
     const plan = searchParams.get('plan')
+    const lang = searchParams.get('lang')
     if (plan) sessionStorage.setItem('yele_plan', plan)
+    if (lang) sessionStorage.setItem('yele_lang', lang)
   }, [searchParams])
   return null
 }

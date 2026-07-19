@@ -150,7 +150,7 @@ export default function DiferenciaSection() {
             className="flex flex-wrap gap-3"
           >
             <a
-              href={t('/presupuesto#precios', '/registro')}
+              href={t('/registro?lang=es', '/registro')}
               className="font-manrope font-semibold text-base bg-white text-[#1D1D1F]
                          px-8 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
             >
