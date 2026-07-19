@@ -18,8 +18,6 @@ export default function WeHelpSection() {
         src="/media/wehelp/wehelp2initial_hq.jpg"
         alt=""
         fill
-        priority
-        unoptimized
         sizes="100vw"
         className="object-cover"
         aria-hidden="true"

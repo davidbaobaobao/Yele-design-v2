@@ -7,37 +7,37 @@ import { useLang } from '@/context/LanguageContext'
 
 const cards = [
   {
-    img: '/showcase/barber-01.jpg',
+    img: '/showcase/barber-01.webp',
     video: '/media/6card/6card1',
     es: { title: 'Diseño a medida',              desc: 'Sin plantillas. Un sitio web construido desde cero para tu negocio.' },
     en: { title: 'Custom design',                desc: 'No templates. A website built from scratch for your business.' },
   },
   {
-    img: '/showcase/tattoo-01.jpg',
+    img: '/showcase/tattoo-01.webp',
     video: '/media/6card/6card2',
     es: { title: 'Entrega rápida',               desc: 'Tu web publicada en tu dominio en menos de una semana.' },
     en: { title: 'Fast delivery',                desc: 'Your site live from one week.' },
   },
   {
-    img: '/showcase/car-01.jpg',
+    img: '/showcase/car-01.webp',
     video: '/media/6card/6card3',
     es: { title: 'Control fácil del contenido',  desc: 'Actualiza tus servicios, menú, precios o fotos tú mismo, cuando quieras.' },
     en: { title: 'Easy content control',         desc: 'Update your services, menu, prices, or photos yourself, anytime.' },
   },
   {
-    img: '/showcase/mecanica-01.jpg',
+    img: '/showcase/mecanica-01.webp',
     video: '/media/6card/6card4',
     es: { title: 'SEO local',                    desc: 'Apareces cuando te buscan.' },
     en: { title: 'Local SEO',                    desc: 'Show up when people search for you.' },
   },
   {
-    img: '/showcase/archi-01.jpg',
+    img: '/showcase/archi-01.webp',
     video: '/media/6card/6card5',
     es: { title: 'Mobile-first',                 desc: 'Perfecto en el móvil, donde el 80% de tus clientes te encuentran.' },
     en: { title: 'Mobile-first',                 desc: 'Looks great on mobile, where 80% of your customers find you.' },
   },
   {
-    img: '/showcase/studio-01.jpg',
+    img: '/showcase/studio-01.webp',
     video: '/media/6card/6card6',
     es: { title: 'Todo incluido',                desc: 'Hosting, dominio, mantenimiento, marketing y soporte. Un precio fijo, sin sorpresas.' },
     en: { title: 'All-in-one',                   desc: 'Hosting, domain, maintenance, marketing and support. One flat price, no surprises.' },

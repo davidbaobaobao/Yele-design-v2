@@ -8,28 +8,28 @@ import { useLang } from '@/context/LanguageContext'
 const steps = [
   {
     num: '01',
-    img: '/como-funciona/step-01.jpg',
+    img: '/como-funciona/step-01.webp',
     video: '/media/como/como1',
     es: { title: 'Cuéntanos tu negocio', desc: 'Rellenas un formulario breve. Nos dices qué haces, a quién, y cómo quieres que te vean.' },
     en: { title: 'Tell us about your business', desc: 'Fill out a short form. Tell us what you do, who you serve, and how you want to be seen.' },
   },
   {
     num: '02',
-    img: '/como-funciona/step-02.jpg',
+    img: '/como-funciona/step-02.webp',
     video: '/media/como/como2',
     es: { title: 'Diseñamos y construimos', desc: 'En 1 semana tienes un sitio profesional, adaptado a tu sector, con tu contenido real.' },
     en: { title: 'We design and build it', desc: 'In 1 week you have a professional site, tailored to your industry, with your real content.' },
   },
   {
     num: '03',
-    img: '/como-funciona/step-03.jpg',
+    img: '/como-funciona/step-03.webp',
     video: '/media/como/como3',
     es: { title: 'Tu web en marcha', desc: 'Apruebas, publicamos. Tu web está live y empieza a trabajar por ti desde el primer día.' },
     en: { title: 'Your website is live', desc: 'You approve, we publish. Your site is live and starts working for you from day one.' },
   },
   {
     num: '04',
-    img: '/como-funciona/step-04.jpg',
+    img: '/como-funciona/step-04.webp',
     video: '/media/como/como4',
     es: { title: 'Soporte y mejora continua', desc: 'Actualizamos, mantenemos y mejoramos tu web. Tú no tocas código. Nunca.' },
     en: { title: 'Continuous support and improvement', desc: 'We update, maintain and improve your website. You never touch the code.' },
@@ -86,7 +86,7 @@ function StepCard({
           <Image src={step.img} alt={t(step.es.title, step.en.title)} fill sizes="50vw" className="object-cover object-center" />
           <video
             ref={videoRef}
-            loop muted playsInline preload="metadata"
+            loop muted playsInline preload="none"
             poster={step.img}
             className="absolute inset-0 w-full h-full object-cover object-center"
           >
@@ -146,7 +146,7 @@ function MobileStepCard({ step, index, t }: { step: typeof steps[0]; index: numb
         <Image src={step.img} alt={t(step.es.title, step.en.title)} fill sizes="92vw" className="object-cover object-center" />
         <video
           ref={videoRef}
-          loop muted playsInline preload="metadata"
+          loop muted playsInline preload="none"
           poster={step.img}
           className="absolute inset-0 w-full h-full object-cover object-center"
         >

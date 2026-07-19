@@ -18,8 +18,6 @@ export default function WeEnsureSection() {
         src="/media/weensure/weensure_poster.jpg"
         alt=""
         fill
-        priority
-        unoptimized
         sizes="100vw"
         className="object-cover"
         aria-hidden="true"

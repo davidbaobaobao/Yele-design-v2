@@ -21,7 +21,6 @@ export default function WeDesignSection() {
           alt=""
           fill
           priority
-          unoptimized
           sizes="100vw"
           className="object-cover"
           aria-hidden="true"
