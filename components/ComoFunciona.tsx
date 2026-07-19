@@ -38,7 +38,7 @@ const steps = [
 
 /* ── Timings ── */
 const ANIM_MS = 340
-const HOLD_MS = 750
+const HOLD_MS = 375
 const IMG_H   = 400
 
 /* ── Desktop step card (one expanded at a time) ── */
