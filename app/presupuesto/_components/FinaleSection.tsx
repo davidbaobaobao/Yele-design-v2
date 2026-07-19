@@ -54,7 +54,7 @@ export default function FinaleSection() {
             className="font-manrope font-semibold text-lg bg-white text-[#1D1D1F]
                        px-10 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
           >
-            {t('Empezar por 0€', 'Start for free')}
+            {t('Empezar por 0€', 'Try for free')}
           </a>
         </motion.div>
 

@@ -161,7 +161,7 @@ export default function DiferenciaSection() {
               className="font-manrope font-semibold text-base bg-white text-[#1D1D1F]
                          px-8 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
             >
-              {t('Empezar gratis', 'Start for free')}
+              {t('Empezar gratis', 'Try for free')}
             </a>
             <a
               href="#contacto"

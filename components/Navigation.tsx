@@ -121,7 +121,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 isDark ? 'bg-white text-[#1D1D1F] hover:bg-[#F5F5F7]' : 'bg-[#1D1D1F] text-white hover:bg-black'
               }`}
             >
-              {t('Empezar por 0€', 'Start free')}
+              {t('Empezar por 0€', 'Try for free')}
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                 <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -179,7 +179,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-1.5 font-manrope text-sm font-medium bg-[#1D1D1F] text-white px-4 py-2 rounded-xl cursor-pointer"
               >
-                {t('Empezar por 0€', 'Start free')}
+                {t('Empezar por 0€', 'Try for free')}
               </Link>
             </div>
           </motion.div>

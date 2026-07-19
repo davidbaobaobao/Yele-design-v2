@@ -199,7 +199,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
           style={{ originX: 0 }}
           aria-hidden="true"
         />
-        <span className="relative z-10">{t('Empezar gratis', 'Start for free')}</span>
+        <span className="relative z-10">{t('Empezar gratis', 'Try for free')}</span>
       </motion.a>
     </motion.div>
   )
