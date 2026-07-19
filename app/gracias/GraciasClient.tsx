@@ -8,9 +8,11 @@ import ClarityScript from '@/components/ClarityScript'
 export default function GraciasClient({
   conversionValue,
   conversionCurrency,
+  customerEmail,
 }: {
   conversionValue: number
   conversionCurrency: string
+  customerEmail: string | null
 }) {
   const searchParams = useSearchParams()
 
@@ -19,13 +21,21 @@ export default function GraciasClient({
     if (!sessionId) return
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(window as any).gtag?.('event', 'conversion', {
+    const gtag = (window as any).gtag
+    if (!gtag) return
+
+    // Enhanced Conversions: pass email so Google can hash and match
+    if (customerEmail) {
+      gtag('set', 'user_data', { email: customerEmail })
+    }
+
+    gtag('event', 'conversion', {
       send_to: 'AW-18281072925/AH2nCP-4p8ocEJ2SjI1E',
       value: conversionValue,
       currency: conversionCurrency,
       transaction_id: sessionId,
     })
-  }, [searchParams, conversionValue, conversionCurrency])
+  }, [searchParams, conversionValue, conversionCurrency, customerEmail])
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6">

@@ -22,6 +22,7 @@ export default async function GraciasPage({
 
   let conversionValue = 49
   let conversionCurrency = 'EUR'
+  let customerEmail: string | null = null
 
   if (session_id) {
     try {
@@ -32,6 +33,7 @@ export default async function GraciasPage({
         conversionValue = PLAN_VALUES[planId].value
         conversionCurrency = PLAN_VALUES[planId].currency
       }
+      customerEmail = session.customer_details?.email ?? null
     } catch {
       // fall through to defaults
     }
@@ -39,7 +41,11 @@ export default async function GraciasPage({
 
   return (
     <Suspense>
-      <GraciasClient conversionValue={conversionValue} conversionCurrency={conversionCurrency} />
+      <GraciasClient
+        conversionValue={conversionValue}
+        conversionCurrency={conversionCurrency}
+        customerEmail={customerEmail}
+      />
     </Suspense>
   )
 }
