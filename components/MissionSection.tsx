@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react'
 import { useLang } from '@/context/LanguageContext'
 
 const LEFT_PAD = 48
-const FILL     = 0.74
+const FILL     = 0.59
 const N        = 5
 const EDGE     = 5   // % — soft gradient transition width at mask edge
 
@@ -56,7 +56,7 @@ export default function MissionSection() {
   useEffect(() => {
     function fitLines() {
       const isMobile = window.innerWidth < 768
-      const fill = isMobile ? 0.92 : FILL
+      const fill = isMobile ? 0.74 : FILL
       const contentW = document.documentElement.clientWidth - LEFT_PAD
       const widths = [m0, m1, m2, m3, m4].map(r => r.current?.getBoundingClientRect().width ?? 0)
       const maxW = Math.max(...widths)

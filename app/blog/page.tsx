@@ -6,18 +6,18 @@ import { articles } from '@/lib/articles'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Blog — Recursos para tu negocio web',
-  description: 'Guías, comparativas y consejos prácticos sobre diseño web, SEO local y presencia digital para PYMEs y autónomos en España.',
+  title: 'Blog — Resources for your business | Yele',
+  description: 'Guides, comparisons and practical advice on web design, local SEO and digital presence for SMBs and freelancers.',
   alternates: { canonical: 'https://yele.design/blog' },
   openGraph: {
-    title: 'Blog — Recursos para tu negocio web | Yele',
-    description: 'Guías y consejos prácticos sobre diseño web y SEO local para negocios españoles.',
+    title: 'Blog — Resources for your business | Yele',
+    description: 'Practical guides on web design and local SEO for small businesses.',
     url: 'https://yele.design/blog',
   },
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 export default function BlogPage() {
@@ -31,7 +31,7 @@ export default function BlogPage() {
         <div className="max-w-[1100px] mx-auto px-6 pt-14 pb-10">
           <p className="font-manrope text-sm font-medium text-[#6B7280] tracking-wide uppercase mb-3">Blog</p>
           <h1 className="font-outfit font-bold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
-            Recursos para tu negocio
+            Resources for your business
           </h1>
         </div>
 
@@ -44,7 +44,7 @@ export default function BlogPage() {
             <div className="relative aspect-[16/10] md:aspect-auto overflow-hidden">
               <Image
                 src={featured.image}
-                alt={featured.titleEs}
+                alt={featured.titleEn}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 priority
@@ -56,18 +56,18 @@ export default function BlogPage() {
                 <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
                   {featured.category}
                 </span>
-                <span className="font-manrope text-xs text-[#6B7280]">{featured.readTime} min de lectura</span>
+                <span className="font-manrope text-xs text-[#6B7280]">{featured.readTime} min read</span>
               </div>
               <h2 className="font-outfit font-semibold text-2xl md:text-3xl text-[#1D1D1F] leading-snug mb-4 group-hover:text-[#0066CC] transition-colors">
-                {featured.titleEs}
+                {featured.titleEn}
               </h2>
               <p className="font-manrope text-[#6B7280] leading-relaxed mb-6">
-                {featured.excerptEs}
+                {featured.excerptEn}
               </p>
               <div className="flex items-center justify-between">
                 <p className="font-manrope text-xs text-[#ADADB8]">{formatDate(featured.date)}</p>
                 <span className="font-manrope text-sm font-medium text-[#0066CC] flex items-center gap-1.5">
-                  Leer artículo
+                  Read article
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                     <path d="M2.5 7h9M8 3.5L11.5 7 8 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -89,7 +89,7 @@ export default function BlogPage() {
                 <div className="relative aspect-[16/9] overflow-hidden">
                   <Image
                     src={article.image}
-                    alt={article.titleEs}
+                    alt={article.titleEn}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -103,10 +103,10 @@ export default function BlogPage() {
                     <span className="font-manrope text-xs text-[#6B7280]">{article.readTime} min</span>
                   </div>
                   <h3 className="font-outfit font-semibold text-[#1D1D1F] text-lg leading-snug mb-2 group-hover:text-[#0066CC] transition-colors line-clamp-2">
-                    {article.titleEs}
+                    {article.titleEn}
                   </h3>
                   <p className="font-manrope text-sm text-[#6B7280] leading-relaxed line-clamp-2">
-                    {article.excerptEs}
+                    {article.excerptEn}
                   </p>
                   <p className="font-manrope text-xs text-[#ADADB8] mt-4">{formatDate(article.date)}</p>
                 </div>

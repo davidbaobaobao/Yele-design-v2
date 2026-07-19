@@ -9,27 +9,27 @@ import type { Metadata } from 'next'
 const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string; button: string }> = {
   'web-para-fontanero-como-conseguir-mas-clientes': {
     href: '/diseno-web-fontaneros',
-    heading: '¿Eres fontanero y buscas una web que te traiga clientes?',
-    body: 'Diseñamos webs específicamente pensadas para fontaneros autónomos: número visible, área de servicio, servicios detallados y SEO local. Listas en 1 semana.',
-    button: 'Ver diseño web para fontaneros →',
+    heading: 'Are you a plumber looking for a website that brings clients?',
+    body: 'We design websites specifically built for self-employed plumbers: visible phone number, service area, detailed services and local SEO. Live in 1 week.',
+    button: 'See web design for plumbers →',
   },
   'web-clinica-dental-como-atraer-pacientes': {
     href: '/diseno-web-clinicas-dentales',
-    heading: '¿Tienes una clínica dental y quieres más pacientes?',
-    body: 'Diseñamos webs para clínicas dentales que transmiten confianza, muestran tus tratamientos y convierten visitas en citas. Desde 49 €/mes.',
-    button: 'Ver diseño web para clínicas dentales →',
+    heading: 'Do you have a dental clinic and want more patients?',
+    body: 'We design websites for dental clinics that build trust, showcase your treatments and turn visits into appointments. From €49/month.',
+    button: 'See web design for dental clinics →',
   },
   'como-una-web-impulsa-tu-negocio-de-fontaneria': {
     href: '/diseno-web-fontaneros',
-    heading: '¿Eres fontanero y buscas una web que traiga trabajo?',
-    body: 'Webs para fontaneros con teléfono visible, zona de cobertura y SEO local. Listas en 1 semana, desde 49 €/mes, sin pago inicial.',
-    button: 'Ver diseño web para fontaneros →',
+    heading: 'Are you a plumber looking for a website that brings work?',
+    body: 'Websites for plumbers with visible phone number, service area and local SEO. Live in 1 week, from €49/month, no setup fee.',
+    button: 'See web design for plumbers →',
   },
   'fontanero-en-espana-numeros-y-estadisticas': {
     href: '/diseno-web-fontaneros',
-    heading: '¿Eres fontanero y quieres captar esas búsquedas?',
-    body: 'Diseñamos tu web con los cinco elementos que convierten búsquedas en llamadas. Lista en 1 semana, desde 49 €/mes, sin pago inicial.',
-    button: 'Ver diseño web para fontaneros →',
+    heading: 'Are you a plumber who wants to capture those searches?',
+    body: 'We design your website with the five elements that turn searches into calls. Live in 1 week, from €49/month, no setup fee.',
+    button: 'See web design for plumbers →',
   },
 }
 
@@ -42,20 +42,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const article = getArticleBySlug(slug)
   if (!article) return {}
   return {
-    title: article.titleEs,
-    description: article.excerptEs,
+    title: article.titleEn,
+    description: article.excerptEn,
     alternates: { canonical: `https://yele.design/blog/${article.slug}` },
     openGraph: {
-      title: `${article.titleEs} | Yele`,
-      description: article.excerptEs,
+      title: `${article.titleEn} | Yele`,
+      description: article.excerptEn,
       url: `https://yele.design/blog/${article.slug}`,
-      images: [{ url: article.image, width: 1200, height: 630, alt: article.titleEs }],
+      images: [{ url: article.image, width: 1200, height: 630, alt: article.titleEn }],
     },
   }
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function renderInline(raw: string): string {
@@ -177,8 +177,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {
         '@type': 'Article',
         '@id': `${pageUrl}#article`,
-        headline: article.titleEs,
-        description: article.excerptEs,
+        headline: article.titleEn,
+        description: article.excerptEn,
         datePublished: article.date,
         dateModified: article.date,
         url: pageUrl,
@@ -204,9 +204,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Inicio', item: 'https://yele.design' },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://yele.design' },
           { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://yele.design/blog' },
-          { '@type': 'ListItem', position: 3, name: article.titleEs, item: pageUrl },
+          { '@type': 'ListItem', position: 3, name: article.titleEn, item: pageUrl },
         ],
       },
     ],
@@ -224,7 +224,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <div className={`relative w-full aspect-[21/8] overflow-hidden ${article.image.endsWith('.svg') ? 'bg-[#1D1D1F]' : 'bg-[#F5F5F7]'}`}>
           <Image
             src={article.image}
-            alt={article.titleEs}
+            alt={article.titleEn}
             fill
             sizes="100vw"
             priority
@@ -243,7 +243,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M11.5 7h-9M6 3.5L2.5 7 6 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            Volver al blog
+            Back to blog
           </Link>
 
           {/* Meta */}
@@ -251,25 +251,25 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
               {article.category}
             </span>
-            <span className="font-manrope text-xs text-[#6B7280]">{article.readTime} min de lectura</span>
+            <span className="font-manrope text-xs text-[#6B7280]">{article.readTime} min read</span>
             <span className="font-manrope text-xs text-[#ADADB8]">{formatDate(article.date)}</span>
           </div>
 
           <h1 className="font-outfit font-bold text-3xl md:text-4xl text-[#1D1D1F] tracking-tight leading-tight mb-6">
-            {article.titleEs}
+            {article.titleEn}
           </h1>
 
           <p className="font-manrope text-xl text-[#6B7280] leading-relaxed mb-10 pb-10 border-b border-black/[0.08]">
-            {article.excerptEs}
+            {article.excerptEn}
           </p>
 
           {/* Content */}
           <div>
-            {renderMarkdown(article.contentEs)}
+            {renderMarkdown(article.contentEn)}
           </div>
         </div>
 
-        {/* Sector landing CTA — pending landing page */}
+        {/* Sector landing CTA */}
         {SECTOR_CTAS[article.slug] && (() => {
           const cta = SECTOR_CTAS[article.slug]!
           return (
@@ -293,16 +293,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className="bg-[#1D1D1F] rounded-2xl p-8 md:p-10">
             <p className="font-manrope text-xs font-medium text-[#6B7280] uppercase tracking-wide mb-3">Yele</p>
             <h2 className="font-outfit font-semibold text-2xl text-white mb-3 leading-snug">
-              Tu web lista en 1 semana.<br />Desde 49 €/mes, sin permanencia.
+              Your website live in 1 week.<br />From €49/month, no commitment.
             </h2>
             <p className="font-manrope text-[#6B7280] text-sm leading-relaxed mb-6">
-              Diseño profesional, hosting, SSL y mantenimiento incluidos. Sin pago inicial.
+              Professional design, hosting, SSL and maintenance included. No setup fee.
             </p>
             <Link
-              href="/registro"
+              href="/empezar"
               className="inline-flex items-center gap-2 font-manrope text-sm font-medium bg-white text-[#1D1D1F] px-5 py-2.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
             >
-              Pedir mi web
+              Get my website
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                 <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -314,7 +314,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {related.length > 0 && (
           <div className="bg-[#F5F5F7] py-14">
             <div className="max-w-[1100px] mx-auto px-6">
-              <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] mb-7">Más artículos</h2>
+              <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] mb-7">More articles</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {related.map(a => (
                   <Link
@@ -325,7 +325,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     <div className="relative aspect-[16/9] overflow-hidden">
                       <Image
                         src={a.image}
-                        alt={a.titleEs}
+                        alt={a.titleEn}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -336,7 +336,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         {a.category}
                       </span>
                       <h3 className="font-outfit font-semibold text-[#1D1D1F] text-base leading-snug mt-3 group-hover:text-[#0066CC] transition-colors line-clamp-2">
-                        {a.titleEs}
+                        {a.titleEn}
                       </h3>
                     </div>
                   </Link>

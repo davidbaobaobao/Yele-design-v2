@@ -28,7 +28,6 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
     { label: t('Proyectos', 'Projects'), href: '/ejemplos' },
     { label: t('Precios', 'Pricing'), href: '#precios' },
     { label: 'FAQ', href: '#faq' },
-    { label: 'Blog', href: '/blog' },
   ]
 
   const scroll = (href: string) => {
