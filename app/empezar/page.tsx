@@ -11,6 +11,31 @@ const inputClass = 'w-full bg-white border border-black/[0.12] rounded-xl px-4 p
 const labelClass = 'font-manrope text-xs text-[#6B7280] mb-1.5 block'
 const errorClass = 'font-manrope text-xs text-red-500 mt-1'
 
+const USD_PLANS = [
+  {
+    key: 'starter',
+    name: 'Starter',
+    price: 99,
+    description: 'Perfect for small businesses getting their first professional website.',
+    features: ['Professional website', 'Custom domain', 'Content management panel', 'On-page SEO', '24/7 support'],
+  },
+  {
+    key: 'pro',
+    name: 'Pro',
+    price: 169,
+    description: 'For growing businesses that need more presence and features.',
+    features: ['Everything in Starter', 'Unlimited pages', 'Custom email', 'Priority support', 'Advanced SEO'],
+    highlight: true,
+  },
+  {
+    key: 'frontier',
+    name: 'Frontier',
+    price: 699,
+    description: 'Full-service for ambitious brands that want the best.',
+    features: ['Everything in Pro', 'Custom animations', 'Multimedia content creation', 'Dedicated account manager', 'Monthly strategy calls'],
+  },
+]
+
 type FormData = {
   nombre_negocio: string
   nombre_contacto: string
@@ -23,8 +48,10 @@ type FormData = {
 
 export default function EmpezarPage() {
   const supabase = createClientComponentClient()
+  const [step, setStep] = useState<'form' | 'pricing' | 'checkout'>('form')
+  const [clientId, setClientId] = useState('')
   const [loading, setLoading] = useState(false)
-  const [autoCheckout, setAutoCheckout] = useState(false)
+  const [planLoading, setPlanLoading] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState('')
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
   const [formData, setFormData] = useState<FormData>({
@@ -37,16 +64,17 @@ export default function EmpezarPage() {
     rgpd: false,
   })
 
+  // Returning user: already submitted form + picked a plan → auto-checkout
   useEffect(() => {
     const submitted = sessionStorage.getItem('yele_submitted')
     const plan = sessionStorage.getItem('yele_plan')
     if (submitted === 'true' && plan) {
-      setAutoCheckout(true)
-      const clientId = sessionStorage.getItem('yele_clientId') ?? ''
+      setStep('checkout')
+      const storedClientId = sessionStorage.getItem('yele_clientId') ?? ''
       fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: plan, billing: 'monthly', clientId }),
+        body: JSON.stringify({ planId: plan, billing: 'monthly', clientId: storedClientId }),
       })
         .then(r => r.json())
         .then(({ url }) => {
@@ -98,15 +126,15 @@ export default function EmpezarPage() {
     }
 
     const result = await response.json()
-    const clientId = result.clientId ?? ''
-    const selectedPlan = sessionStorage.getItem('yele_plan')
+    const newClientId = result.clientId ?? ''
+    const preSelectedPlan = sessionStorage.getItem('yele_plan')
 
-    if (selectedPlan) {
-      // Plan pre-selected (ES flow or user came from pricing) → go straight to Stripe
+    if (preSelectedPlan) {
+      // ES flow or user already picked a plan → go straight to Stripe
       const checkoutRes = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: selectedPlan, billing: 'monthly', clientId }),
+        body: JSON.stringify({ planId: preSelectedPlan, billing: 'monthly', clientId: newClientId }),
       })
       const { url, error: checkoutError } = await checkoutRes.json()
       if (checkoutError || !url) {
@@ -116,19 +144,117 @@ export default function EmpezarPage() {
       }
       window.location.href = url
     } else {
-      // No plan yet (EN generic CTA flow) → store intake result and send to pricing
-      sessionStorage.setItem('yele_clientId', clientId)
-      sessionStorage.setItem('yele_submitted', 'true')
-      window.location.href = '/#precios'
+      // EN generic flow → show pricing inline
+      setClientId(newClientId)
+      setLoading(false)
+      setStep('pricing')
     }
   }
 
-  if (autoCheckout) {
+  async function handlePickPlan(planKey: string) {
+    setPlanLoading(planKey)
+    const checkoutRes = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ planId: planKey, billing: 'monthly', clientId }),
+    })
+    const { url, error } = await checkoutRes.json()
+    if (error || !url) {
+      setPlanLoading(null)
+      return
+    }
+    window.location.href = url
+  }
+
+  if (step === 'checkout') {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-6">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-[#1D1D1F] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="font-manrope text-sm text-[#6B7280]">Setting up your subscription…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (step === 'pricing') {
+    return (
+      <div className="min-h-screen bg-white px-6 py-12">
+        <ClarityScript />
+        <div className="max-w-3xl mx-auto">
+          <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
+            <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
+            <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
+              yele<span className="text-[#6B7280] font-normal">.design</span>
+            </span>
+          </Link>
+
+          <div className="mb-10">
+            <p className="font-manrope text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">Step 2 of 2</p>
+            <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">
+              Choose your plan
+            </h2>
+            <p className="font-manrope text-sm text-[#6B7280]">
+              First month free — no charge today. Cancel anytime.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-4">
+            {USD_PLANS.map(plan => (
+              <div
+                key={plan.key}
+                className={`relative rounded-2xl border p-6 flex flex-col ${
+                  plan.highlight
+                    ? 'border-[#1D1D1F] bg-[#1D1D1F] text-white'
+                    : 'border-black/[0.1] bg-white text-[#1D1D1F]'
+                }`}
+              >
+                {plan.highlight && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#34C759] text-white font-manrope text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                    Most popular
+                  </span>
+                )}
+                <p className={`font-outfit font-semibold text-base mb-1 ${plan.highlight ? 'text-white' : 'text-[#1D1D1F]'}`}>
+                  {plan.name}
+                </p>
+                <p className={`font-manrope text-xs leading-relaxed mb-4 ${plan.highlight ? 'text-white/60' : 'text-[#6B7280]'}`}>
+                  {plan.description}
+                </p>
+                <div className="mb-5">
+                  <span className={`font-outfit font-bold text-3xl ${plan.highlight ? 'text-white' : 'text-[#1D1D1F]'}`}>
+                    ${plan.price}
+                  </span>
+                  <span className={`font-manrope text-xs ml-1 ${plan.highlight ? 'text-white/50' : 'text-[#6B7280]'}`}>/mo</span>
+                </div>
+                <ul className="space-y-2 mb-6 flex-1">
+                  {plan.features.map(f => (
+                    <li key={f} className={`flex items-start gap-2 font-manrope text-xs ${plan.highlight ? 'text-white/80' : 'text-[#6B7280]'}`}>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="flex-shrink-0 mt-0.5" aria-hidden="true">
+                        <path d="M2 6l3 3 5-5" stroke={plan.highlight ? '#34C759' : '#34C759'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  onClick={() => handlePickPlan(plan.key)}
+                  disabled={planLoading !== null}
+                  className={`w-full font-manrope font-semibold text-sm py-3 rounded-xl transition-colors cursor-pointer disabled:opacity-50 ${
+                    plan.highlight
+                      ? 'bg-white text-[#1D1D1F] hover:bg-[#F5F5F7]'
+                      : 'bg-[#1D1D1F] text-white hover:bg-black'
+                  }`}
+                >
+                  {planLoading === plan.key ? 'Loading…' : 'Start free month →'}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center font-manrope text-xs text-[#6B7280] mt-8">
+            All plans include a free 1-month trial. No credit card charged today.
+          </p>
         </div>
       </div>
     )
@@ -149,6 +275,7 @@ export default function EmpezarPage() {
         </Link>
 
         <div className="mb-8">
+          <p className="font-manrope text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">Step 1 of 2</p>
           <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">
             Tell us about your business
           </h2>
@@ -260,7 +387,7 @@ export default function EmpezarPage() {
             disabled={loading}
             className="w-full inline-flex items-center justify-center gap-2 font-manrope font-medium text-sm bg-[#1D1D1F] text-white px-6 py-3.5 rounded-xl hover:bg-black transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
           >
-            {loading ? 'Setting up your trial…' : 'Start my free month →'}
+            {loading ? 'Saving…' : 'Continue →'}
           </button>
 
           <p className="text-center font-manrope text-xs text-[#6B7280]">
