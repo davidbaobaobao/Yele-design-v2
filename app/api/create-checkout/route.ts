@@ -39,13 +39,13 @@ export async function POST(request: Request) {
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${baseUrl}/gracias?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/elegir-plan`,
+      cancel_url: `${baseUrl}/`,
       metadata: { clientId: clientId ?? '', planId, billing },
       subscription_data: {
         metadata: { clientId: clientId ?? '', planId, billing },
         trial_period_days: 30,
       },
-      locale: 'es',
+      locale: 'auto',
       allow_promotion_codes: true,
     }
 
