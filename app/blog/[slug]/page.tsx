@@ -8,27 +8,27 @@ import type { Metadata } from 'next'
 
 const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string; button: string }> = {
   'web-para-fontanero-como-conseguir-mas-clientes': {
-    href: '/diseno-web-fontaneros',
+    href: '/web-design-plumbers',
     heading: 'Are you a plumber looking for a website that brings clients?',
-    body: 'We design websites specifically built for self-employed plumbers: visible phone number, service area, detailed services and local SEO. Live in 1 week.',
+    body: 'We design websites specifically built for plumbers: visible phone number, service area, detailed services and local SEO. Live in 1 week, from $99/mo, no setup fee.',
     button: 'See web design for plumbers →',
   },
   'web-clinica-dental-como-atraer-pacientes': {
-    href: '/diseno-web-clinicas-dentales',
-    heading: 'Do you have a dental clinic and want more patients?',
-    body: 'We design websites for dental clinics that build trust, showcase your treatments and turn visits into appointments. From €49/month.',
-    button: 'See web design for dental clinics →',
+    href: '/quote',
+    heading: 'Do you have a clinic and want more patients?',
+    body: 'We design professional websites for local service businesses that build trust and turn visits into appointments. Live in 1 week, from $99/mo, no setup fee.',
+    button: 'Get a free quote →',
   },
   'como-una-web-impulsa-tu-negocio-de-fontaneria': {
-    href: '/diseno-web-fontaneros',
+    href: '/web-design-plumbers',
     heading: 'Are you a plumber looking for a website that brings work?',
-    body: 'Websites for plumbers with visible phone number, service area and local SEO. Live in 1 week, from €49/month, no setup fee.',
+    body: 'Websites for plumbers with visible phone number, service area and local SEO. Live in 1 week, from $99/mo, no setup fee.',
     button: 'See web design for plumbers →',
   },
   'fontanero-en-espana-numeros-y-estadisticas': {
-    href: '/diseno-web-fontaneros',
+    href: '/web-design-plumbers',
     heading: 'Are you a plumber who wants to capture those searches?',
-    body: 'We design your website with the five elements that turn searches into calls. Live in 1 week, from €49/month, no setup fee.',
+    body: 'We design your website with the five elements that turn searches into calls. Live in 1 week, from $99/mo, no setup fee.',
     button: 'See web design for plumbers →',
   },
 }
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  return new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function renderInline(raw: string): string {
@@ -175,10 +175,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     '@context': 'https://schema.org',
     '@graph': [
       {
-        '@type': 'Article',
+        '@type': 'BlogPosting',
         '@id': `${pageUrl}#article`,
         headline: article.titleEn,
         description: article.excerptEn,
+        inLanguage: 'en',
         datePublished: article.date,
         dateModified: article.date,
         url: pageUrl,
@@ -293,13 +294,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className="bg-[#1D1D1F] rounded-2xl p-8 md:p-10">
             <p className="font-manrope text-xs font-medium text-[#6B7280] uppercase tracking-wide mb-3">Yele</p>
             <h2 className="font-outfit font-semibold text-2xl text-white mb-3 leading-snug">
-              Your website live in 1 week.<br />From €49/month, no commitment.
+              Your website live in 1 week.<br />From $99/mo, no commitment.
             </h2>
             <p className="font-manrope text-[#6B7280] text-sm leading-relaxed mb-6">
               Professional design, hosting, SSL and maintenance included. No setup fee.
             </p>
             <Link
-              href="/#precios"
+              href="/quote"
               className="inline-flex items-center gap-2 font-manrope text-sm font-medium bg-white text-[#1D1D1F] px-5 py-2.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
             >
               Get my website
