@@ -32,11 +32,11 @@ export const metadata: Metadata = {
     'Professional website design for SMBs and freelancers. Live in 1 week, maintenance included, from $99/mo. No setup fee, no commitment.',
   alternates: {
     canonical: 'https://yele.design',
-    languages: { es: 'https://yele.design/es' },
+    languages: { 'x-default': 'https://yele.design' },
   },
   openGraph: {
     type: 'website',
-    locale: 'en_GB',
+    locale: 'en_US',
     url: 'https://yele.design',
     siteName: 'Yele',
     title: 'Professional website design from $99/mo | Yele',

@@ -9,9 +9,10 @@ import FAQClient from '@/components/FAQClient'
 import type { FAQItem } from '@/components/FAQClient'
 
 export const metadata: Metadata = {
-  title: 'Diseño web para reformas — gana más presupuestos | Yele',
+  title: 'Diseño web para reformas — gana más presupuestos',
   description:
     'Web profesional para empresas de reformas lista en 1 semana. Enseña tus proyectos, gana presupuestos y consigue clientes directos sin comisión. Desde 49€/mes.',
+  robots: { index: false, follow: false },
   alternates: {
     canonical: 'https://yele.design/diseno-web-reformas',
   },

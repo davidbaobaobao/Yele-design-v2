@@ -8,9 +8,10 @@ import FAQClient from '@/components/FAQClient'
 import type { FAQItem } from '@/components/FAQClient'
 
 export const metadata: Metadata = {
-  title: 'Diseño web para mudanzas — más presupuestos directos | Yele',
+  title: 'Diseño web para mudanzas — más presupuestos directos',
   description:
     'Web profesional para empresas de mudanzas lista en 1 semana. Formulario de presupuesto, zona de cobertura y confianza para que el cliente te elija a ti. Desde 49€/mes.',
+  robots: { index: false, follow: false },
   alternates: {
     canonical: 'https://yele.design/diseno-web-mudanzas',
   },

@@ -6,7 +6,7 @@ import { articles } from '@/lib/articles'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Blog — Resources for your business | Yele',
+  title: 'Blog — Resources for your business',
   description: 'Guides, comparisons and practical advice on web design, local SEO and digital presence for SMBs and freelancers.',
   alternates: { canonical: 'https://yele.design/blog' },
   openGraph: {

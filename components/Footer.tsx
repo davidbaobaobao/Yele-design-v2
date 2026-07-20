@@ -102,7 +102,7 @@ export default function Footer() {
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="pointer-events-auto flex items-center justify-center w-11 h-11 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            aria-label="Volver arriba"
+            aria-label="Back to top"
           >
             <ChevronUp size={20} className="text-white/60" />
           </button>
@@ -126,7 +126,7 @@ export default function Footer() {
               </div>
 
               <div className="flex gap-12">
-                <nav aria-label="Secciones">
+                <nav aria-label="Sections">
                   <p className="font-manrope text-xs text-white/40 uppercase tracking-[0.12em] mb-3">
                     {t('Secciones', 'Sections')}
                   </p>

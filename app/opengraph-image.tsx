@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Yele — Tu web lista en 3 días'
+export const alt = 'Yele — Your website, live in 3 days'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -42,7 +42,7 @@ export default async function Image() {
             maxWidth: 820,
           }}
         >
-          Tu web lista en 3 días.
+          Your website, live in 3 days.
         </div>
         <div
           style={{
@@ -53,7 +53,7 @@ export default async function Image() {
             lineHeight: 1.4,
           }}
         >
-          Diseño profesional para PYMEs y autónomos en España. Desde €49/mes.
+          Professional web design for US small businesses. From $99/mo.
         </div>
         <div
           style={{
@@ -66,7 +66,7 @@ export default async function Image() {
             letterSpacing: '0.04em',
           }}
         >
-          Sin pago inicial · Sin permanencia
+          No setup fee · No commitment
         </div>
       </div>
     ),

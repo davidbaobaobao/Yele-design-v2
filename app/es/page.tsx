@@ -27,12 +27,12 @@ const FAQ              = dynamic(() => import('@/components/FAQ'))
 const Noticias         = dynamic(() => import('@/components/Noticias'))
 
 export const metadata: Metadata = {
-  title: 'Diseño web profesional desde 49€/mes | Yele',
+  title: 'Diseño web profesional desde 49€/mes',
   description:
     'Diseño web profesional para PYMEs y autónomos. Entrega en 1 semana, mantenimiento incluido, desde €49/mes. Sin pago inicial, sin permanencia.',
+  robots: { index: false, follow: false },
   alternates: {
     canonical: 'https://yele.design/es',
-    languages: { en: 'https://yele.design' },
   },
   openGraph: {
     type: 'website',

@@ -11,12 +11,7 @@ export const metadata: Metadata = {
   title: 'Trabajos — Webs que hemos construido',
   description:
     'Portfolio de webs profesionales construidas por Yele para negocios reales en España. Cerámica, restaurantes, yoga, abogados, fontaneros.',
-  openGraph: {
-    title: 'Trabajos — Webs que hemos construido | Yele',
-    description:
-      'Portfolio de webs profesionales para negocios reales en España.',
-    url: 'https://yele.design/ejemplos',
-  },
+  robots: { index: false, follow: false },
   alternates: {
     canonical: 'https://yele.design/ejemplos',
   },

@@ -30,12 +30,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://yele.design'),
 
   title: {
-    default: 'Desde 49€/mes. Tu página web profesional, sin complicaciones',
+    default: 'Professional website design from $99/mo | Yele',
     template: '%s | Yele',
   },
 
   description:
-    'Diseño web profesional para PYMEs y autónomos españoles. Entrega en 1 semana, mantenimiento incluido, desde €49/mes. Sin pago inicial, sin permanencia.',
+    'Professional website design for US small businesses and freelancers. Live in 1 week, maintenance included, from $99/mo. No setup fee, no commitment.',
 
   authors: [{ name: 'Yele', url: 'https://yele.design' }],
   creator: 'Yele',
@@ -43,28 +43,27 @@ export const metadata: Metadata = {
 
   openGraph: {
     type: 'website',
-    locale: 'es_ES',
-    alternateLocale: 'en_GB',
+    locale: 'en_US',
     url: 'https://yele.design',
     siteName: 'Yele',
-    title: 'Desde 49€/mes. Tu página web profesional, sin complicaciones',
+    title: 'Professional website design from $99/mo | Yele',
     description:
-      'Diseño web profesional para PYMEs y autónomos españoles. Desde €49/mes. Sin pago inicial.',
+      'Professional website design for US small businesses and freelancers. From $99/mo. No setup fee.',
     images: [
       {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Yele — Diseño web por suscripción para negocios españoles',
+        alt: 'Yele — Professional website design for US small businesses',
       },
     ],
   },
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Desde 49€/mes. Tu página web profesional, sin complicaciones',
+    title: 'Professional website design from $99/mo | Yele',
     description:
-      'Diseño web profesional para PYMEs y autónomos españoles. Desde €49/mes.',
+      'Professional website design for US small businesses and freelancers. From $99/mo.',
     images: ['/opengraph-image'],
   },
 
@@ -102,11 +101,11 @@ const schemaOrg = {
         '@type': 'ContactPoint',
         email: 'info@yele.design',
         contactType: 'customer service',
-        availableLanguage: ['Spanish', 'English'],
+        availableLanguage: ['English'],
       },
       areaServed: {
         '@type': 'Country',
-        name: 'España',
+        name: 'United States',
       },
     },
     {
@@ -114,63 +113,63 @@ const schemaOrg = {
       '@id': 'https://yele.design/#website',
       url: 'https://yele.design',
       name: 'Yele',
-      description: 'Diseño web por suscripción para PYMEs y autónomos españoles',
+      description: 'Subscription-based professional website design for US small businesses and freelancers',
       publisher: { '@id': 'https://yele.design/#organization' },
-      inLanguage: ['es', 'en'],
+      inLanguage: ['en'],
     },
     {
       '@type': 'Service',
       '@id': 'https://yele.design/#service',
-      name: 'Diseño web por suscripción',
+      name: 'Subscription website design',
       provider: { '@id': 'https://yele.design/#organization' },
       description:
-        'Diseño y mantenimiento de páginas web profesionales para PYMEs y autónomos en España. Entrega en 1 semana, desde €49/mes.',
-      areaServed: { '@type': 'Country', name: 'España' },
+        'Professional website design and maintenance for US small businesses and freelancers. Live in 1 week, from $99/mo.',
+      areaServed: { '@type': 'Country', name: 'United States' },
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
-        name: 'Planes Yele',
+        name: 'Yele Plans',
         itemListElement: [
           {
             '@type': 'Offer',
             name: 'Starter',
-            price: '49',
-            priceCurrency: 'EUR',
+            price: '99',
+            priceCurrency: 'USD',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
-              price: '49',
-              priceCurrency: 'EUR',
+              price: '99',
+              priceCurrency: 'USD',
               unitText: 'MONTH',
             },
             description:
-              'Web funcional, dominio personalizado, panel de control, SEO on-page, email personalizado, soporte 24/7',
+              'Functional website, custom domain, control panel, on-page SEO, custom email, 24/7 support',
           },
           {
             '@type': 'Offer',
             name: 'Pro',
-            price: '79',
-            priceCurrency: 'EUR',
+            price: '169',
+            priceCurrency: 'USD',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
-              price: '79',
-              priceCurrency: 'EUR',
+              price: '169',
+              priceCurrency: 'USD',
               unitText: 'MONTH',
             },
             description:
-              'Branding, sistema de pagos, calendario y reservas, Google Business Profile, asistente de chat IA',
+              'Branding, payment system, booking calendar, Google Business Profile, AI chat assistant',
           },
           {
             '@type': 'Offer',
             name: 'Frontier',
-            price: '599',
-            priceCurrency: 'EUR',
+            price: '699',
+            priceCurrency: 'USD',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
-              price: '599',
-              priceCurrency: 'EUR',
+              price: '699',
+              priceCurrency: 'USD',
               unitText: 'MONTH',
             },
             description:
-              'Marketing activo mensual, SEO avanzado backlinks, contenido semanal, Google Ads, notas de prensa',
+              'Active monthly marketing, advanced SEO & backlinks, weekly content, Google Ads management, press releases',
           },
         ],
       },
@@ -180,50 +179,50 @@ const schemaOrg = {
       mainEntity: [
         {
           '@type': 'Question',
-          name: '¿Necesito saber de tecnología?',
+          name: 'Do I need to be tech-savvy?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'No. Tú nos dices qué quieres y nosotros lo construimos. Para actualizar contenido tienes un panel sencillo, sin código.',
+            text: 'Not at all. You tell us what you want and we build it. For updating content, you get a simple dashboard — no code needed.',
           },
         },
         {
           '@type': 'Question',
-          name: '¿Cuánto tarda en estar lista mi web?',
+          name: 'How long until my website is live?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'En menos de 1 semana desde que recibes tu formulario completado. Sin esperas.',
+            text: 'Less than 1 week from the time you complete your onboarding form. No waiting around.',
           },
         },
         {
           '@type': 'Question',
-          name: '¿Puedo cancelar cuando quiera?',
+          name: 'Can I cancel anytime?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Sí. Sin permanencia, sin penalizaciones. Si en algún momento no lo necesitas, cancelas y listo.',
+            text: 'Yes. No contracts, no cancellation fees. If you ever decide you don\'t need it, just cancel.',
           },
         },
         {
           '@type': 'Question',
-          name: '¿Qué pasa si quiero cambiar algo de mi web?',
+          name: 'What if I want to make changes to my site?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Nos escribes y lo cambiamos. Según tu plan, en 12, 24 o 48 horas. Sin presupuestos extra.',
+            text: 'Just message us and we\'ll handle it. Depending on your plan, updates are done within 12, 24, or 48 hours. No extra quotes.',
           },
         },
         {
           '@type': 'Question',
-          name: '¿El dominio y el hosting están incluidos?',
+          name: 'Are domain and hosting included?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'El hosting sí. El dominio se puede gestionar con nosotros o tú puedes traer el tuyo propio.',
+            text: 'Hosting is included. For your domain, we can manage it for you or you can bring your own.',
           },
         },
         {
           '@type': 'Question',
-          name: '¿Puedo ver ejemplos de webs que hayáis hecho?',
+          name: 'Can I see examples of websites you\'ve built?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Sí, en la sección Trabajos de esta misma página puedes ver proyectos reales.',
+            text: 'Yes — check out the Portfolio section on this page for real client projects.',
           },
         },
       ],
@@ -233,7 +232,7 @@ const schemaOrg = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${outfit.variable} ${manrope.variable} ${archivo.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${manrope.variable} ${archivo.variable}`}>
       <head>
         <script
           type="application/ld+json"
@@ -246,7 +245,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-black focus:text-white focus:rounded"
           >
-            Saltar al contenido principal
+            Skip to main content
           </a>
           {children}
           <CookieBanner />

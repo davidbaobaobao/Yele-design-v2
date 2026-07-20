@@ -9,9 +9,10 @@ import FAQClient from '@/components/FAQClient'
 import type { FAQItem } from '@/components/FAQClient'
 
 export const metadata: Metadata = {
-  title: 'Diseño web para fontaneros | Yele',
+  title: 'Diseño web para fontaneros',
   description:
     'Web profesional para fontaneros lista en 1 semana. Aparece en Google cuando te buscan en tu zona. Sin pago inicial, desde 49€/mes, sin permanencia.',
+  robots: { index: false, follow: false },
   alternates: {
     canonical: 'https://yele.design/diseno-web-fontaneros',
   },
