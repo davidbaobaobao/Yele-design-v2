@@ -3,57 +3,61 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   const content = `# Yele
 
-> Diseño web por suscripción para PYMEs y autónomos en España.
+> Subscription web design for US small businesses and freelancers.
 
-Yele (yele.design) es un servicio español de diseño y mantenimiento web
-por suscripción mensual. Las webs se entregan en 1 semana.
-No hay coste de setup, no hay permanencia, no se requieren conocimientos técnicos.
+Yele (yele.design) is a US web design subscription service.
+Websites are delivered in 3–5 business days.
+No setup fee, no long-term contract, no technical knowledge required.
 
-## Servicio
+## Service
 
-- Diseño web personalizado desde cero (no plantillas)
-- Mantenimiento mensual incluido (hosting, SSL, actualizaciones)
-- Panel de cliente para editar contenido sin código
-- SEO local optimizado (Schema.org, Google Business, keywords locales)
-- Mobile-first — optimizado para dispositivos móviles
-- Entrega en 1 semana
+- Custom website design from scratch (no templates)
+- Monthly maintenance included (hosting, SSL, updates)
+- Client dashboard to edit content without code
+- Local SEO optimization (Schema.org, Google Business, local keywords)
+- Mobile-first — optimized for all screen sizes
+- Live in 3–5 days
 
-## Precios
+## Pricing
 
-- [Plan Starter](https://yele.design/presupuesto): €49/mes — web funcional, panel de control, SEO, email, soporte 24/7
-- [Plan Pro](https://yele.design/presupuesto): €79/mes — branding, pagos, reservas, Google Business, chat IA
-- [Plan Frontier](https://yele.design/presupuesto): €599/mes — marketing activo, SEO avanzado, contenido semanal, Google Ads
+- [Starter](https://yele.design/quote): $99/mo — professional website, control panel, SEO, email, 24/7 support
+- [Pro](https://yele.design/quote): $169/mo — branding, payments, bookings, Google Business, AI chat
+- [Business](https://yele.design/quote): $699/mo — active marketing, advanced SEO, weekly content, Google Ads
 
-Sin pago inicial. Sin permanencia. Cancelación en cualquier momento.
+No upfront payment. No lock-in contract. Cancel anytime. First month free (30-day trial).
 
-## Mercado objetivo
+## Target Market
 
-PYMEs, autónomos y negocios locales en España:
-fontaneros, clínicas, academias, restaurantes, abogados, comercios,
-estudios de yoga, inmobiliarias, talleres, peluquerías.
+Small businesses, freelancers, and local service providers across the US:
+plumbers, electricians, contractors, moving companies, clinics, restaurants,
+law firms, yoga studios, retail shops, salons.
 
-## Diferenciadores
+## Differentiators
 
-- Frente a agencias web: sin pago inicial de €1.500-5.000, entrega en días no meses
-- Frente a Squarespace/Wix: no requiere tiempo del cliente, diseño personalizado
-- Frente a freelancers: servicio continuo, no proyecto puntual
+- vs. traditional agencies: no $3,000–15,000 upfront cost, live in days not months
+- vs. Squarespace/Wix: no DIY time required, fully custom design
+- vs. freelancers: ongoing service and maintenance, not a one-off project
 
-## Tecnología
+## Technology
 
 Next.js 14, Tailwind CSS, Supabase, Vercel.
-Sitios con PageSpeed 85+ en móvil, CLS < 0.1, LCP < 2.5s.
+Sites score 85+ on mobile PageSpeed, CLS < 0.1, LCP < 2.5s.
 
-## Contacto
+## Contact
 
-- Web: [yele.design](https://yele.design)
+- Website: [yele.design](https://yele.design)
 - Email: info@yele.design
-- Empezar ahora: [Formulario de onboarding](https://yele.design/empezar)
+- Get started: [Get a free quote](https://yele.design/quote)
 
-## Ejemplos de clientes
+## Industries We Serve
 
-Negocios reales en España: estudios de cerámica, bares de tapas,
-estudios de yoga, despachos de abogados, fontaneros autónomos.
-[Ver portfolio de trabajos](https://yele.design/ejemplos)
+Real US small businesses across local service trades and professional services.
+[View portfolio](https://yele.design/portfolio)
+
+- [Website design for plumbers](https://yele.design/web-design-plumbers)
+- [Website design for electricians](https://yele.design/web-design-electricians)
+- [Website design for contractors](https://yele.design/web-design-contractors)
+- [Website design for moving companies](https://yele.design/web-design-movers)
 `
 
   return new NextResponse(content, {
