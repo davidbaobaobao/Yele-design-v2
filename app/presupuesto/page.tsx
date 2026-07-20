@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
 import HeroBento from './_components/HeroBento'
-import MissionSection from '@/components/MissionSection'
+import MissionSection from './_components/MissionSectionEs'
 import WeDesignSection from '@/components/WeDesignSection'
 import WeCreateSection from '@/components/WeCreateSection'
 import WeDeliverSection from '@/components/WeDeliverSection'
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   title: 'Diseño web profesional desde 49€/mes | Agencia de diseño web | Yele',
   description:
     'Diseño web profesional a medida desde 49€/mes. Tu agencia de diseño web sin pago inicial ni permanencia. Página web para tu negocio lista en 3-5 días.',
-  robots: { index: true, follow: true },
+  robots: { index: false, follow: false },
   alternates: { canonical: 'https://yele.design/presupuesto' },
 }
 

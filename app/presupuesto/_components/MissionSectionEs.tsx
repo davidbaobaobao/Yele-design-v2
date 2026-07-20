@@ -16,7 +16,12 @@ const BADGE: React.CSSProperties = {
   lineHeight: 1,
 }
 
-export default function MissionSection() {
+// Presupuesto-specific line order:
+// 0 — Entregamos
+// 1 — Diseño web y Marketing  (plain black)
+// 2 — De última generación    (badge)
+// 3 — por suscripción         (orange)
+export default function MissionSectionEs() {
   const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
   const stickyRef  = useRef<HTMLDivElement>(null)
@@ -28,9 +33,8 @@ export default function MissionSection() {
 
   const m0  = useRef<HTMLSpanElement>(null)
   const m1  = useRef<HTMLSpanElement>(null)
+  const m1m = useRef<HTMLSpanElement>(null) // Mobile: first sub-line of l1
   const m2  = useRef<HTMLSpanElement>(null)
-  // Mobile-only measurement: first sub-line of l2 only (shorter → bigger font)
-  const m2m = useRef<HTMLSpanElement>(null)
   const m3  = useRef<HTMLSpanElement>(null)
 
   const o0 = useRef<HTMLDivElement>(null)
@@ -38,7 +42,6 @@ export default function MissionSection() {
   const o2 = useRef<HTMLDivElement>(null)
   const o3 = useRef<HTMLDivElement>(null)
 
-  // Responsive section height: fewer scrolls on mobile
   useEffect(() => {
     function setHeight() {
       if (sectionRef.current) {
@@ -50,16 +53,14 @@ export default function MissionSection() {
     return () => window.removeEventListener('resize', setHeight)
   }, [])
 
-  // Auto-fit: all lines share the same font size so the longest fills FILL% of content width
   useEffect(() => {
     let rafId: number
     function fitLines() {
       const isMobile = window.innerWidth < 768
-      // Mobile: higher fill + measure only the first sub-line of l2 so the font is larger
       const fill = isMobile ? 0.88 : FILL
       const contentW = document.documentElement.clientWidth - LEFT_PAD
-      const measureRefs = isMobile ? [m0, m1, m2m, m3] : [m0, m1, m2, m3]
-      // Batch all reads before any writes to prevent forced reflow
+      // Mobile: use first sub-line of l1 so font is larger; desktop: full l1 text
+      const measureRefs = isMobile ? [m0, m1m, m2, m3] : [m0, m1, m2, m3]
       const widths = measureRefs.map(r => r.current?.getBoundingClientRect().width ?? 0)
       const maxW = Math.max(...widths)
       if (maxW <= 0) return
@@ -81,7 +82,6 @@ export default function MissionSection() {
     }
   }, [])
 
-  // Scroll-linked reveal — GPU-accelerated translateX instead of CSS mask
   useEffect(() => {
     const overlays = [o0.current, o1.current, o2.current, o3.current]
     let rafId: number | null = null
@@ -101,7 +101,7 @@ export default function MissionSection() {
 
       overlays.forEach((ov, i) => {
         if (!ov) return
-        const lp  = Math.min(1, Math.max(0, (p - i / N) * N))
+        const lp = Math.min(1, Math.max(0, (p - i / N) * N))
         ov.style.transform = `translateX(${(lp - 1) * 100}%)`
       })
     }
@@ -151,13 +151,12 @@ export default function MissionSection() {
     willChange: 'transform',
   }
 
-  const l0 = t('Entregamos', 'We deliver')
-  const l1 = t('De última generación', 'State-of-the-art')
-  const l2 = t('Diseño web y Marketing', 'Website design & Marketing')
-  // Mobile sub-lines for l2
-  const l2m1 = t('Diseño web', 'Website design')
-  const l2m2 = t('y Marketing', '& Marketing')
-  const l3 = t('por suscripción', 'Subscription service')
+  const l0  = t('Entregamos', 'We deliver')
+  const l1  = t('Diseño web y Marketing', 'Website design & Marketing')
+  const l1m1 = t('Diseño web', 'Website design')
+  const l1m2 = t('y Marketing', '& Marketing')
+  const l2  = t('De última generación', 'State-of-the-art')
+  const l3  = t('por suscripción', 'Subscription service')
 
   function scrollPast() {
     const sec = sectionRef.current
@@ -166,20 +165,19 @@ export default function MissionSection() {
     window.scrollTo({ top: bottom, behavior: 'smooth' })
   }
 
-
   return (
     <section ref={sectionRef} className="bg-white" style={{ height: '360vh' }}>
 
       {/* Off-screen measurement spans */}
       <span ref={m0} aria-hidden="true" style={ms}>{l0}</span>
-      {/* l1 now has badge padding — measure with it so font-size accounts for the inset */}
-      <span ref={m1} aria-hidden="true" style={ms}>
-        <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l1}</span>
+      {/* l1 is plain — measure without badge padding */}
+      <span ref={m1} aria-hidden="true" style={ms}>{l1}</span>
+      {/* Mobile: first sub-line of l1 for larger font sizing */}
+      <span ref={m1m} aria-hidden="true" style={ms}>{l1m1}</span>
+      {/* l2 has badge — measure with badge padding */}
+      <span ref={m2} aria-hidden="true" style={ms}>
+        <span style={{ padding: '0.04em 0.16em', display: 'inline-block', letterSpacing: '-0.05em' }}>{l2}</span>
       </span>
-      {/* l2 is now plain text — measure without badge padding */}
-      <span ref={m2} aria-hidden="true" style={ms}>{l2}</span>
-      {/* Mobile l2 measurement (first sub-line, plain) */}
-      <span ref={m2m} aria-hidden="true" style={ms}>{l2m1}</span>
       <span ref={m3} aria-hidden="true" style={ms}>{l3}</span>
 
       <div
@@ -187,7 +185,6 @@ export default function MissionSection() {
         className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden"
         style={{ paddingLeft: LEFT_PAD, visibility: 'hidden' }}
       >
-        {/* Scroll-hint arrow — click skips past the whole section */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
           <button onClick={scrollPast} aria-label="Scroll to next section" className="cursor-pointer bg-transparent border-0 p-0">
             <div className="scroll-arrow-wrap">
@@ -206,31 +203,25 @@ export default function MissionSection() {
           <div ref={o0} aria-hidden="true" style={overlayBase}>{l0}</div>
         </div>
 
-        {/* Line 1 — badge on reveal (white text, black bg) */}
+        {/* Line 1 — plain black on reveal; mobile splits into two sub-lines */}
         <div ref={lw1} style={{ position: 'relative', overflow: 'hidden' }}>
           <div style={{ ...ts, color: '#c8c8c8' }}>
-            <span style={{ display: 'inline-block', letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>{l1}</span>
+            <div className="md:hidden"><div>{l1m1}</div><div>{l1m2}</div></div>
+            <span className="hidden md:inline">{l1}</span>
           </div>
           <div ref={o1} aria-hidden="true" style={overlayBase}>
-            <span style={BADGE}>{l1}</span>
+            <div className="md:hidden"><div>{l1m1}</div><div>{l1m2}</div></div>
+            <span className="hidden md:inline">{l1}</span>
           </div>
         </div>
 
-        {/* Line 2 — plain black on reveal (no background)
-            Mobile: two sub-lines ("Website design" / "& Marketing")
-            Desktop: single inline line
-            Note: use <div className="md:hidden"> not <span style={{display:'contents'}}>
-            because inline styles override Tailwind classes (specificity) */}
+        {/* Line 2 — badge on reveal (white text, black bg); single line on mobile */}
         <div ref={lw2} style={{ position: 'relative', overflow: 'hidden' }}>
-          {/* Gray (unrevealed) layer */}
           <div style={{ ...ts, color: '#c8c8c8' }}>
-            <div className="md:hidden"><div>{l2m1}</div><div>{l2m2}</div></div>
-            <span className="hidden md:inline">{l2}</span>
+            <span style={{ display: 'inline-block', letterSpacing: '-0.05em', padding: '0.04em 0.16em', lineHeight: 1 }}>{l2}</span>
           </div>
-          {/* Plain black (revealed) layer */}
           <div ref={o2} aria-hidden="true" style={overlayBase}>
-            <div className="md:hidden"><div>{l2m1}</div><div>{l2m2}</div></div>
-            <span className="hidden md:inline">{l2}</span>
+            <span style={BADGE}>{l2}</span>
           </div>
         </div>
 
