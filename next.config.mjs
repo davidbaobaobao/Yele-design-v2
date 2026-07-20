@@ -5,10 +5,20 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      { source: '/trabajos',      destination: '/ejemplos',        permanent: true },
+      // Legacy Spanish short-links
+      { source: '/trabajos',      destination: '/portfolio',       permanent: true },
       { source: '/como-funciona', destination: '/#como-funciona',  permanent: true },
       { source: '/precios',       destination: '/#precios',         permanent: true },
       { source: '/contacto',      destination: '/#contacto',        permanent: true },
+      // Phase 3 — retire Spanish homepage
+      { source: '/es',            destination: '/',                permanent: true },
+      // Phase 5 — ejemplos → portfolio
+      { source: '/ejemplos',      destination: '/portfolio',       permanent: true },
+      // Phase 6 — trade verticals
+      { source: '/diseno-web-fontaneros',    destination: '/web-design-plumbers',     permanent: true },
+      { source: '/diseno-web-electricistas', destination: '/web-design-electricians', permanent: true },
+      { source: '/diseno-web-reformas',      destination: '/web-design-contractors',  permanent: true },
+      { source: '/diseno-web-mudanzas',      destination: '/web-design-movers',       permanent: true },
     ]
   },
   images: {
