@@ -243,6 +243,7 @@ export default function WeStackSection() {
     if (!el) return
 
     function onWheel(e: WheelEvent) {
+      if (!el) return
       const { top, bottom } = el.getBoundingClientRect()
       const vh = window.innerHeight
 
