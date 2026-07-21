@@ -139,16 +139,16 @@ function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
         <source src={card.webm} type="video/webm" />
         <source src={card.mp4}  type="video/mp4" />
       </video>
-      {/* Gradient: strong on left half where text sits */}
+      {/* Gradient: strong on right half where text sits */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.42) 42%, rgba(0,0,0,0.08) 68%, transparent 100%)' }}
+        style={{ background: 'linear-gradient(to left, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.42) 42%, rgba(0,0,0,0.08) 68%, transparent 100%)' }}
         aria-hidden
       />
-      {/* Text: vertically centered, constrained to left half */}
+      {/* Text: vertically centered, right half of card, right-aligned */}
       <div
-        className="absolute inset-0 flex flex-col justify-center pl-8 md:pl-10"
-        style={{ maxWidth: '50%' }}
+        className="absolute top-0 bottom-0 right-0 flex flex-col justify-center pr-8 md:pr-10 text-right"
+        style={{ width: '50%' }}
       >
         <h2
           style={{
