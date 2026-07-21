@@ -231,6 +231,7 @@ export default function WhySubscription() {
 
       // ── Resize ────────────────────────────────────────────────────────────
       function onResize() {
+        if (!canvas) return
         const nw = canvas.clientWidth
         const nh = canvas.clientHeight
         camera.aspect = nw / nh
