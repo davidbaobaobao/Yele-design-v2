@@ -51,12 +51,12 @@ const N = steps.length
 
 // Each card i sits UPPER-RIGHT of card i-1 in the rail.
 // As user scrolls, the track moves DOWN-LEFT, bringing each card forward.
-const STEP_X  =  210   // rightward spread per card
-const STEP_Y  =  150   // upward spread per card (negative CSS y)
-const STEP_Z  =  180   // depth per card (behind)
-const CARD_W  =  420
-const CARD_H  =  560
-const TILT_Y  = -38    // rotateY: left side further from viewer
+const STEP_X  =  120   // rightward spread per card
+const STEP_Y  =  100   // upward spread per card (negative CSS y)
+const STEP_Z  =  220   // depth per card (behind)
+const CARD_W  =  820
+const CARD_H  =  540
+const TILT_Y  = -22    // rotateY: left side further from viewer
 
 // ─── Desktop card ─────────────────────────────────────────────────────────────
 
@@ -171,21 +171,36 @@ function StepCard3D({
           transition={{ duration: 0.45 }}
           aria-hidden
         />
-        {/* Bottom gradient for text legibility */}
+        {/* Top gradient for text legibility */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.18) 52%, transparent 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.38) 42%, transparent 72%)' }}
           aria-hidden
         />
-        {/* Text */}
-        <div className="absolute inset-0 flex flex-col justify-end p-7">
-          <span className="font-outfit text-white/30 text-xs font-mono tracking-widest mb-2">{step.num}</span>
-          <h3 className="font-outfit font-semibold text-white text-2xl leading-snug mb-2">
+        {/* Text — top of card */}
+        <div className="absolute top-0 left-0 right-0 flex flex-col p-8">
+          <h3 className="font-outfit font-semibold text-white text-3xl leading-snug mb-2">
             {t(step.es.title, step.en.title)}
           </h3>
           <p className="font-manrope text-white/55 text-sm leading-relaxed">
             {t(step.es.desc, step.en.desc)}
           </p>
+        </div>
+        {/* Large oversized step number — bottom-right */}
+        <div className="absolute bottom-0 right-0 overflow-hidden pointer-events-none leading-none" aria-hidden>
+          <span
+            className="font-outfit block"
+            style={{
+              fontWeight: 900,
+              fontSize: 240,
+              lineHeight: 0.82,
+              color: 'rgba(255,255,255,0.07)',
+              paddingRight: 28,
+              userSelect: 'none',
+            }}
+          >
+            {i + 1}
+          </span>
         </div>
       </motion.div>
     </motion.div>
@@ -279,8 +294,8 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
       <div className="hidden md:block" style={{ height: '420vh' }}>
         <div className="sticky top-0 h-screen overflow-hidden bg-[#0a0a0a]">
 
-          {/* Title — pinned top-left */}
-          <div className="absolute top-12 left-12 z-20 pointer-events-none select-none">
+          {/* Title — slightly down and right, near the card stack */}
+          <div className="absolute z-20 pointer-events-none select-none" style={{ left: '5%', top: '28%' }}>
             <h2 className="font-outfit font-semibold text-5xl xl:text-6xl text-white tracking-tight leading-tight">
               {t('El proceso', 'The process')}<br />
               <span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>
@@ -308,14 +323,14 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
           {/* 3D perspective stage */}
           <div
             className="absolute inset-0"
-            style={{ perspective: '1200px', perspectiveOrigin: '62% 62%' }}
+            style={{ perspective: '1400px', perspectiveOrigin: '68% 58%' }}
           >
-            {/* Track: anchor at lower-center; cards fan upper-right from here */}
+            {/* Track: anchor right-center so active card fills the right ~70% */}
             <motion.div
               className="absolute"
               style={{
-                left: '55%',
-                top:  '60%',
+                left: '66%',
+                top:  '54%',
                 x,
                 y,
                 z,
