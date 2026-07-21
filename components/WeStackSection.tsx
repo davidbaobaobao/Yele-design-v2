@@ -9,7 +9,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useLang } from '@/context/LanguageContext'
 
-const LOCK_MS = 250
+const LOCK_MS = 500
 const TOTAL = 6
 
 const CARDS = [
@@ -235,35 +235,48 @@ export default function WeStackSection() {
   }
 
   // Wheel handler:
-  //   • Section entering from below  → snap flush to viewport top (prevent scroll through)
-  //   • Section flush at top         → discrete card navigation
-  //   • At card edges                → pass through so page scroll resumes
+  //   • Section entering from below (top > 40)  → snap to top; block all scroll
+  //   • Section at top (−80 ≤ top ≤ 10)        → card-by-card navigation (500ms lock)
+  //   • At last card going down / first going up → release so page can scroll past
   useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+
     function onWheel(e: WheelEvent) {
-      const r = sectionRect()
-      if (!r) return
+      const { top, bottom } = el.getBoundingClientRect()
+      const vh = window.innerHeight
 
-      const goingDown = e.deltaY > 0
-      const cur       = activeRef.current
+      // Section completely outside viewport
+      if (bottom <= 0 || top >= vh) return
 
-      // Snap section to viewport top first — prevent passes until complete
-      if (r.top > 24 && goingDown) {
+      const down = e.deltaY > 0
+      const cur  = activeRef.current
+
+      // ── Snap to top ──────────────────────────────────────────────────────────
+      // Block ALL scroll while section is partially in view from below.
+      // snappingRef prevents duplicate scrollTo calls during the animation.
+      if (top > 10 && down) {
         e.preventDefault()
         if (!snappingRef.current) {
           snappingRef.current = true
-          window.scrollTo({ top: window.scrollY + r.top, behavior: 'smooth' })
-          setTimeout(() => { snappingRef.current = false }, 800)
+          window.scrollTo({ top: window.scrollY + top, behavior: 'smooth' })
+          setTimeout(() => { snappingRef.current = false }, 900)
         }
         return
       }
 
-      // Pass through at edges so page can scroll past
-      if (goingDown  && cur === TOTAL - 1) return
-      if (!goingDown && cur === 0)         return
-
-      e.preventDefault()
-      advance(goingDown ? 1 : -1)
+      // ── Card navigation zone (section is flush at viewport top) ──────────────
+      // top ≤ 10  : snap has completed (or nearly so)
+      // top ≥ −80 : section hasn't been scrolled above viewport
+      if (top <= 10 && top >= -80) {
+        if (down  && cur >= TOTAL - 1) return  // last card → release downward
+        if (!down && cur <= 0)         return  // first card → release upward
+        e.preventDefault()
+        advance(down ? 1 : -1)
+      }
+      // top < −80: section scrolled above viewport → pass through freely
     }
+
     window.addEventListener('wheel', onWheel, { passive: false })
     return () => window.removeEventListener('wheel', onWheel)
   // eslint-disable-next-line react-hooks/exhaustive-deps
