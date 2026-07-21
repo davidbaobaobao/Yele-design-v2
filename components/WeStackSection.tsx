@@ -129,24 +129,27 @@ function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
         priority={card.id === 'design'}
         aria-hidden
       />
-      {/* Video — mounted always, only plays when active */}
+      {/* Video — fades in when active, poster shows through when not */}
       <video
         ref={videoRef}
         loop muted playsInline preload="none"
         poster={card.poster}
-        className="absolute inset-0 w-full h-full object-cover"
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}
       >
         <source src={card.webm} type="video/webm" />
         <source src={card.mp4}  type="video/mp4" />
       </video>
-      {/* Gradient: strong at bottom for text legibility */}
+      {/* Gradient: strong on left half where text sits */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.28) 52%, rgba(0,0,0,0.08) 100%)' }}
+        style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.42) 42%, rgba(0,0,0,0.08) 68%, transparent 100%)' }}
         aria-hidden
       />
-      {/* Text overlay */}
-      <div className="absolute inset-0 flex flex-col justify-end px-7 pb-8 md:px-9 md:pb-9">
+      {/* Text: vertically centered, constrained to left half */}
+      <div
+        className="absolute inset-0 flex flex-col justify-center pl-8 md:pl-10"
+        style={{ maxWidth: '50%' }}
+      >
         <h2
           style={{
             fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
@@ -155,19 +158,19 @@ function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
             margin: '0 0 12px',
           }}
         >
-          <span style={{ display: 'block', color: '#ffffff', fontSize: 'clamp(2rem, 5vw, 2.8rem)' }}>
+          <span style={{ display: 'block', color: '#ffffff', fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}>
             {t(card.h1Es, card.h1En)}
           </span>
-          <span className="we-subtitle-orange" style={{ display: 'block', fontSize: 'clamp(2rem, 5vw, 2.8rem)' }}>
+          <span className="we-subtitle-orange" style={{ display: 'block', fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}>
             {t(card.h2Es, card.h2En)}
           </span>
         </h2>
         <p
           style={{
             fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-            fontSize: 'clamp(0.9rem, 2.2vw, 1.05rem)',
-            lineHeight: 1.55,
-            color: 'rgba(255,255,255,0.72)',
+            fontSize: 'clamp(0.85rem, 1.4vw, 1rem)',
+            lineHeight: 1.6,
+            color: 'rgba(255,255,255,0.70)',
             margin: 0,
           }}
         >
@@ -280,7 +283,8 @@ export default function WeStackSection() {
                 width:  cardDims.w,
                 height: cardDims.h,
                 zIndex: off < 0 ? 0 : 90 - off,
-                transformStyle: 'preserve-3d',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
                 pointerEvents: off === 0 ? 'auto' : 'none',
               }}
               animate={state}
