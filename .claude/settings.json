@@ -3,7 +3,29 @@
     "allow": [
       "Bash(/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --headless *)",
       "Bash(npx playwright screenshot *)",
-      "Bash(curl -s http://localhost *)"
+      "Bash(curl -s http://localhost *)",
+      "Bash(curl -s \"https://yele.design/web-design-plumbers\")",
+      "Bash(curl -s \"https://yele.design/web-design-electricians\")",
+      "Bash(curl -s \"https://yele.design/web-design-contractors\")",
+      "Bash(curl -s \"https://yele.design/web-design-movers\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} → %{redirect_url}\" \"https://yele.design/diseno-web-fontaneros\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} → %{redirect_url}\" \"https://yele.design/presupuesto\")",
+      "Bash(curl -s \"https://yele.design/sitemap.xml\")",
+      "Bash(ffprobe -v quiet -print_format json -show_streams \"/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/main_hero/hero2.mp4\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); v=[s for s in d['streams'] if s['codec_type']=='video'][0]; print\\(f\\\\\"codec={v['codec_name']} res={v['width']}x{v['height']} fps={v.get\\('r_frame_rate','?'\\)} duration={v.get\\('duration','?'\\)}s bitrate={int\\(v.get\\('bit_rate',0\\)\\)//1000}kbps\\\\\"\\)\")",
+      "Bash(ffprobe -v quiet -print_format json -show_streams \"/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/main_hero/hero.mp4\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); v=[s for s in d['streams'] if s['codec_type']=='video'][0]; print\\(f\\\\\"hero.mp4: codec={v['codec_name']} res={v['width']}x{v['height']} fps={v.get\\('r_frame_rate','?'\\)} duration={v.get\\('duration','?'\\)}s bitrate={int\\(v.get\\('bit_rate',0\\)\\)//1000}kbps\\\\\"\\)\")",
+      "Bash(ffprobe -v quiet -print_format json -show_streams \"/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/main_hero/hero_hq.mp4\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); v=[s for s in d['streams'] if s['codec_type']=='video'][0]; print\\(f\\\\\"hero_hq.mp4: codec={v['codec_name']} res={v['width']}x{v['height']} fps={v.get\\('r_frame_rate','?'\\)} duration={v.get\\('duration','?'\\)}s bitrate={int\\(v.get\\('bit_rate',0\\)\\)//1000}kbps\\\\\"\\)\")",
+      "Bash(ffprobe -v quiet -show_entries stream=width,height -of csv=p=0 \"/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/main_hero/hero2initial.jpeg\")",
+      "Bash(ffprobe -v quiet -show_entries stream=codec_type -of compact \"/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/main_hero/hero2.mp4\")",
+      "Bash(ffmpeg -y -i hero2.mp4 -vf scale=1920:-2 -c:v libx264 -crf 28 -preset slow -profile:v high -pix_fmt yuv420p -movflags +faststart -an hero2_hq.mp4)",
+      "Bash(ffmpeg -y -i hero2.mp4 -vf scale=960:-2 -c:v libx264 -crf 28 -preset slow -profile:v high -pix_fmt yuv420p -movflags +faststart -an hero2_mobile.mp4)",
+      "Bash(ffmpeg -y -i hero2.mp4 -vf scale=1920:-2 -c:v libvpx-vp9 -crf 35 -b:v 0 -deadline best -an hero2_hq.webm)",
+      "Bash(ffmpeg -y -i hero2.mp4 -vf scale=960:-2 -c:v libvpx-vp9 -crf 35 -b:v 0 -deadline best -an hero2_mobile.webm)",
+      "Bash(ffmpeg -y -i hero2initial.jpeg -vf scale=1920:-2 -q:v 5 hero2_poster.jpg)",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const { articles } = require\\('./lib/articles.ts'\\)\")"
     ]
   }
 }
