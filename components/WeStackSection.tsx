@@ -77,13 +77,14 @@ const CARDS = [
 
 type Card = (typeof CARDS)[number]
 
-// Visual state for each card based on its offset from the active card
+// Visual state for each card based on its offset from the active card.
+// x offsets are proportional to cardW so they work at any card size.
 function cardState(off: number, cardW: number) {
-  if (off < 0)   return { x: -cardW * 1.4, y: 0,   rotateZ: -20, scale: 0.84, opacity: 0 }
-  if (off === 0) return { x: 0,            y: 0,   rotateZ: 0,   scale: 1.00, opacity: 1 }
-  if (off === 1) return { x: 14,           y: 10,  rotateZ: 5,   scale: 0.94, opacity: 1 }
-  if (off === 2) return { x: 24,           y: 18,  rotateZ: 9,   scale: 0.88, opacity: 0.8 }
-  /* off >= 3 */ return { x: 30,           y: 24,  rotateZ: 11,  scale: 0.82, opacity: 0 }
+  if (off < 0)   return { x: -cardW * 1.2, y: 0,            rotateZ: -15, scale: 0.80, opacity: 0 }
+  if (off === 0) return { x: 0,            y: 0,            rotateZ: 0,   scale: 1.00, opacity: 1 }
+  if (off === 1) return { x: cardW * 0.10, y: 0,            rotateZ: 7,   scale: 0.82, opacity: 0.92 }
+  if (off === 2) return { x: cardW * 0.17, y: cardW * 0.02, rotateZ: 12,  scale: 0.70, opacity: 0.72 }
+  /* off >= 3 */ return { x: cardW * 0.22, y: cardW * 0.03, rotateZ: 14,  scale: 0.62, opacity: 0 }
 }
 
 // ─── Individual card ──────────────────────────────────────────────────────────
@@ -123,7 +124,7 @@ function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
         src={card.poster}
         alt=""
         fill
-        sizes="(max-width: 640px) 88vw, 480px"
+        sizes="(max-width: 640px) 92vw, 90vw"
         className="object-cover"
         priority={card.id === 'design'}
         aria-hidden
@@ -187,15 +188,19 @@ export default function WeStackSection() {
 
   const [active, setActive] = useState(0)
 
-  // Responsive card dimensions (computed client-side to avoid SSR mismatch)
-  const [cardDims, setCardDims] = useState({ w: 480, h: 620 })
+  // Responsive card dimensions — landscape, fills most of the section
+  const [cardDims, setCardDims] = useState({ w: 1100, h: 620 })
   useEffect(() => {
     function resize() {
-      if (window.innerWidth < 640) {
-        const w = Math.min(Math.round(window.innerWidth * 0.88), 380)
-        setCardDims({ w, h: Math.round(w * 1.4) })
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      if (vw < 640) {
+        const w = Math.round(vw * 0.92)
+        setCardDims({ w, h: Math.round(w * 0.65) })
       } else {
-        setCardDims({ w: 480, h: 620 })
+        const w = Math.round(Math.min(vw * 0.88, 1280))
+        const h = Math.round(Math.min(vh - 130, w * 0.58))
+        setCardDims({ w, h })
       }
     }
     resize()
@@ -255,7 +260,7 @@ export default function WeStackSection() {
     <section
       ref={sectionRef}
       data-snap-section
-      className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-black"
+      className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-white"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -304,8 +309,8 @@ export default function WeStackSection() {
             }}
             className={`h-2 rounded-full transition-all duration-300 ${
               i === active
-                ? 'w-7 bg-white'
-                : 'w-2 bg-white/35 hover:bg-white/60'
+                ? 'w-7 bg-[#1D1D1F]'
+                : 'w-2 bg-[#1D1D1F]/20 hover:bg-[#1D1D1F]/45'
             }`}
           />
         ))}
