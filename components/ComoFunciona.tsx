@@ -73,7 +73,7 @@ function StepCard3D({ step, i, off, t }: {
   const state    = cardState(off)
 
   // Card 1 (i=0) → black number; cards 2-4 → white number
-  const numColor = i === 0 ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.22)'
+  const numColor = i === 0 ? 'rgba(0,0,0,0.82)' : 'rgba(255,255,255,0.80)'
 
   useEffect(() => {
     const v = videoRef.current
@@ -153,10 +153,10 @@ function StepCard3D({ step, i, off, t }: {
         />
         {/* Text — top of card */}
         <div className="absolute top-0 left-0 right-0 flex flex-col p-8">
-          <h3 className="font-outfit font-semibold text-white text-3xl leading-snug mb-2">
+          <h3 className="font-outfit font-semibold text-white text-4xl xl:text-5xl leading-snug mb-3">
             {t(step.es.title, step.en.title)}
           </h3>
-          <p className="font-manrope text-white/55 text-sm leading-relaxed">
+          <p className="font-manrope text-white/55 text-base leading-relaxed">
             {t(step.es.desc, step.en.desc)}
           </p>
         </div>

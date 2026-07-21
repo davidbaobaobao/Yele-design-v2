@@ -81,7 +81,7 @@ export default function MissionSection() {
     }
   }, [])
 
-  // Scroll-linked reveal — GPU-accelerated translateX instead of CSS mask
+  // Scroll-linked reveal — clip-path wipe so color fills in-place (no text movement)
   useEffect(() => {
     const overlays = [o0.current, o1.current, o2.current, o3.current]
     let rafId: number | null = null
@@ -102,7 +102,7 @@ export default function MissionSection() {
       overlays.forEach((ov, i) => {
         if (!ov) return
         const lp  = Math.min(1, Math.max(0, (p - i / N) * N))
-        ov.style.transform = `translateX(${(lp - 1) * 100}%)`
+        ov.style.clipPath = `inset(0 ${Math.round((1 - lp) * 100)}% 0 0)`
       })
     }
 
@@ -147,8 +147,8 @@ export default function MissionSection() {
     color: '#000',
     position: 'absolute',
     inset: 0,
-    transform: 'translateX(-100%)',
-    willChange: 'transform',
+    clipPath: 'inset(0 100% 0 0)',
+    willChange: 'clip-path',
   }
 
   const l0 = t('Entregamos', 'We deliver')

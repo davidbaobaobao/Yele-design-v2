@@ -69,7 +69,7 @@ const CARDS = [
     h2Es: 'llegar más lejos', h2En: 'you reach further',
     bodyEs: 'SEO, anuncios, IA, automatización y mucho más.',
     bodyEn: 'SEO, ads, AI calling, automation, and beyond.',
-    poster: '/media/wehelp/wehelp_poster.jpg',
+    poster: '/media/wehelp/wehelp2initial_hq.jpg',
     webm:   '/media/wehelp/wehelp_hq.webm',
     mp4:    '/media/wehelp/wehelp_hq.mp4',
   },
@@ -211,17 +211,13 @@ export default function WeStackSection() {
     return () => window.removeEventListener('resize', resize)
   }, [])
 
-  // Prevents rapid-fire snap calls while smooth scroll is in flight
-  const snappingRef = useRef(false)
-
-  // Returns section rect when it overlaps the viewport, null otherwise
-  function sectionRect() {
+  // Section must be within 80px of viewport top before card navigation activates.
+  // VideoSnapController handles the snap-to-view for data-snap-section elements.
+  function sectionIsActive() {
     const el = sectionRef.current
-    if (!el) return null
-    const r  = el.getBoundingClientRect()
-    const vh = window.innerHeight
-    if (r.bottom <= 0 || r.top >= vh) return null
-    return r
+    if (!el) return false
+    const { top } = el.getBoundingClientRect()
+    return top >= -80 && top <= 80
   }
 
   function advance(dir: 1 | -1) {
@@ -234,30 +230,16 @@ export default function WeStackSection() {
     setTimeout(() => { lockedRef.current = false }, LOCK_MS)
   }
 
-  // Wheel handler:
-  //  1. Section entering from below → snap to top of viewport first (no card advance).
-  //  2. Section fully in view       → discrete card navigation with 200ms lock.
-  //  3. At first/last card edge     → pass through so page scroll resumes.
+  // Wheel handler: only intercept when section is flush at viewport top.
+  // VideoSnapController (data-snap-section) handles snapping it there first.
   useEffect(() => {
     function onWheel(e: WheelEvent) {
-      const r = sectionRect()
-      if (!r) return
+      if (!sectionIsActive()) return
 
       const goingDown = e.deltaY > 0
       const cur       = activeRef.current
 
-      // Section not yet at top — snap it flush to viewport top first
-      if (r.top > 24 && goingDown) {
-        e.preventDefault()
-        if (!snappingRef.current) {
-          snappingRef.current = true
-          window.scrollTo({ top: window.scrollY + r.top, behavior: 'smooth' })
-          setTimeout(() => { snappingRef.current = false }, 700)
-        }
-        return
-      }
-
-      // Pass through at edges so page scroll can resume
+      // Pass through at edges so page scroll resumes
       if (goingDown  && cur === TOTAL - 1) return
       if (!goingDown && cur === 0)         return
 
@@ -273,8 +255,7 @@ export default function WeStackSection() {
     touchStartY.current = e.touches[0]!.clientY
   }
   function onTouchEnd(e: React.TouchEvent) {
-    const r = sectionRect()
-    if (!r) return
+    if (!sectionIsActive()) return
     const dy = touchStartY.current - e.changedTouches[0]!.clientY
     if (Math.abs(dy) < 40) return
     const cur = activeRef.current
