@@ -6,32 +6,11 @@ import Footer from '@/components/Footer'
 import { articles, getArticleBySlug } from '@/lib/articles'
 import type { Metadata } from 'next'
 
-const SECTOR_CTAS: Record<string, { href: string; heading: string; body: string; button: string }> = {
-  'web-para-fontanero-como-conseguir-mas-clientes': {
-    href: '/web-design-plumbers',
-    heading: 'Are you a plumber looking for a website that brings clients?',
-    body: 'We design websites specifically built for plumbers: visible phone number, service area, detailed services and local SEO. Live in 1 week, from $99/mo, no setup fee.',
-    button: 'See web design for plumbers →',
-  },
-  'web-clinica-dental-como-atraer-pacientes': {
-    href: '/quote',
-    heading: 'Do you have a clinic and want more patients?',
-    body: 'We design professional websites for local service businesses that build trust and turn visits into appointments. Live in 1 week, from $99/mo, no setup fee.',
-    button: 'Get a free quote →',
-  },
-  'como-una-web-impulsa-tu-negocio-de-fontaneria': {
-    href: '/web-design-plumbers',
-    heading: 'Are you a plumber looking for a website that brings work?',
-    body: 'Websites for plumbers with visible phone number, service area and local SEO. Live in 1 week, from $99/mo, no setup fee.',
-    button: 'See web design for plumbers →',
-  },
-  'fontanero-en-espana-numeros-y-estadisticas': {
-    href: '/web-design-plumbers',
-    heading: 'Are you a plumber who wants to capture those searches?',
-    body: 'We design your website with the five elements that turn searches into calls. Live in 1 week, from $99/mo, no setup fee.',
-    button: 'See web design for plumbers →',
-  },
-}
+// Retired slugs return 410 Gone via middleware.ts (lib/retired-slugs.ts).
+// notFound() below is a safety fallback for slugs that are neither active nor retired.
+
+// No active articles — suppress dynamic rendering for unknown slugs (→ 404)
+export const dynamicParams = false
 
 export function generateStaticParams() {
   return articles.map(a => ({ slug: a.slug }))
@@ -179,7 +158,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         '@id': `${pageUrl}#article`,
         headline: article.titleEn,
         description: article.excerptEn,
-        inLanguage: 'en',
+        inLanguage: article.lang,
         datePublished: article.date,
         dateModified: article.date,
         url: pageUrl,
@@ -269,25 +248,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             {renderMarkdown(article.contentEn)}
           </div>
         </div>
-
-        {/* Sector landing CTA */}
-        {SECTOR_CTAS[article.slug] && (() => {
-          const cta = SECTOR_CTAS[article.slug]!
-          return (
-            <div className="max-w-[720px] mx-auto px-6 pb-8">
-              <div className="border border-[#0066CC]/20 bg-[#E8F2FF] rounded-2xl p-7">
-                <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{cta.heading}</p>
-                <p className="font-manrope text-sm text-[#6B7280] leading-relaxed mb-5">{cta.body}</p>
-                <Link
-                  href={cta.href}
-                  className="inline-flex items-center font-manrope text-sm font-medium text-[#0066CC] hover:text-[#004D99] transition-colors"
-                >
-                  {cta.button}
-                </Link>
-              </div>
-            </div>
-          )
-        })()}
 
         {/* CTA box */}
         <div className="max-w-[720px] mx-auto px-6 pb-16">

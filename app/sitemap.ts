@@ -6,12 +6,14 @@ const STATIC_LAST_MOD = new Date('2026-07-20')
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://yele.design'
 
-  const articleEntries: MetadataRoute.Sitemap = articles.map(a => ({
-    url: `${baseUrl}/blog/${a.slug}`,
-    lastModified: new Date(a.date),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }))
+  const articleEntries: MetadataRoute.Sitemap = articles
+    .filter(a => a.lang === 'en')
+    .map(a => ({
+      url: `${baseUrl}/blog/${a.slug}`,
+      lastModified: new Date(a.date),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }))
 
   return [
     {
