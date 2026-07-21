@@ -8,29 +8,29 @@ import { useLang } from '@/context/LanguageContext'
 const steps = [
   {
     num: '01',
-    img: '/como-funciona/step-01.webp',
-    video: '/media/como/como1',
+    img: '/media/como2/vid1_poster.jpg',
+    video: '/media/como2/vid1_c',
     es: { title: 'Cuéntanos tu negocio', desc: 'Rellenas un formulario breve. Nos dices qué haces, a quién, y cómo quieres que te vean.' },
     en: { title: 'Tell us about your business', desc: 'Fill out a short form. Tell us what you do, who you serve, and how you want to be seen.' },
   },
   {
     num: '02',
-    img: '/como-funciona/step-02.webp',
-    video: '/media/como/como2',
+    img: '/media/como2/vid2_poster.jpg',
+    video: '/media/como2/vid2_c',
     es: { title: 'Diseñamos y construimos', desc: 'En 1 semana tienes un sitio profesional, adaptado a tu sector, con tu contenido real.' },
     en: { title: 'We design and build it', desc: 'In 1 week you have a professional site, tailored to your industry, with your real content.' },
   },
   {
     num: '03',
-    img: '/como-funciona/step-03.webp',
-    video: '/media/como/como3',
+    img: '/media/como2/vid3_poster.jpg',
+    video: '/media/como2/vid3_c',
     es: { title: 'Tu web en marcha', desc: 'Apruebas, publicamos. Tu web está live y empieza a trabajar por ti desde el primer día.' },
     en: { title: 'Your website is live', desc: 'You approve, we publish. Your site is live and starts working for you from day one.' },
   },
   {
     num: '04',
-    img: '/como-funciona/step-04.webp',
-    video: '/media/como/como4',
+    img: '/media/como2/vid4_poster.jpg',
+    video: '/media/como2/vid4_c',
     es: { title: 'Soporte y mejora continua', desc: 'Actualizamos, mantenemos y mejoramos tu web. Tú no tocas código. Nunca.' },
     en: { title: 'Continuous support and improvement', desc: 'We update, maintain and improve your website. You never touch the code.' },
   },
@@ -94,8 +94,8 @@ function StepCard({
             poster={step.img}
             className="absolute inset-0 w-full h-full object-cover object-center"
           >
-            <source src={`${step.video}.mp4`}  type="video/mp4" />
             <source src={`${step.video}.webm`} type="video/webm" />
+            <source src={`${step.video}.mp4`}  type="video/mp4" />
           </video>
         </div>
       </motion.div>

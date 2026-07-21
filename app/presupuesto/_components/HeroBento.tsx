@@ -35,8 +35,8 @@ export default function HeroBento() {
     const v = videoRef.current
     if (!v || window.innerWidth >= 768) return
     const sources = v.querySelectorAll('source')
-    ;(sources[0] as HTMLSourceElement).src = '/media/main_hero/hero2_mobile.webm'
-    ;(sources[1] as HTMLSourceElement).src = '/media/main_hero/hero2_mobile.mp4'
+    ;(sources[0] as HTMLSourceElement).src = '/media/main_hero/hero3_mobile.webm'
+    ;(sources[1] as HTMLSourceElement).src = '/media/main_hero/hero3_mobile.mp4'
     v.load()
   }, [])
 
@@ -48,7 +48,7 @@ export default function HeroBento() {
 
         {/* Poster — priority-preloaded, unoptimized so it hits CDN directly without optimizer delay */}
         <Image
-          src="/media/main_hero/hero2_poster.jpg"
+          src="/media/main_hero/hero3_poster.jpg"
           alt=""
           fill
           priority
@@ -63,11 +63,11 @@ export default function HeroBento() {
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover hero-vid"
           autoPlay muted loop playsInline preload="auto"
-          poster="/media/main_hero/hero2_poster.jpg"
+          poster="/media/main_hero/hero3_poster.jpg"
           aria-hidden="true"
         >
-          <source src="/media/main_hero/hero2_hq.webm" type="video/webm" />
-          <source src="/media/main_hero/hero2_hq.mp4"  type="video/mp4" />
+          <source src="/media/main_hero/hero3_hq.webm" type="video/webm" />
+          <source src="/media/main_hero/hero3_hq.mp4"  type="video/mp4" />
         </video>
 
         {/* Top vignette for nav legibility */}
