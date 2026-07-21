@@ -192,7 +192,7 @@ export default function WhySubscription() {
           colBuf[(i+j)*3+2] = tmp.b
         }
       }
-      flatGeo.setAttribute('color', new THREE_TYPES.BufferAttribute(colBuf, 3))
+      flatGeo.setAttribute('color', new THREE.BufferAttribute(colBuf, 3))
       flatGeo.computeVertexNormals()
 
       const mat = new THREE.MeshStandardMaterial({
