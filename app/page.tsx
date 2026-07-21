@@ -3,15 +3,10 @@ import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
 import HeroBento from '@/app/presupuesto/_components/HeroBento'
 import MissionSection from '@/components/MissionSection'
-import WeDesignSection from '@/components/WeDesignSection'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold sections — code-split into separate chunks to reduce initial JS
-const WeCreateSection      = dynamic(() => import('@/components/WeCreateSection'))
-const WeDeliverSection     = dynamic(() => import('@/components/WeDeliverSection'))
-const WeEnsureSection      = dynamic(() => import('@/components/WeEnsureSection'))
-const WeImproveSection     = dynamic(() => import('@/components/WeImproveSection'))
-const WeHelpSection        = dynamic(() => import('@/components/WeHelpSection'))
+const WeStackSection       = dynamic(() => import('@/components/WeStackSection'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
 const ComoFunciona         = dynamic(() => import('@/components/ComoFunciona'))
 const Showcase             = dynamic(() => import('@/components/Showcase'))
@@ -52,12 +47,7 @@ export default function Home() {
       <main id="main-content">
         <HeroBento />
         <MissionSection />
-        <WeDesignSection />
-        <WeCreateSection />
-        <WeDeliverSection />
-        <WeEnsureSection />
-        <WeImproveSection />
-        <WeHelpSection />
+        <WeStackSection />
         <VideoSnapController />
         <ComoFunciona noBg />
         <Showcase noHeader noBg fullScreen />
