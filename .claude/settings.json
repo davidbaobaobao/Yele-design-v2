@@ -25,7 +25,15 @@
       "Bash(ffmpeg -y -i hero2.mp4 -vf scale=960:-2 -c:v libvpx-vp9 -crf 35 -b:v 0 -deadline best -an hero2_mobile.webm)",
       "Bash(ffmpeg -y -i hero2initial.jpeg -vf scale=1920:-2 -q:v 5 hero2_poster.jpg)",
       "Bash(node -e ' *)",
-      "Bash(node -e \"const { articles } = require\\('./lib/articles.ts'\\)\")"
+      "Bash(node -e \"const { articles } = require\\('./lib/articles.ts'\\)\")",
+      "Bash(ffprobe -v quiet -print_format json -show_streams -show_format \"/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2.mp4\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); vs=[s for s in d['streams'] if s.get\\('codec_type'\\)=='video'][0]; print\\(f\\\\\"Resolution: {vs['width']}x{vs['height']}\\\\nCodec: {vs['codec_name']}\\\\nFPS: {vs.get\\('r_frame_rate','?'\\)}\\\\nDuration: {float\\(d['format']['duration']\\):.1f}s\\\\nSize: {int\\(d['format']['size']\\)//1024}KB\\\\\"\\)\")",
+      "Bash(ffmpeg -y -i '/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2.mp4' -vf scale=1920:-2 -c:v libx264 -crf 28 -preset slow -profile:v high -level 4.1 -pix_fmt yuv420p -movflags +faststart -an '/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2_hq.mp4')",
+      "Bash(ffmpeg -y -i '/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2.mp4' -vf scale=1920:-2 -c:v libvpx-vp9 -crf 35 -b:v 0 -deadline best -cpu-used 2 -an '/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2_hq.webm')",
+      "Bash(ffmpeg -y -i '/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2.mp4' -ss 0.5 -vframes 1 -vf scale=1920:-2 -q:v 4 '/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2_poster.jpg')",
+      "Bash(ffmpeg -y -i '/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2.mp4' -vf scale=1920:-2 -c:v libvpx-vp9 -crf 35 -b:v 0 -deadline good -cpu-used 2 -an '/Users/davidbao/Documents/Project Website/Yele-design-v2/public/media/pricing2/pricing2_hq.webm')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); deps={**d.get\\('dependencies',{}\\),**d.get\\('devDependencies',{}\\)}; print\\('three' in deps and f'three: {deps[\\\\\"three\\\\\"]}' or 'three: NOT INSTALLED'\\)\")",
+      "Bash(git stash *)"
     ]
   }
 }
