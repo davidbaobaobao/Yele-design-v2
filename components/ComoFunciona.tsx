@@ -1,19 +1,13 @@
 'use client'
 
-// ComoFunciona — desktop: sticky section, 4 large cards stacked diagonally.
-// Scrolling moves cards down-left; each card slides to front in turn.
-// Title is pinned top-left. Mobile: vertical card list.
+// ComoFunciona — desktop: full-screen sticky section, 4 large 3D cards.
+// Discrete card-by-card wheel navigation with 200ms lock.
+// Cards fan upper-right; scroll moves each card to front with spring animation.
+// Mouse parallax makes the stack float. Border rendered via clip-path (no 3D artifact).
 
 import Image from 'next/image'
 import { useRef, useState, useEffect } from 'react'
-import {
-  motion,
-  useScroll,
-  useSpring,
-  useTransform,
-  useMotionValueEvent,
-  type MotionValue,
-} from 'framer-motion'
+import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 
 const steps = [
@@ -47,56 +41,40 @@ const steps = [
   },
 ]
 
-const N = steps.length
+const N       = steps.length
+const LOCK_MS = 200
 
-// Each card i sits UPPER-RIGHT of card i-1 in the rail.
-// As user scrolls, the track moves DOWN-LEFT, bringing each card forward.
-const STEP_X  =  120   // rightward spread per card
-const STEP_Y  =  100   // upward spread per card (negative CSS y)
-const STEP_Z  =  220   // depth per card (behind)
-const CARD_W  =  820
-const CARD_H  =  540
-const TILT_Y  = -22    // rotateY: left side further from viewer
+const STEP_X = 120
+const STEP_Y = 100
+const STEP_Z = 220
+const CARD_W = 820
+const CARD_H = 540
+const TILT_Y = -22
+
+// Card spatial state relative to active card
+function cardState(off: number) {
+  if (off < 0)   return { x: -CARD_W * 0.6, y:  CARD_H * 0.5, z:  80, opacity: 0 }
+  if (off === 0) return { x: 0,             y:  0,             z:  0,  opacity: 1 }
+  if (off === 1) return { x:  STEP_X,       y: -STEP_Y,        z: -STEP_Z,        opacity: 0.60 }
+  if (off === 2) return { x:  STEP_X * 2,   y: -STEP_Y * 2,    z: -STEP_Z * 2,   opacity: 0.38 }
+  return               { x:  STEP_X * 3,   y: -STEP_Y * 3,    z: -STEP_Z * 3,   opacity: 0 }
+}
 
 // ─── Desktop card ─────────────────────────────────────────────────────────────
 
-function StepCard3D({
-  step,
-  i,
-  smooth,
-  activeIdx,
-  t,
-}: {
+function StepCard3D({ step, i, off, t }: {
   step: (typeof steps)[0]
   i: number
-  smooth: MotionValue<number>
-  activeIdx: number
+  off: number
   t: (es: string, en: string) => string
 }) {
-  const videoRef  = useRef<HTMLVideoElement>(null)
-  const isActive  = i === activeIdx
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const isActive = off === 0
+  const state    = cardState(off)
 
-  // Per-card fade: future cards appear dimly, past cards fade to 0
-  const seg      = 1 / (N - 1)
-  const prevPeak = Math.max(0, (i - 1) * seg)
-  const thisPeak = i * seg
-  const halfNext = Math.min(1, (i + 0.5) * seg)
+  // Card 1 (i=0) → white number; cards 2-4 → dark number
+  const numColor = i === 0 ? 'rgba(255,255,255,0.24)' : 'rgba(0,0,0,0.22)'
 
-  const opacity = useTransform(
-    smooth,
-    i === 0
-      ? [0,         halfNext]
-      : i === N - 1
-        ? [prevPeak, thisPeak]
-        : [prevPeak, thisPeak, halfNext],
-    i === 0
-      ? [1,    0]
-      : i === N - 1
-        ? [0.45, 1]
-        : [0.45, 1, 0],
-  )
-
-  // Video: play only when active
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
@@ -117,34 +95,31 @@ function StepCard3D({
   }, [isActive])
 
   return (
-    // Outer: 3D position in rail + animated opacity (no overflow so no preserve-3d conflict)
+    // Outer: 3D position + shadow (no overflow/clip so shadow renders cleanly in 3D)
     <motion.div
       style={{
-        position:           'absolute',
-        width:              CARD_W,
-        height:             CARD_H,
-        // Card i centred at track origin, then spread upper-right per step
-        x:        i * STEP_X - CARD_W / 2,
-        y:       -(i * STEP_Y) - CARD_H / 2,
-        z:       -(i * STEP_Z),
-        rotateY:  TILT_Y,
-        opacity,
-        backfaceVisibility:        'hidden',
-        WebkitBackfaceVisibility:  'hidden',
+        position:                   'absolute',
+        width:                      CARD_W,
+        height:                     CARD_H,
+        borderRadius:               16,
+        willChange:                 'transform',
+        rotateY:                    TILT_Y,
+        backfaceVisibility:         'hidden',
+        WebkitBackfaceVisibility:   'hidden',
       }}
+      animate={{
+        x:         state.x - CARD_W / 2,
+        y:         state.y - CARD_H / 2,
+        z:         state.z,
+        opacity:   state.opacity,
+        boxShadow: isActive
+          ? '0 80px 160px rgba(0,0,0,0.95), 0 24px 64px rgba(0,0,0,0.65), 0 4px 16px rgba(0,0,0,0.5)'
+          : '0 24px 48px rgba(0,0,0,0.4)',
+      }}
+      transition={{ type: 'spring', stiffness: 280, damping: 30 }}
     >
-      {/* Inner: clipping + shadow animation (separate from preserve-3d parent) */}
-      <motion.div
-        className="relative w-full h-full overflow-hidden"
-        style={{ borderRadius: 16 }}
-        animate={{
-          boxShadow: isActive
-            ? '0 48px 96px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.14)'
-            : '0 16px 40px rgba(0,0,0,0.45)',
-        }}
-        transition={{ duration: 0.45 }}
-      >
-        {/* Poster */}
+      {/* Content — clip-path gives smooth rounded corners in 3D without overflow-hidden artifact */}
+      <div style={{ position: 'absolute', inset: 0, clipPath: 'inset(0 round 16px)' }}>
         <Image
           src={step.img}
           alt={t(step.es.title, step.en.title)}
@@ -153,7 +128,6 @@ function StepCard3D({
           className="object-cover"
           priority={i === 0}
         />
-        {/* Video */}
         <video
           ref={videoRef}
           loop muted playsInline preload="none"
@@ -164,17 +138,17 @@ function StepCard3D({
           <source src={`${step.video}.mp4`}  type="video/mp4" />
         </video>
 
-        {/* Dim overlay — fades away on active card */}
+        {/* Dim overlay — fades on active */}
         <motion.div
           className="absolute inset-0 bg-black pointer-events-none"
           animate={{ opacity: isActive ? 0 : 0.42 }}
           transition={{ duration: 0.45 }}
           aria-hidden
         />
-        {/* Top gradient for text legibility */}
+        {/* Top gradient for text */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.38) 42%, transparent 72%)' }}
+          style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.32) 36%, transparent 62%)' }}
           aria-hidden
         />
         {/* Text — top of card */}
@@ -186,23 +160,30 @@ function StepCard3D({
             {t(step.es.desc, step.en.desc)}
           </p>
         </div>
-        {/* Large oversized step number — bottom-right */}
-        <div className="absolute bottom-0 right-0 overflow-hidden pointer-events-none leading-none" aria-hidden>
+        {/* Oversized step number — bottom-right */}
+        <div className="absolute bottom-0 right-0 overflow-hidden leading-none pointer-events-none" aria-hidden>
           <span
             className="font-outfit block"
             style={{
-              fontWeight: 900,
-              fontSize: 240,
-              lineHeight: 0.82,
-              color: 'rgba(255,255,255,0.07)',
+              fontWeight:  900,
+              fontSize:    240,
+              lineHeight:  0.82,
+              color:       numColor,
               paddingRight: 28,
-              userSelect: 'none',
+              userSelect:  'none',
             }}
           >
             {i + 1}
           </span>
         </div>
-      </motion.div>
+      </div>
+
+      {/* Border ring — outside clip-path so it renders at full resolution */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ borderRadius: 16, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.10)' }}
+        aria-hidden
+      />
     </motion.div>
   )
 }
@@ -268,34 +249,93 @@ function MobileStepCard({ step, index, t }: {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
   const { t }      = useLang()
-  const sectionRef = useRef<HTMLElement>(null)
+  const sectionRef  = useRef<HTMLElement>(null)
+  const lockedRef   = useRef(false)
+  const activeRef   = useRef(0)
+  const touchStartY = useRef(0)
   const [activeIdx, setActiveIdx] = useState(0)
 
-  const { scrollYProgress } = useScroll({
-    target:  sectionRef,
-    offset:  ['start start', 'end end'],
-  })
+  // Mouse parallax — smooth spring follows cursor, whole stack drifts gently
+  const mouseX  = useMotionValue(0)
+  const mouseY  = useMotionValue(0)
+  const springX = useSpring(mouseX, { damping: 45, stiffness: 180 })
+  const springY = useSpring(mouseY, { damping: 45, stiffness: 180 })
 
-  const smooth = useSpring(scrollYProgress, { mass: 0.1, stiffness: 100, damping: 20 })
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const onMove = (e: MouseEvent) => {
+      mouseX.set((e.clientX / window.innerWidth  - 0.5) * 22)
+      mouseY.set((e.clientY / window.innerHeight - 0.5) * 15)
+    }
+    el.addEventListener('mousemove', onMove, { passive: true })
+    return () => el.removeEventListener('mousemove', onMove)
+  }, [mouseX, mouseY])
 
-  useMotionValueEvent(smooth, 'change', (v) => {
-    setActiveIdx(Math.min(N - 1, Math.round(v * (N - 1))))
-  })
+  function sectionIsActive() {
+    const el = sectionRef.current
+    if (!el) return false
+    const { top, bottom } = el.getBoundingClientRect()
+    const vh = window.innerHeight
+    return (Math.min(bottom, vh) - Math.max(top, 0)) / vh > 0.5
+  }
 
-  // Track slides DOWN-LEFT as scroll increases, pulling each card to the front
-  const x = useTransform(smooth, [0, 1], [0, -(N - 1) * STEP_X])
-  const y = useTransform(smooth, [0, 1], [0,  (N - 1) * STEP_Y])
-  const z = useTransform(smooth, [0, 1], [0,  (N - 1) * STEP_Z])
+  function advance(dir: 1 | -1) {
+    if (lockedRef.current) return
+    const next = activeRef.current + dir
+    if (next < 0 || next >= N) return
+    lockedRef.current = true
+    activeRef.current = next
+    setActiveIdx(next)
+    setTimeout(() => { lockedRef.current = false }, LOCK_MS)
+  }
+
+  // Intercept wheel when section is visible; pass through at edges
+  useEffect(() => {
+    function onWheel(e: WheelEvent) {
+      if (!sectionIsActive()) return
+      const cur      = activeRef.current
+      const goingDown = e.deltaY > 0
+      if (goingDown  && cur === N - 1) return
+      if (!goingDown && cur === 0)     return
+      e.preventDefault()
+      advance(goingDown ? 1 : -1)
+    }
+    window.addEventListener('wheel', onWheel, { passive: false })
+    return () => window.removeEventListener('wheel', onWheel)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function onTouchStart(e: React.TouchEvent) {
+    touchStartY.current = e.touches[0]!.clientY
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    if (!sectionIsActive()) return
+    const dy        = touchStartY.current - e.changedTouches[0]!.clientY
+    if (Math.abs(dy) < 40) return
+    const cur       = activeRef.current
+    const goingDown  = dy > 0
+    if (goingDown  && cur === N - 1) return
+    if (!goingDown && cur === 0)     return
+    advance(goingDown ? 1 : -1)
+  }
 
   return (
-    <section ref={sectionRef} id="como-funciona">
-
+    <section
+      ref={sectionRef}
+      id="como-funciona"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       {/* ── Desktop ── */}
-      <div className="hidden md:block" style={{ height: '420vh' }}>
-        <div className="sticky top-0 h-screen overflow-hidden bg-[#0a0a0a]">
+      <div className="hidden md:block">
+        <div className="relative h-screen overflow-hidden bg-[#0a0a0a]">
 
-          {/* Title — slightly down and right, near the card stack */}
-          <div className="absolute z-20 pointer-events-none select-none" style={{ left: '5%', top: '28%' }}>
+          {/* Title — right-aligned, positioned near the cards */}
+          <div
+            className="absolute z-20 pointer-events-none select-none text-right"
+            style={{ left: '5%', top: '28%' }}
+          >
             <h2 className="font-outfit font-semibold text-5xl xl:text-6xl text-white tracking-tight leading-tight">
               {t('El proceso', 'The process')}<br />
               <span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>
@@ -304,8 +344,7 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
               {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
               {t('Sin costes sorpresa.', 'No surprise costs.')}
             </p>
-            {/* Step counter dots */}
-            <div className="flex gap-2 mt-5">
+            <div className="flex gap-2 mt-5 justify-end">
               {steps.map((s, i) => (
                 <motion.div
                   key={s.num}
@@ -325,15 +364,14 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
             className="absolute inset-0"
             style={{ perspective: '1400px', perspectiveOrigin: '68% 58%' }}
           >
-            {/* Track: anchor right-center so active card fills the right ~70% */}
+            {/* Track — mouse parallax offsets the whole stack */}
             <motion.div
               className="absolute"
               style={{
-                left: '66%',
-                top:  '54%',
-                x,
-                y,
-                z,
+                left:           '66%',
+                top:            '54%',
+                x:              springX,
+                y:              springY,
                 transformStyle: 'preserve-3d',
               }}
             >
@@ -342,8 +380,7 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
                   key={step.num}
                   step={step}
                   i={i}
-                  smooth={smooth}
-                  activeIdx={activeIdx}
+                  off={i - activeIdx}
                   t={t}
                 />
               ))}
@@ -355,7 +392,7 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
 
       {/* ── Mobile ── */}
       <div className="md:hidden px-4 py-12 bg-[#0a0a0a]">
-        <div className="mb-8">
+        <div className="mb-8 text-right">
           <h2 className="font-outfit font-semibold text-4xl text-white tracking-tight mb-3 leading-tight">
             {t('El proceso', 'The process')}<br />
             <span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>
