@@ -72,8 +72,8 @@ function StepCard3D({ step, i, off, t }: {
   const isActive = off === 0
   const state    = cardState(off)
 
-  // Card 1 (i=0) → white number; cards 2-4 → dark number
-  const numColor = i === 0 ? 'rgba(255,255,255,0.24)' : 'rgba(0,0,0,0.22)'
+  // Card 1 (i=0) → black number; cards 2-4 → white number
+  const numColor = i === 0 ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.22)'
 
   useEffect(() => {
     const v = videoRef.current
@@ -272,12 +272,17 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
     return () => el.removeEventListener('mousemove', onMove)
   }, [mouseX, mouseY])
 
-  function sectionIsActive() {
+  // Prevents rapid-fire snap calls during smooth scroll animation
+  const snappingRef = useRef(false)
+
+  // Returns section rect only when section overlaps the viewport
+  function sectionRect() {
     const el = sectionRef.current
-    if (!el) return false
-    const { top, bottom } = el.getBoundingClientRect()
+    if (!el) return null
+    const r  = el.getBoundingClientRect()
     const vh = window.innerHeight
-    return (Math.min(bottom, vh) - Math.max(top, 0)) / vh > 0.5
+    if (r.bottom <= 0 || r.top >= vh) return null
+    return { top: r.top, bottom: r.bottom, vh }
   }
 
   function advance(dir: 1 | -1) {
@@ -290,14 +295,33 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
     setTimeout(() => { lockedRef.current = false }, LOCK_MS)
   }
 
-  // Intercept wheel when section is visible; pass through at edges
+  // Wheel handler:
+  //  1. Section entering from below → snap to full view first (no card advance yet).
+  //  2. Section fully in view      → discrete card navigation with 200ms lock.
+  //  3. At first/last card edge    → pass through so page scroll resumes.
   useEffect(() => {
     function onWheel(e: WheelEvent) {
-      if (!sectionIsActive()) return
-      const cur      = activeRef.current
+      const r = sectionRect()
+      if (!r) return
+
       const goingDown = e.deltaY > 0
-      if (goingDown  && cur === N - 1) return
-      if (!goingDown && cur === 0)     return
+      const cur       = activeRef.current
+
+      // Section not yet at top of viewport — snap it into full view
+      if (r.top > 24 && goingDown) {
+        e.preventDefault()
+        if (!snappingRef.current) {
+          snappingRef.current = true
+          window.scrollTo({ top: window.scrollY + r.top, behavior: 'smooth' })
+          setTimeout(() => { snappingRef.current = false }, 700)
+        }
+        return
+      }
+
+      // Pass through at edges so the page can scroll past the section
+      if (cur === N - 1 && goingDown)  return
+      if (cur === 0     && !goingDown) return
+
       e.preventDefault()
       advance(goingDown ? 1 : -1)
     }
@@ -310,7 +334,8 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
     touchStartY.current = e.touches[0]!.clientY
   }
   function onTouchEnd(e: React.TouchEvent) {
-    if (!sectionIsActive()) return
+    const r = sectionRect()
+    if (!r) return
     const dy        = touchStartY.current - e.changedTouches[0]!.clientY
     if (Math.abs(dy) < 40) return
     const cur       = activeRef.current
@@ -334,7 +359,7 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
           {/* Title — right-aligned, positioned near the cards */}
           <div
             className="absolute z-20 pointer-events-none select-none text-right"
-            style={{ left: '5%', top: '28%' }}
+            style={{ left: '22%', top: '28%' }}
           >
             <h2 className="font-outfit font-semibold text-5xl xl:text-6xl text-white tracking-tight leading-tight">
               {t('El proceso', 'The process')}<br />
