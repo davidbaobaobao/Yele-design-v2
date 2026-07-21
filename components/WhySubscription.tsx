@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
+import type * as THREE_TYPES from 'three'
 
 // ── Card data ─────────────────────────────────────────────────────────────────
 
@@ -118,7 +119,6 @@ export default function WhySubscription() {
     if (!canvas) return
 
     let animId = 0
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let disposeAll: (() => void) | null = null
 
     import('three').then((THREE) => {
@@ -126,7 +126,7 @@ export default function WhySubscription() {
       const h = canvas.clientHeight || window.innerHeight
 
       // Renderer
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
+      const renderer: THREE_TYPES.WebGLRenderer = new THREE.WebGLRenderer({ canvas, antialias: true })
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
       renderer.setSize(w, h, false)
       renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -143,7 +143,7 @@ export default function WhySubscription() {
       // ── Geometry: low-poly terrain with diagonal seam ─────────────────────
       const seg = window.innerWidth < 768 ? 22 : 36
       const geo = new THREE.PlaneGeometry(34, 34, seg, seg)
-      const rawPos = geo.attributes.position as THREE.BufferAttribute
+      const rawPos = geo.attributes.position as THREE_TYPES.BufferAttribute
 
       // Displace Z (before rotation): chaotic upper-left, smooth lower-right.
       // In PlaneGeometry space: x ∈ [-17,17], y ∈ [-17,17].
@@ -163,7 +163,7 @@ export default function WhySubscription() {
       const flatGeo = geo.toNonIndexed()
 
       // Vertex colors — one color per face (set all 3 verts to face centroid color)
-      const fp = flatGeo.attributes.position as THREE.BufferAttribute
+      const fp = flatGeo.attributes.position as THREE_TYPES.BufferAttribute
       const colBuf = new Float32Array(fp.count * 3)
       const colorStops = [
         new THREE.Color('#08060e'),
@@ -192,7 +192,7 @@ export default function WhySubscription() {
           colBuf[(i+j)*3+2] = tmp.b
         }
       }
-      flatGeo.setAttribute('color', new THREE.BufferAttribute(colBuf, 3))
+      flatGeo.setAttribute('color', new THREE_TYPES.BufferAttribute(colBuf, 3))
       flatGeo.computeVertexNormals()
 
       const mat = new THREE.MeshStandardMaterial({
