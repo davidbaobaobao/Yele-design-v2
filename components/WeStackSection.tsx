@@ -89,9 +89,15 @@ function cardState(off: number, cardW: number) {
 
 // ─── Individual card ──────────────────────────────────────────────────────────
 
+// Cards with light video backgrounds → black text for contrast
+const DARK_TEXT_IDS = new Set(['design', 'deliver', 'improve'])
+
 function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
   const { t } = useLang()
   const videoRef = useRef<HTMLVideoElement>(null)
+  const isDark   = DARK_TEXT_IDS.has(card.id)
+  const h1Color  = isDark ? '#0a0a0a'              : '#ffffff'
+  const bodyColor = isDark ? 'rgba(0,0,0,0.70)'   : 'rgba(255,255,255,0.70)'
 
   useEffect(() => {
     const v = videoRef.current
@@ -139,12 +145,6 @@ function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
         <source src={card.webm} type="video/webm" />
         <source src={card.mp4}  type="video/mp4" />
       </video>
-      {/* Gradient: strong on left half where text sits */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.60) 48%, rgba(0,0,0,0.08) 68%, transparent 100%)' }}
-        aria-hidden
-      />
       {/* Text: vertically centered, left half of card, right-aligned to centre */}
       <div
         className="absolute top-0 bottom-0 left-0 flex flex-col justify-center pr-8 md:pr-10 pl-6 md:pl-8 text-right"
@@ -158,7 +158,7 @@ function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
             margin: '0 0 12px',
           }}
         >
-          <span style={{ display: 'block', color: '#ffffff', fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}>
+          <span style={{ display: 'block', color: h1Color, fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}>
             {t(card.h1Es, card.h1En)}
           </span>
           <span className="we-subtitle-orange" style={{ display: 'block', fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}>
@@ -170,7 +170,7 @@ function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
             fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
             fontSize: 'clamp(0.85rem, 1.4vw, 1rem)',
             lineHeight: 1.6,
-            color: 'rgba(255,255,255,0.70)',
+            color: bodyColor,
             margin: 0,
           }}
         >
@@ -211,12 +211,17 @@ export default function WeStackSection() {
     return () => window.removeEventListener('resize', resize)
   }, [])
 
-  function sectionIsActive() {
+  // Prevents rapid-fire snap calls while smooth scroll is in flight
+  const snappingRef = useRef(false)
+
+  // Returns section rect when it overlaps the viewport, null otherwise
+  function sectionRect() {
     const el = sectionRef.current
-    if (!el) return false
-    const { top, bottom } = el.getBoundingClientRect()
+    if (!el) return null
+    const r  = el.getBoundingClientRect()
     const vh = window.innerHeight
-    return (Math.min(bottom, vh) - Math.max(top, 0)) / vh > 0.5
+    if (r.bottom <= 0 || r.top >= vh) return null
+    return r
   }
 
   function advance(dir: 1 | -1) {
@@ -229,14 +234,33 @@ export default function WeStackSection() {
     setTimeout(() => { lockedRef.current = false }, LOCK_MS)
   }
 
-  // Wheel — intercept only when section is active and not at an edge
+  // Wheel handler:
+  //  1. Section entering from below → snap to top of viewport first (no card advance).
+  //  2. Section fully in view       → discrete card navigation with 200ms lock.
+  //  3. At first/last card edge     → pass through so page scroll resumes.
   useEffect(() => {
     function onWheel(e: WheelEvent) {
-      if (!sectionIsActive()) return
-      const cur = activeRef.current
+      const r = sectionRect()
+      if (!r) return
+
       const goingDown = e.deltaY > 0
-      if (goingDown  && cur === TOTAL - 1) return   // let page scroll past
-      if (!goingDown && cur === 0)         return   // let page scroll back
+      const cur       = activeRef.current
+
+      // Section not yet at top — snap it flush to viewport top first
+      if (r.top > 24 && goingDown) {
+        e.preventDefault()
+        if (!snappingRef.current) {
+          snappingRef.current = true
+          window.scrollTo({ top: window.scrollY + r.top, behavior: 'smooth' })
+          setTimeout(() => { snappingRef.current = false }, 700)
+        }
+        return
+      }
+
+      // Pass through at edges so page scroll can resume
+      if (goingDown  && cur === TOTAL - 1) return
+      if (!goingDown && cur === 0)         return
+
       e.preventDefault()
       advance(goingDown ? 1 : -1)
     }
@@ -249,7 +273,8 @@ export default function WeStackSection() {
     touchStartY.current = e.touches[0]!.clientY
   }
   function onTouchEnd(e: React.TouchEvent) {
-    if (!sectionIsActive()) return
+    const r = sectionRect()
+    if (!r) return
     const dy = touchStartY.current - e.changedTouches[0]!.clientY
     if (Math.abs(dy) < 40) return
     const cur = activeRef.current
