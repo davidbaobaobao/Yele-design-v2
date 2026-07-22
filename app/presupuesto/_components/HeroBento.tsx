@@ -197,10 +197,10 @@ export default function HeroBento() {
             >
               {t('Tu Web', 'Your Website')}<br />{t('Gestionada', 'Handled')}<br />{t('Para siempre', 'Forever')}
             </h1>
-            <p className="font-manrope text-white/80 mt-4 text-base leading-relaxed">
+            <p className="font-manrope text-white/80 mt-4 text-lg leading-relaxed">
               {t('Diseño, contenido y mantenimiento · Una suscripción', 'Design, content & maintenance · One subscription')}
             </p>
-            <p className="font-manrope text-white font-semibold mt-1.5 text-base">
+            <p className="font-manrope text-white font-semibold mt-1.5 text-lg">
               {t('Desde 49 €/mes · Cancela cuando quieras', 'From $99/month · Cancel anytime')}
             </p>
           </div>
@@ -222,7 +222,7 @@ export default function HeroBento() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path className="hero-sparkle-main" d="M12 3L13.6 8.4L19 10L13.6 11.6L12 17L10.4 11.6L5 10L10.4 8.4L12 3Z" stroke="#ffffff" strokeWidth="1.6" strokeLinejoin="round" />
             </svg>
-            <span style={{ fontFamily: 'var(--font-manrope), sans-serif', fontWeight: 600, fontSize: 15, color: '#ffffff', whiteSpace: 'nowrap' }}>
+            <span style={{ fontFamily: 'var(--font-manrope), sans-serif', fontWeight: 600, fontSize: 17, color: '#ffffff', whiteSpace: 'nowrap' }}>
               {t('Primer mes ', 'Start for ')}<span style={{ fontWeight: 800 }}>{t('gratis', 'free')}</span>
             </span>
           </div>
@@ -231,10 +231,10 @@ export default function HeroBento() {
             <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
               {MARQUEE_ITEMS.map((label, i) => (
                 <div key={i} className="flex items-center shrink-0">
-                  <span className="font-manrope" style={{ fontWeight: 600, fontSize: 14, color: '#0a0a0a', whiteSpace: 'nowrap', padding: '0 22px' }}>
+                  <span className="font-manrope" style={{ fontWeight: 600, fontSize: 16, color: '#0a0a0a', whiteSpace: 'nowrap', padding: '0 22px' }}>
                     {label}
                   </span>
-                  <span style={{ color: '#e2482f', fontSize: 14, fontWeight: 600 }} aria-hidden="true">›</span>
+                  <span style={{ color: '#e2482f', fontSize: 16, fontWeight: 600 }} aria-hidden="true">›</span>
                 </div>
               ))}
             </div>

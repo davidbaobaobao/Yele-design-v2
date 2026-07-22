@@ -227,13 +227,47 @@ export default function WhySubscription() {
   const titleFontPx = Math.max(32, Math.min(62, Math.round(X0 * 0.16)))
 
   return (
-    <section
-      ref={sectionRef}
-      id="why-subscription"
-      className="relative h-screen overflow-hidden bg-[#0a0a0a]"
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-    >
+    <div id="why-subscription">
+      {/* ── Mobile: vertically stacked cards, no tilt, natural scroll ── */}
+      <div className="md:hidden">
+        {CARDS.map((card, i) => {
+          const darkInk  = DARK_INK.has(i)
+          const fg       = darkInk ? '#1a0a2e' : '#ffffff'
+          const fgMuted  = darkInk ? 'rgba(15,5,25,0.58)' : 'rgba(255,255,255,0.68)'
+          const iconRing = darkInk ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.18)'
+          return (
+            <div
+              key={i}
+              style={{
+                background:    PALETTE[i],
+                minHeight:     '100dvh',
+                padding:       '64px 28px 48px',
+                display:       'flex',
+                flexDirection: 'column',
+                justifyContent:'flex-start',
+              }}
+            >
+              <div style={{ width: 72, height: 72, borderRadius: '50%', background: iconRing, display: 'flex', alignItems: 'center', justifyContent: 'center', color: fg, marginBottom: 28, flexShrink: 0 }}>
+                {ICONS[i]}
+              </div>
+              <h3 style={{ fontFamily: 'var(--font-outfit), sans-serif', fontSize: 'clamp(28px, 8vw, 40px)', fontWeight: 700, lineHeight: 1.08, color: fg, margin: '0 0 16px', letterSpacing: '-0.02em' }}>
+                {t(card.es.title, card.en.title)}
+              </h3>
+              <p style={{ fontFamily: 'var(--font-manrope), sans-serif', fontSize: 'clamp(15px, 4vw, 17px)', lineHeight: 1.60, color: fgMuted, margin: 0 }}>
+                {t(card.es.desc, card.en.desc)}
+              </p>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* ── Desktop: horizontal spring fan ── */}
+      <section
+        ref={sectionRef}
+        className="hidden md:block relative h-screen overflow-hidden bg-[#0a0a0a]"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
       {/* Video background — object-position top so it visually continues into the Pricing section below */}
       <video
         ref={videoRef}
@@ -413,6 +447,7 @@ export default function WhySubscription() {
           })}
         </motion.div>
       </div>
-    </section>
+      </section>
+    </div>
   )
 }

@@ -416,7 +416,7 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
 
       {/* ── Mobile ── */}
       <div className="md:hidden px-4 py-12 bg-[#0a0a0a]">
-        <div className="mb-8 text-right">
+        <div className="mb-8 text-left">
           <h2 className="font-outfit font-semibold text-4xl text-white tracking-tight mb-3 leading-tight">
             {t('El proceso', 'The process')}<br />
             <span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>

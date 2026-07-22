@@ -87,10 +87,67 @@ function cardState(off: number, cardW: number) {
   /* off >= 3 */ return { x: cardW * 0.28, y: cardW * 0.03, rotateZ: 14,  scale: 0.62, opacity: 0 }
 }
 
-// ─── Individual card ──────────────────────────────────────────────────────────
+// ─── Mobile card (full-screen, natural scroll) ────────────────────────────────
 
 // Cards with light video backgrounds → black text for contrast
 const DARK_TEXT_IDS = new Set(['design', 'deliver', 'improve'])
+
+function MobileWeCard({ card }: { card: (typeof CARDS)[number] }) {
+  const { t }     = useLang()
+  const videoRef  = useRef<HTMLVideoElement>(null)
+  const isDark    = DARK_TEXT_IDS.has(card.id)
+  const h1Color   = isDark ? '#0a0a0a' : '#ffffff'
+  const bodyColor = isDark ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.75)'
+  const scrim     = isDark
+    ? 'linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.0) 60%)'
+    : 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 60%)'
+
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    v.setAttribute('muted', '')
+    v.setAttribute('playsinline', '')
+    v.muted = true
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { v.muted = true; v.currentTime = 0; v.play().catch(() => {}) }
+        else v.pause()
+      },
+      { threshold: 0.4 }
+    )
+    observer.observe(v)
+    function onEnded() { v.currentTime = 0; v.play().catch(() => {}) }
+    v.addEventListener('ended', onEnded)
+    return () => { observer.disconnect(); v.removeEventListener('ended', onEnded) }
+  }, [])
+
+  return (
+    <div className="relative w-full overflow-hidden" style={{ height: '100dvh', minHeight: '100vh' }}>
+      <Image src={card.poster} alt="" fill sizes="100vw" className="object-cover" priority={card.id === 'design'} aria-hidden />
+      <video ref={videoRef} loop muted playsInline preload="none" poster={card.poster}
+        className="absolute inset-0 w-full h-full object-cover">
+        <source src={card.webm} type="video/webm" />
+        <source src={card.mp4}  type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 pointer-events-none" style={{ background: scrim }} aria-hidden />
+      <div className="absolute inset-0 flex flex-col justify-center px-7 pb-8">
+        <h2 style={{ fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700, lineHeight: 1.0, margin: '0 0 14px' }}>
+          <span style={{ display: 'block', color: h1Color, fontSize: 'clamp(2.1rem, 9vw, 2.8rem)' }}>
+            {t(card.h1Es, card.h1En)}
+          </span>
+          <span className="we-subtitle-orange" style={{ display: 'block', fontSize: 'clamp(2.1rem, 9vw, 2.8rem)' }}>
+            {t(card.h2Es, card.h2En)}
+          </span>
+        </h2>
+        <p style={{ fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif', fontSize: 'clamp(0.95rem, 3.8vw, 1.05rem)', lineHeight: 1.6, color: bodyColor, margin: 0, maxWidth: '78vw' }}>
+          {t(card.bodyEs, card.bodyEn)}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ─── Individual card ──────────────────────────────────────────────────────────
 
 function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
   const { t } = useLang()
@@ -299,64 +356,72 @@ export default function WeStackSection() {
   }
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-white"
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-    >
-      {/* Card stack stage */}
-      <div
-        className="relative flex-1 flex items-center justify-center w-full"
-        style={{ perspective: '1200px' }}
-      >
-        {CARDS.map((card, i) => {
-          const off   = i - active
-          const state = cardState(off, cardDims.w)
-          return (
-            <motion.div
-              key={card.id}
-              className="absolute rounded-2xl overflow-hidden shadow-2xl"
-              style={{
-                width:  cardDims.w,
-                height: cardDims.h,
-                zIndex: off < 0 ? 0 : 90 - off,
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-                pointerEvents: off === 0 ? 'auto' : 'none',
-              }}
-              animate={state}
-              transition={{ type: 'spring', stiffness: 130, damping: 26, mass: 1.0 }}
-            >
-              <WeCard card={card} isActive={off === 0} />
-            </motion.div>
-          )
-        })}
+    <>
+      {/* ── Mobile: one full-screen card per "slide", natural vertical scroll ── */}
+      <div className="md:hidden">
+        {CARDS.map(card => <MobileWeCard key={card.id} card={card} />)}
       </div>
 
-      {/* Dot navigation */}
-      <div className="relative z-50 flex gap-2.5 pb-8" role="tablist" aria-label="We section navigation">
-        {CARDS.map((card, i) => (
-          <button
-            key={card.id}
-            role="tab"
-            aria-selected={i === active}
-            aria-label={`${card.h1En} ${card.h2En}`}
-            onClick={() => {
-              if (lockedRef.current) return
-              lockedRef.current = true
-              activeRef.current = i
-              setActive(i)
-              setTimeout(() => { lockedRef.current = false }, LOCK_MS)
-            }}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === active
-                ? 'w-7 bg-[#1D1D1F]'
-                : 'w-2 bg-[#1D1D1F]/20 hover:bg-[#1D1D1F]/45'
-            }`}
-          />
-        ))}
-      </div>
-    </section>
+      {/* ── Desktop: horizontal fan with scroll-jacking ── */}
+      <section
+        ref={sectionRef}
+        className="hidden md:flex relative w-full h-screen flex-col items-center justify-center overflow-hidden bg-white"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        {/* Card stack stage */}
+        <div
+          className="relative flex-1 flex items-center justify-center w-full"
+          style={{ perspective: '1200px' }}
+        >
+          {CARDS.map((card, i) => {
+            const off   = i - active
+            const state = cardState(off, cardDims.w)
+            return (
+              <motion.div
+                key={card.id}
+                className="absolute rounded-2xl overflow-hidden shadow-2xl"
+                style={{
+                  width:  cardDims.w,
+                  height: cardDims.h,
+                  zIndex: off < 0 ? 0 : 90 - off,
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  pointerEvents: off === 0 ? 'auto' : 'none',
+                }}
+                animate={state}
+                transition={{ type: 'spring', stiffness: 130, damping: 26, mass: 1.0 }}
+              >
+                <WeCard card={card} isActive={off === 0} />
+              </motion.div>
+            )
+          })}
+        </div>
+
+        {/* Dot navigation */}
+        <div className="relative z-50 flex gap-2.5 pb-8" role="tablist" aria-label="We section navigation">
+          {CARDS.map((card, i) => (
+            <button
+              key={card.id}
+              role="tab"
+              aria-selected={i === active}
+              aria-label={`${card.h1En} ${card.h2En}`}
+              onClick={() => {
+                if (lockedRef.current) return
+                lockedRef.current = true
+                activeRef.current = i
+                setActive(i)
+                setTimeout(() => { lockedRef.current = false }, LOCK_MS)
+              }}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === active
+                  ? 'w-7 bg-[#1D1D1F]'
+                  : 'w-2 bg-[#1D1D1F]/20 hover:bg-[#1D1D1F]/45'
+              }`}
+            />
+          ))}
+        </div>
+      </section>
+    </>
   )
 }

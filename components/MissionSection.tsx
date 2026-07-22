@@ -30,8 +30,11 @@ export default function MissionSection() {
   const m1  = useRef<HTMLSpanElement>(null)
   const m2  = useRef<HTMLSpanElement>(null)
   // Mobile-only measurement: first sub-line of l2 only (shorter → bigger font)
-  const m2m = useRef<HTMLSpanElement>(null)
-  const m3  = useRef<HTMLSpanElement>(null)
+  const m2m  = useRef<HTMLSpanElement>(null)
+  const m3   = useRef<HTMLSpanElement>(null)
+  // Mobile-only: l3 split into two sub-lines — measure each so font can grow
+  const m3m1 = useRef<HTMLSpanElement>(null)
+  const m3m2 = useRef<HTMLSpanElement>(null)
 
   const o0 = useRef<HTMLDivElement>(null)
   const o1 = useRef<HTMLDivElement>(null)
@@ -55,10 +58,10 @@ export default function MissionSection() {
     let rafId: number
     function fitLines() {
       const isMobile = window.innerWidth < 768
-      // Mobile: higher fill + measure only the first sub-line of l2 so the font is larger
-      const fill = isMobile ? 0.88 : FILL
+      // Mobile: higher fill + split long lines so the font can be much larger
+      const fill = isMobile ? 0.92 : FILL
       const contentW = document.documentElement.clientWidth - LEFT_PAD
-      const measureRefs = isMobile ? [m0, m1, m2m, m3] : [m0, m1, m2, m3]
+      const measureRefs = isMobile ? [m0, m1, m2m, m3m1, m3m2] : [m0, m1, m2, m3]
       // Batch all reads before any writes to prevent forced reflow
       const widths = measureRefs.map(r => r.current?.getBoundingClientRect().width ?? 0)
       const maxW = Math.max(...widths)
@@ -157,7 +160,10 @@ export default function MissionSection() {
   // Mobile sub-lines for l2
   const l2m1 = t('Diseño web', 'Website design')
   const l2m2 = t('y Marketing', '& Marketing')
-  const l3 = t('por suscripción', 'Subscription service')
+  const l3   = t('por suscripción', 'Subscription service')
+  // Mobile sub-lines for l3 — split so the font size can grow
+  const l3m1 = t('por', 'Subscription')
+  const l3m2 = t('suscripción', 'service')
 
   function scrollPast() {
     const sec = sectionRef.current
@@ -180,7 +186,10 @@ export default function MissionSection() {
       <span ref={m2} aria-hidden="true" style={ms}>{l2}</span>
       {/* Mobile l2 measurement (first sub-line, plain) */}
       <span ref={m2m} aria-hidden="true" style={ms}>{l2m1}</span>
-      <span ref={m3} aria-hidden="true" style={ms}>{l3}</span>
+      <span ref={m3}  aria-hidden="true" style={ms}>{l3}</span>
+      {/* Mobile l3 sub-line measurements */}
+      <span ref={m3m1} aria-hidden="true" style={ms}>{l3m1}</span>
+      <span ref={m3m2} aria-hidden="true" style={ms}>{l3m2}</span>
 
       <div
         ref={stickyRef}
@@ -234,11 +243,20 @@ export default function MissionSection() {
           </div>
         </div>
 
-        {/* Line 3 — orange on reveal */}
+        {/* Line 3 — orange on reveal; mobile: two sub-lines, each orange */}
         <div ref={lw3} style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ ...ts, color: '#c8c8c8' }}>{l3}</div>
+          <div style={{ ...ts, color: '#c8c8c8' }}>
+            <div className="md:hidden"><div>{l3m1}</div><div>{l3m2}</div></div>
+            <span className="hidden md:inline">{l3}</span>
+          </div>
           <div ref={o3} aria-hidden="true" style={overlayBase}>
-            <span className="we-subtitle-orange">{l3}</span>
+            <div className="md:hidden">
+              <div><span className="we-subtitle-orange">{l3m1}</span></div>
+              <div><span className="we-subtitle-orange">{l3m2}</span></div>
+            </div>
+            <span className="hidden md:inline">
+              <span className="we-subtitle-orange">{l3}</span>
+            </span>
           </div>
         </div>
       </div>
