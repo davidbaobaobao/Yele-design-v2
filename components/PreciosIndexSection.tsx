@@ -143,10 +143,10 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' } as Transition}
       viewport={{ once: true, margin: '-80px' }}
-      className={`relative flex flex-col rounded-3xl p-8 cursor-default ${
+      className={`relative flex flex-col rounded-3xl cursor-default ${
         plan.highlighted
-          ? 'bg-[#1D1D1F] text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] ring-1 ring-white/10'
-          : 'bg-[#F5F5F7] text-[#1D1D1F] shadow-[0_16px_56px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07]'
+          ? 'px-8 py-12 bg-[#1D1D1F] text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] ring-1 ring-white/10'
+          : 'p-8 bg-[#F5F5F7] text-[#1D1D1F] shadow-[0_16px_56px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07]'
       }`}
     >
       <motion.div
@@ -165,7 +165,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
         <p className={`font-manrope text-sm font-medium mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>
           {t(plan.es.name, plan.en.name)}
         </p>
-        <div className="flex items-end gap-1 mb-1">
+        <div className="flex items-end gap-1 mb-2">
           <span className={`font-manrope text-2xl font-semibold mb-1 ${plan.highlighted ? 'text-white/60' : 'text-[#6B7280]'}`}>
             {t('', '$')}
           </span>
@@ -174,15 +174,28 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
             {t(' €/mes', '/mo')}
           </span>
         </div>
+        {/* Pill — inside card next to price; slightly larger on highlighted */}
+        <span className={`we-pill-orange font-manrope font-semibold text-white rounded-full inline-flex items-center whitespace-nowrap self-start ${
+          plan.highlighted ? 'text-sm px-4 py-1.5' : 'text-xs px-3 py-1'
+        }`}>
+          {t('Primer mes gratis', '1st month free')}
+        </span>
       </div>
 
       <ul className="relative flex-1 flex flex-col gap-3 mb-8">
-        {features.map(feat => (
-          <li key={feat} className="flex items-start gap-2.5">
-            <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />
-            <span className={`font-manrope text-sm ${plan.highlighted ? 'text-white/80' : 'text-[#1D1D1F]'}`}>{feat}</span>
-          </li>
-        ))}
+        {features.map(feat => {
+          const isHeader = feat.includes('plus:') || feat.includes('más:')
+          return (
+            <li key={feat} className="flex items-start gap-2.5">
+              {!isHeader && (
+                <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />
+              )}
+              <span className={`font-manrope text-sm ${plan.highlighted ? 'text-white/80' : 'text-[#1D1D1F]'} ${isHeader ? 'font-bold' : ''}`}>
+                {feat}
+              </span>
+            </li>
+          )
+        })}
       </ul>
 
       <motion.a
@@ -269,19 +282,14 @@ export default function PreciosIndexSection() {
           className="text-center mb-10"
         >
           <h2
-            className="font-outfit font-semibold text-white tracking-tight mb-6"
+            className="font-outfit font-semibold text-white tracking-tight"
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}
           >
             {t('Precios', 'Pricing')}
           </h2>
-
-          {/* Orange gradient pill — same wave animation as We* subtitles */}
-          <span className="we-pill-orange font-manrope font-semibold text-base text-white px-6 py-3 rounded-full inline-block">
-            {t('Primer mes gratuito', 'First month free')}
-          </span>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 items-stretch">
+        <div className="grid md:grid-cols-3 gap-6 items-center">
           {plans.map((plan, i) => (
             <PricingCard key={plan.key} plan={plan} index={i} t={t} />
           ))}

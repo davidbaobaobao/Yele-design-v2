@@ -79,7 +79,7 @@ const ICONS = [
 // ── Fan layout constants ───────────────────────────────────────────────────────
 
 const TILTS = [-11, 8, -9, 12, -7, 10, -6]
-const SPACING_FACTORS = [0.97, 1.03, 0.95, 1.04, 0.98, 1.02]
+const SPACING_FACTORS = [1.00, 1.05, 0.99, 1.06, 1.01, 1.04]
 
 const N = CARDS.length
 const SENSITIVITY = 0.55
@@ -99,8 +99,8 @@ type Layout = {
 function calcLayout(vw: number, vh: number): Layout {
   // Wide cards: 46% of viewport, 380–660px
   const cardW   = Math.max(380, Math.min(660, Math.round(vw * 0.46)))
-  // Large gap (93%) → only corners overlap (~7% overlap at default factor)
-  const baseGap = Math.round(cardW * 0.93)
+  // Gap (96%) → corners-only overlap; raised min factors prevent content being covered
+  const baseGap = Math.round(cardW * 0.96)
   const offsets: number[] = [0]
   for (const f of SPACING_FACTORS) {
     offsets.push(offsets[offsets.length - 1] + Math.round(baseGap * f))
@@ -284,7 +284,7 @@ export default function WhySubscription() {
                 }}
               >
                 {t('¿Por qué suscripción es', 'Why subscription is')}<br />
-                <span style={{ color: '#e2482f' }}>{t('mejor?', 'better?')}</span>
+                <span className="we-subtitle-orange">{t('mejor?', 'better?')}</span>
               </h2>
 
               {/* Right-pointing bouncing arrow */}

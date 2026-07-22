@@ -326,7 +326,7 @@ export default function WeStackSection() {
                 pointerEvents: off === 0 ? 'auto' : 'none',
               }}
               animate={state}
-              transition={{ type: 'spring', stiffness: 190, damping: 28 }}
+              transition={{ type: 'spring', stiffness: 85, damping: 22, mass: 1.3 }}
             >
               <WeCard card={card} isActive={off === 0} />
             </motion.div>
