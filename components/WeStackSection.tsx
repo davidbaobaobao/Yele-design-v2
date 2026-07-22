@@ -268,14 +268,14 @@ export default function WeStackSection() {
 
       // ── Card navigation zone (section is flush at viewport top) ──────────────
       // top ≤ 10  : snap has completed (or nearly so)
-      // top ≥ −80 : section hasn't been scrolled above viewport
-      if (top <= 10 && top >= -80) {
+      // top ≥ −150: gives 150px buffer for smooth-scroll overshoot before releasing
+      if (top <= 10 && top >= -150) {
         if (down  && cur >= TOTAL - 1) return  // last card → release downward
         if (!down && cur <= 0)         return  // first card → release upward
         e.preventDefault()
         advance(down ? 1 : -1)
       }
-      // top < −80: section scrolled above viewport → pass through freely
+      // top < −150: section scrolled above viewport → pass through freely
     }
 
     window.addEventListener('wheel', onWheel, { passive: false })
@@ -326,7 +326,7 @@ export default function WeStackSection() {
                 pointerEvents: off === 0 ? 'auto' : 'none',
               }}
               animate={state}
-              transition={{ type: 'spring', stiffness: 85, damping: 22, mass: 1.3 }}
+              transition={{ type: 'spring', stiffness: 130, damping: 26, mass: 1.0 }}
             >
               <WeCard card={card} isActive={off === 0} />
             </motion.div>
