@@ -126,4 +126,3 @@ html.sand-helix-page body {
 /* Hide scrollbar cross-browser */
 .hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
-}
