@@ -29,7 +29,7 @@ const CARDS = [
     h2Es: 'todo el contenido que necesitas', h2En: 'Any content you need',
     bodyEs: 'De fotografía y vídeo a copy e ilustraciones. Para que tu web sea impactante y llamativa.',
     bodyEn: 'From photography and video to copy and illustrations. So your website looks stunning and eye-catching.',
-    poster: '/media/we%20create/bgvideo_poster.jpg',
+    poster: '/media/we%20create/bgvideo_poster2.jpeg',
     webm:   '/media/we%20create/bgvideo_hq.webm',
     mp4:    '/media/we%20create/bgvideo_hq.mp4',
   },
