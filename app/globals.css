@@ -122,3 +122,8 @@ html.sand-helix-page body {
 @media (max-width: 767px) {
   .dif-vid { object-position: right bottom; }
 }
+
+/* Hide scrollbar cross-browser */
+.hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+}

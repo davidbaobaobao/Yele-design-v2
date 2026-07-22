@@ -211,21 +211,6 @@ export default function ShowcaseFeatureCards() {
           ))}
         </div>
 
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          viewport={{ once: true }}
-        >
-          <a
-            href={t('/presupuesto', '/presupuesto')}
-            className="inline-flex items-center gap-2 bg-[#0a0a0a] text-white font-manrope font-semibold text-base rounded-xl px-8 py-4 hover:bg-[#1a1a1a] transition-colors"
-          >
-            {t('Empezar gratis', 'Start for free')}
-            <span aria-hidden="true">→</span>
-          </a>
-        </motion.div>
       </div>
     </section>
   )
