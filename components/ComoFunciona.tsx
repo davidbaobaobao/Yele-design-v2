@@ -23,7 +23,7 @@ const steps = [
     img: '/media/como2/vid2_poster.jpg',
     video: '/media/como2/vid2_c',
     es: { title: 'Diseñamos y construimos', desc: 'En 1 semana tienes un sitio profesional, adaptado a tu sector, con tu contenido real.' },
-    en: { title: 'We design and build it', desc: 'In 1 week you have a professional site, tailored to your industry, with your real content.' },
+    en: { title: 'We design and build it', desc: 'Your industry, your content, your site — live in 1 week.' },
   },
   {
     num: '03',
@@ -37,7 +37,7 @@ const steps = [
     img: '/media/como2/vid4_poster.jpg',
     video: '/media/como2/vid4_c',
     es: { title: 'Soporte y mejora continua', desc: 'Actualizamos, mantenemos y mejoramos tu web. Tú no tocas código. Nunca.' },
-    en: { title: 'Continuous support and improvement', desc: 'We update, maintain and improve your website. You never touch the code.' },
+    en: { title: 'Always on, always improving', desc: 'We update, maintain, and improve your site continuously. You never touch a thing.' },
   },
 ]
 
@@ -72,8 +72,7 @@ function StepCard3D({ step, i, off, t }: {
   const isActive = off === 0
   const state    = cardState(off)
 
-  // Card 1 (i=0) → black number; cards 2-4 → white number
-  const numColor = i === 0 ? 'rgba(0,0,0,0.82)' : 'rgba(255,255,255,0.80)'
+  const numColor = 'rgba(255,255,255,0.80)'
 
   useEffect(() => {
     const v = videoRef.current
@@ -359,7 +358,7 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
           {/* Title — right-aligned, positioned near the cards */}
           <div
             className="absolute z-20 pointer-events-none select-none text-right"
-            style={{ left: '22%', top: '28%' }}
+            style={{ left: '30%', top: '28%' }}
           >
             <h2 className="font-outfit font-semibold text-5xl xl:text-6xl text-white tracking-tight leading-tight">
               {t('El proceso', 'The process')}<br />
