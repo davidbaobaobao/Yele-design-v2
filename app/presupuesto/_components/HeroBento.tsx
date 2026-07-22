@@ -138,16 +138,16 @@ export default function HeroBento() {
                 className="font-archivo"
                 style={{
                   fontWeight: 500,
-                  fontSize: 74,
-                  lineHeight: 1.02,
+                  fontSize: 92,
+                  lineHeight: 0.97,
                   letterSpacing: '-0.02em',
                   color: '#ffffff',
                   marginLeft: 20,
                 }}
               >
-                {t('Tu Web.', 'Your Website.')}<br />
-                {t('Diseñada. Gestionada.', 'Designed. Managed.')}<br />
-                {t('Mejorada. Para siempre.', 'Improved. Forever.')}
+                {t('Tu Web', 'Your Website')}<br />
+                {t('Gestionada', 'Handled')}<br />
+                {t('Para siempre', 'Forever')}
               </h1>
               <p
                 className="font-manrope"
@@ -193,9 +193,9 @@ export default function HeroBento() {
           <div className="relative">
             <h1
               className="font-archivo text-white"
-              style={{ fontWeight: 500, fontSize: 52, lineHeight: 1.02, letterSpacing: '-0.02em' }}
+              style={{ fontWeight: 500, fontSize: 64, lineHeight: 0.97, letterSpacing: '-0.02em' }}
             >
-              {t('Tu Web.', 'Your Website.')}<br />{t('Diseñada. Gestionada.', 'Designed. Managed.')}<br />{t('Mejorada. Para siempre.', 'Improved. Forever.')}
+              {t('Tu Web', 'Your Website')}<br />{t('Gestionada', 'Handled')}<br />{t('Para siempre', 'Forever')}
             </h1>
             <p className="font-manrope text-white/80 mt-4 text-base leading-relaxed">
               {t('Diseño, contenido y mantenimiento · Una suscripción', 'Design, content & maintenance · One subscription')}
