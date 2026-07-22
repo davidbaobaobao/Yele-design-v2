@@ -79,7 +79,7 @@ const ICONS = [
 // ── Fan layout constants ───────────────────────────────────────────────────────
 
 const TILTS = [-11, 8, -9, 12, -7, 10, -6]
-const SPACING_FACTORS = [1.00, 1.05, 0.99, 1.06, 1.01, 1.04]
+const SPACING_FACTORS = [1.00, 1.00, 1.00, 1.00, 1.00, 1.00]
 
 const N = CARDS.length
 const SENSITIVITY = 0.65
@@ -302,7 +302,7 @@ export default function WhySubscription() {
               style={{
                 position:      'absolute',
                 left:          titleLeft,
-                top:           '14%',
+                top:           '32%',
                 width:         titleW,
                 pointerEvents: 'none',
                 userSelect:    'none',
@@ -321,10 +321,10 @@ export default function WhySubscription() {
                   letterSpacing: '-0.02em',
                 }}
               >
-                {t('¿Por qué suscripción es', 'Why subscription is')}
+                {t('¿Por qué suscripción', 'Why subscription')}
               </h2>
 
-              {/* Subtitle — slightly larger, with breathing room above */}
+              {/* Orange line — "is better?" */}
               <div style={{ marginTop: 14, textAlign: 'right' }}>
                 <span
                   className="we-subtitle-orange"
@@ -337,7 +337,7 @@ export default function WhySubscription() {
                     letterSpacing: '-0.02em',
                   }}
                 >
-                  {t('mejor?', 'better?')}
+                  {t('es mejor?', 'is better?')}
                 </span>
               </div>
 

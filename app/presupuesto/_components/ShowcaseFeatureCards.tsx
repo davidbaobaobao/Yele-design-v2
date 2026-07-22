@@ -146,9 +146,48 @@ function ParallaxCard({ img, video, title, desc, i }: { img: string; video: stri
 
 export default function ShowcaseFeatureCards() {
   const { t } = useLang()
+  const sectionRef = useRef<HTMLElement>(null)
+
+  // 250ms scroll lock on desktop — gives users a moment to register the grid
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    let locked = false
+    let lockTimer: ReturnType<typeof setTimeout>
+
+    function preventScroll(e: WheelEvent) {
+      if (locked) e.preventDefault()
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (window.innerWidth < 768) return
+      if (entry.isIntersecting && !locked) {
+        locked = true
+        const { top } = el.getBoundingClientRect()
+        if (Math.abs(top) > 20) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        window.addEventListener('wheel', preventScroll, { passive: false })
+        clearTimeout(lockTimer)
+        lockTimer = setTimeout(() => {
+          locked = false
+          window.removeEventListener('wheel', preventScroll)
+        }, 250)
+      } else if (!entry.isIntersecting) {
+        locked = false
+        window.removeEventListener('wheel', preventScroll)
+        clearTimeout(lockTimer)
+      }
+    }, { threshold: 0.3 })
+
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+      clearTimeout(lockTimer)
+      window.removeEventListener('wheel', preventScroll)
+    }
+  }, [])
 
   return (
-    <section id="showcase-cards" className="min-h-screen flex flex-col justify-center py-6">
+    <section ref={sectionRef} id="showcase-cards" className="min-h-screen flex flex-col justify-center py-6">
       <div className="max-w-6xl mx-auto px-6 w-full">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -171,6 +210,22 @@ export default function ShowcaseFeatureCards() {
             />
           ))}
         </div>
+
+        <motion.div
+          className="text-center mt-12"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          viewport={{ once: true }}
+        >
+          <a
+            href={t('/presupuesto', '/presupuesto')}
+            className="inline-flex items-center gap-2 bg-[#0a0a0a] text-white font-manrope font-semibold text-base rounded-xl px-8 py-4 hover:bg-[#1a1a1a] transition-colors"
+          >
+            {t('Empezar gratis', 'Start for free')}
+            <span aria-hidden="true">→</span>
+          </a>
+        </motion.div>
       </div>
     </section>
   )

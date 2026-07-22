@@ -429,30 +429,6 @@ export default function WeStackSection() {
           </motion.div>
         </div>
 
-        {/* Dot navigation */}
-        <div className="relative z-50 flex gap-2.5 pb-8">
-          {CARDS.map((card, i) => (
-            <motion.button
-              key={card.id}
-              role="tab"
-              aria-selected={i === active}
-              aria-label={`${card.h1En} ${card.h2En}`}
-              onClick={() => {
-                if (lockedRef.current) return
-                lockedRef.current = true
-                activeRef.current = i
-                setActive(i)
-                setTimeout(() => { lockedRef.current = false }, LOCK_MS)
-              }}
-              className="h-2 rounded-full cursor-pointer border-0 bg-transparent p-0"
-              animate={{
-                width:           i === active ? 28 : 8,
-                backgroundColor: i === active ? '#1D1D1F' : 'rgba(29,29,31,0.20)',
-              }}
-              transition={{ duration: 0.4 }}
-            />
-          ))}
-        </div>
       </section>
     </>
   )
