@@ -116,7 +116,7 @@ function MobileWeCard({ card }: { card: (typeof CARDS)[number] }) {
       { threshold: 0.4 }
     )
     observer.observe(v)
-    function onEnded() { v.currentTime = 0; v.play().catch(() => {}) }
+    function onEnded() { v!.currentTime = 0; v!.play().catch(() => {}) }
     v.addEventListener('ended', onEnded)
     return () => { observer.disconnect(); v.removeEventListener('ended', onEnded) }
   }, [])
