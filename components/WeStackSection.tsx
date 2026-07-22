@@ -82,9 +82,9 @@ type Card = (typeof CARDS)[number]
 function cardState(off: number, cardW: number) {
   if (off < 0)   return { x: -cardW * 1.2, y: 0,            rotateZ: -15, scale: 0.80, opacity: 0 }
   if (off === 0) return { x: 0,            y: 0,            rotateZ: 0,   scale: 1.00, opacity: 1 }
-  if (off === 1) return { x: cardW * 0.10, y: 0,            rotateZ: 7,   scale: 0.82, opacity: 0.92 }
-  if (off === 2) return { x: cardW * 0.17, y: cardW * 0.02, rotateZ: 12,  scale: 0.70, opacity: 0.72 }
-  /* off >= 3 */ return { x: cardW * 0.22, y: cardW * 0.03, rotateZ: 14,  scale: 0.62, opacity: 0 }
+  if (off === 1) return { x: cardW * 0.18, y: 0,            rotateZ: 7,   scale: 0.82, opacity: 0.92 }
+  if (off === 2) return { x: cardW * 0.24, y: cardW * 0.02, rotateZ: 12,  scale: 0.70, opacity: 0.72 }
+  /* off >= 3 */ return { x: cardW * 0.28, y: cardW * 0.03, rotateZ: 14,  scale: 0.62, opacity: 0 }
 }
 
 // ─── Individual card ──────────────────────────────────────────────────────────
@@ -326,7 +326,7 @@ export default function WeStackSection() {
                 pointerEvents: off === 0 ? 'auto' : 'none',
               }}
               animate={state}
-              transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+              transition={{ type: 'spring', stiffness: 190, damping: 28 }}
             >
               <WeCard card={card} isActive={off === 0} />
             </motion.div>
