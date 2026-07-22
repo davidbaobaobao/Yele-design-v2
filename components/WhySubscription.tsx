@@ -82,7 +82,7 @@ const TILTS = [-11, 8, -9, 12, -7, 10, -6]
 const SPACING_FACTORS = [1.00, 1.05, 0.99, 1.06, 1.01, 1.04]
 
 const N = CARDS.length
-const SENSITIVITY = 0.55
+const SENSITIVITY = 0.65
 // How far from the section top (px) cards start — avoids clipping the tilted top corners
 const CARD_TOP = 64
 
@@ -99,8 +99,8 @@ type Layout = {
 function calcLayout(vw: number, vh: number): Layout {
   // Wide cards: 46% of viewport, 380–660px
   const cardW   = Math.max(380, Math.min(660, Math.round(vw * 0.46)))
-  // Gap (96%) → corners-only overlap; raised min factors prevent content being covered
-  const baseGap = Math.round(cardW * 0.96)
+  // Gap (120%) → clear separation; no card content covered by the previous card
+  const baseGap = Math.round(cardW * 1.20)
   const offsets: number[] = [0]
   for (const f of SPACING_FACTORS) {
     offsets.push(offsets[offsets.length - 1] + Math.round(baseGap * f))
@@ -224,7 +224,7 @@ export default function WhySubscription() {
   const titleW      = Math.min(380, Math.max(0, X0 - 40))
   const showTitle   = titleW > 120
   const titleLeft   = X0 - titleW - 40
-  const titleFontPx = Math.max(28, Math.min(56, Math.round(X0 * 0.14)))
+  const titleFontPx = Math.max(32, Math.min(62, Math.round(X0 * 0.16)))
 
   return (
     <section
@@ -234,10 +234,11 @@ export default function WhySubscription() {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Video background */}
+      {/* Video background — object-position top so it visually continues into the Pricing section below */}
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: '50% 0%' }}
         autoPlay muted loop playsInline preload="none"
         poster="/media/pricing2/pricing2_poster.jpg"
         aria-hidden="true"
@@ -246,10 +247,10 @@ export default function WhySubscription() {
         <source src="/media/pricing2/pricing2_hq.mp4"  type="video/mp4" />
       </video>
 
-      {/* Scrim — light touch so the title area stays bright */}
+      {/* Scrim — bottom opacity matches the Pricing section top for a seamless visual join */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.00) 35%, rgba(0,0,0,0.35) 100%)' }}
+        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.00) 35%, rgba(0,0,0,0.55) 100%)' }}
       />
 
       {/* Stage — full section height, strip translates inside it */}
@@ -264,7 +265,7 @@ export default function WhySubscription() {
               style={{
                 position:      'absolute',
                 left:          titleLeft,
-                top:           '38%',
+                top:           '44%',
                 width:         titleW,
                 pointerEvents: 'none',
                 userSelect:    'none',
@@ -283,9 +284,25 @@ export default function WhySubscription() {
                   letterSpacing: '-0.02em',
                 }}
               >
-                {t('¿Por qué suscripción es', 'Why subscription is')}<br />
-                <span className="we-subtitle-orange">{t('mejor?', 'better?')}</span>
+                {t('¿Por qué suscripción es', 'Why subscription is')}
               </h2>
+
+              {/* Subtitle — slightly larger, with breathing room above */}
+              <div style={{ marginTop: 14, textAlign: 'right' }}>
+                <span
+                  className="we-subtitle-orange"
+                  style={{
+                    display:       'block',
+                    fontFamily:    'var(--font-outfit), sans-serif',
+                    fontSize:      Math.round(titleFontPx * 1.12),
+                    fontWeight:    700,
+                    lineHeight:    1.08,
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  {t('mejor?', 'better?')}
+                </span>
+              </div>
 
               {/* Right-pointing bouncing arrow */}
               <motion.div
