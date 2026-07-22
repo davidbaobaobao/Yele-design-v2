@@ -5,7 +5,6 @@ import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, typ
 import { Check } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
-import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 const plans = [
   {
@@ -226,7 +225,20 @@ export default function PreciosIndexSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef   = useRef<HTMLVideoElement>(null)
 
-  useVideoAutoplay(videoRef)
+  // Video plays only while mouse is moving; pauses after 600ms of stillness
+  useEffect(() => {
+    const el  = sectionRef.current
+    const vid = videoRef.current
+    if (!el || !vid) return
+    let timer: ReturnType<typeof setTimeout>
+    function onMouseMove() {
+      if (vid!.paused) vid!.play().catch(() => {})
+      clearTimeout(timer)
+      timer = setTimeout(() => { vid!.pause() }, 600)
+    }
+    el.addEventListener('mousemove', onMouseMove, { passive: true })
+    return () => { el.removeEventListener('mousemove', onMouseMove); clearTimeout(timer) }
+  }, [])
 
   useEffect(() => {
     const el = sectionRef.current
@@ -276,17 +288,16 @@ export default function PreciosIndexSection() {
       id="precios"
       className="relative min-h-screen flex items-center overflow-hidden py-24 bg-[#0a0a0a]"
     >
-      {/* Video background — same source as WhySubscription, object-position bottom to visually continue from that section */}
+      {/* Video background — plays on mouse movement, pauses on stillness */}
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: '50% 100%' }}
-        autoPlay muted loop playsInline preload="none"
-        poster="/media/pricing2/pricing2_poster.jpg"
+        muted loop playsInline preload="none"
+        poster="/media/pricing3/pricing3_poster.jpg"
         aria-hidden="true"
       >
-        <source src="/media/pricing2/pricing2_hq.webm" type="video/webm" />
-        <source src="/media/pricing2/pricing2_hq.mp4"  type="video/mp4" />
+        <source src="/media/pricing3/pricing3_hq.webm" type="video/webm" />
+        <source src="/media/pricing3/pricing3_hq.mp4"  type="video/mp4" />
       </video>
 
       {/* Scrim — top opacity matches WhySubscription bottom for a seamless visual join */}

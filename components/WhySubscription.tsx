@@ -3,7 +3,6 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
-import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 // ── Card data ─────────────────────────────────────────────────────────────────
 
@@ -83,8 +82,6 @@ const SPACING_FACTORS = [1.00, 1.05, 0.99, 1.06, 1.01, 1.04]
 
 const N = CARDS.length
 const SENSITIVITY = 0.65
-// How far from the section top (px) cards start — avoids clipping the tilted top corners
-const CARD_TOP = 64
 
 // ── Responsive layout ─────────────────────────────────────────────────────────
 
@@ -94,24 +91,26 @@ type Layout = {
   offsets:     number[]
   totalTravel: number
   X0:          number   // left edge of card 0 when strip is at x=0 (card 0 centred)
+  cardTop:     number   // how far from section top cards begin (bottom 70% of viewport)
 }
 
 function calcLayout(vw: number, vh: number): Layout {
-  // Wide cards: 46% of viewport, 380–660px
   const cardW   = Math.max(380, Math.min(660, Math.round(vw * 0.46)))
-  // Gap (120%) → clear separation; no card content covered by the previous card
-  const baseGap = Math.round(cardW * 1.20)
+  // 94% gap → slight corner overlap on all pairs without covering card content
+  const baseGap = Math.round(cardW * 0.94)
   const offsets: number[] = [0]
   for (const f of SPACING_FACTORS) {
     offsets.push(offsets[offsets.length - 1] + Math.round(baseGap * f))
   }
+  // Cards fill the bottom 70% of the section
+  const cardTop = Math.round(vh * 0.30)
   return {
     cardW,
-    // Cards extend 40px below the section bottom for the "cut" look
-    cardH:       Math.round(vh) - CARD_TOP + 80,
+    cardH:       Math.round(vh) - cardTop + 80,
     offsets,
     totalTravel: offsets[N - 1],
     X0:          Math.round(vw / 2 - cardW / 2),
+    cardTop,
   }
 }
 
@@ -132,7 +131,20 @@ export default function WhySubscription() {
   const motionX = useMotionValue(0)
   const springX = useSpring(motionX, { stiffness: 88, damping: 21, mass: 0.85 })
 
-  useVideoAutoplay(videoRef)
+  // ── Mouse-driven video playback (desktop only) ──────────────────────────────
+  useEffect(() => {
+    const el  = sectionRef.current
+    const vid = videoRef.current
+    if (!el || !vid) return
+    let timer: ReturnType<typeof setTimeout>
+    function onMouseMove() {
+      if (vid!.paused) vid!.play().catch(() => {})
+      clearTimeout(timer)
+      timer = setTimeout(() => { vid!.pause() }, 600)
+    }
+    el.addEventListener('mousemove', onMouseMove, { passive: true })
+    return () => { el.removeEventListener('mousemove', onMouseMove); clearTimeout(timer) }
+  }, [])
 
   // ── Resize ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -218,7 +230,7 @@ export default function WhySubscription() {
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
-  const { cardW, cardH, offsets, X0 } = layout
+  const { cardW, cardH, offsets, X0, cardTop } = layout
 
   // Title appears in the strip to the left of card 0 — only when space is available
   const titleW      = Math.min(380, Math.max(0, X0 - 40))
@@ -273,12 +285,12 @@ export default function WhySubscription() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-      {/* Video background — object-position top so it visually continues into the Pricing section below */}
+      {/* Video background — plays on mouse movement, pauses on stillness */}
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
         style={{ objectPosition: '50% 0%' }}
-        autoPlay muted loop playsInline preload="none"
+        muted loop playsInline preload="none"
         poster="/media/pricing2/pricing2_poster.jpg"
         aria-hidden="true"
       >
@@ -304,7 +316,7 @@ export default function WhySubscription() {
               style={{
                 position:      'absolute',
                 left:          titleLeft,
-                top:           '44%',
+                top:           '14%',
                 width:         titleW,
                 pointerEvents: 'none',
                 userSelect:    'none',
@@ -388,7 +400,7 @@ export default function WhySubscription() {
                 style={{
                   position:         'absolute',
                   left:             X0 + offsets[i],
-                  top:              CARD_TOP,
+                  top:              cardTop,
                   width:            cardW,
                   height:           cardH,
                   borderRadius:     24,
