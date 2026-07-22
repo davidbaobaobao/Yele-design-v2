@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
@@ -211,8 +210,6 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
 export default function PreciosIndexSection() {
   const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  useVideoAutoplay(videoRef)
 
   useEffect(() => {
     const el = sectionRef.current
@@ -260,19 +257,8 @@ export default function PreciosIndexSection() {
     <section
       ref={sectionRef}
       id="precios"
-      className="relative min-h-screen flex items-center overflow-hidden py-24"
+      className="relative min-h-screen flex items-center overflow-hidden py-24 bg-[#0a0a0a]"
     >
-      <video
-        ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover"
-        autoPlay muted loop playsInline preload="none"
-        poster="/media/pricing2/pricing2_poster.jpg"
-        aria-hidden="true"
-      >
-        <source src="/media/pricing2/pricing2_hq.webm" type="video/webm" />
-        <source src="/media/pricing2/pricing2_hq.mp4"  type="video/mp4" />
-      </video>
-      <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div
