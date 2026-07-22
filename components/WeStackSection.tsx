@@ -402,7 +402,7 @@ export default function WeStackSection() {
                     height:                   cardDims.h,
                     borderRadius:             20,
                     willChange:               'transform',
-                    rotateY:                  -15,
+                    rotateY:                  -8,
                     backfaceVisibility:       'hidden',
                     WebkitBackfaceVisibility: 'hidden',
                     zIndex:                   off < 0 ? 0 : 50 - Math.max(0, off),
