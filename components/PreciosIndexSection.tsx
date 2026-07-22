@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, typ
 import { Check } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 const plans = [
   {
@@ -225,20 +226,7 @@ export default function PreciosIndexSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef   = useRef<HTMLVideoElement>(null)
 
-  // Video plays only while mouse is moving; pauses after 600ms of stillness
-  useEffect(() => {
-    const el  = sectionRef.current
-    const vid = videoRef.current
-    if (!el || !vid) return
-    let timer: ReturnType<typeof setTimeout>
-    function onMouseMove() {
-      if (vid!.paused) vid!.play().catch(() => {})
-      clearTimeout(timer)
-      timer = setTimeout(() => { vid!.pause() }, 600)
-    }
-    el.addEventListener('mousemove', onMouseMove, { passive: true })
-    return () => { el.removeEventListener('mousemove', onMouseMove); clearTimeout(timer) }
-  }, [])
+  useVideoAutoplay(videoRef)
 
   useEffect(() => {
     const el = sectionRef.current
@@ -288,11 +276,10 @@ export default function PreciosIndexSection() {
       id="precios"
       className="relative min-h-screen flex items-center overflow-hidden py-24 bg-[#0a0a0a]"
     >
-      {/* Video background — plays on mouse movement, pauses on stillness */}
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
-        muted loop playsInline preload="none"
+        autoPlay muted loop playsInline preload="none"
         poster="/media/pricing3/pricing3_poster.jpg"
         aria-hidden="true"
       >

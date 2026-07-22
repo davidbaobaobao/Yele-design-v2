@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 // ── Card data ─────────────────────────────────────────────────────────────────
 
@@ -96,8 +97,7 @@ type Layout = {
 
 function calcLayout(vw: number, vh: number): Layout {
   const cardW   = Math.max(380, Math.min(660, Math.round(vw * 0.46)))
-  // 94% gap → slight corner overlap on all pairs without covering card content
-  const baseGap = Math.round(cardW * 0.94)
+  const baseGap = Math.round(cardW * 1.08)
   const offsets: number[] = [0]
   for (const f of SPACING_FACTORS) {
     offsets.push(offsets[offsets.length - 1] + Math.round(baseGap * f))
@@ -131,20 +131,7 @@ export default function WhySubscription() {
   const motionX = useMotionValue(0)
   const springX = useSpring(motionX, { stiffness: 88, damping: 21, mass: 0.85 })
 
-  // ── Mouse-driven video playback (desktop only) ──────────────────────────────
-  useEffect(() => {
-    const el  = sectionRef.current
-    const vid = videoRef.current
-    if (!el || !vid) return
-    let timer: ReturnType<typeof setTimeout>
-    function onMouseMove() {
-      if (vid!.paused) vid!.play().catch(() => {})
-      clearTimeout(timer)
-      timer = setTimeout(() => { vid!.pause() }, 600)
-    }
-    el.addEventListener('mousemove', onMouseMove, { passive: true })
-    return () => { el.removeEventListener('mousemove', onMouseMove); clearTimeout(timer) }
-  }, [])
+  useVideoAutoplay(videoRef)
 
   // ── Resize ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -285,12 +272,11 @@ export default function WhySubscription() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-      {/* Video background — plays on mouse movement, pauses on stillness */}
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
         style={{ objectPosition: '50% 0%' }}
-        muted loop playsInline preload="none"
+        autoPlay muted loop playsInline preload="none"
         poster="/media/pricing2/pricing2_poster.jpg"
         aria-hidden="true"
       >

@@ -5,11 +5,11 @@
 // 250ms lock per transition to prevent accidental double-advance.
 
 import { useRef, useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useMotionValue, useSpring } from 'framer-motion'
 import Image from 'next/image'
 import { useLang } from '@/context/LanguageContext'
 
-const LOCK_MS = 500
+const LOCK_MS = 200
 const TOTAL = 6
 
 const CARDS = [
@@ -77,14 +77,16 @@ const CARDS = [
 
 type Card = (typeof CARDS)[number]
 
-// Visual state for each card based on its offset from the active card.
-// x offsets are proportional to cardW so they work at any card size.
+// 3D horizontal stack: active card centre, next cards step right + recede in Z.
+// Exiting cards (off < 0) fly out to the left.
 function cardState(off: number, cardW: number) {
-  if (off < 0)   return { x: -cardW * 1.2, y: 0,            rotateZ: -15, scale: 0.80, opacity: 0 }
-  if (off === 0) return { x: 0,            y: 0,            rotateZ: 0,   scale: 1.00, opacity: 1 }
-  if (off === 1) return { x: cardW * 0.18, y: 0,            rotateZ: 7,   scale: 0.82, opacity: 0.92 }
-  if (off === 2) return { x: cardW * 0.24, y: cardW * 0.02, rotateZ: 12,  scale: 0.70, opacity: 0.72 }
-  /* off >= 3 */ return { x: cardW * 0.28, y: cardW * 0.03, rotateZ: 14,  scale: 0.62, opacity: 0 }
+  const STEP_X = Math.round(cardW * 0.13)
+  const STEP_Z = 220
+  if (off < 0)   return { x: -cardW * 1.5,  z:   0,           opacity: 0    }
+  if (off === 0) return { x: 0,             z:   0,           opacity: 1    }
+  if (off === 1) return { x: STEP_X,        z: -STEP_Z,       opacity: 0.78 }
+  if (off === 2) return { x: STEP_X * 1.6,  z: -STEP_Z * 1.7, opacity: 0.52 }
+  return               { x: STEP_X * 2,     z: -STEP_Z * 2.2, opacity: 0    }
 }
 
 // ─── Mobile card (full-screen, natural scroll) ────────────────────────────────
@@ -248,6 +250,12 @@ export default function WeStackSection() {
 
   const [active, setActive] = useState(0)
 
+  // Mouse parallax for 3D depth
+  const mouseX       = useMotionValue(0)
+  const mouseY       = useMotionValue(0)
+  const mouseSpringX = useSpring(mouseX, { damping: 45, stiffness: 180 })
+  const mouseSpringY = useSpring(mouseY, { damping: 45, stiffness: 180 })
+
   // Responsive card dimensions — landscape, fills most of the section
   const [cardDims, setCardDims] = useState({ w: 1100, h: 620 })
   useEffect(() => {
@@ -266,6 +274,19 @@ export default function WeStackSection() {
     resize()
     window.addEventListener('resize', resize)
     return () => window.removeEventListener('resize', resize)
+  }, [])
+
+  // Mouse parallax — gentle drift follows cursor over the desktop section
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const onMove = (e: MouseEvent) => {
+      mouseX.set((e.clientX / window.innerWidth  - 0.5) * 18)
+      mouseY.set((e.clientY / window.innerHeight - 0.5) * 12)
+    }
+    el.addEventListener('mousemove', onMove, { passive: true })
+    return () => el.removeEventListener('mousemove', onMove)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Returns section rect when visible in viewport, null otherwise
@@ -291,50 +312,34 @@ export default function WeStackSection() {
     setTimeout(() => { lockedRef.current = false }, LOCK_MS)
   }
 
-  // Wheel handler:
-  //   • Section entering from below (top > 40)  → snap to top; block all scroll
-  //   • Section at top (−80 ≤ top ≤ 10)        → card-by-card navigation (500ms lock)
-  //   • At last card going down / first going up → release so page can scroll past
+  // Wheel handler (ComoFunciona engine):
+  //   • Section entering from below → snap to full view first, no card advance yet
+  //   • Section at top → discrete card nav with 200ms lock
+  //   • At first/last card edge → pass through so page scroll resumes
   useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-
     function onWheel(e: WheelEvent) {
-      if (!el) return
-      const { top, bottom } = el.getBoundingClientRect()
-      const vh = window.innerHeight
+      const r = sectionRect()
+      if (!r) return
 
-      // Section completely outside viewport
-      if (bottom <= 0 || top >= vh) return
+      const goingDown = e.deltaY > 0
+      const cur       = activeRef.current
 
-      const down = e.deltaY > 0
-      const cur  = activeRef.current
-
-      // ── Snap to top ──────────────────────────────────────────────────────────
-      // Block ALL scroll while section is partially in view from below.
-      // snappingRef prevents duplicate scrollTo calls during the animation.
-      if (top > 10 && down) {
+      if (r.top > 24 && goingDown) {
         e.preventDefault()
         if (!snappingRef.current) {
           snappingRef.current = true
-          window.scrollTo({ top: window.scrollY + top, behavior: 'smooth' })
-          setTimeout(() => { snappingRef.current = false }, 900)
+          window.scrollTo({ top: window.scrollY + r.top, behavior: 'smooth' })
+          setTimeout(() => { snappingRef.current = false }, 700)
         }
         return
       }
 
-      // ── Card navigation zone (section is flush at viewport top) ──────────────
-      // top ≤ 10  : snap has completed (or nearly so)
-      // top ≥ −150: gives 150px buffer for smooth-scroll overshoot before releasing
-      if (top <= 10 && top >= -150) {
-        if (down  && cur >= TOTAL - 1) return  // last card → release downward
-        if (!down && cur <= 0)         return  // first card → release upward
-        e.preventDefault()
-        advance(down ? 1 : -1)
-      }
-      // top < −150: section scrolled above viewport → pass through freely
-    }
+      if (cur === TOTAL - 1 && goingDown)  return
+      if (cur === 0         && !goingDown) return
 
+      e.preventDefault()
+      advance(goingDown ? 1 : -1)
+    }
     window.addEventListener('wheel', onWheel, { passive: false })
     return () => window.removeEventListener('wheel', onWheel)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -362,46 +367,72 @@ export default function WeStackSection() {
         {CARDS.map(card => <MobileWeCard key={card.id} card={card} />)}
       </div>
 
-      {/* ── Desktop: horizontal fan with scroll-jacking ── */}
+      {/* ── Desktop: 3D horizontal card stack (ComoFunciona engine, horizontal) ── */}
       <section
         ref={sectionRef}
         className="hidden md:flex relative w-full h-screen flex-col items-center justify-center overflow-hidden bg-white"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/* Card stack stage */}
+        {/* 3D perspective stage */}
         <div
-          className="relative flex-1 flex items-center justify-center w-full"
-          style={{ perspective: '1200px' }}
+          className="absolute inset-0"
+          style={{ perspective: '1400px', perspectiveOrigin: '44% 50%' }}
         >
-          {CARDS.map((card, i) => {
-            const off   = i - active
-            const state = cardState(off, cardDims.w)
-            return (
-              <motion.div
-                key={card.id}
-                className="absolute rounded-2xl overflow-hidden shadow-2xl"
-                style={{
-                  width:  cardDims.w,
-                  height: cardDims.h,
-                  zIndex: off < 0 ? 0 : 90 - off,
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
-                  pointerEvents: off === 0 ? 'auto' : 'none',
-                }}
-                animate={state}
-                transition={{ type: 'spring', stiffness: 130, damping: 26, mass: 1.0 }}
-              >
-                <WeCard card={card} isActive={off === 0} />
-              </motion.div>
-            )
-          })}
+          <motion.div
+            className="absolute"
+            style={{
+              left:           '50%',
+              top:            '50%',
+              x:              mouseSpringX,
+              y:              mouseSpringY,
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            {CARDS.map((card, i) => {
+              const off      = i - active
+              const isActive = off === 0
+              const state    = cardState(off, cardDims.w)
+              return (
+                <motion.div
+                  key={card.id}
+                  style={{
+                    position:                 'absolute',
+                    width:                    cardDims.w,
+                    height:                   cardDims.h,
+                    borderRadius:             20,
+                    willChange:               'transform',
+                    rotateY:                  -15,
+                    backfaceVisibility:       'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    zIndex:                   off < 0 ? 0 : 50 - Math.max(0, off),
+                    pointerEvents:            isActive ? 'auto' : 'none',
+                  }}
+                  animate={{
+                    x:         state.x - cardDims.w / 2,
+                    y:         -cardDims.h / 2,
+                    z:         state.z,
+                    opacity:   state.opacity,
+                    boxShadow: isActive
+                      ? '0 60px 120px rgba(0,0,0,0.28), 0 16px 48px rgba(0,0,0,0.16)'
+                      : '0 16px 40px rgba(0,0,0,0.10)',
+                  }}
+                  transition={{ type: 'spring', stiffness: 280, damping: 30 }}
+                >
+                  {/* clip-path avoids overflow:hidden 3D rendering artifacts */}
+                  <div style={{ position: 'absolute', inset: 0, clipPath: 'inset(0 round 20px)' }}>
+                    <WeCard card={card} isActive={isActive} />
+                  </div>
+                </motion.div>
+              )
+            })}
+          </motion.div>
         </div>
 
         {/* Dot navigation */}
-        <div className="relative z-50 flex gap-2.5 pb-8" role="tablist" aria-label="We section navigation">
+        <div className="relative z-50 flex gap-2.5 pb-8">
           {CARDS.map((card, i) => (
-            <button
+            <motion.button
               key={card.id}
               role="tab"
               aria-selected={i === active}
@@ -413,11 +444,12 @@ export default function WeStackSection() {
                 setActive(i)
                 setTimeout(() => { lockedRef.current = false }, LOCK_MS)
               }}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === active
-                  ? 'w-7 bg-[#1D1D1F]'
-                  : 'w-2 bg-[#1D1D1F]/20 hover:bg-[#1D1D1F]/45'
-              }`}
+              className="h-2 rounded-full cursor-pointer border-0 bg-transparent p-0"
+              animate={{
+                width:           i === active ? 28 : 8,
+                backgroundColor: i === active ? '#1D1D1F' : 'rgba(29,29,31,0.20)',
+              }}
+              transition={{ duration: 0.4 }}
             />
           ))}
         </div>
