@@ -358,9 +358,9 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
           {/* Title — right-aligned, positioned near the cards */}
           <div
             className="absolute z-20 pointer-events-none select-none text-right"
-            style={{ left: '30%', top: '28%' }}
+            style={{ left: '16px', right: 'calc(34% + 450px)', top: '28%' }}
           >
-            <h2 className="font-outfit font-semibold text-5xl xl:text-6xl text-white tracking-tight leading-tight">
+            <h2 className="font-outfit font-semibold text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl text-white tracking-tight leading-tight">
               {t('El proceso', 'The process')}<br />
               <span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>
             </h2>
