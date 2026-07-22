@@ -17,8 +17,8 @@ const CARDS = [
     id: 'design',
     h1Es: 'Diseñamos',   h1En: 'We design',
     h2Es: 'tu visión',   h2En: 'your vision',
-    bodyEs: 'De webs que impactan visualmente a webs de alta conversión y todo lo que hay entre medias.',
-    bodyEn: 'From bold statement websites to high converting websites and everything in between.',
+    bodyEs: 'De webs que impactan visualmente\na webs de alta conversión\ny todo lo que hay entre medias.',
+    bodyEn: 'From bold statement websites\nto high converting websites\nand everything in between.',
     poster: '/media/wedesign/wedesign_poster.jpg',
     webm:   '/media/wedesign/wedesign_hq.webm',
     mp4:    '/media/wedesign/wedesign_hq.mp4',
@@ -27,8 +27,8 @@ const CARDS = [
     id: 'create',
     h1Es: 'Creamos',                        h1En: 'We create',
     h2Es: 'todo el contenido que necesitas', h2En: 'Any content you need',
-    bodyEs: 'De fotografía y vídeo a copy e ilustraciones. Para que tu web sea impactante y llamativa.',
-    bodyEn: 'From photography and video to copy and illustrations. So your website looks stunning and eye-catching.',
+    bodyEs: 'De fotografía y vídeo a copy e ilustraciones.\nPara que tu web sea impactante y llamativa.',
+    bodyEn: 'From photography and video to copy and illustrations.\nSo your website looks stunning and eye-catching.',
     poster: '/media/we%20create/bgvideo_poster2.jpeg',
     webm:   '/media/we%20create/bgvideo_hq.webm',
     mp4:    '/media/we%20create/bgvideo_hq.mp4',
@@ -141,7 +141,7 @@ function MobileWeCard({ card }: { card: (typeof CARDS)[number] }) {
             {t(card.h2Es, card.h2En)}
           </span>
         </h2>
-        <p style={{ fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif', fontSize: 'clamp(0.95rem, 3.8vw, 1.05rem)', lineHeight: 1.6, color: bodyColor, margin: 0, maxWidth: '78vw' }}>
+        <p style={{ fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif', fontSize: 'clamp(0.95rem, 3.8vw, 1.05rem)', lineHeight: 1.6, color: bodyColor, margin: 0, maxWidth: '78vw', whiteSpace: 'pre-line' }}>
           {t(card.bodyEs, card.bodyEn)}
         </p>
       </div>
@@ -226,11 +226,12 @@ function WeCard({ card, isActive }: { card: Card; isActive: boolean }) {
         </h2>
         <p
           style={{
-            fontFamily: 'Helvetica Neue, Helvetica, Arial, sans-serif',
-            fontSize: 'clamp(0.85rem, 1.4vw, 1rem)',
-            lineHeight: 1.6,
-            color: bodyColor,
-            margin: 0,
+            fontFamily:  'Helvetica Neue, Helvetica, Arial, sans-serif',
+            fontSize:    'clamp(0.85rem, 1.4vw, 1rem)',
+            lineHeight:  1.6,
+            color:       bodyColor,
+            margin:      0,
+            whiteSpace:  'pre-line',
           }}
         >
           {t(card.bodyEs, card.bodyEn)}
@@ -247,6 +248,9 @@ export default function WeStackSection() {
   const lockedRef   = useRef(false)
   const activeRef   = useRef(0)
   const touchStartY = useRef(0)
+  // Chrome: e.preventDefault() can be ignored during active compositor animations (will-change:transform).
+  // Snap the page back to its locked position if any drift slips through.
+  const snapBackY   = useRef<number | null>(null)
 
   const [active, setActive] = useState(0)
 
@@ -309,7 +313,8 @@ export default function WeStackSection() {
     lockedRef.current = true
     activeRef.current = next
     setActive(next)
-    setTimeout(() => { lockedRef.current = false }, LOCK_MS)
+    snapBackY.current = window.scrollY
+    setTimeout(() => { lockedRef.current = false; snapBackY.current = null }, LOCK_MS)
   }
 
   // Wheel handler (ComoFunciona engine):
@@ -343,6 +348,18 @@ export default function WeStackSection() {
     window.addEventListener('wheel', onWheel, { passive: false })
     return () => window.removeEventListener('wheel', onWheel)
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Chrome scroll-drift correction: if any page scroll slips past e.preventDefault(),
+  // immediately restore the locked position before the frame is painted.
+  useEffect(() => {
+    function onScroll() {
+      const target = snapBackY.current
+      if (target === null) return
+      if (Math.abs(window.scrollY - target) > 2) window.scrollTo(0, target)
+    }
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   function onTouchStart(e: React.TouchEvent) {
