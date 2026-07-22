@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, typ
 import { Check } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 const plans = [
   {
@@ -223,6 +224,9 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
 export default function PreciosIndexSection() {
   const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
+  const videoRef   = useRef<HTMLVideoElement>(null)
+
+  useVideoAutoplay(videoRef)
 
   useEffect(() => {
     const el = sectionRef.current
@@ -272,6 +276,24 @@ export default function PreciosIndexSection() {
       id="precios"
       className="relative min-h-screen flex items-center overflow-hidden py-24 bg-[#0a0a0a]"
     >
+      {/* Video background */}
+      <video
+        ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover"
+        autoPlay muted loop playsInline preload="none"
+        poster="/media/pricing3/pricing3_poster.jpg"
+        aria-hidden="true"
+      >
+        <source src="/media/pricing3/pricing3_hq.webm" type="video/webm" />
+        <source src="/media/pricing3/pricing3_hq.mp4"  type="video/mp4" />
+      </video>
+
+      {/* Scrim */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0.65) 100%)' }}
+        aria-hidden="true"
+      />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div

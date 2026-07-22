@@ -239,11 +239,11 @@ export default function WhySubscription() {
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
         autoPlay muted loop playsInline preload="none"
-        poster="/media/pricing3/pricing3_poster.jpg"
+        poster="/media/pricing2/pricing2_poster.jpg"
         aria-hidden="true"
       >
-        <source src="/media/pricing3/pricing3_hq.webm" type="video/webm" />
-        <source src="/media/pricing3/pricing3_hq.mp4"  type="video/mp4" />
+        <source src="/media/pricing2/pricing2_hq.webm" type="video/webm" />
+        <source src="/media/pricing2/pricing2_hq.mp4"  type="video/mp4" />
       </video>
 
       {/* Scrim — light touch so the title area stays bright */}
