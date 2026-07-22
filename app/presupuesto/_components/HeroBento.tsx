@@ -138,28 +138,28 @@ export default function HeroBento() {
                 className="font-archivo"
                 style={{
                   fontWeight: 500,
-                  fontSize: 96,
-                  lineHeight: 0.98,
+                  fontSize: 74,
+                  lineHeight: 1.02,
                   letterSpacing: '-0.02em',
                   color: '#ffffff',
                   marginLeft: 20,
                 }}
               >
-                Web<br />
-                {t('Diseño', 'Design')}<br />
-                {t('Reimaginado', 'Reimagined')}
+                {t('Tu Web.', 'Your Website.')}<br />
+                {t('Diseñada. Gestionada.', 'Designed. Managed.')}<br />
+                {t('Mejorada. Para siempre.', 'Improved. Forever.')}
               </h1>
               <p
                 className="font-manrope"
-                style={{ marginTop: 32, marginLeft: 20, fontWeight: 400, fontSize: 22, letterSpacing: '0.01em', color: '#ffffff' }}
+                style={{ marginTop: 32, marginLeft: 20, fontWeight: 400, fontSize: 19, letterSpacing: '0.01em', color: '#ffffff' }}
               >
-                {t('Tu agencia de diseño web · Sin complicaciones', 'Your Web design agency · Hassle-free')}
+                {t('Diseño, contenido y mantenimiento · Una suscripción', 'Design, content & maintenance · One subscription')}
               </p>
               <p
                 className="font-manrope"
-                style={{ marginTop: 8, marginLeft: 20, fontWeight: 600, fontSize: 22, letterSpacing: '0.01em', color: '#ffffff' }}
+                style={{ marginTop: 8, marginLeft: 20, fontWeight: 600, fontSize: 19, letterSpacing: '0.01em', color: '#ffffff' }}
               >
-                {t('Desde 49 €/mes', 'From $99/month')}
+                {t('Desde 49 €/mes · Cancela cuando quieras', 'From $99/month · Cancel anytime')}
               </p>
             </div>
 
@@ -193,15 +193,15 @@ export default function HeroBento() {
           <div className="relative">
             <h1
               className="font-archivo text-white"
-              style={{ fontWeight: 500, fontSize: 64, lineHeight: 0.98, letterSpacing: '-0.02em' }}
+              style={{ fontWeight: 500, fontSize: 52, lineHeight: 1.02, letterSpacing: '-0.02em' }}
             >
-              Web<br />{t('Diseño', 'Design')}<br />{t('Reimaginado', 'Reimagined')}
+              {t('Tu Web.', 'Your Website.')}<br />{t('Diseñada. Gestionada.', 'Designed. Managed.')}<br />{t('Mejorada. Para siempre.', 'Improved. Forever.')}
             </h1>
-            <p className="font-manrope text-white/80 mt-4 text-lg leading-relaxed">
-              {t('Tu agencia de diseño web · Sin complicaciones', 'Your Web design agency · Hassle-free')}
+            <p className="font-manrope text-white/80 mt-4 text-base leading-relaxed">
+              {t('Diseño, contenido y mantenimiento · Una suscripción', 'Design, content & maintenance · One subscription')}
             </p>
-            <p className="font-manrope text-white font-semibold mt-1.5 text-lg">
-              {t('Desde 49 €/mes', 'From $99/month')}
+            <p className="font-manrope text-white font-semibold mt-1.5 text-base">
+              {t('Desde 49 €/mes · Cancela cuando quieras', 'From $99/month · Cancel anytime')}
             </p>
           </div>
         </div>
