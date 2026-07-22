@@ -228,34 +228,39 @@ export default function WhySubscription() {
 
   return (
     <div id="why-subscription">
-      {/* ── Mobile: vertically stacked cards, no tilt, natural scroll ── */}
-      <div className="md:hidden">
+      {/* ── Mobile: sticky card stack — each card slides up over the previous ── */}
+      <div className="md:hidden bg-[#0a0a0a]">
         {CARDS.map((card, i) => {
           const darkInk  = DARK_INK.has(i)
           const fg       = darkInk ? '#1a0a2e' : '#ffffff'
           const fgMuted  = darkInk ? 'rgba(15,5,25,0.58)' : 'rgba(255,255,255,0.68)'
-          const iconRing = darkInk ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.18)'
+          const iconRing = darkInk ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.20)'
           return (
             <div
               key={i}
-              style={{
+              className="sticky top-0"
+              style={{ height: '100dvh', zIndex: i + 1, padding: '0 12px' }}
+            >
+              <div style={{
+                height:        '100%',
                 background:    PALETTE[i],
-                minHeight:     '100dvh',
-                padding:       '64px 28px 48px',
+                borderRadius:  24,
+                padding:       '56px 24px 40px',
                 display:       'flex',
                 flexDirection: 'column',
                 justifyContent:'flex-start',
-              }}
-            >
-              <div style={{ width: 72, height: 72, borderRadius: '50%', background: iconRing, display: 'flex', alignItems: 'center', justifyContent: 'center', color: fg, marginBottom: 28, flexShrink: 0 }}>
-                {ICONS[i]}
+                overflow:      'hidden',
+              }}>
+                <div style={{ width: 68, height: 68, borderRadius: '50%', background: iconRing, display: 'flex', alignItems: 'center', justifyContent: 'center', color: fg, marginBottom: 28, flexShrink: 0 }}>
+                  {ICONS[i]}
+                </div>
+                <h3 style={{ fontFamily: 'var(--font-outfit), sans-serif', fontSize: 'clamp(28px, 8vw, 40px)', fontWeight: 700, lineHeight: 1.08, color: fg, margin: '0 0 16px', letterSpacing: '-0.02em' }}>
+                  {t(card.es.title, card.en.title)}
+                </h3>
+                <p style={{ fontFamily: 'var(--font-manrope), sans-serif', fontSize: 'clamp(15px, 4vw, 17px)', lineHeight: 1.60, color: fgMuted, margin: 0 }}>
+                  {t(card.es.desc, card.en.desc)}
+                </p>
               </div>
-              <h3 style={{ fontFamily: 'var(--font-outfit), sans-serif', fontSize: 'clamp(28px, 8vw, 40px)', fontWeight: 700, lineHeight: 1.08, color: fg, margin: '0 0 16px', letterSpacing: '-0.02em' }}>
-                {t(card.es.title, card.en.title)}
-              </h3>
-              <p style={{ fontFamily: 'var(--font-manrope), sans-serif', fontSize: 'clamp(15px, 4vw, 17px)', lineHeight: 1.60, color: fgMuted, margin: 0 }}>
-                {t(card.es.desc, card.en.desc)}
-              </p>
             </div>
           )
         })}
