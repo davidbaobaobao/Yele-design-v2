@@ -221,10 +221,10 @@ export default function WhySubscription() {
   const { cardW, cardH, offsets, X0 } = layout
 
   // Title appears in the strip to the left of card 0 — only when space is available
-  const titleW    = Math.min(280, Math.max(0, X0 - 60))
-  const showTitle = titleW > 100
-  const titleLeft = X0 - titleW - 40
-  const titleFontPx = Math.max(20, Math.min(44, Math.round(X0 * 0.10)))
+  const titleW      = Math.min(380, Math.max(0, X0 - 40))
+  const showTitle   = titleW > 120
+  const titleLeft   = X0 - titleW - 40
+  const titleFontPx = Math.max(28, Math.min(56, Math.round(X0 * 0.14)))
 
   return (
     <section
@@ -246,10 +246,10 @@ export default function WhySubscription() {
         <source src="/media/pricing2/pricing2_hq.mp4"  type="video/mp4" />
       </video>
 
-      {/* Scrim */}
+      {/* Scrim — light touch so the title area stays bright */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.08) 40%, rgba(0,0,0,0.45) 100%)' }}
+        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.00) 35%, rgba(0,0,0,0.35) 100%)' }}
       />
 
       {/* Stage — full section height, strip translates inside it */}
@@ -264,7 +264,7 @@ export default function WhySubscription() {
               style={{
                 position:      'absolute',
                 left:          titleLeft,
-                top:           '30%',
+                top:           '38%',
                 width:         titleW,
                 pointerEvents: 'none',
                 userSelect:    'none',
@@ -275,17 +275,37 @@ export default function WhySubscription() {
                 style={{
                   fontFamily:    'var(--font-outfit), sans-serif',
                   fontSize:      titleFontPx,
-                  fontWeight:    600,
-                  lineHeight:    1.20,
-                  color:         '#ffffff',
+                  fontWeight:    700,
+                  lineHeight:    1.18,
+                  color:         '#0a0a0a',
                   margin:        0,
                   textAlign:     'right',
-                  letterSpacing: '-0.01em',
+                  letterSpacing: '-0.02em',
                 }}
               >
                 {t('¿Por qué suscripción es', 'Why subscription is')}<br />
                 <span style={{ color: '#e2482f' }}>{t('mejor?', 'better?')}</span>
               </h2>
+
+              {/* Right-pointing bouncing arrow */}
+              <motion.div
+                style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}
+                animate={{ x: [0, 10, 0] }}
+                transition={{ duration: 1.3, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <svg
+                  width="44" height="44"
+                  viewBox="0 0 120 120"
+                  fill="none"
+                  stroke="#e2482f"
+                  strokeWidth="13"
+                  strokeLinecap="butt"
+                  strokeLinejoin="miter"
+                  aria-hidden="true"
+                >
+                  <polyline points="32,22 88,60 32,98" />
+                </svg>
+              </motion.div>
             </div>
           )}
 
