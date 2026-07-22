@@ -97,10 +97,10 @@ type Layout = {
 }
 
 function calcLayout(vw: number, vh: number): Layout {
-  // Wider cards: 36% of viewport, 300–540px
-  const cardW   = Math.max(300, Math.min(540, Math.round(vw * 0.36)))
-  // Larger base gap (82%) → more visible separation between cards
-  const baseGap = Math.round(cardW * 0.82)
+  // Wide cards: 46% of viewport, 380–660px
+  const cardW   = Math.max(380, Math.min(660, Math.round(vw * 0.46)))
+  // Large gap (93%) → only corners overlap (~7% overlap at default factor)
+  const baseGap = Math.round(cardW * 0.93)
   const offsets: number[] = [0]
   for (const f of SPACING_FACTORS) {
     offsets.push(offsets[offsets.length - 1] + Math.round(baseGap * f))
@@ -122,14 +122,12 @@ export default function WhySubscription() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef   = useRef<HTMLVideoElement>(null)
 
-  const snappingRef    = useRef(false)
-  const xTargetRef     = useRef(0)
-  const touchStartY    = useRef(0)
-  const currentCardRef = useRef(0)
-  const layoutRef      = useRef<Layout>(calcLayout(1440, 900))
+  const snappingRef = useRef(false)
+  const xTargetRef  = useRef(0)
+  const touchStartY = useRef(0)
+  const layoutRef   = useRef<Layout>(calcLayout(1440, 900))
 
-  const [layout,      setLayout]      = useState<Layout>(layoutRef.current)
-  const [currentCard, setCurrentCard] = useState(0)
+  const [layout, setLayout] = useState<Layout>(layoutRef.current)
 
   const motionX = useMotionValue(0)
   const springX = useSpring(motionX, { stiffness: 88, damping: 21, mass: 0.85 })
@@ -151,23 +149,6 @@ export default function WhySubscription() {
     return () => window.removeEventListener('resize', calc)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // ── Track active card ────────────────────────────────────────────────────────
-  useEffect(() => {
-    return springX.on('change', (val) => {
-      const { offsets } = layoutRef.current
-      let closest = 0
-      let minDist  = Infinity
-      for (let i = 0; i < N; i++) {
-        const d = Math.abs(-val - offsets[i])
-        if (d < minDist) { minDist = d; closest = i }
-      }
-      if (closest !== currentCardRef.current) {
-        currentCardRef.current = closest
-        setCurrentCard(closest)
-      }
-    })
-  }, [springX])
 
   // ── Wheel ───────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -221,8 +202,15 @@ export default function WhySubscription() {
     if (Math.abs(dy) < 40) return
 
     const { offsets, totalTravel } = layoutRef.current
+    // Find which card is currently closest to derive the touch-advance target
+    let cur = 0
+    let minD = Infinity
+    for (let i = 0; i < N; i++) {
+      const d = Math.abs(-xTargetRef.current - offsets[i])
+      if (d < minD) { minD = d; cur = i }
+    }
     const dir  = dy > 0 ? 1 : -1
-    const next = Math.max(0, Math.min(N - 1, currentCardRef.current + dir))
+    const next = Math.max(0, Math.min(N - 1, cur + dir))
     const newX = Math.max(-totalTravel, Math.min(0, -offsets[next]))
     xTargetRef.current = newX
     motionX.set(newX)
@@ -307,12 +295,16 @@ export default function WhySubscription() {
             const fg       = darkInk ? '#1a0a2e' : '#ffffff'
             const fgMuted  = darkInk ? 'rgba(15,5,25,0.60)' : 'rgba(255,255,255,0.65)'
             const iconRing = darkInk ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.20)'
-            const zIdx     = 50 - Math.abs(i - currentCard) * 5
+            // Static z-index: earlier cards always in front — no discrete "pop" on scroll
+            const zIdx     = N - i
 
-            const pad      = Math.max(32, Math.round(cardW * 0.085))
-            const iconSize = Math.max(72, Math.round(cardW * 0.17))
+            const pad      = Math.max(36, Math.round(cardW * 0.085))
+            const iconSize = Math.max(72, Math.round(cardW * 0.16))
             const titlePx  = Math.max(30, Math.min(54, Math.round(cardW * 0.10)))
             const descPx   = Math.max(14, Math.min(17, Math.round(cardW * 0.036)))
+            // Icon sits slightly lower than the card edge; title+desc grouped just below icon
+            const topPad   = Math.round(pad * 1.4)
+            const iconGap  = Math.round(pad * 0.75)
 
             return (
               <div
@@ -325,11 +317,11 @@ export default function WhySubscription() {
                   height:           cardH,
                   borderRadius:     24,
                   background:       PALETTE[i],
-                  // Three-group layout: icon top, title middle, description bottom
                   display:          'flex',
                   flexDirection:    'column',
-                  justifyContent:   'space-between',
+                  justifyContent:   'flex-start',
                   padding:          pad,
+                  paddingTop:       topPad,
                   zIndex:           zIdx,
                   transform:        `rotateZ(${TILTS[i]}deg)`,
                   transformOrigin:  'center top',
@@ -339,7 +331,7 @@ export default function WhySubscription() {
                   WebkitUserSelect: 'none',
                 }}
               >
-                {/* 1. Icon — large circular badge */}
+                {/* Icon — large circular badge, slightly below card top */}
                 <div style={{
                   width:           iconSize,
                   height:          iconSize,
@@ -350,11 +342,12 @@ export default function WhySubscription() {
                   justifyContent:  'center',
                   color:           fg,
                   flexShrink:      0,
+                  marginBottom:    iconGap,
                 }}>
                   {ICONS[i]}
                 </div>
 
-                {/* 2. Title — oversized, card center */}
+                {/* Title — large, just below icon */}
                 <h3 style={{
                   fontFamily:    'var(--font-outfit), sans-serif',
                   fontSize:      titlePx,
@@ -362,12 +355,13 @@ export default function WhySubscription() {
                   lineHeight:    1.08,
                   color:         fg,
                   margin:        0,
+                  marginBottom:  18,
                   letterSpacing: '-0.02em',
                 }}>
                   {t(card.es.title, card.en.title)}
                 </h3>
 
-                {/* 3. Description — bottom */}
+                {/* Description — grouped near title */}
                 <p style={{
                   fontFamily: 'var(--font-manrope), sans-serif',
                   fontSize:   descPx,
