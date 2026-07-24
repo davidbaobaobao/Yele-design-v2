@@ -81,22 +81,22 @@ export default function ElectricistasPage() {
         <section className="pt-32 pb-20 md:pt-44 md:pb-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
             <h1
-              className="font-outfit font-bold text-[#1D1D1F] tracking-tighter leading-[1.05] mb-6"
+              className="font-display font-bold text-ink tracking-tighter leading-[1.05] mb-6"
               style={{ fontSize: 'clamp(40px, 5.5vw, 72px)' }}
             >
               Diseño web para electricistas
               <span className="mt-4 block">
-                <span className="inline-flex font-manrope text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
+                <span className="inline-flex font-body text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
                   Desde 49€/mes
                 </span>
               </span>
             </h1>
-            <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
+            <p className="font-body text-muted text-xl leading-relaxed max-w-2xl mb-10">
               Cuando a alguien se le va la luz o le salta el cuadro, busca un electricista en Google y llama al primero que le da confianza. Aparece tú — con una web profesional lista en 1 semana. Desde 49€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Pedir mi web <span aria-hidden="true">→</span>
             </Link>
@@ -104,15 +104,15 @@ export default function ElectricistasPage() {
         </section>
 
         {/* Pilar 1 — Urgencia + confianza */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+        <section className="py-20 md:py-28 bg-base">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Por qué importa
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               Te buscan con prisa y con dudas
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               Un problema eléctrico asusta. El cliente no quiere al más barato: quiere a alguien que se vea serio y profesional, porque un trabajo mal hecho es un riesgo en su casa. Si te encuentra en Google con una web clara — tu zona, tus servicios, tu teléfono, tus reseñas — transmites esa seriedad antes de descolgar el teléfono. Sin web, ese cliente llama al de al lado.
             </p>
           </div>
@@ -121,13 +121,13 @@ export default function ElectricistasPage() {
         {/* Pilar 2 — Sin comisión */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               La trampa de los portales
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               Deja de pagar comisión<br />por cada aviso
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               En Cronoshare y similares pagas por cada contacto y compites en precio con otros cinco electricistas en el mismo aviso. Con web propia el cliente te encuentra y te llama a ti directamente, sin intermediario y sin comisión.
             </p>
           </div>
@@ -139,10 +139,10 @@ export default function ElectricistasPage() {
         {/* Por qué Yele */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Por qué Yele
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-10 leading-tight">
               Es básicamente probar<br className="hidden md:block" /> sin riesgo.
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -152,9 +152,9 @@ export default function ElectricistasPage() {
                 { title: 'Todo incluido', desc: 'Dominio, hosting, mantenimiento y soporte. Sin facturas sorpresa.' },
                 { title: 'Lista en 1 semana', desc: 'No en dos meses. En menos de una semana tu web está en marcha.' },
               ] as const).map(item => (
-                <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
-                  <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
-                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{item.desc}</p>
+                <div key={item.title} className="bg-base rounded-2xl p-6">
+                  <p className="font-display font-semibold text-ink text-lg mb-2">{item.title}</p>
+                  <p className="font-body text-muted text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -168,17 +168,17 @@ export default function ElectricistasPage() {
         <FAQClient faqs={FAQS} />
 
         {/* Final CTA */}
-        <section className="py-24 md:py-32 bg-[#1D1D1F]">
+        <section className="py-24 md:py-32 bg-ink">
           <div className="max-w-3xl mx-auto px-6 text-center">
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
               Que te encuentren cuando<br />más te necesitan.
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg mb-10">
+            <p className="font-body text-muted text-lg mb-10">
               Sin pago inicial. Lista en 1 semana.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-8 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-white text-ink px-8 py-4 rounded-2xl hover:bg-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Pedir mi web <span aria-hidden="true">→</span>
             </Link>

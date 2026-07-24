@@ -22,41 +22,41 @@ export default function CookieBanner() {
   if (!visible) return null
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[60] bg-white/96 backdrop-blur-md border-t border-black/[0.07] shadow-[0_-2px_20px_rgba(0,0,0,0.06)]">
+    <div className="fixed bottom-0 left-0 right-0 z-[60] bg-white/96 backdrop-blur-md border-t border-hairline shadow-[0_-2px_20px_rgba(0,0,0,0.06)]">
       {expanded ? (
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="font-manrope text-sm font-semibold text-[#1D1D1F]">Cookie preferences</p>
+            <p className="font-body text-sm font-semibold text-ink">Cookie preferences</p>
             <button
               onClick={() => setExpanded(false)}
               aria-label="Collapse"
-              className="text-[#6B7280] hover:text-[#1D1D1F] transition-colors"
+              className="text-muted hover:text-ink transition-colors"
             >
               <ChevronDown size={15} />
             </button>
           </div>
 
-          <div className="space-y-0 mb-4 rounded-xl border border-black/[0.07] overflow-hidden">
+          <div className="space-y-0 mb-4 rounded-xl border border-hairline overflow-hidden">
             {/* Essential */}
-            <div className="flex items-center justify-between px-3 py-2.5 border-b border-black/[0.06] bg-black/[0.01]">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-hairline bg-black/[0.01]">
               <div>
-                <p className="font-manrope text-xs font-medium text-[#1D1D1F]">Essential</p>
-                <p className="font-manrope text-[11px] text-[#6B7280]">Required for the site to function.</p>
+                <p className="font-body text-xs font-medium text-ink">Essential</p>
+                <p className="font-body text-[11px] text-muted">Required for the site to function.</p>
               </div>
-              <span className="font-manrope text-[11px] text-[#34C759] font-medium shrink-0 ml-4">Always on</span>
+              <span className="font-body text-[11px] text-[#34C759] font-medium shrink-0 ml-4">Always on</span>
             </div>
 
             {/* Analytics */}
-            <div className="flex items-center justify-between px-3 py-2.5 border-b border-black/[0.06]">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-hairline">
               <div>
-                <p className="font-manrope text-xs font-medium text-[#1D1D1F]">Analytics</p>
-                <p className="font-manrope text-[11px] text-[#6B7280]">Help us improve the website.</p>
+                <p className="font-body text-xs font-medium text-ink">Analytics</p>
+                <p className="font-body text-[11px] text-muted">Help us improve the website.</p>
               </div>
               <button
                 role="switch"
                 aria-checked={prefs.analytics}
                 onClick={() => setPrefs(p => ({ ...p, analytics: !p.analytics }))}
-                className={`relative ml-4 w-9 h-5 rounded-full shrink-0 transition-colors duration-200 ${prefs.analytics ? 'bg-[#1D1D1F]' : 'bg-black/15'}`}
+                className={`relative ml-4 w-9 h-5 rounded-full shrink-0 transition-colors duration-200 ${prefs.analytics ? 'bg-ink' : 'bg-black/15'}`}
               >
                 <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${prefs.analytics ? 'translate-x-4' : 'translate-x-0'}`} />
               </button>
@@ -65,14 +65,14 @@ export default function CookieBanner() {
             {/* Marketing */}
             <div className="flex items-center justify-between px-3 py-2.5">
               <div>
-                <p className="font-manrope text-xs font-medium text-[#1D1D1F]">Marketing</p>
-                <p className="font-manrope text-[11px] text-[#6B7280]">Personalised advertising.</p>
+                <p className="font-body text-xs font-medium text-ink">Marketing</p>
+                <p className="font-body text-[11px] text-muted">Personalised advertising.</p>
               </div>
               <button
                 role="switch"
                 aria-checked={prefs.marketing}
                 onClick={() => setPrefs(p => ({ ...p, marketing: !p.marketing }))}
-                className={`relative ml-4 w-9 h-5 rounded-full shrink-0 transition-colors duration-200 ${prefs.marketing ? 'bg-[#1D1D1F]' : 'bg-black/15'}`}
+                className={`relative ml-4 w-9 h-5 rounded-full shrink-0 transition-colors duration-200 ${prefs.marketing ? 'bg-ink' : 'bg-black/15'}`}
               >
                 <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${prefs.marketing ? 'translate-x-4' : 'translate-x-0'}`} />
               </button>
@@ -80,19 +80,19 @@ export default function CookieBanner() {
           </div>
 
           <div className="flex items-center justify-between">
-            <a href="/politica-privacidad" className="font-manrope text-[11px] text-[#6B7280] hover:text-[#1D1D1F] transition-colors underline underline-offset-2">
+            <a href="/politica-privacidad" className="font-body text-[11px] text-muted hover:text-ink transition-colors underline underline-offset-2">
               Privacy policy
             </a>
             <div className="flex gap-2">
               <button
                 onClick={() => save(prefs)}
-                className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors px-3 py-1.5 rounded-lg border border-black/10 hover:border-black/20"
+                className="font-body text-xs text-muted hover:text-ink transition-colors px-3 py-1.5 rounded-lg border border-black/10 hover:border-black/20"
               >
                 Save selection
               </button>
               <button
                 onClick={() => save({ analytics: true, marketing: true })}
-                className="font-manrope text-xs font-medium bg-[#1D1D1F] text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
+                className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
               >
                 Accept all
               </button>
@@ -101,28 +101,28 @@ export default function CookieBanner() {
         </div>
       ) : (
         <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center gap-3">
-          <p className="font-manrope text-xs text-[#6B7280] flex-1 min-w-0 truncate">
+          <p className="font-body text-xs text-muted flex-1 min-w-0 truncate">
             By continuing you agree to our{' '}
-            <a href="/politica-privacidad" className="underline underline-offset-2 hover:text-[#1D1D1F] transition-colors">
+            <a href="/politica-privacidad" className="underline underline-offset-2 hover:text-ink transition-colors">
               cookies policy
             </a>.
           </p>
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => setExpanded(true)}
-              className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors flex items-center gap-0.5 px-2 py-1.5"
+              className="font-body text-xs text-muted hover:text-ink transition-colors flex items-center gap-0.5 px-2 py-1.5"
             >
               Customize <ChevronUp size={11} />
             </button>
             <button
               onClick={() => save({ analytics: false, marketing: false })}
-              className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors px-2 py-1.5"
+              className="font-body text-xs text-muted hover:text-ink transition-colors px-2 py-1.5"
             >
               Essential only
             </button>
             <button
               onClick={() => save({ analytics: true, marketing: true })}
-              className="font-manrope text-xs font-medium bg-[#1D1D1F] text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
+              className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
             >
               Accept
             </button>

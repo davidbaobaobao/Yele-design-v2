@@ -67,7 +67,7 @@ export default function RegistroPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-6">
+      <div className="min-h-screen bg-base flex items-center justify-center px-6">
         <h1 className="sr-only">Create your account</h1>
         <motion.div
           className="max-w-md w-full text-center"
@@ -80,16 +80,16 @@ export default function RegistroPage() {
               <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="#34C759" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <h2 className="font-outfit font-semibold text-3xl text-[#1D1D1F] mb-3">
+          <h2 className="font-display font-semibold text-3xl text-ink mb-3">
             Check your email
           </h2>
-          <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-8">
-            We sent a magic link to <strong className="text-[#1D1D1F]">{email}</strong>. Click it to continue.
+          <p className="font-body text-muted text-base leading-relaxed mb-8">
+            We sent a magic link to <strong className="text-ink">{email}</strong>. Click it to continue.
           </p>
           <button
             type="button"
             onClick={() => setSent(false)}
-            className="font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors cursor-pointer"
+            className="font-body text-sm text-muted hover:text-ink transition-colors cursor-pointer"
           >
             ← Use a different email
           </button>
@@ -99,7 +99,7 @@ export default function RegistroPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-6">
+    <div className="min-h-screen bg-base flex items-center justify-center px-6">
       <Suspense fallback={null}><PlanSaver /></Suspense>
       <ClarityScript />
       <h1 className="sr-only">Create your account</h1>
@@ -112,8 +112,8 @@ export default function RegistroPage() {
         >
           <Link href="/" className="flex items-center gap-1.5 focus-visible:outline-none">
             <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
-            <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-              yele<span className="text-[#6B7280] font-normal">.design</span>
+            <span className="font-display font-semibold text-sm text-ink">
+              yele<span className="text-muted font-normal">.design</span>
             </span>
           </Link>
         </motion.div>
@@ -124,10 +124,10 @@ export default function RegistroPage() {
           {...fadeUp}
           transition={{ duration: 0.5, delay: 0.05 } as Transition}
         >
-          <h2 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-2">
+          <h2 className="font-display font-semibold text-3xl text-ink tracking-tight mb-2">
             Create your account
           </h2>
-          <p className="font-manrope text-[#6B7280] text-base">
+          <p className="font-body text-muted text-base">
             Start building your website today.
           </p>
         </motion.div>
@@ -141,7 +141,7 @@ export default function RegistroPage() {
           <button
             type="button"
             onClick={handleGoogle}
-            className="w-full flex items-center justify-center gap-3 font-manrope font-medium text-sm text-[#1D1D1F] bg-white border border-black/[0.12] rounded-xl px-5 py-3.5 hover:bg-[#F5F5F7] transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+            className="w-full flex items-center justify-center gap-3 font-body font-medium text-sm text-ink bg-white border border-hairline rounded-xl px-5 py-3.5 hover:bg-base transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
           >
             {/* Google icon */}
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -156,13 +156,13 @@ export default function RegistroPage() {
           {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-black/[0.07]" />
-            <span className="font-manrope text-xs text-[#6B7280]">or</span>
+            <span className="font-body text-xs text-muted">or</span>
             <div className="flex-1 h-px bg-black/[0.07]" />
           </div>
 
           {/* Email magic link */}
           <div>
-            <label htmlFor="email" className="font-manrope text-xs text-[#6B7280] mb-1.5 block">
+            <label htmlFor="email" className="font-body text-xs text-muted mb-1.5 block">
               Email
             </label>
             <input
@@ -172,7 +172,7 @@ export default function RegistroPage() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleEmailLink()}
-              className="w-full bg-white border border-black/[0.12] rounded-xl px-4 py-3.5 font-manrope text-sm text-[#1D1D1F] placeholder-[#6B7280] focus:outline-none focus:border-[#1D1D1F] transition-colors"
+              className="w-full bg-white border border-hairline rounded-xl px-4 py-3.5 font-body text-sm text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors"
               autoComplete="email"
             />
           </div>
@@ -181,28 +181,28 @@ export default function RegistroPage() {
             type="button"
             onClick={handleEmailLink}
             disabled={loading || !email}
-            className="w-full flex items-center justify-center gap-2 font-manrope font-medium text-sm bg-[#1D1D1F] text-white rounded-xl px-5 py-3.5 hover:bg-black transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+            className="w-full flex items-center justify-center gap-2 font-body font-medium text-sm bg-ink text-white rounded-xl px-5 py-3.5 hover:bg-black transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
           >
             {loading ? 'Sending…' : 'Continue with email'}
           </button>
 
           {error && (
-            <p className="font-manrope text-xs text-red-500 text-center">{error}</p>
+            <p className="font-body text-xs text-red-500 text-center">{error}</p>
           )}
         </motion.div>
 
         {/* Footer */}
         <motion.p
-          className="mt-8 font-manrope text-xs text-[#6B7280] text-center leading-relaxed"
+          className="mt-8 font-body text-xs text-muted text-center leading-relaxed"
           {...fadeUp}
           transition={{ duration: 0.5, delay: 0.15 } as Transition}
         >
           By continuing you agree to our{' '}
-          <Link href="/aviso-legal" className="underline hover:text-[#1D1D1F] transition-colors">
+          <Link href="/aviso-legal" className="underline hover:text-ink transition-colors">
             Terms of service
           </Link>{' '}
           and{' '}
-          <Link href="/politica-privacidad" className="underline hover:text-[#1D1D1F] transition-colors">
+          <Link href="/politica-privacidad" className="underline hover:text-ink transition-colors">
             Privacy policy
           </Link>.
         </motion.p>
@@ -214,7 +214,7 @@ export default function RegistroPage() {
         >
           <Link
             href="/"
-            className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors"
+            className="font-body text-xs text-muted hover:text-ink transition-colors"
           >
             ← Back to home
           </Link>

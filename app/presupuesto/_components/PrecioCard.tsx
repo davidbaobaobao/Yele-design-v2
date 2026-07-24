@@ -121,11 +121,11 @@ export default function PrecioCard() {
           className="text-center mb-10"
         >
           {/* "Precios" label — larger */}
-          <span className="font-manrope text-xl font-bold tracking-[0.2em] uppercase text-white/80 mb-5 block">
+          <span className="font-body text-xl font-bold tracking-[0.2em] uppercase text-white/80 mb-5 block">
             Precios
           </span>
           <h2
-            className="font-outfit font-semibold text-white tracking-tight whitespace-nowrap"
+            className="font-display font-semibold text-white tracking-tight whitespace-nowrap"
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}
           >
             Sin letra pequeña.
@@ -162,10 +162,10 @@ export default function PrecioCard() {
             {/* Price + animated orange pill */}
             <div className="flex items-center gap-4 flex-wrap mb-8">
               <div className="flex items-end gap-1">
-                <span className="font-outfit font-semibold text-6xl tracking-tight leading-none text-[#1D1D1F]">
+                <span className="font-display font-semibold text-6xl tracking-tight leading-none text-ink">
                   99€
                 </span>
-                <span className="font-manrope text-sm text-[#6B7280] mb-1.5">/mes</span>
+                <span className="font-body text-sm text-muted mb-1.5">/mes</span>
               </div>
 
               {/* Pill — slow ambient glow */}
@@ -179,7 +179,7 @@ export default function PrecioCard() {
                   ],
                 }}
                 transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
-                className="font-manrope font-semibold text-sm text-white px-4 py-2 rounded-full block"
+                className="font-body font-semibold text-sm text-white px-4 py-2 rounded-full block"
               >
                 Primer mes gratuito
               </motion.span>
@@ -190,7 +190,7 @@ export default function PrecioCard() {
               {features.map(feat => (
                 <li key={feat} className="flex items-center gap-3">
                   <Check size={16} className="flex-shrink-0 text-[#34C759]" aria-hidden="true" />
-                  <span className="font-manrope text-sm text-[#1D1D1F]">{feat}</span>
+                  <span className="font-body text-sm text-ink">{feat}</span>
                 </li>
               ))}
             </ul>
@@ -198,15 +198,15 @@ export default function PrecioCard() {
             {/* CTA */}
             <a
               href="/registro?plan=starter-es"
-              className="relative block text-center font-manrope font-semibold text-sm py-4 rounded-xl
-                         bg-[#1D1D1F] text-white hover:bg-black transition-colors"
+              className="relative block text-center font-body font-semibold text-sm py-4 rounded-xl
+                         bg-ink text-white hover:bg-black transition-colors"
             >
               Empezar por 0€
             </a>
           </motion.div>
 
           {/* Footer note — bold and visible */}
-          <p className="text-center font-manrope text-sm font-semibold text-white mt-6">
+          <p className="text-center font-body text-sm font-semibold text-white mt-6">
             Sin permanencia. Cancela cuando quieras.
           </p>
         </div>

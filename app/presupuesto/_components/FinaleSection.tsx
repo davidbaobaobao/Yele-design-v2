@@ -36,7 +36,7 @@ export default function FinaleSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true }}
-          className="font-outfit font-light text-white tracking-tight leading-none mb-10"
+          className="font-display font-light text-white tracking-tight leading-none mb-10"
           style={{ fontSize: 'clamp(40px, 7vw, 100px)' }}
         >
           {t('Empieza', 'Start')}<br />
@@ -51,8 +51,8 @@ export default function FinaleSection() {
         >
           <a
             href={t('/registro?lang=es', '/registro')}
-            className="font-manrope font-semibold text-lg bg-white text-[#1D1D1F]
-                       px-10 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors"
+            className="font-body font-semibold text-lg bg-white text-ink
+                       px-10 py-4 rounded-2xl hover:bg-base transition-colors"
           >
             {t('Empezar gratis', 'Start for free')}
           </a>

@@ -69,7 +69,7 @@ function ScrollRow({ cards, xMotion }: { cards: CardData[]; xMotion: MotionValue
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <p className="absolute bottom-3 left-3 right-3 font-outfit font-medium text-white text-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 truncate">
+            <p className="absolute bottom-3 left-3 right-3 font-display font-medium text-white text-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 truncate">
               {card.project.name}
             </p>
           </Link>
@@ -110,8 +110,8 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
     <div ref={wrapperRef} style={{ height: wrapperH }}>
       <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
         <div className="relative space-y-3">
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 z-10 bg-gradient-to-r from-base to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-base to-transparent" />
           {rows.map((rowCards, rowIdx) => (
             <div key={rowIdx} className="overflow-visible">
               <motion.div
@@ -134,7 +134,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <p className="absolute bottom-3 left-3 right-3 font-outfit font-medium text-white text-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 truncate">
+                    <p className="absolute bottom-3 left-3 right-3 font-display font-medium text-white text-sm opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 truncate">
                       {card.project.name}
                     </p>
                   </Link>
@@ -165,22 +165,22 @@ export default function ShowcaseLargeClient({ projects }: { projects: ShowcasePr
   }, [projects])
 
   const heading = (
-    <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
+    <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight">
       <span className="block">Tener página web</span>
       <span className="block">nunca fue tan fácil.</span>
     </h2>
   )
 
   return (
-    <section ref={sectionRef} className="bg-[#F5F5F7]">
+    <section ref={sectionRef} className="bg-base">
       {/* Desktop */}
       <div className="hidden md:block py-10">
         <div className="max-w-6xl mx-auto px-6 mb-10">
           {heading}
         </div>
         <div className="relative space-y-4 overflow-x-hidden">
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-40 z-10 bg-gradient-to-r from-[#F5F5F7] to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-40 z-10 bg-gradient-to-l from-[#F5F5F7] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-40 z-10 bg-gradient-to-r from-base to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-40 z-10 bg-gradient-to-l from-base to-transparent" />
           {rows ? (
             <>
               <ScrollRow cards={rows[0]} xMotion={row1X} />

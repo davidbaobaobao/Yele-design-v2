@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Outfit, Manrope, Archivo } from 'next/font/google'
+import { Archivo, Instrument_Sans, IBM_Plex_Mono } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 import { LanguageProvider } from '@/context/LanguageContext'
@@ -7,22 +7,23 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import CookieBanner from '@/components/CookieBanner'
 
-const outfit = Outfit({
-  subsets: ['latin'],
-  variable: '--font-outfit',
-  display: 'swap',
-})
-
-const manrope = Manrope({
-  subsets: ['latin'],
-  variable: '--font-manrope',
-  display: 'swap',
-})
-
 const archivo = Archivo({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-archivo',
+  weight: ['700', '800', '900'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
+const instrumentSans = Instrument_Sans({
+  subsets: ['latin'],
+  variable: '--font-body',
+  display: 'swap',
+})
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
   display: 'swap',
 })
 
@@ -232,14 +233,14 @@ const schemaOrg = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${manrope.variable} ${archivo.variable}`}>
+    <html lang="en" className={`${archivo.variable} ${instrumentSans.variable} ${ibmPlexMono.variable}`}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
         />
       </head>
-      <body className="font-manrope bg-white text-[#1D1D1F] antialiased">
+      <body className="font-body bg-base text-ink antialiased">
         <LanguageProvider>
           <a
             href="#main-content"

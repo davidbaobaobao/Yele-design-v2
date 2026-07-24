@@ -55,11 +55,11 @@ export default async function EjemplosPage() {
   }))
 
   return (
-    <main className="min-h-screen bg-[#F5F5F7]">
+    <main className="min-h-screen bg-base">
       <Navigation />
 
       <div className="px-3 pt-28 pb-4">
-        <h1 className="font-outfit font-bold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
+        <h1 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight">
           Portafolio
         </h1>
       </div>

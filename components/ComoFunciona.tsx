@@ -152,17 +152,17 @@ function StepCard3D({ step, i, off, t }: {
         />
         {/* Text — top of card */}
         <div className="absolute top-0 left-0 right-0 flex flex-col p-8">
-          <h3 className="font-outfit font-semibold text-white text-4xl xl:text-5xl leading-snug mb-3">
+          <h3 className="font-display font-semibold text-white text-4xl xl:text-5xl leading-snug mb-3">
             {t(step.es.title, step.en.title)}
           </h3>
-          <p className="font-manrope text-white/55 text-lg leading-relaxed">
+          <p className="font-body text-white/55 text-lg leading-relaxed">
             {t(step.es.desc, step.en.desc)}
           </p>
         </div>
         {/* Oversized step number — bottom-right */}
         <div className="absolute bottom-0 right-0 overflow-hidden leading-none pointer-events-none" aria-hidden>
           <span
-            className="font-outfit block"
+            className="font-display block"
             style={{
               fontWeight:  900,
               fontSize:    240,
@@ -222,7 +222,7 @@ function MobileStepCard({ step, index, t }: {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: 'easeOut' }}
       viewport={{ once: true, margin: '-20px' }}
-      className="rounded-2xl overflow-hidden bg-[#1D1D1F] shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
+      className="rounded-2xl overflow-hidden bg-ink shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
     >
       <div className="relative h-44 overflow-hidden">
         <Image src={step.img} alt={t(step.es.title, step.en.title)} fill sizes="92vw" className="object-cover object-center" />
@@ -233,10 +233,10 @@ function MobileStepCard({ step, index, t }: {
         </video>
       </div>
       <div className="flex items-start gap-4 px-5 py-4">
-        <span className="font-outfit text-2xl font-semibold leading-none text-white/25 mt-0.5 shrink-0">{step.num}</span>
+        <span className="font-display text-2xl font-semibold leading-none text-white/25 mt-0.5 shrink-0">{step.num}</span>
         <div>
-          <h3 className="font-outfit font-semibold text-lg text-white leading-snug">{t(step.es.title, step.en.title)}</h3>
-          <p className="font-manrope text-lg text-white/60 mt-1.5 leading-relaxed">{t(step.es.desc, step.en.desc)}</p>
+          <h3 className="font-display font-semibold text-lg text-white leading-snug">{t(step.es.title, step.en.title)}</h3>
+          <p className="font-body text-lg text-white/60 mt-1.5 leading-relaxed">{t(step.es.desc, step.en.desc)}</p>
         </div>
       </div>
     </motion.div>
@@ -360,11 +360,11 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
             className="absolute z-20 pointer-events-none select-none text-right"
             style={{ left: '16px', right: 'calc(34% + 450px)', top: '28%' }}
           >
-            <h2 className="font-outfit font-semibold text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl text-white tracking-tight leading-tight">
+            <h2 className="font-display font-semibold text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl text-white tracking-tight leading-tight">
               {t('El proceso', 'The process')}<br />
               <span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>
             </h2>
-            <p className="font-manrope text-white/40 text-lg leading-relaxed mt-3">
+            <p className="font-body text-white/40 text-lg leading-relaxed mt-3">
               {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
               {t('Sin costes sorpresa.', 'No surprise costs.')}
             </p>
@@ -417,11 +417,11 @@ export default function ComoFunciona(_props: { noBg?: boolean } = {}) {
       {/* ── Mobile ── */}
       <div className="md:hidden px-4 py-12 bg-[#0a0a0a]">
         <div className="mb-8 text-left">
-          <h2 className="font-outfit font-semibold text-4xl text-white tracking-tight mb-3 leading-tight">
+          <h2 className="font-display font-semibold text-4xl text-white tracking-tight mb-3 leading-tight">
             {t('El proceso', 'The process')}<br />
             <span className="we-subtitle-orange">{t('Simplificado', 'Simplified')}</span>
           </h2>
-          <p className="font-manrope text-white/45 text-lg leading-relaxed">
+          <p className="font-body text-white/45 text-lg leading-relaxed">
             {t('Sin reuniones interminables.', 'No endless meetings.')}<br />
             {t('Sin presupuesto sorpresa.', 'No surprise costs.')}
           </p>

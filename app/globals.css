@@ -3,15 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --bg: #FFFFFF;
-  --bg-secondary: #F5F5F7;
-  --glass: rgba(255,255,255,0.72);
-  --text-primary: #1D1D1F;
-  --text-secondary: #6B7280;
-  --accent: #000000;
-  --interactive: #0066CC;
-  --success: #34C759;
-  --border: rgba(0,0,0,0.08);
+  --base: #F7F6F3;
+  --ink: #16161A;
+  --muted: #8A8A92;
+  --dark: #101014;
+  --bone: #F2F0EB;
+  --hairline: rgba(0,0,0,0.08);
+  --hairline-dark: rgba(255,255,255,0.12);
 }
 
 * {
@@ -23,8 +21,8 @@ html {
 }
 
 body {
-  color: var(--text-primary);
-  background: var(--bg);
+  color: var(--ink);
+  background: var(--base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

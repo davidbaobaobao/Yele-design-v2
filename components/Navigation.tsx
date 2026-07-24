@@ -53,17 +53,17 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
           transition={{ duration: 0.5, ease: 'easeOut' }}
           className={`flex items-center gap-6 px-5 py-2.5 rounded-2xl transition-all duration-300 ${
             isDark
-              ? 'bg-transparent border border-white/10'
+              ? 'bg-transparent border border-hairlineDark'
               : scrolled
-                ? 'bg-white/90 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-black/[0.06]'
-                : 'bg-white/70 backdrop-blur-md border border-black/[0.04]'
+                ? 'bg-white/90 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] border border-hairline'
+                : 'bg-white/70 backdrop-blur-md border border-hairline'
           }`}
         >
           {/* Wordmark */}
           <Link href="/" className="flex items-center gap-1.5 flex-shrink-0 focus-visible:outline-none">
             <span className="w-2 h-2 rounded-full bg-[#34C759] flex-shrink-0" aria-hidden="true" />
-            <span className={`font-outfit font-semibold text-sm ${isDark ? 'text-white' : 'text-[#1D1D1F]'}`}>
-              yele<span className={`font-normal ${isDark ? 'text-white/50' : 'text-[#6B7280]'}`}>.design</span>
+            <span className={`font-display font-semibold text-sm ${isDark ? 'text-white' : 'text-ink'}`}>
+              yele<span className={`font-normal ${isDark ? 'text-white/50' : 'text-muted'}`}>.design</span>
             </span>
           </Link>
 
@@ -73,8 +73,8 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
               <button
                 key={link.href}
                 onClick={() => scroll(link.href)}
-                className={`font-manrope text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline ${
-                  isDark ? 'text-white/70 hover:text-white' : 'text-[#6B7280] hover:text-[#1D1D1F]'
+                className={`font-body text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline ${
+                  isDark ? 'text-white/70 hover:text-white' : 'text-muted hover:text-ink'
                 }`}
               >
                 {link.label}
@@ -90,8 +90,8 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
             {isHomePage ? (
               <Link
                 href={langHref}
-                className={`font-manrope text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none px-2.5 py-1 rounded-lg ${
-                  isDark ? 'text-white/60 hover:text-white bg-white/10' : 'text-[#6B7280] hover:text-[#1D1D1F] bg-[#F2F2F5]'
+                className={`font-body text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none px-2.5 py-1 rounded-lg ${
+                  isDark ? 'text-white/60 hover:text-white bg-white/10' : 'text-muted hover:text-ink bg-[#F2F2F5]'
                 }`}
                 aria-label={pathname === '/' ? 'Versión en español' : 'English version'}
               >
@@ -100,8 +100,8 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
             ) : (
               <button
                 onClick={toggleLang}
-                className={`font-manrope text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none px-2.5 py-1 rounded-lg ${
-                  isDark ? 'text-white/60 hover:text-white bg-white/10' : 'text-[#6B7280] hover:text-[#1D1D1F] bg-[#F2F2F5]'
+                className={`font-body text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none px-2.5 py-1 rounded-lg ${
+                  isDark ? 'text-white/60 hover:text-white bg-white/10' : 'text-muted hover:text-ink bg-[#F2F2F5]'
                 }`}
                 aria-label={`Cambiar a ${lang === 'es' ? 'inglés' : 'español'}`}
               >
@@ -111,8 +111,8 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
 
             <a
               href="https://app.yele.design/login"
-              className={`font-manrope text-sm transition-colors cursor-pointer focus-visible:outline-none ${
-                isDark ? 'text-white/60 hover:text-white' : 'text-[#6B7280] hover:text-[#1D1D1F]'
+              className={`font-body text-sm transition-colors cursor-pointer focus-visible:outline-none ${
+                isDark ? 'text-white/60 hover:text-white' : 'text-muted hover:text-ink'
               }`}
             >
               {t('Ingresar', 'Log in')}
@@ -121,8 +121,8 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
             <Link
               href={t('/registro?lang=es', '/registro')}
               prefetch={false}
-              className={`flex items-center gap-1.5 font-manrope text-sm font-medium px-4 py-2 rounded-xl transition-colors active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC] ${
-                isDark ? 'bg-white text-[#1D1D1F] hover:bg-[#F5F5F7]' : 'bg-[#1D1D1F] text-white hover:bg-black'
+              className={`flex items-center gap-1.5 font-body text-sm font-medium px-4 py-2 rounded-xl transition-colors active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC] ${
+                isDark ? 'bg-white text-ink hover:bg-base' : 'bg-ink text-white hover:bg-black'
               }`}
             >
               {t('Empezar gratis', 'Start for free')}
@@ -134,7 +134,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
 
           {/* Mobile hamburger */}
           <button
-            className={`md:hidden p-1 cursor-pointer ${isDark ? 'text-white' : 'text-[#1D1D1F]'}`}
+            className={`md:hidden p-1 cursor-pointer ${isDark ? 'text-white' : 'text-ink'}`}
             onClick={() => setOpen(!open)}
             aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
           >
@@ -151,30 +151,30 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-20 left-4 right-4 z-40 bg-white/95 backdrop-blur-xl rounded-2xl border border-black/[0.06] shadow-[0_8px_40px_rgba(0,0,0,0.12)] p-4"
+            className="fixed top-20 left-4 right-4 z-40 bg-white/95 backdrop-blur-xl rounded-2xl border border-hairline shadow-[0_8px_40px_rgba(0,0,0,0.12)] p-4"
           >
             {links.map((link) => (
               <button
                 key={link.href}
                 onClick={() => scroll(link.href)}
-                className="w-full text-left font-manrope text-base text-[#1D1D1F] py-3 border-b border-black/[0.04] last:border-0 cursor-pointer"
+                className="w-full text-left font-body text-base text-ink py-3 border-b border-hairline last:border-0 cursor-pointer"
               >
                 {link.label}
               </button>
             ))}
             <div className="flex items-center gap-3 pt-3">
               {isHomePage ? (
-                <Link href={langHref} className="font-manrope text-xs text-[#6B7280] cursor-pointer">
+                <Link href={langHref} className="font-body text-xs text-muted cursor-pointer">
                   {pathname === '/' ? 'ES' : 'EN'}
                 </Link>
               ) : (
-                <button onClick={toggleLang} className="font-manrope text-xs text-[#6B7280] cursor-pointer">
+                <button onClick={toggleLang} className="font-body text-xs text-muted cursor-pointer">
                   {lang === 'es' ? 'EN' : 'ES'}
                 </button>
               )}
               <a
                 href="https://app.yele.design/login"
-                className="font-manrope text-sm text-[#6B7280] cursor-pointer"
+                className="font-body text-sm text-muted cursor-pointer"
               >
                 {t('Ingresar', 'Log in')}
               </a>
@@ -182,7 +182,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 href={t('/registro?lang=es', '/registro')}
                 prefetch={false}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-1.5 font-manrope text-sm font-medium bg-[#1D1D1F] text-white px-4 py-2 rounded-xl cursor-pointer"
+                className="flex items-center gap-1.5 font-body text-sm font-medium bg-ink text-white px-4 py-2 rounded-xl cursor-pointer"
               >
                 {t('Empezar gratis', 'Start for free')}
               </Link>

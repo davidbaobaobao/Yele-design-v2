@@ -146,8 +146,8 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
       viewport={{ once: true, margin: '-80px' }}
       className={`relative flex flex-col rounded-3xl cursor-default ${
         plan.highlighted
-          ? 'px-8 py-12 bg-[#1D1D1F] text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] ring-1 ring-white/10'
-          : 'p-8 bg-[#F5F5F7] text-[#1D1D1F] shadow-[0_16px_56px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07]'
+          ? 'px-8 py-12 bg-ink text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] ring-1 ring-white/10'
+          : 'p-8 bg-base text-ink shadow-[0_16px_56px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07]'
       }`}
     >
       <motion.div
@@ -157,26 +157,26 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
       />
 
       {plan.badge && (
-        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-xs font-manrope font-semibold px-3 py-1 rounded-full bg-white text-[#1D1D1F] whitespace-nowrap">
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-xs font-body font-semibold px-3 py-1 rounded-full bg-white text-ink whitespace-nowrap">
           {plan.badge}
         </span>
       )}
 
       <div className="relative mb-6">
-        <p className={`font-manrope text-sm font-medium mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>
+        <p className={`font-body text-sm font-medium mb-2 ${plan.highlighted ? 'text-white/50' : 'text-muted'}`}>
           {t(plan.es.name, plan.en.name)}
         </p>
         <div className="flex items-end gap-1 mb-2">
-          <span className={`font-manrope text-2xl font-semibold mb-1 ${plan.highlighted ? 'text-white/60' : 'text-[#6B7280]'}`}>
+          <span className={`font-body text-2xl font-semibold mb-1 ${plan.highlighted ? 'text-white/60' : 'text-muted'}`}>
             {t('', '$')}
           </span>
-          <span className="font-outfit font-semibold text-5xl tracking-tight">{t(String(plan.priceEs), String(plan.priceEn))}</span>
-          <span className={`font-manrope text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-[#6B7280]'}`}>
+          <span className="font-display font-semibold text-5xl tracking-tight">{t(String(plan.priceEs), String(plan.priceEn))}</span>
+          <span className={`font-body text-sm mb-2 ${plan.highlighted ? 'text-white/50' : 'text-muted'}`}>
             {t(' €/mes', '/mo')}
           </span>
         </div>
         {/* Pill — inside card next to price; slightly larger on highlighted */}
-        <span className={`we-pill-orange font-manrope font-semibold text-white rounded-full inline-flex items-center whitespace-nowrap self-start ${
+        <span className={`we-pill-orange font-body font-semibold text-white rounded-full inline-flex items-center whitespace-nowrap self-start ${
           plan.highlighted ? 'text-sm px-4 py-1.5' : 'text-xs px-3 py-1'
         }`}>
           {t('Primer mes gratis', '1st month free')}
@@ -191,7 +191,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
               {!isHeader && (
                 <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />
               )}
-              <span className={`font-manrope text-sm ${plan.highlighted ? 'text-white/80' : 'text-[#1D1D1F]'} ${isHeader ? 'font-bold' : ''}`}>
+              <span className={`font-body text-sm ${plan.highlighted ? 'text-white/80' : 'text-ink'} ${isHeader ? 'font-bold' : ''}`}>
                 {feat}
               </span>
             </li>
@@ -201,15 +201,15 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
 
       <motion.a
         href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)}
-        className={`relative overflow-hidden block text-center font-manrope font-medium text-sm py-3.5 rounded-xl cursor-pointer ${
-          plan.highlighted ? 'bg-white text-[#1D1D1F]' : 'bg-[#1D1D1F] text-white'
+        className={`relative overflow-hidden block text-center font-body font-medium text-sm py-3.5 rounded-xl cursor-pointer ${
+          plan.highlighted ? 'bg-white text-ink' : 'bg-ink text-white'
         }`}
         whileHover="hover"
         whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}
         initial="rest"
       >
         <motion.span
-          className={`absolute inset-0 ${plan.highlighted ? 'bg-[#F5F5F7]' : 'bg-black'}`}
+          className={`absolute inset-0 ${plan.highlighted ? 'bg-base' : 'bg-black'}`}
           variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
           transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
           style={{ originX: 0 }}
@@ -303,7 +303,7 @@ export default function PreciosIndexSection() {
           className="text-center mb-10"
         >
           <h2
-            className="font-outfit font-semibold text-white tracking-tight"
+            className="font-display font-semibold text-white tracking-tight"
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}
           >
             {t('Precios', 'Pricing')}
@@ -316,14 +316,14 @@ export default function PreciosIndexSection() {
           ))}
         </div>
 
-        <p className="text-center font-manrope text-sm font-bold text-white mt-6">
+        <p className="text-center font-body text-sm font-bold text-white mt-6">
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
 
         <div className="text-center mt-4">
           <button
             onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-            className="font-manrope text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80 transition-colors cursor-pointer"
+            className="font-body text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80 transition-colors cursor-pointer"
           >
             {t('Ayúdame a decidir', 'Help me decide')}
           </button>

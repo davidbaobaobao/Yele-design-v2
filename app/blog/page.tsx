@@ -26,11 +26,11 @@ export default function BlogPage() {
   return (
     <>
       <Navigation />
-      <main id="main-content" className="min-h-screen bg-[#F5F5F7] pt-[72px]">
+      <main id="main-content" className="min-h-screen bg-base pt-[72px]">
         {/* Header */}
         <div className="max-w-[1100px] mx-auto px-6 pt-14 pb-10">
-          <p className="font-manrope text-sm font-medium text-[#6B7280] tracking-wide uppercase mb-3">Blog</p>
-          <h1 className="font-outfit font-bold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
+          <p className="font-body text-sm font-medium text-muted tracking-wide uppercase mb-3">Blog</p>
+          <h1 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight">
             Resources for your business
           </h1>
         </div>
@@ -41,7 +41,7 @@ export default function BlogPage() {
             <div className="max-w-[1100px] mx-auto px-6 pb-10">
               <Link
                 href={`/blog/${featured.slug}`}
-                className="group block md:grid md:grid-cols-2 gap-0 bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300"
+                className="group block md:grid md:grid-cols-2 gap-0 bg-white rounded-2xl overflow-hidden border border-hairline"
               >
                 <div className="relative aspect-[16/10] md:aspect-auto overflow-hidden">
                   <Image
@@ -55,20 +55,20 @@ export default function BlogPage() {
                 </div>
                 <div className="flex flex-col justify-center p-8 md:p-10">
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
+                    <span className="font-body text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
                       {featured.category}
                     </span>
-                    <span className="font-manrope text-xs text-[#6B7280]">{featured.readTime} min read</span>
+                    <span className="font-body text-xs text-muted">{featured.readTime} min read</span>
                   </div>
-                  <h2 className="font-outfit font-semibold text-2xl md:text-3xl text-[#1D1D1F] leading-snug mb-4 group-hover:text-[#0066CC] transition-colors">
+                  <h2 className="font-display font-semibold text-2xl md:text-3xl text-ink leading-snug mb-4 group-hover:text-[#0066CC] transition-colors">
                     {featured.titleEn}
                   </h2>
-                  <p className="font-manrope text-[#6B7280] leading-relaxed mb-6">
+                  <p className="font-body text-muted leading-relaxed mb-6">
                     {featured.excerptEn}
                   </p>
                   <div className="flex items-center justify-between">
-                    <p className="font-manrope text-xs text-[#ADADB8]">{formatDate(featured.date)}</p>
-                    <span className="font-manrope text-sm font-medium text-[#0066CC] flex items-center gap-1.5">
+                    <p className="font-body text-xs text-[#ADADB8]">{formatDate(featured.date)}</p>
+                    <span className="font-body text-sm font-medium text-[#0066CC] flex items-center gap-1.5">
                       Read article
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                         <path d="M2.5 7h9M8 3.5L11.5 7 8 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -87,7 +87,7 @@ export default function BlogPage() {
                     <Link
                       key={article.slug}
                       href={`/blog/${article.slug}`}
-                      className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300"
+                      className="group bg-white rounded-2xl overflow-hidden border border-hairline"
                     >
                       <div className="relative aspect-[16/9] overflow-hidden">
                         <Image
@@ -100,18 +100,18 @@ export default function BlogPage() {
                       </div>
                       <div className="p-5">
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
+                          <span className="font-body text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
                             {article.category}
                           </span>
-                          <span className="font-manrope text-xs text-[#6B7280]">{article.readTime} min</span>
+                          <span className="font-body text-xs text-muted">{article.readTime} min</span>
                         </div>
-                        <h3 className="font-outfit font-semibold text-[#1D1D1F] text-lg leading-snug mb-2 group-hover:text-[#0066CC] transition-colors line-clamp-2">
+                        <h3 className="font-display font-semibold text-ink text-lg leading-snug mb-2 group-hover:text-[#0066CC] transition-colors line-clamp-2">
                           {article.titleEn}
                         </h3>
-                        <p className="font-manrope text-sm text-[#6B7280] leading-relaxed line-clamp-2">
+                        <p className="font-body text-sm text-muted leading-relaxed line-clamp-2">
                           {article.excerptEn}
                         </p>
-                        <p className="font-manrope text-xs text-[#ADADB8] mt-4">{formatDate(article.date)}</p>
+                        <p className="font-body text-xs text-[#ADADB8] mt-4">{formatDate(article.date)}</p>
                       </div>
                     </Link>
                   ))}
@@ -121,7 +121,7 @@ export default function BlogPage() {
           </>
         ) : (
           <div className="max-w-[1100px] mx-auto px-6 pb-20">
-            <p className="font-manrope text-[#6B7280] text-lg">Articles coming soon.</p>
+            <p className="font-body text-muted text-lg">Articles coming soon.</p>
           </div>
         )}
       </main>

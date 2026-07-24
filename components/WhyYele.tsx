@@ -37,10 +37,10 @@ export default function WhyYele() {
   return (
     <section className="py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-8 mb-12">
-        <p className="text-[#6B7280] text-sm uppercase tracking-widest mb-3">
+        <p className="text-muted text-sm uppercase tracking-widest mb-3">
           {t('Por qué Yele', 'Why Yele')}
         </p>
-        <h2 className="text-5xl font-['Outfit'] font-semibold text-[#1D1D1F] leading-tight">
+        <h2 className="text-5xl font-['Outfit'] font-semibold text-ink leading-tight">
           {t('Todo lo que necesitas.', 'Everything you need.')}<br />
           {t('Nada que no necesitas.', "Nothing you don't.")}
         </h2>
@@ -59,17 +59,17 @@ export default function WhyYele() {
           <div
             key={card.es.title}
             className="flex-shrink-0 w-[300px] md:w-[320px] snap-start
-                       bg-[#F5F5F7] rounded-3xl p-8 flex flex-col gap-6"
+                       bg-base rounded-3xl p-8 flex flex-col gap-6"
           >
             <div className="w-12 h-12 rounded-2xl bg-white flex items-center
                             justify-center text-2xl shadow-sm">
               {card.icon}
             </div>
             <div className="flex flex-col gap-3">
-              <h3 className="text-xl font-['Outfit'] font-semibold text-[#1D1D1F]">
+              <h3 className="text-xl font-['Outfit'] font-semibold text-ink">
                 {t(card.es.title, card.en.title)}
               </h3>
-              <p className="text-[#6B7280] font-['Instrument_Sans'] text-base leading-relaxed">
+              <p className="text-muted font-['Instrument_Sans'] text-base leading-relaxed">
                 {t(card.es.description, card.en.description)}
               </p>
             </div>

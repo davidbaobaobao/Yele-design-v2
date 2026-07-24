@@ -122,17 +122,17 @@ export default function MoversPage() {
         <section className="pt-32 pb-20 md:pt-44 md:pb-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
             <h1
-              className="font-outfit font-bold text-[#1D1D1F] tracking-tighter leading-[1.05] mb-6"
+              className="font-display font-bold text-ink tracking-tighter leading-[1.05] mb-6"
               style={{ fontSize: 'clamp(40px, 5.5vw, 72px)' }}
             >
               Website design for moving companies
             </h1>
-            <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
+            <p className="font-body text-muted text-xl leading-relaxed max-w-2xl mb-10">
               When someone has a move date, they request quotes from several movers the same day and decide fast. If you&rsquo;re not easy to find on Google and don&rsquo;t make it easy to request a quote, you don&rsquo;t even make the shortlist. Professional website live in 1 week. From $99/mo, no setup fee, no commitment.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
             </Link>
@@ -140,15 +140,15 @@ export default function MoversPage() {
         </section>
 
         {/* Pillar 1 — Speed of decision */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+        <section className="py-20 md:py-28 bg-base">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Why it matters
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               A move is decided<br className="hidden md:block" /> in a single afternoon
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               When someone has a move date locked in, they search &ldquo;movers near me&rdquo; or their city name and request quotes from the first companies that look credible. They decide on two things: clear pricing and the confidence that their stuff will be safe. A website with your service area, what&rsquo;s included, and a simple quote button gets you into that shortlist. Without one, you&rsquo;re not even considered.
             </p>
           </div>
@@ -157,21 +157,21 @@ export default function MoversPage() {
         {/* Quote form + service area mockup */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Key features
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-4 leading-tight">
               Easy quote request<br className="hidden md:block" /> + service area
             </h2>
-            <p className="font-manrope text-[#6B7280] text-base mb-12 max-w-xl">
+            <p className="font-body text-muted text-base mb-12 max-w-xl">
               Two elements that turn visitors into contacts: a direct form and a clear map of where you operate.
             </p>
 
             <div className="grid md:grid-cols-2 gap-8">
 
               {/* Quote form */}
-              <div className="bg-[#F5F5F7] rounded-2xl p-8">
-                <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-6">
+              <div className="bg-base rounded-2xl p-8">
+                <p className="font-display font-semibold text-ink text-lg mb-6">
                   Request a quote
                 </p>
                 <div className="flex flex-col gap-3">
@@ -182,29 +182,29 @@ export default function MoversPage() {
                     { label: 'Approximate square footage', placeholder: 'e.g. 1,200 sq ft' },
                   ].map(field => (
                     <div key={field.label}>
-                      <label className="font-manrope text-[10px] font-semibold uppercase tracking-widest text-[#6B7280] block mb-1">
+                      <label className="font-body text-[10px] font-semibold uppercase tracking-widest text-muted block mb-1">
                         {field.label}
                       </label>
-                      <div className="w-full bg-white border border-black/[0.08] rounded-xl px-4 py-3 font-manrope text-sm text-[#6B7280]">
+                      <div className="w-full bg-white border border-hairline rounded-xl px-4 py-3 font-body text-sm text-muted">
                         {field.placeholder}
                       </div>
                     </div>
                   ))}
-                  <div className="mt-2 bg-[#1D1D1F] text-white font-manrope font-medium text-sm rounded-xl px-5 py-3.5 text-center">
+                  <div className="mt-2 bg-ink text-white font-body font-medium text-sm rounded-xl px-5 py-3.5 text-center">
                     Request a quote →
                   </div>
                 </div>
-                <p className="font-manrope text-[10px] text-[#6B7280] mt-4 text-center">
+                <p className="font-body text-[10px] text-muted mt-4 text-center">
                   Goes straight to your email — no intermediaries.
                 </p>
               </div>
 
               {/* Service area */}
-              <div className="bg-[#F5F5F7] rounded-2xl p-8">
-                <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">
+              <div className="bg-base rounded-2xl p-8">
+                <p className="font-display font-semibold text-ink text-lg mb-2">
                   Service area
                 </p>
-                <p className="font-manrope text-sm text-[#6B7280] mb-6">
+                <p className="font-body text-sm text-muted mb-6">
                   Customers see immediately if you cover their move — without having to call.
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -215,16 +215,16 @@ export default function MoversPage() {
                   ].map(city => (
                     <span
                       key={city}
-                      className="font-manrope text-xs font-medium bg-white border border-black/[0.08] text-[#1D1D1F] px-3 py-1.5 rounded-full"
+                      className="font-body text-xs font-medium bg-white border border-hairline text-ink px-3 py-1.5 rounded-full"
                     >
                       {city}
                     </span>
                   ))}
-                  <span className="font-manrope text-xs text-[#6B7280] px-3 py-1.5">
+                  <span className="font-body text-xs text-muted px-3 py-1.5">
                     + your custom areas
                   </span>
                 </div>
-                <p className="font-manrope text-[10px] text-[#6B7280] mt-6">
+                <p className="font-body text-[10px] text-muted mt-6">
                   These cities are customized to match the areas where you actually operate.
                 </p>
               </div>
@@ -234,15 +234,15 @@ export default function MoversPage() {
         </section>
 
         {/* Pillar 2 — Lead aggregators */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+        <section className="py-20 md:py-28 bg-base">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               The lead aggregator trap
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               Stop depending<br className="hidden md:block" /> on moving lead sites
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               Moving lead aggregators put you in a price war and charge per contact. With your own site, customers request a quote from you directly — no fee, no middleman, and you own the relationship from the first message.
             </p>
           </div>
@@ -251,18 +251,18 @@ export default function MoversPage() {
         {/* Trust signals */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Build trust before the call
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-10 leading-tight">
               Show customers you&rsquo;re<br className="hidden md:block" /> the safe choice
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {TRUST_SIGNALS.map(signal => (
-                <div key={signal.title} className="bg-[#F5F5F7] rounded-2xl p-6">
-                  <div className="text-[#1D1D1F] mb-3">{signal.icon}</div>
-                  <p className="font-outfit font-semibold text-[#1D1D1F] text-base mb-2">{signal.title}</p>
-                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{signal.desc}</p>
+                <div key={signal.title} className="bg-base rounded-2xl p-6">
+                  <div className="text-ink mb-3">{signal.icon}</div>
+                  <p className="font-display font-semibold text-ink text-base mb-2">{signal.title}</p>
+                  <p className="font-body text-muted text-sm leading-relaxed">{signal.desc}</p>
                 </div>
               ))}
             </div>
@@ -274,10 +274,10 @@ export default function MoversPage() {
         {/* Why Yele */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Why Yele
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-10 leading-tight">
               Basically risk-free to try.
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -287,9 +287,9 @@ export default function MoversPage() {
                 { title: 'All inclusive', desc: 'Domain, hosting, maintenance, and support. No surprise invoices.' },
                 { title: 'Live in 1 week', desc: 'Not two months. In under a week your site is up and running.' },
               ] as const).map(item => (
-                <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
-                  <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
-                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{item.desc}</p>
+                <div key={item.title} className="bg-base rounded-2xl p-6">
+                  <p className="font-display font-semibold text-ink text-lg mb-2">{item.title}</p>
+                  <p className="font-body text-muted text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -300,17 +300,17 @@ export default function MoversPage() {
         <FAQClient faqs={FAQS} />
 
         {/* Final CTA */}
-        <section className="py-24 md:py-32 bg-[#1D1D1F]">
+        <section className="py-24 md:py-32 bg-ink">
           <div className="max-w-3xl mx-auto px-6 text-center">
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
               Get on the shortlist<br />for every local move.
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg mb-10">
+            <p className="font-body text-muted text-lg mb-10">
               No setup fee. Live in 1 week.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-8 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-white text-ink px-8 py-4 rounded-2xl hover:bg-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
             </Link>

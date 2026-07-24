@@ -99,11 +99,8 @@ function ParallaxCard({ img, video, title, desc, i }: { img: string; video: stri
         transition={{ duration: 0.6, delay: i * 0.07, ease: 'easeOut' }}
         viewport={{ once: true, margin: '-50px' }}
         style={{ rotateX, rotateY, scale, transformStyle: 'preserve-3d' }}
-        className="group bg-white border border-black/[0.07] rounded-3xl overflow-hidden
-                   cursor-default select-none will-change-transform h-full
-                   shadow-[0_8px_32px_rgba(0,0,0,0.14),0_2px_8px_rgba(0,0,0,0.08)]
-                   hover:shadow-[0_28px_72px_rgba(0,0,0,0.22),0_4px_16px_rgba(0,0,0,0.1)]
-                   transition-shadow duration-300"
+        className="group bg-white border border-hairline rounded-3xl overflow-hidden
+                   cursor-default select-none will-change-transform h-full"
       >
         <div className="relative h-44 md:h-52 overflow-hidden bg-[#0a0a0a]">
           <motion.div
@@ -132,10 +129,10 @@ function ParallaxCard({ img, video, title, desc, i }: { img: string; video: stri
         </div>
 
         <div className="px-5 pt-5 pb-5">
-          <h3 className="font-outfit font-semibold text-[#1D1D1F] text-[15px] leading-tight tracking-tight mb-1.5">
+          <h3 className="font-display font-semibold text-ink text-[15px] leading-tight tracking-tight mb-1.5">
             {title}
           </h3>
-          <p className="font-manrope text-[13px] text-[#6B7280] leading-relaxed">
+          <p className="font-body text-[13px] text-muted leading-relaxed">
             {desc}
           </p>
         </div>
@@ -194,7 +191,7 @@ export default function ShowcaseFeatureCards() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: 'easeOut' }}
           viewport={{ once: true, margin: '-60px' }}
-          className="font-outfit font-semibold text-3xl md:text-4xl text-[#1D1D1F] tracking-tight mb-10"
+          className="font-display font-semibold text-3xl md:text-4xl text-ink tracking-tight mb-10"
         >
           {t('Mantente por delante de la competencia', 'Stay ahead of the competition')}
         </motion.h2>

@@ -28,14 +28,14 @@ function BienvenidoContent() {
   }, [sessionId])
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-6">
+    <div className="min-h-screen bg-base flex items-center justify-center px-6">
       <div className="max-w-md w-full text-center">
 
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
           <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
-          <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-            yele<span className="text-[#6B7280] font-normal">.design</span>
+          <span className="font-display font-semibold text-sm text-ink">
+            yele<span className="text-muted font-normal">.design</span>
           </span>
         </Link>
 
@@ -46,14 +46,14 @@ function BienvenidoContent() {
           </svg>
         </div>
 
-        <h1 className="font-outfit font-semibold text-3xl text-[#1D1D1F] tracking-tight mb-3">
+        <h1 className="font-display font-semibold text-3xl text-ink tracking-tight mb-3">
           ¡Bienvenido a Yele!
         </h1>
-        <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-2">
+        <p className="font-body text-muted text-base leading-relaxed mb-2">
           Tu suscripción está activa
-          {planName ? <> — <strong className="text-[#1D1D1F]">Plan {planName}</strong></> : ''}.
+          {planName ? <> — <strong className="text-ink">Plan {planName}</strong></> : ''}.
         </p>
-        <p className="font-manrope text-[#6B7280] text-base leading-relaxed mb-8">
+        <p className="font-body text-muted text-base leading-relaxed mb-8">
           Ya estamos trabajando en tu web. Te contactaremos en menos de 24 horas.
         </p>
 
@@ -62,7 +62,7 @@ function BienvenidoContent() {
             href="https://app.yele.design"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 font-manrope font-medium text-sm bg-[#1D1D1F] text-white px-6 py-3.5 rounded-xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+            className="inline-flex items-center justify-center gap-2 font-body font-medium text-sm bg-ink text-white px-6 py-3.5 rounded-xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
           >
             Acceder a mi panel
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -70,9 +70,9 @@ function BienvenidoContent() {
             </svg>
           </a>
 
-          <p className="font-manrope text-xs text-[#6B7280]">
+          <p className="font-body text-xs text-muted">
             ¿Preguntas?{' '}
-            <a href="mailto:info@yele.design" className="underline hover:text-[#1D1D1F] transition-colors">
+            <a href="mailto:info@yele.design" className="underline hover:text-ink transition-colors">
               info@yele.design
             </a>
           </p>
@@ -85,7 +85,7 @@ function BienvenidoContent() {
 
 export default function BienvenidoPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+    <Suspense fallback={<div className="min-h-screen bg-base" />}>
       <BienvenidoContent />
     </Suspense>
   )

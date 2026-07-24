@@ -110,14 +110,14 @@ function TitleOverlay({
       }}
     >
       <h2
-        className="font-outfit font-semibold text-white text-xl md:text-2xl tracking-tight leading-tight mb-1"
+        className="font-display font-semibold text-white text-xl md:text-2xl tracking-tight leading-tight mb-1"
         style={{ textShadow: '0 1px 16px rgba(0,0,0,0.7), 0 0 40px rgba(0,0,0,0.4)' }}
       >
         {name}
       </h2>
       {description && (
         <p
-          className="font-manrope text-white text-sm"
+          className="font-body text-white text-sm"
           style={{ textShadow: '0 1px 10px rgba(0,0,0,0.8)' }}
         >
           {description}
@@ -208,7 +208,7 @@ export default function EjemplosClient({ projects }: { projects: Project[] }) {
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Volver al inicio"
-          className="w-11 h-11 rounded-full bg-[#1D1D1F] text-white flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-black active:scale-95 transition-all duration-200"
+          className="w-11 h-11 rounded-full bg-ink text-white flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-black active:scale-95 transition-all duration-200"
         >
           <ArrowUp size={16} />
         </button>

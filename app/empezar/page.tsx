@@ -7,9 +7,9 @@ import Link from 'next/link'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import ClarityScript from '@/components/ClarityScript'
 
-const inputClass = 'w-full bg-white border border-black/[0.12] rounded-xl px-4 py-3 font-manrope text-sm text-[#1D1D1F] placeholder-[#6B7280] focus:outline-none focus:border-[#1D1D1F] transition-colors'
-const labelClass = 'font-manrope text-xs text-[#6B7280] mb-1.5 block'
-const errorClass = 'font-manrope text-xs text-red-500 mt-1'
+const inputClass = 'w-full bg-white border border-hairline rounded-xl px-4 py-3 font-body text-sm text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors'
+const labelClass = 'font-body text-xs text-muted mb-1.5 block'
+const errorClass = 'font-body text-xs text-red-500 mt-1'
 
 const USD_PLANS = [
   {
@@ -253,10 +253,10 @@ export default function EmpezarPage() {
 
   if (step === 'checkout') {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-6">
+      <div className="min-h-screen bg-base flex items-center justify-center px-6">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-[#1D1D1F] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="font-manrope text-sm text-[#6B7280]">Setting up your subscription…</p>
+          <div className="w-8 h-8 border-2 border-ink border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="font-body text-sm text-muted">Setting up your subscription…</p>
         </div>
       </div>
     )
@@ -264,24 +264,24 @@ export default function EmpezarPage() {
 
   if (step === 'pricing') {
     return (
-      <div className="min-h-screen bg-white px-6 py-12">
+      <div className="min-h-screen bg-base px-6 py-12">
         <ClarityScript />
         <div className="max-w-3xl mx-auto">
           <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
             <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
-            <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-              yele<span className="text-[#6B7280] font-normal">.design</span>
+            <span className="font-display font-semibold text-sm text-ink">
+              yele<span className="text-muted font-normal">.design</span>
             </span>
           </Link>
 
           <div className="mb-10">
-            <p className="font-manrope text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">
+            <p className="font-body text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">
               {lang === 'es' ? 'Paso 2 de 2' : 'Step 2 of 2'}
             </p>
-            <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">
+            <h2 className="font-display font-semibold text-2xl text-ink tracking-tight mb-1">
               {lang === 'es' ? 'Elige tu plan' : 'Choose your plan'}
             </h2>
-            <p className="font-manrope text-sm text-[#6B7280]">
+            <p className="font-body text-sm text-muted">
               {lang === 'es'
                 ? 'Primer mes gratis — sin cargo hoy. Cancela cuando quieras.'
                 : 'First month free — no charge today. Cancel anytime.'}
@@ -294,30 +294,30 @@ export default function EmpezarPage() {
                 key={plan.key}
                 className={`relative rounded-2xl border p-6 flex flex-col ${
                   plan.highlight
-                    ? 'border-[#1D1D1F] bg-[#1D1D1F] text-white'
-                    : 'border-black/[0.1] bg-white text-[#1D1D1F]'
+                    ? 'border-ink bg-ink text-white'
+                    : 'border-hairline bg-white text-ink'
                 }`}
               >
                 {plan.highlight && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#34C759] text-white font-manrope text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#34C759] text-white font-body text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
                     Most popular
                   </span>
                 )}
-                <p className={`font-outfit font-semibold text-base mb-1 ${plan.highlight ? 'text-white' : 'text-[#1D1D1F]'}`}>
+                <p className={`font-display font-semibold text-base mb-1 ${plan.highlight ? 'text-white' : 'text-ink'}`}>
                   {plan.name}
                 </p>
-                <p className={`font-manrope text-xs leading-relaxed mb-4 ${plan.highlight ? 'text-white/60' : 'text-[#6B7280]'}`}>
+                <p className={`font-body text-xs leading-relaxed mb-4 ${plan.highlight ? 'text-white/60' : 'text-muted'}`}>
                   {plan.description}
                 </p>
                 <div className="mb-5">
-                  <span className={`font-outfit font-bold text-3xl ${plan.highlight ? 'text-white' : 'text-[#1D1D1F]'}`}>
+                  <span className={`font-display font-bold text-3xl ${plan.highlight ? 'text-white' : 'text-ink'}`}>
                     {plan.currency}{plan.price}
                   </span>
-                  <span className={`font-manrope text-xs ml-1 ${plan.highlight ? 'text-white/50' : 'text-[#6B7280]'}`}>/mo</span>
+                  <span className={`font-body text-xs ml-1 ${plan.highlight ? 'text-white/50' : 'text-muted'}`}>/mo</span>
                 </div>
                 <ul className="space-y-2 mb-6 flex-1">
                   {plan.features.map(f => (
-                    <li key={f} className={`flex items-start gap-2 font-manrope text-xs ${plan.highlight ? 'text-white/80' : 'text-[#6B7280]'}`}>
+                    <li key={f} className={`flex items-start gap-2 font-body text-xs ${plan.highlight ? 'text-white/80' : 'text-muted'}`}>
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="flex-shrink-0 mt-0.5" aria-hidden="true">
                         <path d="M2 6l3 3 5-5" stroke={plan.highlight ? '#34C759' : '#34C759'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
@@ -329,10 +329,10 @@ export default function EmpezarPage() {
                   type="button"
                   onClick={() => handlePickPlan(plan.key)}
                   disabled={planLoading !== null}
-                  className={`w-full font-manrope font-semibold text-sm py-3 rounded-xl transition-colors cursor-pointer disabled:opacity-50 ${
+                  className={`w-full font-body font-semibold text-sm py-3 rounded-xl transition-colors cursor-pointer disabled:opacity-50 ${
                     plan.highlight
-                      ? 'bg-white text-[#1D1D1F] hover:bg-[#F5F5F7]'
-                      : 'bg-[#1D1D1F] text-white hover:bg-black'
+                      ? 'bg-white text-ink hover:bg-base'
+                      : 'bg-ink text-white hover:bg-black'
                   }`}
                 >
                   {planLoading === plan.key ? 'Loading…' : 'Start free month →'}
@@ -341,7 +341,7 @@ export default function EmpezarPage() {
             ))}
           </div>
 
-          <p className="text-center font-manrope text-xs text-[#6B7280] mt-8">
+          <p className="text-center font-body text-xs text-muted mt-8">
             {lang === 'es'
               ? 'Todos los planes incluyen 1 mes gratis. Sin cargo hoy.'
               : 'All plans include a free 1-month trial. No credit card charged today.'}
@@ -352,7 +352,7 @@ export default function EmpezarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white px-6 py-12">
+    <div className="min-h-screen bg-base px-6 py-12">
       <ClarityScript />
       <div className="max-w-md mx-auto">
 
@@ -360,17 +360,17 @@ export default function EmpezarPage() {
 
         <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
           <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
-          <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-            yele<span className="text-[#6B7280] font-normal">.design</span>
+          <span className="font-display font-semibold text-sm text-ink">
+            yele<span className="text-muted font-normal">.design</span>
           </span>
         </Link>
 
         <div className="mb-8">
-          <p className="font-manrope text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">Step 1 of 2</p>
-          <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] tracking-tight mb-1">
+          <p className="font-body text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">Step 1 of 2</p>
+          <h2 className="font-display font-semibold text-2xl text-ink tracking-tight mb-1">
             Tell us about your business
           </h2>
-          <p className="font-manrope text-sm text-[#6B7280]">
+          <p className="font-body text-sm text-muted">
             We&apos;ll set everything up for you. Takes less than 2 minutes.
           </p>
         </div>
@@ -455,11 +455,11 @@ export default function EmpezarPage() {
                 type="checkbox"
                 checked={formData.rgpd}
                 onChange={e => set('rgpd', e.target.checked)}
-                className="mt-0.5 w-4 h-4 accent-[#1D1D1F] flex-shrink-0"
+                className="mt-0.5 w-4 h-4 accent-ink flex-shrink-0"
               />
-              <span className="font-manrope text-sm text-[#1D1D1F]">
+              <span className="font-body text-sm text-ink">
                 I have read and accept the{' '}
-                <Link href="/politica-privacidad" target="_blank" className="underline hover:text-[#6B7280] transition-colors">
+                <Link href="/politica-privacidad" target="_blank" className="underline hover:text-muted transition-colors">
                   privacy policy
                 </Link>
                 <span className="text-red-500 ml-0.5">*</span>
@@ -469,25 +469,25 @@ export default function EmpezarPage() {
           </div>
 
           {submitError && (
-            <p className="font-manrope text-xs text-red-500 text-center">{submitError}</p>
+            <p className="font-body text-xs text-red-500 text-center">{submitError}</p>
           )}
 
           <button
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 font-manrope font-medium text-sm bg-[#1D1D1F] text-white px-6 py-3.5 rounded-xl hover:bg-black transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+            className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-sm bg-ink text-white px-6 py-3.5 rounded-xl hover:bg-black transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
           >
             {loading ? 'Saving…' : 'Continue →'}
           </button>
 
-          <p className="text-center font-manrope text-xs text-[#6B7280]">
+          <p className="text-center font-body text-xs text-muted">
             No charge today. Your free month starts now.
           </p>
         </div>
 
         <div className="mt-8 text-center">
-          <Link href="/" className="font-manrope text-xs text-[#6B7280] hover:text-[#1D1D1F] transition-colors">
+          <Link href="/" className="font-body text-xs text-muted hover:text-ink transition-colors">
             ← Back to home
           </Link>
         </div>

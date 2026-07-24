@@ -91,7 +91,7 @@ function BeneficioCard({
       transition={{ duration: 0.6 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative bg-white border border-black/[0.06] rounded-2xl p-8 cursor-default overflow-hidden"
+      className="relative bg-white border border-hairline rounded-2xl p-8 cursor-default overflow-hidden"
       whileHover={{ y: -3, boxShadow: '0 12px 40px rgba(0,0,0,0.09)', transition: { duration: 0.2 } }}
     >
       {/* Spotlight overlay */}
@@ -103,19 +103,19 @@ function BeneficioCard({
 
       {/* Icon with tinted circle */}
       <motion.div
-        className="relative w-10 h-10 rounded-full bg-[#F5F5F7] flex items-center justify-center mb-5 overflow-hidden"
+        className="relative w-10 h-10 rounded-full bg-base flex items-center justify-center mb-5 overflow-hidden"
         style={{ background: iconTint }}
       >
         <motion.div
-          className="absolute inset-0 bg-[#F5F5F7] -z-10 rounded-full"
+          className="absolute inset-0 bg-base -z-10 rounded-full"
         />
-        <Icon size={18} strokeWidth={1.5} className="text-[#1D1D1F] relative z-10" aria-hidden="true" />
+        <Icon size={18} strokeWidth={1.5} className="text-ink relative z-10" aria-hidden="true" />
       </motion.div>
 
-      <h3 className="relative font-outfit font-semibold text-lg text-[#1D1D1F] mb-2">
+      <h3 className="relative font-display font-semibold text-lg text-ink mb-2">
         {title}
       </h3>
-      <p className="relative font-manrope text-sm text-[#6B7280] leading-relaxed">
+      <p className="relative font-body text-sm text-muted leading-relaxed">
         {desc}
       </p>
     </motion.div>
@@ -138,7 +138,7 @@ export default function Beneficios({
   const { t } = useLang()
 
   return (
-    <section id="beneficios" className={sectionClassName ?? 'pt-12 pb-24 md:pt-16 md:pb-32 bg-[#F5F5F7]'}>
+    <section id="beneficios" className={sectionClassName ?? 'pt-12 pb-24 md:pt-16 md:pb-32 bg-base'}>
       <div className="max-w-6xl mx-auto px-6">
         {!noHeader && (
           <motion.div
@@ -148,7 +148,7 @@ export default function Beneficios({
             viewport={{ once: true, margin: '-80px' }}
             className="mb-14"
           >
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-4">
               {headingLine1 !== undefined ? (
                 <>
                   {headingLine1}
@@ -161,7 +161,7 @@ export default function Beneficios({
                 </>
               )}
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg max-w-xl">
+            <p className="font-body text-muted text-lg max-w-xl">
               {subtitle ?? t(
                 'Sin agencias, sin complicaciones, sin permanencia.',
                 'No agencies, no hassle, no lock-in.'

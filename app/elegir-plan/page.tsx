@@ -141,37 +141,37 @@ function ElegirPlanContent() {
   const mobileOrder = [PLANS[1], PLANS[0], PLANS[2]]
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] px-4 py-14">
+    <div className="min-h-screen bg-base px-4 py-14">
       <div className="max-w-5xl mx-auto">
 
         {/* Logo */}
         <div className="flex justify-center mb-12">
           <Link href="/" className="inline-flex items-center gap-1.5 focus-visible:outline-none">
             <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
-            <span className="font-outfit font-semibold text-sm text-[#1D1D1F]">
-              yele<span className="text-[#6B7280] font-normal">.design</span>
+            <span className="font-display font-semibold text-sm text-ink">
+              yele<span className="text-muted font-normal">.design</span>
             </span>
           </Link>
         </div>
 
         {/* Heading */}
         <div className="text-center mb-10">
-          <h1 className="font-outfit font-semibold text-4xl sm:text-5xl text-[#1D1D1F] tracking-tight mb-3">
+          <h1 className="font-display font-semibold text-4xl sm:text-5xl text-ink tracking-tight mb-3">
             Sin letra pequeña.
           </h1>
-          <p className="font-manrope text-[#6B7280] text-lg">
+          <p className="font-body text-muted text-lg">
             Elige tu plan. Cambia cuando quieras.
           </p>
         </div>
 
         {/* Billing toggle */}
         <div className="flex justify-center mb-10">
-          <div className="inline-flex items-center bg-white border border-black/[0.08] rounded-xl p-1">
+          <div className="inline-flex items-center bg-white border border-hairline rounded-xl p-1">
             <button
               type="button"
               onClick={() => setAnnual(false)}
-              className={`font-manrope text-sm px-5 py-2 rounded-lg transition-all cursor-pointer ${
-                !annual ? 'bg-[#1D1D1F] text-white' : 'text-[#6B7280] hover:text-[#1D1D1F]'
+              className={`font-body text-sm px-5 py-2 rounded-lg transition-all cursor-pointer ${
+                !annual ? 'bg-ink text-white' : 'text-muted hover:text-ink'
               }`}
             >
               Mensual
@@ -179,8 +179,8 @@ function ElegirPlanContent() {
             <button
               type="button"
               onClick={() => setAnnual(true)}
-              className={`font-manrope text-sm px-5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                annual ? 'bg-[#1D1D1F] text-white' : 'text-[#6B7280] hover:text-[#1D1D1F]'
+              className={`font-body text-sm px-5 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                annual ? 'bg-ink text-white' : 'text-muted hover:text-ink'
               }`}
             >
               Anual
@@ -222,11 +222,11 @@ function ElegirPlanContent() {
 
         {/* Promo code */}
         <div className="max-w-sm mx-auto mb-6">
-          <p className="font-manrope text-xs text-[#6B7280] mb-2 text-center">
+          <p className="font-body text-xs text-muted mb-2 text-center">
             ¿Tienes un código promocional?
           </p>
           {promoApplied ? (
-            <div className="flex items-center justify-center gap-2 font-manrope text-sm text-[#25A244]">
+            <div className="flex items-center justify-center gap-2 font-body text-sm text-[#25A244]">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M20 6L9 17l-5-5" />
               </svg>
@@ -241,25 +241,25 @@ function ElegirPlanContent() {
                   value={promoCode}
                   onChange={e => { setPromoCode(e.target.value.toUpperCase()); setPromoError('') }}
                   onKeyDown={e => e.key === 'Enter' && applyPromo()}
-                  className="flex-1 bg-white border border-black/[0.12] rounded-xl px-4 py-2.5 font-manrope text-sm text-[#1D1D1F] placeholder-[#6B7280] focus:outline-none focus:border-[#1D1D1F] transition-colors uppercase tracking-widest"
+                  className="flex-1 bg-white border border-hairline rounded-xl px-4 py-2.5 font-body text-sm text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors uppercase tracking-widest"
                 />
                 <button
                   type="button"
                   onClick={applyPromo}
-                  className="font-manrope font-medium text-sm bg-[#1D1D1F] text-white px-5 py-2.5 rounded-xl hover:bg-black transition-colors cursor-pointer"
+                  className="font-body font-medium text-sm bg-ink text-white px-5 py-2.5 rounded-xl hover:bg-black transition-colors cursor-pointer"
                 >
                   Aplicar
                 </button>
               </div>
               {promoError && (
-                <p className="font-manrope text-xs text-red-500 mt-1.5 text-center">{promoError}</p>
+                <p className="font-body text-xs text-red-500 mt-1.5 text-center">{promoError}</p>
               )}
             </>
           )}
         </div>
 
         {/* Fine print */}
-        <p className="font-manrope text-xs text-[#6B7280] text-center">
+        <p className="font-body text-xs text-muted text-center">
           Sin permanencia. Cancela cuando quieras.
         </p>
 
@@ -288,30 +288,30 @@ function PlanCard({ plan, annual, loading, onSelect, mobile }: {
         {/* Badge */}
         {'badge' in plan && plan.badge && (
           <div className="flex justify-center mb-2">
-            <span className="font-manrope font-semibold text-xs bg-[#1D1D1F] text-white px-3 py-1 rounded-full">
+            <span className="font-body font-semibold text-xs bg-ink text-white px-3 py-1 rounded-full">
               {plan.badge}
             </span>
           </div>
         )}
-        <div className="flex-1 bg-[#1D1D1F] rounded-2xl p-6 flex flex-col">
+        <div className="flex-1 bg-ink rounded-2xl p-6 flex flex-col">
           <div className="mb-4">
-            <h3 className="font-outfit font-semibold text-xl text-white mb-1">{plan.name}</h3>
-            <p className="font-manrope text-sm text-white/60 leading-relaxed">{plan.desc}</p>
+            <h3 className="font-display font-semibold text-xl text-white mb-1">{plan.name}</h3>
+            <p className="font-body text-sm text-white/60 leading-relaxed">{plan.desc}</p>
           </div>
           <div className="mb-5">
             <div className="flex items-baseline gap-1">
-              <span className="font-outfit font-semibold text-4xl text-white">€{priceDisplay}</span>
-              <span className="font-manrope text-sm text-white/60">/mes</span>
+              <span className="font-display font-semibold text-4xl text-white">€{priceDisplay}</span>
+              <span className="font-body text-sm text-white/60">/mes</span>
             </div>
             {annual && (
-              <p className="font-manrope text-xs text-white/40 mt-0.5">
+              <p className="font-body text-xs text-white/40 mt-0.5">
                 Facturado €{plan.annualTotal.toFixed(2).replace('.', ',')}/año
               </p>
             )}
           </div>
           <ul className="space-y-2.5 flex-1 mb-6">
             {plan.features.map(f => (
-              <li key={f} className="flex items-start gap-2 font-manrope text-sm text-white/80">
+              <li key={f} className="flex items-start gap-2 font-body text-sm text-white/80">
                 <span className="text-[#34C759] mt-0.5 flex-shrink-0"><CheckIcon /></span>
                 {f}
               </li>
@@ -321,11 +321,11 @@ function PlanCard({ plan, annual, loading, onSelect, mobile }: {
             type="button"
             onClick={() => onSelect(plan.id)}
             disabled={anyLoading}
-            className="w-full font-manrope font-semibold text-sm bg-white text-[#1D1D1F] py-3.5 rounded-xl hover:bg-white/90 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full font-body font-semibold text-sm bg-white text-ink py-3.5 rounded-xl hover:bg-white/90 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
-                <span className="w-4 h-4 border-2 border-[#1D1D1F]/30 border-t-[#1D1D1F] rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-ink/30 border-t-ink rounded-full animate-spin" />
                 Cargando…
               </>
             ) : 'Empezar'}
@@ -336,25 +336,25 @@ function PlanCard({ plan, annual, loading, onSelect, mobile }: {
   }
 
   return (
-    <div className="bg-white border border-black/[0.08] rounded-2xl p-6 flex flex-col">
+    <div className="bg-white border border-hairline rounded-2xl p-6 flex flex-col">
       <div className="mb-4">
-        <h3 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-1">{plan.name}</h3>
-        <p className="font-manrope text-sm text-[#6B7280] leading-relaxed">{plan.desc}</p>
+        <h3 className="font-display font-semibold text-xl text-ink mb-1">{plan.name}</h3>
+        <p className="font-body text-sm text-muted leading-relaxed">{plan.desc}</p>
       </div>
       <div className="mb-5">
         <div className="flex items-baseline gap-1">
-          <span className="font-outfit font-semibold text-4xl text-[#1D1D1F]">€{priceDisplay}</span>
-          <span className="font-manrope text-sm text-[#6B7280]">/mes</span>
+          <span className="font-display font-semibold text-4xl text-ink">€{priceDisplay}</span>
+          <span className="font-body text-sm text-muted">/mes</span>
         </div>
         {annual && (
-          <p className="font-manrope text-xs text-[#6B7280] mt-0.5">
+          <p className="font-body text-xs text-muted mt-0.5">
             Facturado €{plan.annualTotal.toFixed(2).replace('.', ',')}/año
           </p>
         )}
       </div>
       <ul className="space-y-2.5 flex-1 mb-6">
         {plan.features.map(f => (
-          <li key={f} className="flex items-start gap-2 font-manrope text-sm text-[#3D3D3D]">
+          <li key={f} className="flex items-start gap-2 font-body text-sm text-[#3D3D3D]">
             <span className="text-[#34C759] mt-0.5 flex-shrink-0"><CheckIcon /></span>
             {f}
           </li>
@@ -364,7 +364,7 @@ function PlanCard({ plan, annual, loading, onSelect, mobile }: {
         type="button"
         onClick={() => onSelect(plan.id)}
         disabled={anyLoading}
-        className="w-full font-manrope font-semibold text-sm bg-[#1D1D1F] text-white py-3.5 rounded-xl hover:bg-black transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full font-body font-semibold text-sm bg-ink text-white py-3.5 rounded-xl hover:bg-black transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isLoading ? (
           <>
@@ -379,7 +379,7 @@ function PlanCard({ plan, annual, loading, onSelect, mobile }: {
 
 export default function ElegirPlanPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F5F5F7]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-base" />}>
       <ElegirPlanContent />
     </Suspense>
   )

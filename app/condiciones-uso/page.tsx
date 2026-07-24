@@ -13,27 +13,27 @@ export default function CondicionesUso() {
       <Navigation />
       <main id="main-content" className="pt-[72px]">
         <div className="max-w-[720px] mx-auto px-6 py-20">
-          <p className="font-manrope text-xs text-[#6B7280] mb-4 uppercase tracking-[0.12em]">Legal</p>
-          <h1 className="font-outfit font-semibold text-4xl text-[#1D1D1F] tracking-tight mb-3">
+          <p className="font-body text-xs text-muted mb-4 uppercase tracking-[0.12em]">Legal</p>
+          <h1 className="font-display font-semibold text-4xl text-ink tracking-tight mb-3">
             Condiciones de Uso
           </h1>
-          <p className="font-manrope text-[#6B7280] text-sm mb-12">Última actualización: julio de 2026</p>
+          <p className="font-body text-muted text-sm mb-12">Última actualización: julio de 2026</p>
 
-          <div className="font-manrope text-[#1D1D1F] space-y-10 leading-relaxed">
+          <div className="font-body text-ink space-y-10 leading-relaxed">
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">1. Objeto</h2>
-              <p className="text-[#6B7280]">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">1. Objeto</h2>
+              <p className="text-muted">
                 Las presentes Condiciones de Uso regulan la contratación y uso del servicio de diseño web por suscripción ofrecido por Yele a través del sitio web yele.design. La contratación del servicio implica la aceptación plena e incondicional de estas condiciones.
               </p>
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">2. Descripción del servicio</h2>
-              <p className="text-[#6B7280] mb-3">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">2. Descripción del servicio</h2>
+              <p className="text-muted mb-3">
                 Yele ofrece un servicio de diseño, desarrollo y mantenimiento de páginas web bajo modalidad de suscripción mensual. El servicio incluye, según el plan contratado:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-[#6B7280] ml-2">
+              <ul className="list-disc list-inside space-y-2 text-muted ml-2">
                 <li>Diseño y desarrollo de página web personalizada</li>
                 <li>Entrega en un plazo de 1 semana desde la aprobación del brief</li>
                 <li>Alojamiento web y dominio durante la vigencia de la suscripción</li>
@@ -43,37 +43,37 @@ export default function CondicionesUso() {
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">3. Contratación y registro</h2>
-              <p className="text-[#6B7280]">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">3. Contratación y registro</h2>
+              <p className="text-muted">
                 Para contratar el servicio, el cliente debe ser mayor de edad, actuar en nombre propio o con representación legal suficiente, y proporcionar información veraz y actualizada durante el proceso de registro. El cliente es responsable de mantener la confidencialidad de sus credenciales de acceso.
               </p>
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">4. Precio y pago</h2>
-              <p className="text-[#6B7280] mb-3">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">4. Precio y pago</h2>
+              <p className="text-muted mb-3">
                 El precio del servicio es el indicado en la página de precios en el momento de la contratación, expresado en euros e IVA incluido. El cobro se realiza de forma mensual mediante cargo automático a la tarjeta de crédito o débito del cliente, gestionado por Stripe, plataforma de pagos con certificación PCI-DSS de nivel 1.
               </p>
-              <p className="text-[#6B7280]">
+              <p className="text-muted">
                 Yele se reserva el derecho a modificar los precios con un preaviso mínimo de 30 días por correo electrónico. El cliente podrá cancelar antes de que el nuevo precio entre en vigor.
               </p>
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">5. Cancelación y baja</h2>
-              <p className="text-[#6B7280] mb-3">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">5. Cancelación y baja</h2>
+              <p className="text-muted mb-3">
                 El servicio no tiene permanencia mínima. El cliente puede cancelar su suscripción en cualquier momento desde el panel de cliente o escribiendo a{' '}
                 <a href="mailto:info@yele.design" className="text-[#0066CC] hover:underline">info@yele.design</a>.
               </p>
-              <p className="text-[#6B7280]">
+              <p className="text-muted">
                 La cancelación será efectiva al final del período de facturación en curso. No se realizarán reembolsos por períodos parciales ya facturados. Tras la baja, el sitio web dejará de estar activo y el cliente podrá solicitar la exportación de sus contenidos en un plazo de 30 días.
               </p>
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">6. Obligaciones del cliente</h2>
-              <p className="text-[#6B7280] mb-3">El cliente se compromete a:</p>
-              <ul className="list-disc list-inside space-y-2 text-[#6B7280] ml-2">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">6. Obligaciones del cliente</h2>
+              <p className="text-muted mb-3">El cliente se compromete a:</p>
+              <ul className="list-disc list-inside space-y-2 text-muted ml-2">
                 <li>Proporcionar los contenidos, imágenes y textos necesarios para el desarrollo del sitio en tiempo y forma.</li>
                 <li>Utilizar el servicio conforme a la ley, la moral y el orden público.</li>
                 <li>No publicar contenidos ilícitos, ofensivos, difamatorios o que infrinjan derechos de terceros.</li>
@@ -82,41 +82,41 @@ export default function CondicionesUso() {
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">7. Propiedad intelectual</h2>
-              <p className="text-[#6B7280] mb-3">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">7. Propiedad intelectual</h2>
+              <p className="text-muted mb-3">
                 Los contenidos aportados por el cliente (textos, imágenes, logotipos, etc.) son y seguirán siendo propiedad del cliente. El cliente garantiza que dispone de los derechos necesarios para su uso.
               </p>
-              <p className="text-[#6B7280] mb-3">
+              <p className="text-muted mb-3">
                 El diseño, el código y los desarrollos técnicos realizados por Yele son propiedad de Yele durante la vigencia de la suscripción. Tras la cancelación, el cliente podrá solicitar la exportación de sus contenidos, pero no del código fuente desarrollado por Yele.
               </p>
-              <p className="text-[#6B7280]">
-                <strong className="text-[#1D1D1F] font-medium">Dominio:</strong> Si el dominio es registrado y gestionado por Yele como parte del servicio, Yele mantiene la titularidad del mismo durante la vigencia de la suscripción. En caso de cancelación, el dominio no se transfiere automáticamente al cliente. Si el cliente desea retener el dominio, deberá solicitarlo expresamente antes de la baja, pudiendo estar sujeto al coste de transferencia vigente. Si el cliente aporta su propio dominio, éste seguirá siendo propiedad del cliente en todo momento.
+              <p className="text-muted">
+                <strong className="text-ink font-medium">Dominio:</strong> Si el dominio es registrado y gestionado por Yele como parte del servicio, Yele mantiene la titularidad del mismo durante la vigencia de la suscripción. En caso de cancelación, el dominio no se transfiere automáticamente al cliente. Si el cliente desea retener el dominio, deberá solicitarlo expresamente antes de la baja, pudiendo estar sujeto al coste de transferencia vigente. Si el cliente aporta su propio dominio, éste seguirá siendo propiedad del cliente en todo momento.
               </p>
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">8. Limitación de responsabilidad</h2>
-              <p className="text-[#6B7280]">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">8. Limitación de responsabilidad</h2>
+              <p className="text-muted">
                 Yele no se hace responsable de las pérdidas de negocio, ingresos o datos derivadas del uso o la imposibilidad de uso del servicio. La responsabilidad máxima de Yele frente al cliente no podrá superar en ningún caso el importe abonado en el último mes de servicio.
               </p>
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">9. Modificación de las condiciones</h2>
-              <p className="text-[#6B7280]">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">9. Modificación de las condiciones</h2>
+              <p className="text-muted">
                 Yele se reserva el derecho a modificar estas Condiciones de Uso, notificando al cliente por correo electrónico con al menos 15 días de antelación. El uso continuado del servicio tras dicho plazo implicará la aceptación de las nuevas condiciones.
               </p>
             </section>
 
             <section>
-              <h2 className="font-outfit font-semibold text-xl text-[#1D1D1F] mb-3">10. Ley aplicable y jurisdicción</h2>
-              <p className="text-[#6B7280]">
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">10. Ley aplicable y jurisdicción</h2>
+              <p className="text-muted">
                 Estas condiciones se rigen por la legislación española. Para cualquier controversia derivada de la prestación del servicio, las partes se someten a la jurisdicción de los juzgados y tribunales del domicilio del consumidor, conforme a lo establecido en la normativa de protección de consumidores y usuarios.
               </p>
             </section>
 
-            <section className="pt-4 border-t border-black/[0.06]">
-              <p className="text-[#6B7280] text-sm">
+            <section className="pt-4 border-t border-hairline">
+              <p className="text-muted text-sm">
                 Para cualquier consulta sobre estas condiciones, puedes contactarnos en{' '}
                 <a href="mailto:info@yele.design" className="text-[#0066CC] hover:underline">
                   info@yele.design

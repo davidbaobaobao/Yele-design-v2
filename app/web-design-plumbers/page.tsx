@@ -82,17 +82,17 @@ export default function PlumbersPage() {
         <section className="pt-32 pb-20 md:pt-44 md:pb-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
             <h1
-              className="font-outfit font-bold text-[#1D1D1F] tracking-tighter leading-[1.05] mb-6"
+              className="font-display font-bold text-ink tracking-tighter leading-[1.05] mb-6"
               style={{ fontSize: 'clamp(40px, 5.5vw, 72px)' }}
             >
               Website design for plumbers
             </h1>
-            <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
+            <p className="font-body text-muted text-xl leading-relaxed max-w-2xl mb-10">
               Your professional website, live in 1 week. Show up in Google when someone in your area needs a plumber — and win jobs without paying commission per lead. From $99/mo, no setup fee, no commitment.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
             </Link>
@@ -100,15 +100,15 @@ export default function PlumbersPage() {
         </section>
 
         {/* Pillar 1 — Emergency intent */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+        <section className="py-20 md:py-28 bg-base">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Why it matters
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               Customers search when they have a problem — right now
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               A burst pipe or a broken water heater doesn&rsquo;t wait. Customers open Google, search &ldquo;plumber near me&rdquo; or their neighborhood name, and call the first result that looks credible. If you don&rsquo;t have a website showing your services, your area, your phone, and your reviews — that job goes to someone else. Not because they&rsquo;re better, but because they&rsquo;re visible.
             </p>
           </div>
@@ -117,13 +117,13 @@ export default function PlumbersPage() {
         {/* Pillar 2 — Lead platforms */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               The lead platform trap
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               Stop paying per lead<br />to Angi and Thumbtack
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               Angi, Thumbtack, and HomeAdvisor charge you for every contact and pit you against five other plumbers competing on price. With your own site, customers find you directly and call you — no middleman, no commission. The site pays for itself with a couple of jobs a month that used to go to the platform.
             </p>
           </div>
@@ -135,10 +135,10 @@ export default function PlumbersPage() {
         {/* Why Yele */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Why Yele
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-10 leading-tight">
               Basically risk-free to try.
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -148,9 +148,9 @@ export default function PlumbersPage() {
                 { title: 'All inclusive', desc: 'Domain, hosting, maintenance, and support. No surprise invoices.' },
                 { title: 'Live in 1 week', desc: 'Not two months. In under a week your site is up and running.' },
               ] as const).map(item => (
-                <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
-                  <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
-                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{item.desc}</p>
+                <div key={item.title} className="bg-base rounded-2xl p-6">
+                  <p className="font-display font-semibold text-ink text-lg mb-2">{item.title}</p>
+                  <p className="font-body text-muted text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -161,17 +161,17 @@ export default function PlumbersPage() {
         <FAQClient faqs={FAQS} />
 
         {/* Final CTA */}
-        <section className="py-24 md:py-32 bg-[#1D1D1F]">
+        <section className="py-24 md:py-32 bg-ink">
           <div className="max-w-3xl mx-auto px-6 text-center">
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
               Start winning the jobs<br />you&rsquo;re missing right now.
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg mb-10">
+            <p className="font-body text-muted text-lg mb-10">
               No setup fee. Live in 1 week.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-8 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-white text-ink px-8 py-4 rounded-2xl hover:bg-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
             </Link>

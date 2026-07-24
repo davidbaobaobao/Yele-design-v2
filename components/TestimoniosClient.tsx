@@ -51,11 +51,11 @@ function ReviewCard({
       className="flex-shrink-0 flex flex-col rounded-2xl"
       style={{ width: 360, background: '#161616', minHeight: 340, padding: '28px 28px 24px' }}
     >
-      <p style={{ fontFamily: 'var(--font-manrope), sans-serif', color: '#555', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 18 }}>
+      <p style={{ fontFamily: 'var(--font-body), sans-serif', color: '#555', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 18 }}>
         / Review
       </p>
 
-      <p style={{ fontFamily: 'var(--font-manrope), sans-serif', color: 'rgba(255,255,255,0.82)', fontSize: 14, lineHeight: 1.75, flex: 1, margin: 0 }}>
+      <p style={{ fontFamily: 'var(--font-body), sans-serif', color: 'rgba(255,255,255,0.82)', fontSize: 14, lineHeight: 1.75, flex: 1, margin: 0 }}>
         &ldquo;{bodyText}&rdquo;
         {isLong && (
           <button
@@ -80,10 +80,10 @@ function ReviewCard({
             style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
           />
           <div style={{ minWidth: 0 }}>
-            <p style={{ fontFamily: 'var(--font-outfit), sans-serif', fontWeight: 500, color: '#fff', fontSize: 14, lineHeight: 1.2, margin: 0 }}>
+            <p style={{ fontFamily: 'var(--font-display), sans-serif', fontWeight: 500, color: '#fff', fontSize: 14, lineHeight: 1.2, margin: 0 }}>
               {item.author_name}
             </p>
-            <p style={{ fontFamily: 'var(--font-manrope), sans-serif', color: '#666', fontSize: 12, marginTop: 3, margin: '3px 0 0' }}>
+            <p style={{ fontFamily: 'var(--font-body), sans-serif', color: '#666', fontSize: 12, marginTop: 3, margin: '3px 0 0' }}>
               {item.role}
             </p>
           </div>
@@ -158,7 +158,7 @@ export default function TestimoniosClient({
   return (
     <section className="bg-[#0a0a0a] py-20 md:py-28">
       <div className="max-w-6xl mx-auto px-6 mb-12">
-        <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight">
+        <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight">
           {t('Lo que dicen nuestros clientes.', 'What our clients say.')}
         </h2>
       </div>

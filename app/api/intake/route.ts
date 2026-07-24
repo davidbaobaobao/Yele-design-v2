@@ -80,29 +80,29 @@ function buildEmailHtml(data: Record<string, unknown>): string {
   const row = (label: string, value: unknown) =>
     value
       ? `<tr>
-          <td style="padding:8px 16px;font-size:12px;font-weight:600;color:#8A9BAD;text-transform:uppercase;letter-spacing:0.06em;width:160px;vertical-align:top;">${label}</td>
-          <td style="padding:8px 16px;font-size:14px;color:#1E2B3A;vertical-align:top;">${Array.isArray(value) ? value.join(', ') : String(value)}</td>
+          <td style="padding:8px 16px;font-size:12px;font-weight:600;color:#8A8A92;text-transform:uppercase;letter-spacing:0.06em;width:160px;vertical-align:top;">${label}</td>
+          <td style="padding:8px 16px;font-size:14px;color:#16161A;vertical-align:top;">${Array.isArray(value) ? value.join(', ') : String(value)}</td>
         </tr>`
       : ''
 
   const section = (title: string, rows: string) =>
     `<div style="margin-bottom:24px;">
-      <div style="background:#F5F2EE;padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A9BAD;">${title}</div>
+      <div style="background:#F7F6F3;padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#8A8A92;">${title}</div>
       <table style="width:100%;border-collapse:collapse;border:1px solid #E8E4DF;">${rows}</table>
     </div>`
 
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#F5F2EE;font-family:Arial,sans-serif;">
+<body style="margin:0;padding:0;background:#F7F6F3;font-family:Arial,sans-serif;">
 <div style="max-width:640px;margin:0 auto;background:#FFFFFF;">
-  <div style="background:#1D1D1F;padding:24px 32px;">
+  <div style="background:#16161A;padding:24px 32px;">
     <span style="font-size:20px;font-weight:700;color:#FFFFFF;font-family:Georgia,serif;">yele</span>
     <span style="color:#34C759;font-size:20px;font-weight:700;">.design</span>
-    <span style="color:#6B7280;font-size:12px;margin-left:12px;">Nueva solicitud</span>
+    <span style="color:#8A8A92;font-size:12px;margin-left:12px;">Nueva solicitud</span>
   </div>
   <div style="padding:28px 32px 8px;">
-    <h1 style="margin:0;font-size:26px;color:#1D1D1F;font-family:Georgia,serif;font-weight:400;letter-spacing:-0.02em;">${data.nombre_negocio || data.nombre_contacto}</h1>
-    <p style="margin:6px 0 0;font-size:14px;color:#6B7280;">${[data.sector, data.ciudad].filter(Boolean).join(' · ')}</p>
+    <h1 style="margin:0;font-size:26px;color:#16161A;font-family:Georgia,serif;font-weight:400;letter-spacing:-0.02em;">${data.nombre_negocio || data.nombre_contacto}</h1>
+    <p style="margin:6px 0 0;font-size:14px;color:#8A8A92;">${[data.sector, data.ciudad].filter(Boolean).join(' · ')}</p>
   </div>
   <div style="padding:16px 32px 32px;">
     ${section('Información del negocio',
@@ -140,12 +140,12 @@ function buildEmailHtml(data: Record<string, unknown>): string {
       row('Notas', data.notas)
     )}
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://app.yele.design/admin" style="display:inline-block;background:#1D1D1F;color:#FFFFFF;font-weight:700;font-size:13px;padding:14px 32px;text-decoration:none;letter-spacing:0.04em;border-radius:8px;">
+      <a href="https://app.yele.design/admin" style="display:inline-block;background:#16161A;color:#FFFFFF;font-weight:700;font-size:13px;padding:14px 32px;text-decoration:none;letter-spacing:0.04em;border-radius:8px;">
         Ver en panel de admin →
       </a>
     </div>
   </div>
-  <div style="background:#F5F2EE;padding:16px 32px;font-size:11px;color:#6B7280;text-align:center;border-top:1px solid #E8E4DF;">
+  <div style="background:#F7F6F3;padding:16px 32px;font-size:11px;color:#8A8A92;text-align:center;border-top:1px solid #E8E4DF;">
     Yele Studio · yele.design · Solicitud recibida el ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
   </div>
 </div>
@@ -160,32 +160,32 @@ function buildConfirmationHtml(data: Record<string, unknown>): string {
 
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#F5F5F7;font-family:Arial,sans-serif;">
+<body style="margin:0;padding:0;background:#F7F6F3;font-family:Arial,sans-serif;">
 <div style="max-width:560px;margin:0 auto;background:#FFFFFF;">
-  <div style="background:#1D1D1F;padding:24px 32px;">
+  <div style="background:#16161A;padding:24px 32px;">
     <span style="font-size:20px;font-weight:700;color:#FFFFFF;font-family:Georgia,serif;">yele</span>
     <span style="color:#34C759;font-size:20px;font-weight:700;">.design</span>
   </div>
   <div style="padding:32px;">
-    <h1 style="margin:0 0 16px;font-size:24px;color:#1D1D1F;font-family:Georgia,serif;font-weight:400;">We received your request.</h1>
-    <p style="font-size:15px;color:#3D3D3D;line-height:1.65;margin:0 0 20px;">
+    <h1 style="margin:0 0 16px;font-size:24px;color:#16161A;font-family:Georgia,serif;font-weight:400;">We received your request.</h1>
+    <p style="font-size:15px;color:#16161A;line-height:1.65;margin:0 0 20px;">
       Hi${contacto ? ' ' + contacto : ''}. Thanks for choosing Yele Studio to build your website${nombre ? ' for <strong>' + nombre + '</strong>' : ''}. We&apos;re on it.
     </p>
-    <div style="background:#F5F5F7;border-radius:8px;padding:20px;margin:0 0 24px;">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6B7280;margin-bottom:10px;">Next steps</div>
-      <div style="font-size:14px;color:#1D1D1F;line-height:1.7;">
-        <div style="margin-bottom:8px;">① Explain more about your business and goals at <a href="https://yele.design/survey" style="color:#1D1D1F;text-decoration:underline;">yele.design/survey</a></div>
+    <div style="background:#F7F6F3;border-radius:8px;padding:20px;margin:0 0 24px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#8A8A92;margin-bottom:10px;">Next steps</div>
+      <div style="font-size:14px;color:#16161A;line-height:1.7;">
+        <div style="margin-bottom:8px;">① Explain more about your business and goals at <a href="https://yele.design/survey" style="color:#16161A;text-decoration:underline;">yele.design/survey</a></div>
         <div>② We will contact you as soon as we receive your information.</div>
       </div>
     </div>
-    <p style="font-size:13px;color:#6B7280;line-height:1.6;margin:0 0 28px;">
-      Any questions? Reply to this email or reach us at <a href="mailto:info@yele.design" style="color:#1D1D1F;">info@yele.design</a>
+    <p style="font-size:13px;color:#8A8A92;line-height:1.6;margin:0 0 28px;">
+      Any questions? Reply to this email or reach us at <a href="mailto:info@yele.design" style="color:#16161A;">info@yele.design</a>
     </p>
-    <a href="https://yele.design/survey" style="display:inline-block;background:#1D1D1F;color:#FFFFFF;font-weight:700;font-size:13px;padding:14px 28px;text-decoration:none;border-radius:8px;">
+    <a href="https://yele.design/survey" style="display:inline-block;background:#16161A;color:#FFFFFF;font-weight:700;font-size:13px;padding:14px 28px;text-decoration:none;border-radius:8px;">
       Provide my business info →
     </a>
   </div>
-  <div style="background:#F5F5F7;padding:14px 32px;font-size:11px;color:#6B7280;border-top:1px solid #E5E5E5;">
+  <div style="background:#F7F6F3;padding:14px 32px;font-size:11px;color:#8A8A92;border-top:1px solid #E5E5E5;">
     Yele Studio · yele.design
   </div>
 </div>

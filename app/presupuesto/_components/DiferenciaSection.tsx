@@ -108,7 +108,7 @@ export default function DiferenciaSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
-            className="font-outfit font-extrabold tracking-tight leading-none mb-10 text-left"
+            className="font-display font-extrabold tracking-tight leading-none mb-10 text-left"
             style={{ fontSize: 'clamp(32px, 4vw, 58px)' }}
           >
             <span className="we-subtitle-orange">
@@ -121,7 +121,7 @@ export default function DiferenciaSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.15, ease: 'easeOut' }}
             viewport={{ once: true }}
-            className="font-manrope leading-relaxed mb-12 space-y-2 text-left"
+            className="font-body leading-relaxed mb-12 space-y-2 text-left"
             style={{ fontSize: 'clamp(15px, 1.6vw, 20px)' }}
           >
             <p className="text-white/60">
@@ -151,14 +151,14 @@ export default function DiferenciaSection() {
           >
             <a
               href={t('/registro?lang=es', '/registro')}
-              className="font-manrope font-semibold text-base bg-white text-[#1D1D1F]
-                         px-8 py-3.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
+              className="font-body font-semibold text-base bg-white text-ink
+                         px-8 py-3.5 rounded-xl hover:bg-base transition-colors"
             >
               {t('Empezar gratis', 'Start for free')}
             </a>
             <a
               href="#contacto"
-              className="font-manrope font-semibold text-base text-white
+              className="font-body font-semibold text-base text-white
                          border border-white/25 px-8 py-3.5 rounded-xl
                          hover:bg-white/10 transition-colors"
             >

@@ -10,18 +10,18 @@ export default function Noticias() {
   const articles = getRecentArticles(3)
 
   return (
-    <section className="bg-[#F5F5F7] py-20 px-6">
+    <section className="bg-base py-20 px-6">
       <div className="max-w-[1100px] mx-auto">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <p className="font-manrope text-sm font-medium text-[#6B7280] tracking-wide uppercase mb-2">Blog</p>
-            <h2 className="font-outfit font-semibold text-3xl md:text-4xl text-[#1D1D1F] tracking-tight">
+            <p className="font-body text-sm font-medium text-muted tracking-wide uppercase mb-2">Blog</p>
+            <h2 className="font-display font-semibold text-3xl md:text-4xl text-ink tracking-tight">
               Recursos para tu negocio
             </h2>
           </div>
           <Link
             href="/blog"
-            className="hidden md:flex items-center gap-1.5 font-manrope text-sm text-[#0066CC] hover:underline"
+            className="hidden md:flex items-center gap-1.5 font-body text-sm text-[#0066CC] hover:underline"
           >
             Ver todos
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -35,7 +35,7 @@ export default function Noticias() {
             <Link
               key={article.slug}
               href={`/blog/${article.slug}`}
-              className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300"
+              className="group bg-white rounded-2xl overflow-hidden border border-hairline"
             >
               <div className="relative aspect-[16/9] overflow-hidden">
                 <Image
@@ -48,18 +48,18 @@ export default function Noticias() {
               </div>
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
+                  <span className="font-body text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
                     {article.category}
                   </span>
-                  <span className="font-manrope text-xs text-[#6B7280]">{article.readTime} min</span>
+                  <span className="font-body text-xs text-muted">{article.readTime} min</span>
                 </div>
-                <h3 className="font-outfit font-semibold text-[#1D1D1F] text-lg leading-snug mb-2 group-hover:text-[#0066CC] transition-colors line-clamp-2">
+                <h3 className="font-display font-semibold text-ink text-lg leading-snug mb-2 group-hover:text-[#0066CC] transition-colors line-clamp-2">
                   {article.titleEs}
                 </h3>
-                <p className="font-manrope text-sm text-[#6B7280] leading-relaxed line-clamp-2">
+                <p className="font-body text-sm text-muted leading-relaxed line-clamp-2">
                   {article.excerptEs}
                 </p>
-                <p className="font-manrope text-xs text-[#ADADB8] mt-4">{formatDate(article.date)}</p>
+                <p className="font-body text-xs text-[#ADADB8] mt-4">{formatDate(article.date)}</p>
               </div>
             </Link>
           ))}
@@ -68,7 +68,7 @@ export default function Noticias() {
         <div className="mt-8 md:hidden text-center">
           <Link
             href="/blog"
-            className="font-manrope text-sm text-[#0066CC] hover:underline"
+            className="font-body text-sm text-[#0066CC] hover:underline"
           >
             Ver todos los artículos →
           </Link>

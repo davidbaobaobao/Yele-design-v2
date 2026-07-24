@@ -75,7 +75,7 @@ export default function WebGLSection() {
       {/* Layer 3: text — pointer-events-none so mouse falls through to grid */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center -translate-y-16 pointer-events-none">
         <h2
-          className="font-outfit font-bold text-white leading-[1.05] tracking-tighter mb-10 select-none"
+          className="font-display font-bold text-white leading-[1.05] tracking-tighter mb-10 select-none"
           style={{ fontSize: 'clamp(32px, 4vw, 56px)' }}
         >
           <span className="block">Una página web no es</span>

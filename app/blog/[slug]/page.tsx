@@ -40,7 +40,7 @@ function formatDate(iso: string) {
 function renderInline(raw: string): string {
   return raw
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#0066CC] underline underline-offset-2 hover:text-[#004D99] font-medium">$1</a>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-[#1D1D1F] font-semibold">$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-ink font-semibold">$1</strong>')
 }
 
 function renderMarkdown(md: string) {
@@ -54,14 +54,14 @@ function renderMarkdown(md: string) {
 
     if (line.startsWith('## ')) {
       elements.push(
-        <h2 key={key++} className="font-outfit font-semibold text-2xl text-[#1D1D1F] mt-10 mb-4 tracking-tight">
+        <h2 key={key++} className="font-display font-semibold text-2xl text-ink mt-10 mb-4 tracking-tight">
           {line.slice(3)}
         </h2>
       )
       i++
     } else if (line.startsWith('### ')) {
       elements.push(
-        <h3 key={key++} className="font-outfit font-semibold text-lg text-[#1D1D1F] mt-7 mb-3">
+        <h3 key={key++} className="font-display font-semibold text-lg text-ink mt-7 mb-3">
           {line.slice(4)}
         </h3>
       )
@@ -81,9 +81,9 @@ function renderMarkdown(md: string) {
               const cells = row.split('|').filter((_, ci) => ci > 0 && ci < row.split('|').length - 1).map(c => c.trim())
               const Tag = ri === 0 ? 'th' : 'td'
               return (
-                <tr key={ri} className={ri === 0 ? 'bg-[#F5F5F7]' : ri % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]'}>
+                <tr key={ri} className={ri === 0 ? 'bg-base' : ri % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]'}>
                   {cells.map((cell, ci) => (
-                    <Tag key={ci} className="font-manrope px-4 py-2.5 text-left border border-black/[0.08] text-[#1D1D1F]">
+                    <Tag key={ci} className="font-body px-4 py-2.5 text-left border border-hairline text-ink">
                       {cell}
                     </Tag>
                   ))}
@@ -99,7 +99,7 @@ function renderMarkdown(md: string) {
         const [, alt, src] = imgMatch
         elements.push(
           // eslint-disable-next-line @next/next/no-img-element
-          <img key={key++} src={src} alt={alt} className="w-full rounded-xl my-8 border border-black/[0.06]" />
+          <img key={key++} src={src} alt={alt} className="w-full rounded-xl my-8 border border-hairline" />
         )
       }
       i++
@@ -110,7 +110,7 @@ function renderMarkdown(md: string) {
         i++
       }
       elements.push(
-        <ul key={key++} className="list-disc list-inside space-y-2 text-[#6B7280] font-manrope leading-relaxed my-4 ml-2">
+        <ul key={key++} className="list-disc list-inside space-y-2 text-muted font-body leading-relaxed my-4 ml-2">
           {items.map((item, idx) => (
             <li key={idx} dangerouslySetInnerHTML={{ __html: renderInline(item) }} />
           ))}
@@ -129,7 +129,7 @@ function renderMarkdown(md: string) {
       elements.push(
         <p
           key={key++}
-          className="font-manrope text-[#6B7280] leading-relaxed text-[17px] my-4"
+          className="font-body text-muted leading-relaxed text-[17px] my-4"
           dangerouslySetInnerHTML={{ __html: renderInline(text) }}
         />
       )
@@ -199,9 +199,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Navigation />
-      <main id="main-content" className="min-h-screen bg-white pt-[72px]">
+      <main id="main-content" className="min-h-screen bg-base pt-[72px]">
         {/* Hero image */}
-        <div className={`relative w-full aspect-[21/8] overflow-hidden ${article.image.endsWith('.svg') ? 'bg-[#1D1D1F]' : 'bg-[#F5F5F7]'}`}>
+        <div className={`relative w-full aspect-[21/8] overflow-hidden ${article.image.endsWith('.svg') ? 'bg-ink' : 'bg-base'}`}>
           <Image
             src={article.image}
             alt={article.titleEn}
@@ -218,7 +218,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           {/* Back link */}
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1.5 font-manrope text-sm text-[#6B7280] hover:text-[#1D1D1F] transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 font-body text-sm text-muted hover:text-ink transition-colors mb-8"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M11.5 7h-9M6 3.5L2.5 7 6 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -228,18 +228,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
           {/* Meta */}
           <div className="flex items-center gap-3 mb-5">
-            <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
+            <span className="font-body text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
               {article.category}
             </span>
-            <span className="font-manrope text-xs text-[#6B7280]">{article.readTime} min read</span>
-            <span className="font-manrope text-xs text-[#ADADB8]">{formatDate(article.date)}</span>
+            <span className="font-body text-xs text-muted">{article.readTime} min read</span>
+            <span className="font-body text-xs text-[#ADADB8]">{formatDate(article.date)}</span>
           </div>
 
-          <h1 className="font-outfit font-bold text-3xl md:text-4xl text-[#1D1D1F] tracking-tight leading-tight mb-6">
+          <h1 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight leading-tight mb-6">
             {article.titleEn}
           </h1>
 
-          <p className="font-manrope text-xl text-[#6B7280] leading-relaxed mb-10 pb-10 border-b border-black/[0.08]">
+          <p className="font-body text-xl text-muted leading-relaxed mb-10 pb-10 border-b border-hairline">
             {article.excerptEn}
           </p>
 
@@ -251,17 +251,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
         {/* CTA box */}
         <div className="max-w-[720px] mx-auto px-6 pb-16">
-          <div className="bg-[#1D1D1F] rounded-2xl p-8 md:p-10">
-            <p className="font-manrope text-xs font-medium text-[#6B7280] uppercase tracking-wide mb-3">Yele</p>
-            <h2 className="font-outfit font-semibold text-2xl text-white mb-3 leading-snug">
+          <div className="bg-ink rounded-2xl p-8 md:p-10">
+            <p className="font-body text-xs font-medium text-muted uppercase tracking-wide mb-3">Yele</p>
+            <h2 className="font-display font-semibold text-2xl text-white mb-3 leading-snug">
               Your website live in 1 week.<br />From $99/mo, no commitment.
             </h2>
-            <p className="font-manrope text-[#6B7280] text-sm leading-relaxed mb-6">
+            <p className="font-body text-muted text-sm leading-relaxed mb-6">
               Professional design, hosting, SSL and maintenance included. No setup fee.
             </p>
             <Link
               href="/quote"
-              className="inline-flex items-center gap-2 font-manrope text-sm font-medium bg-white text-[#1D1D1F] px-5 py-2.5 rounded-xl hover:bg-[#F5F5F7] transition-colors"
+              className="inline-flex items-center gap-2 font-body text-sm font-medium bg-white text-ink px-5 py-2.5 rounded-xl hover:bg-base transition-colors"
             >
               Get my website
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -273,15 +273,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
         {/* Related articles */}
         {related.length > 0 && (
-          <div className="bg-[#F5F5F7] py-14">
+          <div className="bg-base py-14">
             <div className="max-w-[1100px] mx-auto px-6">
-              <h2 className="font-outfit font-semibold text-2xl text-[#1D1D1F] mb-7">More articles</h2>
+              <h2 className="font-display font-semibold text-2xl text-ink mb-7">More articles</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {related.map(a => (
                   <Link
                     key={a.slug}
                     href={`/blog/${a.slug}`}
-                    className="group bg-white rounded-2xl overflow-hidden border border-black/[0.06] hover:shadow-[0_8px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300"
+                    className="group bg-white rounded-2xl overflow-hidden border border-hairline"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden">
                       <Image
@@ -293,10 +293,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                       />
                     </div>
                     <div className="p-5">
-                      <span className="font-manrope text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
+                      <span className="font-body text-xs font-medium text-[#0066CC] bg-[#E8F2FF] px-2.5 py-1 rounded-full">
                         {a.category}
                       </span>
-                      <h3 className="font-outfit font-semibold text-[#1D1D1F] text-base leading-snug mt-3 group-hover:text-[#0066CC] transition-colors line-clamp-2">
+                      <h3 className="font-display font-semibold text-ink text-base leading-snug mt-3 group-hover:text-[#0066CC] transition-colors line-clamp-2">
                         {a.titleEn}
                       </h3>
                     </div>

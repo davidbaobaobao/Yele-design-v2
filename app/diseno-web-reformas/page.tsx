@@ -103,22 +103,22 @@ export default function ReformasPage() {
         <section className="pt-32 pb-20 md:pt-44 md:pb-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
             <h1
-              className="font-outfit font-bold text-[#1D1D1F] tracking-tighter leading-[1.05] mb-6"
+              className="font-display font-bold text-ink tracking-tighter leading-[1.05] mb-6"
               style={{ fontSize: 'clamp(40px, 5.5vw, 72px)' }}
             >
               Diseño web para empresas de reformas
               <span className="mt-4 block">
-                <span className="inline-flex font-manrope text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
+                <span className="inline-flex font-body text-sm font-semibold tracking-wide bg-[#34C759]/[0.12] text-[#1A7A33] px-4 py-1.5 rounded-full">
                   Desde 49€/mes
                 </span>
               </span>
             </h1>
-            <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
+            <p className="font-body text-muted text-xl leading-relaxed max-w-2xl mb-10">
               Quien va a gastarse miles de euros en reformar su casa investiga mucho antes de decidir. Si no ve tu trabajo, elige a otro. Enseña tus proyectos con una web profesional lista en 1 semana. Desde 49€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Pedir mi web <span aria-hidden="true">→</span>
             </Link>
@@ -126,15 +126,15 @@ export default function ReformasPage() {
         </section>
 
         {/* Pilar 1 — Prueba + confianza */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+        <section className="py-20 md:py-28 bg-base">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Por qué importa
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               Una reforma no se decide<br className="hidden md:block" /> por teléfono
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               Antes de contratar una reforma, el cliente compara durante semanas: mira fotos de trabajos anteriores, lee reseñas, juzga si puede confiarte su casa y su dinero. Si solo tienes un Instagram o un perfil en un portal, no puede juzgarte bien. Una web con tu galería de proyectos — antes y después — es lo que convierte a un curioso en un presupuesto pedido.
             </p>
           </div>
@@ -143,19 +143,19 @@ export default function ReformasPage() {
         {/* Galería de proyectos — placeholder spine */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Tu trabajo habla por ti
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-4 leading-tight">
               Galería de proyectos
             </h2>
-            <p className="font-manrope text-[#6B7280] text-base mb-10 max-w-xl">
+            <p className="font-body text-muted text-base mb-10 max-w-xl">
               Antes y después de cada reforma. Tus clientes ven exactamente lo que pueden esperar.
             </p>
 
             <div className="grid md:grid-cols-3 gap-6">
               {GALLERY_PROJECTS.map(project => (
-                <div key={project.label} className="rounded-2xl overflow-hidden border border-black/[0.06]">
+                <div key={project.label} className="rounded-2xl overflow-hidden border border-hairline">
                   {/* Before */}
                   <div className="relative aspect-[4/3]">
                     <Image
@@ -165,7 +165,7 @@ export default function ReformasPage() {
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                    <span className="absolute top-3 left-3 font-manrope text-[10px] font-semibold tracking-widest uppercase bg-white/90 text-[#6B7280] px-2.5 py-1 rounded-full">
+                    <span className="absolute top-3 left-3 font-body text-[10px] font-semibold tracking-widest uppercase bg-white/90 text-muted px-2.5 py-1 rounded-full">
                       Antes
                     </span>
                   </div>
@@ -178,14 +178,14 @@ export default function ReformasPage() {
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                    <span className="absolute top-3 left-3 font-manrope text-[10px] font-semibold tracking-widest uppercase bg-[#1D1D1F]/80 text-white px-2.5 py-1 rounded-full">
+                    <span className="absolute top-3 left-3 font-body text-[10px] font-semibold tracking-widest uppercase bg-ink/80 text-white px-2.5 py-1 rounded-full">
                       Después
                     </span>
                   </div>
                   {/* Label */}
                   <div className="px-4 py-3 bg-white">
-                    <p className="font-outfit font-medium text-sm text-[#1D1D1F]">{project.label}</p>
-                    <p className="font-manrope text-xs text-[#6B7280] mt-0.5">{project.location}</p>
+                    <p className="font-display font-medium text-sm text-ink">{project.label}</p>
+                    <p className="font-body text-xs text-muted mt-0.5">{project.location}</p>
                   </div>
                 </div>
               ))}
@@ -194,15 +194,15 @@ export default function ReformasPage() {
         </section>
 
         {/* Pilar 2 — Sin comisión */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+        <section className="py-20 md:py-28 bg-base">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               La trampa de los portales
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               Deja de competir<br className="hidden md:block" /> solo por precio
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               En Habitissimo o Reformas.com pagas por cada contacto y entras en una guerra de precios con otras cinco empresas. Con tu propia web y tu galería, el cliente te elige por tu trabajo, no por ser el más barato — y te contacta directo, sin comisión de por medio.
             </p>
           </div>
@@ -214,10 +214,10 @@ export default function ReformasPage() {
         {/* Por qué Yele */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Por qué Yele
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-10 leading-tight">
               Es básicamente probar<br className="hidden md:block" /> sin riesgo.
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -227,9 +227,9 @@ export default function ReformasPage() {
                 { title: 'Todo incluido', desc: 'Dominio, hosting, mantenimiento y soporte. Sin facturas sorpresa.' },
                 { title: 'Lista en 1 semana', desc: 'No en dos meses. En menos de una semana tu web está en marcha.' },
               ] as const).map(item => (
-                <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
-                  <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
-                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{item.desc}</p>
+                <div key={item.title} className="bg-base rounded-2xl p-6">
+                  <p className="font-display font-semibold text-ink text-lg mb-2">{item.title}</p>
+                  <p className="font-body text-muted text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -243,17 +243,17 @@ export default function ReformasPage() {
         <FAQClient faqs={FAQS} />
 
         {/* Final CTA */}
-        <section className="py-24 md:py-32 bg-[#1D1D1F]">
+        <section className="py-24 md:py-32 bg-ink">
           <div className="max-w-3xl mx-auto px-6 text-center">
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
               Deja que tu trabajo<br />hable por ti.
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg mb-10">
+            <p className="font-body text-muted text-lg mb-10">
               Sin pago inicial. Lista en 1 semana.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-8 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-white text-ink px-8 py-4 rounded-2xl hover:bg-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Pedir mi web <span aria-hidden="true">→</span>
             </Link>

@@ -253,10 +253,10 @@ export default function WhySubscription() {
                 <div style={{ width: 68, height: 68, borderRadius: '50%', background: iconRing, display: 'flex', alignItems: 'center', justifyContent: 'center', color: fg, marginBottom: 28, flexShrink: 0 }}>
                   {ICONS[i]}
                 </div>
-                <h3 style={{ fontFamily: 'var(--font-outfit), sans-serif', fontSize: 'clamp(28px, 8vw, 40px)', fontWeight: 700, lineHeight: 1.08, color: fg, margin: '0 0 16px', letterSpacing: '-0.02em' }}>
+                <h3 style={{ fontFamily: 'var(--font-display), sans-serif', fontSize: 'clamp(28px, 8vw, 40px)', fontWeight: 700, lineHeight: 1.08, color: fg, margin: '0 0 16px', letterSpacing: '-0.02em' }}>
                   {t(card.es.title, card.en.title)}
                 </h3>
-                <p style={{ fontFamily: 'var(--font-manrope), sans-serif', fontSize: 'clamp(15px, 4vw, 17px)', lineHeight: 1.60, color: fgMuted, margin: 0 }}>
+                <p style={{ fontFamily: 'var(--font-body), sans-serif', fontSize: 'clamp(15px, 4vw, 17px)', lineHeight: 1.60, color: fgMuted, margin: 0 }}>
                   {t(card.es.desc, card.en.desc)}
                 </p>
               </div>
@@ -311,7 +311,7 @@ export default function WhySubscription() {
             >
               <h2
                 style={{
-                  fontFamily:    'var(--font-outfit), sans-serif',
+                  fontFamily:    'var(--font-display), sans-serif',
                   fontSize:      titleFontPx,
                   fontWeight:    700,
                   lineHeight:    1.18,
@@ -329,7 +329,7 @@ export default function WhySubscription() {
                 <span
                   style={{
                     display:       'block',
-                    fontFamily:    'var(--font-outfit), sans-serif',
+                    fontFamily:    'var(--font-display), sans-serif',
                     fontSize:      Math.round(titleFontPx * 1.12) + 2,
                     fontWeight:    700,
                     lineHeight:    1.08,
@@ -423,7 +423,7 @@ export default function WhySubscription() {
 
                 {/* Title — large, just below icon */}
                 <h3 style={{
-                  fontFamily:    'var(--font-outfit), sans-serif',
+                  fontFamily:    'var(--font-display), sans-serif',
                   fontSize:      titlePx,
                   fontWeight:    700,
                   lineHeight:    1.08,
@@ -437,7 +437,7 @@ export default function WhySubscription() {
 
                 {/* Description — grouped near title */}
                 <p style={{
-                  fontFamily: 'var(--font-manrope), sans-serif',
+                  fontFamily: 'var(--font-body), sans-serif',
                   fontSize:   descPx,
                   lineHeight: 1.60,
                   color:      fgMuted,

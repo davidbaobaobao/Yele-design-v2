@@ -104,17 +104,17 @@ export default function ContractorsPage() {
         <section className="pt-32 pb-20 md:pt-44 md:pb-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
             <h1
-              className="font-outfit font-bold text-[#1D1D1F] tracking-tighter leading-[1.05] mb-6"
+              className="font-display font-bold text-ink tracking-tighter leading-[1.05] mb-6"
               style={{ fontSize: 'clamp(40px, 5.5vw, 72px)' }}
             >
               Website design for contractors
             </h1>
-            <p className="font-manrope text-[#6B7280] text-xl leading-relaxed max-w-2xl mb-10">
+            <p className="font-body text-muted text-xl leading-relaxed max-w-2xl mb-10">
               When someone is about to spend thousands on a renovation, they research. If they can&rsquo;t see your work, they hire someone else. Show your projects with a professional website live in 1 week. From $99/mo, no setup fee, no commitment.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-[#1D1D1F] text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
             </Link>
@@ -122,15 +122,15 @@ export default function ContractorsPage() {
         </section>
 
         {/* Pillar 1 — Proof + trust */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+        <section className="py-20 md:py-28 bg-base">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Why it matters
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               A renovation isn&rsquo;t decided<br className="hidden md:block" /> in one phone call
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               Before hiring a contractor, customers compare for weeks: they look at past projects, read reviews, and judge whether they can trust you with their home and their money. If all you have is an Angi profile, they can&rsquo;t judge you properly. A website with a project gallery — before and after — is what turns a curious visitor into a bid request.
             </p>
           </div>
@@ -139,19 +139,19 @@ export default function ContractorsPage() {
         {/* Gallery */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Your work speaks for you
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-4 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-4 leading-tight">
               Project gallery
             </h2>
-            <p className="font-manrope text-[#6B7280] text-base mb-10 max-w-xl">
+            <p className="font-body text-muted text-base mb-10 max-w-xl">
               Before and after every project. Customers see exactly what to expect from you.
             </p>
 
             <div className="grid md:grid-cols-3 gap-6">
               {GALLERY_PROJECTS.map(project => (
-                <div key={project.label} className="rounded-2xl overflow-hidden border border-black/[0.06]">
+                <div key={project.label} className="rounded-2xl overflow-hidden border border-hairline">
                   <div className="relative aspect-[4/3]">
                     <Image
                       src={project.before}
@@ -160,7 +160,7 @@ export default function ContractorsPage() {
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                    <span className="absolute top-3 left-3 font-manrope text-[10px] font-semibold tracking-widest uppercase bg-white/90 text-[#6B7280] px-2.5 py-1 rounded-full">
+                    <span className="absolute top-3 left-3 font-body text-[10px] font-semibold tracking-widest uppercase bg-white/90 text-muted px-2.5 py-1 rounded-full">
                       Before
                     </span>
                   </div>
@@ -172,13 +172,13 @@ export default function ContractorsPage() {
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                    <span className="absolute top-3 left-3 font-manrope text-[10px] font-semibold tracking-widest uppercase bg-[#1D1D1F]/80 text-white px-2.5 py-1 rounded-full">
+                    <span className="absolute top-3 left-3 font-body text-[10px] font-semibold tracking-widest uppercase bg-ink/80 text-white px-2.5 py-1 rounded-full">
                       After
                     </span>
                   </div>
                   <div className="px-4 py-3 bg-white">
-                    <p className="font-outfit font-medium text-sm text-[#1D1D1F]">{project.label}</p>
-                    <p className="font-manrope text-xs text-[#6B7280] mt-0.5">{project.location}</p>
+                    <p className="font-display font-medium text-sm text-ink">{project.label}</p>
+                    <p className="font-body text-xs text-muted mt-0.5">{project.location}</p>
                   </div>
                 </div>
               ))}
@@ -187,15 +187,15 @@ export default function ContractorsPage() {
         </section>
 
         {/* Pillar 2 — Lead platforms */}
-        <section className="py-20 md:py-28 bg-[#F5F5F7]">
+        <section className="py-20 md:py-28 bg-base">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               The lead platform trap
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-6 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-6 leading-tight">
               Stop competing<br className="hidden md:block" /> only on price
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg leading-relaxed max-w-2xl">
+            <p className="font-body text-muted text-lg leading-relaxed max-w-2xl">
               On Angi, Houzz, or HomeAdvisor you pay per contact and enter a price war with four other contractors on the same lead. With your own site and your own gallery, customers choose you for your work — not just your price — and contact you directly, with no commission.
             </p>
           </div>
@@ -206,10 +206,10 @@ export default function ContractorsPage() {
         {/* Why Yele */}
         <section className="py-20 md:py-28 bg-white">
           <div className="max-w-6xl mx-auto px-6">
-            <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+            <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
               Why Yele
             </span>
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight mb-10 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-10 leading-tight">
               Basically risk-free to try.
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -219,9 +219,9 @@ export default function ContractorsPage() {
                 { title: 'All inclusive', desc: 'Domain, hosting, maintenance, and support. No surprise invoices.' },
                 { title: 'Live in 1 week', desc: 'Not two months. In under a week your site is up and running.' },
               ] as const).map(item => (
-                <div key={item.title} className="bg-[#F5F5F7] rounded-2xl p-6">
-                  <p className="font-outfit font-semibold text-[#1D1D1F] text-lg mb-2">{item.title}</p>
-                  <p className="font-manrope text-[#6B7280] text-sm leading-relaxed">{item.desc}</p>
+                <div key={item.title} className="bg-base rounded-2xl p-6">
+                  <p className="font-display font-semibold text-ink text-lg mb-2">{item.title}</p>
+                  <p className="font-body text-muted text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -232,17 +232,17 @@ export default function ContractorsPage() {
         <FAQClient faqs={FAQS} />
 
         {/* Final CTA */}
-        <section className="py-24 md:py-32 bg-[#1D1D1F]">
+        <section className="py-24 md:py-32 bg-ink">
           <div className="max-w-3xl mx-auto px-6 text-center">
-            <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
+            <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight mb-5 leading-tight">
               Let your work<br />speak for itself.
             </h2>
-            <p className="font-manrope text-[#6B7280] text-lg mb-10">
+            <p className="font-body text-muted text-lg mb-10">
               No setup fee. Live in 1 week.
             </p>
             <Link
               href="/registro"
-              className="inline-flex items-center gap-2 font-manrope font-medium text-base bg-white text-[#1D1D1F] px-8 py-4 rounded-2xl hover:bg-[#F5F5F7] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
+              className="inline-flex items-center gap-2 font-body font-medium text-base bg-white text-ink px-8 py-4 rounded-2xl hover:bg-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
             </Link>

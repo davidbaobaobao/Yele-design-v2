@@ -15,7 +15,7 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <section id="faq" className={`py-24 md:py-32 ${noBg ? '' : 'bg-[#F5F5F7]'}`}>
+    <section id="faq" className={`py-24 md:py-32 ${noBg ? '' : 'bg-base'}`}>
       <div className="max-w-3xl mx-auto px-6">
 
         <motion.div
@@ -25,10 +25,10 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
           viewport={{ once: true, margin: '-80px' }}
           className="mb-12"
         >
-          <span className="font-manrope text-xs tracking-[0.15em] uppercase text-[#6B7280] mb-4 block">
+          <span className="font-body text-xs tracking-[0.15em] uppercase text-muted mb-4 block">
             FAQ
           </span>
-          <h2 className="font-outfit font-semibold text-4xl md:text-5xl text-[#1D1D1F] tracking-tight">
+          <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight">
             {t('Resolvemos tus dudas.', 'We answer your questions.')}
           </h2>
         </motion.div>
@@ -47,7 +47,7 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
                 onClick={() => setOpen(open === i ? null : i)}
                 aria-expanded={open === i}
               >
-                <span className="font-outfit font-medium text-base text-[#1D1D1F] group-hover:text-[#6B7280] transition-colors pr-6">
+                <span className="font-display font-medium text-base text-ink group-hover:text-muted transition-colors pr-6">
                   {faq.question}
                 </span>
                 <motion.div
@@ -55,7 +55,7 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
                   transition={{ duration: 0.25 } as Transition}
                   className="flex-shrink-0"
                 >
-                  <Plus size={18} className="text-[#6B7280]" />
+                  <Plus size={18} className="text-muted" />
                 </motion.div>
               </button>
 
@@ -69,7 +69,7 @@ export default function FAQClient({ faqs, noBg }: { faqs: FAQItem[]; noBg?: bool
                     transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
                     className="overflow-hidden"
                   >
-                    <p className="font-manrope text-sm text-[#6B7280] leading-relaxed pb-5">
+                    <p className="font-body text-sm text-muted leading-relaxed pb-5">
                       {faq.answer}
                     </p>
                   </motion.div>
