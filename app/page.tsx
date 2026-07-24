@@ -6,6 +6,7 @@ import Mission from '@/components/Mission'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold sections — code-split into separate chunks to reduce initial JS
+const WhatWeDo             = dynamic(() => import('@/components/WhatWeDo'))
 const WeStackSection       = dynamic(() => import('@/components/WeStackSection'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
 const ComoFunciona         = dynamic(() => import('@/components/ComoFunciona'))
@@ -50,6 +51,7 @@ export default function Home() {
           <Hero />
           <Mission />
         </div>
+        <WhatWeDo />
         <WeStackSection />
         <VideoSnapController />
         <ComoFunciona noBg />
