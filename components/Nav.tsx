@@ -14,9 +14,9 @@ const LINKS = [
   { label: 'FAQ', href: '#faq' },
 ]
 
-// hasHero: whether this page renders a <section id="hero"> for the nav to
-// watch. Pages without one (or the hero having fully scrolled past) render
-// the solid/blurred nav state.
+// hasHero: whether this page renders a <div id="dark-zone"> (hero + mission,
+// both dark sections) for the nav to watch. Pages without one (or once the
+// dark zone has fully scrolled past) render the solid/blurred nav state.
 export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
   const { t } = useLang()
   const pathname = usePathname()
@@ -25,19 +25,19 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
 
   useEffect(() => {
     if (!hasHero) return
-    const hero = document.getElementById('hero')
-    if (!hero || !('IntersectionObserver' in window)) {
+    const darkZone = document.getElementById('dark-zone')
+    if (!darkZone || !('IntersectionObserver' in window)) {
       setOverHero(false)
       return
     }
-    // Hero section is the full 250vh block, so this stays true for the
-    // entire sticky-pinned scroll and flips false only once its bottom
-    // edge passes the top of the viewport.
+    // The dark zone spans the hero's full 250vh block plus the mission
+    // section, so this stays true for that whole stretch and flips false
+    // only once its bottom edge passes the top of the viewport.
     const io = new IntersectionObserver(
       ([entry]) => setOverHero(entry.isIntersecting),
       { threshold: 0 }
     )
-    io.observe(hero)
+    io.observe(darkZone)
     return () => io.disconnect()
   }, [hasHero])
 

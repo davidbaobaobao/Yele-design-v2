@@ -46,8 +46,10 @@ export default function Home() {
     <EnLangProvider>
       <Nav />
       <main id="main-content">
-        <Hero />
-        <Mission />
+        <div id="dark-zone">
+          <Hero />
+          <Mission />
+        </div>
         <WeStackSection />
         <VideoSnapController />
         <ComoFunciona noBg />
