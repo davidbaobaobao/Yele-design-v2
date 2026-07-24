@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
-import Navigation from '@/components/Navigation'
-import HeroBento from '@/app/presupuesto/_components/HeroBento'
-import MissionSection from '@/components/MissionSection'
+import Nav from '@/components/Nav'
+import Hero from '@/components/Hero'
+import Mission from '@/components/Mission'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold sections — code-split into separate chunks to reduce initial JS
@@ -44,14 +44,16 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <EnLangProvider>
-      <Navigation heroIsDark />
+      <Nav />
       <main id="main-content">
-        <HeroBento />
-        <MissionSection />
+        <Hero />
+        <Mission />
         <WeStackSection />
         <VideoSnapController />
         <ComoFunciona noBg />
-        <Showcase noHeader noBg fullScreen />
+        <div id="trabajos">
+          <Showcase noHeader noBg fullScreen />
+        </div>
         <PreciosIndexSection />
         <WhySubscription />
         <ShowcaseFeatureCards />
