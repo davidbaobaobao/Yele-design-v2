@@ -80,8 +80,8 @@ function WhyYeleCard({
   const poster = `${VIDEO_DIR}/${card.videoBase}_poster.jpg`
 
   const inner = (
-    <div className="max-w-[380px] mx-auto">
-      <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#EEEDE9]">
+    <div>
+      <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#EEEDE9]">
         {reduceMotion ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
@@ -102,9 +102,9 @@ function WhyYeleCard({
         )}
       </div>
 
-      <div className="mt-6 px-1">
-        <h3 className="font-display text-ink text-[20px]">{card.title}</h3>
-        <p className="font-body text-[15px] text-muted max-w-sm mt-2">{card.description}</p>
+      <div className="mt-5">
+        <h3 className="font-display text-ink text-[19px]">{card.title}</h3>
+        <p className="font-body text-[14px] text-muted max-w-md mt-1.5">{card.description}</p>
       </div>
     </div>
   )
@@ -200,7 +200,7 @@ export default function WhyYele() {
       <section className="relative bg-base py-28 px-6">
         <div className="max-w-6xl mx-auto">
           {heading}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-14 mt-14">
             {CARDS.map((card, i) => (
               <WhyYeleCard key={card.videoBase} card={card} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
             ))}
@@ -221,7 +221,7 @@ export default function WhyYele() {
       <div className="max-w-6xl mx-auto">
         <motion.div variants={childVariants}>{heading}</motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-14 mt-14">
           {CARDS.map((card, i) => (
             <WhyYeleCard key={card.videoBase} card={card} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
           ))}
