@@ -6,7 +6,6 @@ import { motion, useReducedMotion } from 'framer-motion'
 const VIDEO_DIR = '/media/whyyele'
 
 type CardData = {
-  n: string
   title: string
   description: string
   videoBase: string
@@ -14,37 +13,31 @@ type CardData = {
 
 const CARDS: CardData[] = [
   {
-    n: '01',
     title: 'Custom design',
     description: 'Built from scratch for your business. No templates, no lookalikes.',
     videoBase: 'whyyele1',
   },
   {
-    n: '02',
     title: 'Yours to control',
     description: 'Edit prices, photos and content anytime from your dashboard.',
     videoBase: 'whyyele2',
   },
   {
-    n: '03',
     title: 'One flat price',
-    description: 'Hosting, domain, changes and support — all included, one monthly rate.',
+    description: 'Hosting, domain, changes and support — all included in one monthly rate.',
     videoBase: 'whyyele3',
   },
   {
-    n: '04',
     title: 'No lock-in',
-    description: "Cancel whenever you want. You stay because it works, not because you're stuck.",
+    description: 'Cancel whenever you want. You stay because it works.',
     videoBase: 'whyyele4',
   },
   {
-    n: '05',
     title: 'Live in days',
     description: 'Your site ready in a week, not months. Updates in hours.',
     videoBase: 'whyyele5',
   },
   {
-    n: '06',
     title: 'Built to convert',
     description: 'Designed to turn visitors into calls, bookings and customers.',
     videoBase: 'whyyele6',
@@ -65,33 +58,31 @@ function WhyYeleCard({
   const poster = `${VIDEO_DIR}/${card.videoBase}_poster.jpg`
 
   const inner = (
-    <div className="relative h-[60vh] md:h-[70vh] md:min-h-[520px] rounded-3xl overflow-hidden bg-white border border-hairline flex flex-col justify-end">
-      {reduceMotion ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
-      ) : (
-        <video
-          ref={videoRef}
-          muted
-          loop
-          playsInline
-          preload="none"
-          poster={poster}
-          className="absolute inset-0 w-full h-full object-cover"
-          aria-hidden="true"
-        >
-          <source src={`${VIDEO_DIR}/${card.videoBase}.webm`} type="video/webm" />
-          <source src={`${VIDEO_DIR}/${card.videoBase}.mp4`} type="video/mp4" />
-        </video>
-      )}
+    <div className="max-w-[380px] md:max-w-[420px] mx-auto">
+      <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#EEEDE9]">
+        {reduceMotion ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <video
+            ref={videoRef}
+            muted
+            loop
+            playsInline
+            preload="none"
+            poster={poster}
+            className="absolute inset-0 w-full h-full object-cover"
+            aria-hidden="true"
+          >
+            <source src={`${VIDEO_DIR}/${card.videoBase}.webm`} type="video/webm" />
+            <source src={`${VIDEO_DIR}/${card.videoBase}.mp4`} type="video/mp4" />
+          </video>
+        )}
+      </div>
 
-      {/* Bottom gradient so the text stays legible over the video */}
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-white pointer-events-none" />
-
-      <div className="relative z-10 p-8">
-        <span className="block font-mono text-sm text-muted mb-2">{card.n}</span>
-        <h3 className="font-display text-ink text-[28px] mb-2">{card.title}</h3>
-        <p className="font-body text-ink/70 max-w-sm">{card.description}</p>
+      <div className="mt-6 px-1">
+        <h3 className="font-display text-ink text-[20px]">{card.title}</h3>
+        <p className="font-body text-[15px] text-muted max-w-sm mt-2">{card.description}</p>
       </div>
     </div>
   )
@@ -100,10 +91,10 @@ function WhyYeleCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, delay: (index % 2) * 0.08 + 0.05, ease: 'easeOut' }}
+      transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
     >
       {inner}
     </motion.div>
@@ -175,19 +166,18 @@ export default function WhyYele() {
   }, [reduceMotion])
 
   return (
-    <section className="bg-base py-24 px-6 md:px-10">
-      <span className="block font-mono text-sm text-muted mb-4">WHY YELE</span>
-      <h2 className="font-display text-ink text-[clamp(2rem,3.5vw,3.25rem)] leading-tight max-w-3xl">
-        Everything included. Nothing hidden.
-      </h2>
-      <p className="font-body text-muted max-w-xl mt-4">
-        Six reasons the subscription just works.
-      </p>
+    <section className="bg-base py-28 px-6">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="font-display text-ink text-[clamp(1.5rem,2.5vw,2.25rem)] leading-tight">
+          Everything included. Nothing hidden.
+        </h2>
+        <div className="border-t border-hairline mt-8" />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-        {CARDS.map((card, i) => (
-          <WhyYeleCard key={card.videoBase} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-16 mt-16">
+          {CARDS.map((card, i) => (
+            <WhyYeleCard key={card.videoBase} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
+          ))}
+        </div>
       </div>
     </section>
   )
