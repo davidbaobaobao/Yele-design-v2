@@ -24,6 +24,7 @@ type CardData = {
   n: string
   title: string
   bg: string
+  text: string
   description: string
   capabilities: string[]
   videoBase: string
@@ -34,7 +35,8 @@ const CARDS: CardData[] = [
   {
     n: '01',
     title: 'We design',
-    bg: '#DAD8D2', // warm grey — matches the dimmed wevideo1 footage
+    bg: '#1A1815', // warm charcoal — tinted with the dimmed wevideo1 footage
+    text: '#F3EFE9',
     description:
       "Bold, custom, no templates. A website designed from scratch for your business and nobody else's.",
     capabilities: ['ART DIRECTION', 'UX & LAYOUT', 'BRANDING', 'MOBILE-FIRST'],
@@ -43,7 +45,8 @@ const CARDS: CardData[] = [
   {
     n: '02',
     title: 'We build',
-    bg: '#D2D6DA', // cool grey — matches the dimmed wevideo2 footage
+    bg: '#14171C', // blue charcoal — tinted with the dimmed wevideo2 footage
+    text: '#EAEEF3',
     description: 'Fast, reliable, SEO-ready. Live in one week, built to perform from day one.',
     capabilities: ['NEXT-GEN STACK', 'LOCAL SEO', 'PERFORMANCE', 'HOSTING & DOMAIN'],
     videoBase: 'wevideo2',
@@ -51,7 +54,8 @@ const CARDS: CardData[] = [
   {
     n: '03',
     title: 'We create',
-    bg: '#DDD8CE', // sand grey — matches the dimmed wevideo3 footage
+    bg: '#1A1710', // ochre charcoal — tinted with the dimmed wevideo3 footage
+    text: '#F3EDDF',
     description:
       'Photography, video, copy and illustration. Content that makes your site stand out — included.',
     capabilities: ['PHOTO & VIDEO', 'COPYWRITING', 'ILLUSTRATION', 'SOCIAL ASSETS'],
@@ -60,7 +64,8 @@ const CARDS: CardData[] = [
   {
     n: '04',
     title: 'We maintain',
-    bg: '#D4D3D6', // neutral grey — matches the dimmed wevideo4 footage
+    bg: '#161418', // violet charcoal — tinted with the dimmed wevideo4 footage
+    text: '#EFECF2',
     description:
       "Hosting, security, updates and every change you need. Handled forever — that's the point.",
     capabilities: ['24/7 SUPPORT', 'UPDATES INCLUDED', 'SECURITY', 'ALWAYS IMPROVING'],
@@ -142,13 +147,17 @@ function WhatWeDoCard({
   const inner = (
     <div
       style={{ backgroundColor: card.bg, willChange: 'transform' }}
-      className="relative flex flex-col h-full rounded-t-[2rem] border-t border-hairline overflow-hidden"
+      className="relative flex flex-col h-full rounded-t-[2rem] border-t border-hairlineDark overflow-hidden"
     >
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. */}
       <div className="shrink-0 flex items-center justify-between px-8" style={{ height: 'var(--wwd-strip-h)' }}>
-        <h2 className="font-display font-bold text-ink text-[28px] md:text-[44px]">{card.title}</h2>
-        <span className="font-mono text-sm text-muted">{card.n}</span>
+        <h2 className="font-display font-bold text-[28px] md:text-[44px]" style={{ color: card.text }}>
+          {card.title}
+        </h2>
+        <span className="font-mono text-sm" style={{ color: card.text, opacity: 0.7 }}>
+          {card.n}
+        </span>
       </div>
 
       {/* Body — the part that gets covered as the next card arrives. Content
@@ -160,10 +169,12 @@ function WhatWeDoCard({
           until the card actually starts collapsing. */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-6 pt-2 min-h-0">
         <div className="md:col-span-5 self-start">
-          <p className="font-body text-base md:text-lg max-w-md text-ink">{card.description}</p>
+          <p className="font-body text-base md:text-lg max-w-md" style={{ color: card.text }}>
+            {card.description}
+          </p>
         </div>
         <div className="md:col-start-6 md:col-span-2 self-start">
-          <div className="font-mono text-sm uppercase text-ink/70 space-y-1.5">
+          <div className="font-mono text-sm uppercase space-y-1.5" style={{ color: card.text, opacity: 0.7 }}>
             {card.capabilities.map(c => (
               <div key={c}>{c}</div>
             ))}
@@ -291,7 +302,7 @@ export default function WhatWeDo() {
   }, [reduceMotion])
 
   return (
-    <section data-nav-dark className="wwd-strip-vars relative bg-[#0A0A0A]">
+    <section data-nav-dark className="wwd-strip-vars relative bg-[#0E0E10]">
       <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
       <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
       <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
