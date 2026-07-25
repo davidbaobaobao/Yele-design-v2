@@ -34,37 +34,37 @@ const CARDS: CardData[] = [
   {
     n: '01',
     title: 'We design',
-    bg: '#E8CE8F', // amber gold — matches wedesign video bg
+    bg: '#DAD8D2', // warm grey — matches the dimmed wevideo1 footage
     description:
       "Bold, custom, no templates. A website designed from scratch for your business and nobody else's.",
     capabilities: ['ART DIRECTION', 'UX & LAYOUT', 'BRANDING', 'MOBILE-FIRST'],
-    videoBase: 'wedesign',
+    videoBase: 'wevideo1',
   },
   {
     n: '02',
     title: 'We build',
-    bg: '#B8C0E8', // periwinkle blue — matches webuild video bg
+    bg: '#D2D6DA', // cool grey — matches the dimmed wevideo2 footage
     description: 'Fast, reliable, SEO-ready. Live in one week, built to perform from day one.',
     capabilities: ['NEXT-GEN STACK', 'LOCAL SEO', 'PERFORMANCE', 'HOSTING & DOMAIN'],
-    videoBase: 'webuild',
+    videoBase: 'wevideo2',
   },
   {
     n: '03',
     title: 'We create',
-    bg: '#EBC9DD', // pink iridescent — matches wecreate video bg
+    bg: '#DDD8CE', // sand grey — matches the dimmed wevideo3 footage
     description:
       'Photography, video, copy and illustration. Content that makes your site stand out — included.',
     capabilities: ['PHOTO & VIDEO', 'COPYWRITING', 'ILLUSTRATION', 'SOCIAL ASSETS'],
-    videoBase: 'wecreate',
+    videoBase: 'wevideo3',
   },
   {
     n: '04',
     title: 'We maintain',
-    bg: '#C9D2E0', // pale sky blue — matches wemantain video bg
+    bg: '#D4D3D6', // neutral grey — matches the dimmed wevideo4 footage
     description:
       "Hosting, security, updates and every change you need. Handled forever — that's the point.",
     capabilities: ['24/7 SUPPORT', 'UPDATES INCLUDED', 'SECURITY', 'ALWAYS IMPROVING'],
-    videoBase: 'wemantain',
+    videoBase: 'wevideo4',
     closingLine: 'BUILT. STAYING.',
   },
 ]
