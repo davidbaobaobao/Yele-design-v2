@@ -8,6 +8,7 @@ import { EnLangProvider } from '@/components/LangProvider'
 // Below-fold sections — code-split into separate chunks to reduce initial JS
 const WhatWeDo             = dynamic(() => import('@/components/WhatWeDo'))
 const WhyYele              = dynamic(() => import('@/components/WhyYele'))
+const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const WeStackSection       = dynamic(() => import('@/components/WeStackSection'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
 const ComoFunciona         = dynamic(() => import('@/components/ComoFunciona'))
@@ -54,6 +55,7 @@ export default function Home() {
         <Mission />
         <WhatWeDo />
         <WhyYele />
+        <HowWeWork />
         <div id="trabajos">
           <Showcase noHeader noBg fullScreen />
         </div>
