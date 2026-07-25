@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const AMBER_DARK = '#C97F3D'
 const VIDEO_DIR = '/media/wesection'
@@ -221,7 +222,7 @@ function useCoverDim(nextRef: React.RefObject<HTMLElement | null>) {
 }
 
 export default function WhatWeDo() {
-  const reduceMotion = !!useReducedMotion()
+  const reduceMotion = !!useHydratedReducedMotion()
 
   const card2Ref = useRef<HTMLDivElement>(null)
   const card3Ref = useRef<HTMLDivElement>(null)

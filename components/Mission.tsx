@@ -1,15 +1,16 @@
 'use client'
 
 import { useRef } from 'react'
-import { useReducedMotion, useScroll } from 'framer-motion'
+import { useScroll } from 'framer-motion'
 import MissionFillText from './MissionFillText'
+import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const STATEMENT =
   'Other agencies build your website and disappear. We build it — and stay. Design, content, maintenance and growth, handled forever.'
 
 export default function Mission() {
   const sectionRef = useRef<HTMLElement>(null)
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useHydratedReducedMotion()
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,

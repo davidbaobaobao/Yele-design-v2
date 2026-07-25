@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
+import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const MEDIA_DIR = '/media/howwework'
 const AMBER = '#C97F3D'
@@ -97,7 +98,7 @@ function StepVisual({ step }: { step: StepData }) {
 }
 
 function HowWeWorkStep({ step, index }: { step: StepData; index: number }) {
-  const reduceMotion = !!useReducedMotion()
+  const reduceMotion = !!useHydratedReducedMotion()
   const visualFirst = index % 2 === 1
   const textOrder = visualFirst ? 'md:order-2' : 'md:order-1'
   const visualOrder = visualFirst ? 'md:order-1' : 'md:order-2'

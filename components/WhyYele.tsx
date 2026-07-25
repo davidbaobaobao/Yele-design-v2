@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useReducedMotion, useInView, type Variants } from 'framer-motion'
+import { motion, useInView, type Variants } from 'framer-motion'
+import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const VIDEO_DIR = '/media/whyyele'
 
@@ -114,7 +115,7 @@ function WhyYeleCard({
 }
 
 export default function WhyYele() {
-  const reduceMotion = !!useReducedMotion()
+  const reduceMotion = !!useHydratedReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
   const inView = useInView(sectionRef, { once: true, margin: '-20% 0px' })
   const [entered, setEntered] = useState(false)

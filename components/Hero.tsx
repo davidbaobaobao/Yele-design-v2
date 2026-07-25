@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
+import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const POSTER = '/media/hero/hero2_poster.jpg'
 
@@ -49,7 +50,7 @@ export default function Hero() {
   const [maskUrl, setMaskUrl] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
 
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useHydratedReducedMotion()
 
   useVideoAlwaysAutoplay(colorVideoRef)
   useVideoAlwaysAutoplay(bwVideoRef)
