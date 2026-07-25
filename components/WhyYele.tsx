@@ -1,79 +1,192 @@
 'use client'
-import { useRef } from 'react'
-import { useLang } from '@/context/LanguageContext'
 
-const cards = [
+import { useEffect, useRef } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
+
+const VIDEO_DIR = '/media/whyyele'
+
+type CardData = {
+  n: string
+  title: string
+  description: string
+  videoBase: string
+}
+
+const CARDS: CardData[] = [
   {
-    icon: '⚡',
-    es: { title: 'Lista en 1 semana', description: 'De cero a online en menos de una semana. Sin esperas de meses ni reuniones interminables.' },
-    en: { title: 'Ready in 1 week', description: 'From zero to online in less than a week. No months of waiting.' },
+    n: '01',
+    title: 'Custom design',
+    description: 'Built from scratch for your business. No templates, no lookalikes.',
+    videoBase: 'whyyele1',
   },
   {
-    icon: '📍',
-    es: { title: 'SEO local incluido', description: 'Apareces cuando te buscan cerca. Schema markup, Google Business y keywords locales. Todo incluido.' },
-    en: { title: 'Local SEO included', description: 'Show up when people search nearby. Schema, Google Business, local keywords. All included.' },
+    n: '02',
+    title: 'Yours to control',
+    description: 'Edit prices, photos and content anytime from your dashboard.',
+    videoBase: 'whyyele2',
   },
   {
-    icon: '📱',
-    es: { title: 'Mobile-first', description: 'El 80% de tus clientes te ven desde el móvil. Rápida, ligera y perfecta en cualquier pantalla.' },
-    en: { title: 'Mobile-first', description: '80% of your clients find you on mobile. Fast, light and perfect on any screen.' },
+    n: '03',
+    title: 'One flat price',
+    description: 'Hosting, domain, changes and support — all included, one monthly rate.',
+    videoBase: 'whyyele3',
   },
   {
-    icon: '🔧',
-    es: { title: 'Siempre online', description: 'Hosting, SSL y actualizaciones incluidas. Tu web siempre operativa. Sin extras, sin sorpresas.' },
-    en: { title: 'Always online', description: 'Hosting, SSL and updates included. Your site always live. No extras, no surprises.' },
+    n: '04',
+    title: 'No lock-in',
+    description: "Cancel whenever you want. You stay because it works, not because you're stuck.",
+    videoBase: 'whyyele4',
   },
   {
-    icon: '🎛️',
-    es: { title: 'Tú controlas el contenido', description: 'Cambia textos, fotos y precios desde tu panel. Sin tocar código. Los cambios aparecen en 60 segundos.' },
-    en: { title: 'You control the content', description: 'Update text, photos and prices from your panel. No code. Changes live in 60 seconds.' },
+    n: '05',
+    title: 'Live in days',
+    description: 'Your site ready in a week, not months. Updates in hours.',
+    videoBase: 'whyyele5',
+  },
+  {
+    n: '06',
+    title: 'Built to convert',
+    description: 'Designed to turn visitors into calls, bookings and customers.',
+    videoBase: 'whyyele6',
   },
 ]
 
-export default function WhyYele() {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const { t } = useLang()
+function WhyYeleCard({
+  card,
+  index,
+  videoRef,
+  reduceMotion,
+}: {
+  card: CardData
+  index: number
+  videoRef: React.Ref<HTMLVideoElement>
+  reduceMotion: boolean
+}) {
+  const poster = `${VIDEO_DIR}/${card.videoBase}_poster.jpg`
+
+  const inner = (
+    <div className="relative h-[60vh] md:h-[70vh] md:min-h-[520px] rounded-3xl overflow-hidden bg-white border border-hairline flex flex-col justify-end">
+      {reduceMotion ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
+      ) : (
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          preload="none"
+          poster={poster}
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src={`${VIDEO_DIR}/${card.videoBase}.webm`} type="video/webm" />
+          <source src={`${VIDEO_DIR}/${card.videoBase}.mp4`} type="video/mp4" />
+        </video>
+      )}
+
+      {/* Bottom gradient so the text stays legible over the video */}
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-white pointer-events-none" />
+
+      <div className="relative z-10 p-8">
+        <span className="block font-mono text-sm text-muted mb-2">{card.n}</span>
+        <h3 className="font-display text-ink text-[28px] mb-2">{card.title}</h3>
+        <p className="font-body text-ink/70 max-w-sm">{card.description}</p>
+      </div>
+    </div>
+  )
+
+  if (reduceMotion) return inner
 
   return (
-    <section className="py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-8 mb-12">
-        <p className="text-muted text-sm uppercase tracking-widest mb-3">
-          {t('Por qué Yele', 'Why Yele')}
-        </p>
-        <h2 className="text-5xl font-['Outfit'] font-semibold text-ink leading-tight">
-          {t('Todo lo que necesitas.', 'Everything you need.')}<br />
-          {t('Nada que no necesitas.', "Nothing you don't.")}
-        </h2>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, delay: (index % 2) * 0.08 + 0.05, ease: 'easeOut' }}
+    >
+      {inner}
+    </motion.div>
+  )
+}
 
-      <div
-        ref={scrollRef}
-        className="flex gap-6 overflow-x-scroll overflow-y-hidden
-                   scroll-smooth snap-x snap-mandatory
-                   pl-8 pr-[calc(100vw-300px-32px)]
-                   md:pl-[80px] md:pr-[calc(100vw-3*320px-2*24px-80px)]
-                   [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none]
-                   [scrollbar-width:none]"
-      >
-        {cards.map((card) => (
-          <div
-            key={card.es.title}
-            className="flex-shrink-0 w-[300px] md:w-[320px] snap-start
-                       bg-base rounded-3xl p-8 flex flex-col gap-6"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-white flex items-center
-                            justify-center text-2xl shadow-sm">
-              {card.icon}
-            </div>
-            <div className="flex flex-col gap-3">
-              <h3 className="text-xl font-['Outfit'] font-semibold text-ink">
-                {t(card.es.title, card.en.title)}
-              </h3>
-              <p className="text-muted font-['Instrument_Sans'] text-base leading-relaxed">
-                {t(card.es.description, card.en.description)}
-              </p>
-            </div>
-          </div>
+export default function WhyYele() {
+  const reduceMotion = !!useReducedMotion()
+
+  const videoRefs = [
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+  ]
+
+  // One shared IntersectionObserver drives play/pause for all six videos —
+  // play once a card is >=30% visible, pause otherwise, so we never force
+  // all six to decode/play at once.
+  useEffect(() => {
+    if (reduceMotion) return
+    const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
+    if (videos.length === 0) return
+
+    videos.forEach(v => {
+      v.setAttribute('muted', '')
+      v.setAttribute('playsinline', '')
+      v.setAttribute('webkit-playsinline', '')
+      v.muted = true
+    })
+
+    const play = (v: HTMLVideoElement) => {
+      if (!v.paused && !v.ended) return
+      v.muted = true
+      if (v.ended) v.currentTime = 0
+      if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
+      v.play().catch(() => {
+        setTimeout(() => {
+          if (v.paused || v.ended) {
+            v.muted = true
+            v.play().catch(() => {})
+          }
+        }, 300)
+      })
+    }
+
+    const onEnded = (e: Event) => play(e.target as HTMLVideoElement)
+    videos.forEach(v => v.addEventListener('ended', onEnded))
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const v = entry.target as HTMLVideoElement
+          if (entry.isIntersecting) play(v)
+          else v.pause()
+        })
+      },
+      { threshold: 0.3 }
+    )
+    videos.forEach(v => observer.observe(v))
+
+    return () => {
+      observer.disconnect()
+      videos.forEach(v => v.removeEventListener('ended', onEnded))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion])
+
+  return (
+    <section className="bg-base py-24 px-6 md:px-10">
+      <span className="block font-mono text-sm text-muted mb-4">WHY YELE</span>
+      <h2 className="font-display text-ink text-[clamp(2rem,3.5vw,3.25rem)] leading-tight max-w-3xl">
+        Everything included. Nothing hidden.
+      </h2>
+      <p className="font-body text-muted max-w-xl mt-4">
+        Six reasons the subscription just works.
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+        {CARDS.map((card, i) => (
+          <WhyYeleCard key={card.videoBase} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
         ))}
       </div>
     </section>
