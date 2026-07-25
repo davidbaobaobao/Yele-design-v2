@@ -14,10 +14,11 @@ const LINKS = [
   { label: 'FAQ', href: '#faq' },
 ]
 
-// hasHero: whether this page renders a <div id="dark-zone"> (the dark hero
-// section) for the nav to watch. Pages without one (or once the dark zone
-// has fully scrolled past) render the solid/blurred nav state. Mission
-// isn't part of this zone — it's a light (bg-base) section now.
+// hasHero: whether this page renders dark sections (the hero's
+// <div id="dark-zone"> plus any other section marked `data-nav-dark`, e.g.
+// "Beyond the website") for the nav to watch. Pages without any (or once
+// they've all scrolled past) render the solid/blurred nav state. Mission
+// isn't part of this — it's a light (bg-base) section now.
 export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
   const { t } = useLang()
   const pathname = usePathname()
@@ -26,19 +27,26 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
 
   useEffect(() => {
     if (!hasHero) return
-    const darkZone = document.getElementById('dark-zone')
-    if (!darkZone || !('IntersectionObserver' in window)) {
+    const darkZones = document.querySelectorAll('#dark-zone, [data-nav-dark]')
+    if (darkZones.length === 0 || !('IntersectionObserver' in window)) {
       setOverHero(false)
       return
     }
-    // The dark zone spans the hero's full 250vh block, so this stays true
-    // for that whole stretch and flips false only once its bottom edge
-    // passes the top of the viewport.
+    // Several dark sections can appear down the page (hero, "Beyond the
+    // website", ...) — the nav stays light-text as long as ANY of them is
+    // intersecting the viewport, not just the first one.
+    const intersecting = new Set<Element>()
     const io = new IntersectionObserver(
-      ([entry]) => setOverHero(entry.isIntersecting),
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) intersecting.add(entry.target)
+          else intersecting.delete(entry.target)
+        })
+        setOverHero(intersecting.size > 0)
+      },
       { threshold: 0 }
     )
-    io.observe(darkZone)
+    darkZones.forEach(el => io.observe(el))
     return () => io.disconnect()
   }, [hasHero])
 

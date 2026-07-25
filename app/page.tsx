@@ -9,6 +9,7 @@ import { EnLangProvider } from '@/components/LangProvider'
 const WhatWeDo             = dynamic(() => import('@/components/WhatWeDo'))
 const WhyYele              = dynamic(() => import('@/components/WhyYele'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
+const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
 const WeStackSection       = dynamic(() => import('@/components/WeStackSection'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
 const ComoFunciona         = dynamic(() => import('@/components/ComoFunciona'))
@@ -56,6 +57,7 @@ export default function Home() {
         <WhatWeDo />
         <WhyYele />
         <HowWeWork />
+        <BeyondWebsite />
         <div id="trabajos">
           <Showcase noHeader noBg fullScreen />
         </div>
