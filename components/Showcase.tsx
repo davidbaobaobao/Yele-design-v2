@@ -21,6 +21,11 @@ const PROJECTS: ShowcaseProject[] = [
   { id: '10', name: 'Portfolio Digital · Barcelona',  description: null, additional_images: [], main_image: '/media/carouselmedia/carousel-10.jpeg' },
 ]
 
-export default function Showcase({ noHeader, noBg, fullScreen }: { noHeader?: boolean; noBg?: boolean; fullScreen?: boolean } = {}) {
-  return <ShowcaseClient projects={PROJECTS} noHeader={noHeader} noBg={noBg} fullScreen={fullScreen} />
+export default function Showcase({
+  noHeader,
+  noBg,
+  fullScreen,
+  dark,
+}: { noHeader?: boolean; noBg?: boolean; fullScreen?: boolean; dark?: boolean } = {}) {
+  return <ShowcaseClient projects={PROJECTS} noHeader={noHeader} noBg={noBg} fullScreen={fullScreen} dark={dark} />
 }

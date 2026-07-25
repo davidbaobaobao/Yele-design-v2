@@ -19,9 +19,9 @@ export default function Mission() {
   // ---- Reduced-motion fallback: fully static, no fill ----
   if (reduceMotion) {
     return (
-      <section className="bg-base min-h-screen flex items-center justify-center px-6">
+      <section data-nav-dark className="bg-[#0A0A0A] min-h-screen flex items-center justify-center px-6">
         <p
-          className="font-display font-bold text-ink leading-[1.3] tracking-tight max-w-[80vw] text-center"
+          className="font-display font-bold text-bone leading-[1.3] tracking-tight max-w-[80vw] text-center"
           style={{ fontSize: 'clamp(1.75rem, 3vw, 3rem)' }}
         >
           Other agencies build your website and disappear. We build it —{' '}
@@ -38,8 +38,8 @@ export default function Mission() {
   // whole section, so it reads as a short, tight section despite the fill
   // needing room. See MissionFillText for the fill math. ----
   return (
-    <section ref={sectionRef} className="relative h-[160vh] bg-base">
-      <div className="sticky top-0 h-screen flex items-center justify-center px-6 bg-base">
+    <section ref={sectionRef} data-nav-dark className="relative h-[160vh] bg-[#0A0A0A]">
+      <div className="sticky top-0 h-screen flex items-center justify-center px-6 bg-[#0A0A0A]">
         <MissionFillText text={STATEMENT} amberPhrase="and stay" scrollYProgress={scrollYProgress} />
       </div>
     </section>

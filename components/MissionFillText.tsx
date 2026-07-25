@@ -3,8 +3,11 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useMotionValueEvent, type MotionValue } from 'framer-motion'
 
-const GREY: [number, number, number] = [0xc9, 0xc6, 0xbf] // #C9C6BF — unfilled
-const INK: [number, number, number] = [0x16, 0x16, 0x1a] // #16161A — filled
+// Inverted for the black section bg: unfilled starts dim (close to the
+// black bg) and fills up to bone (light), the reverse of the original
+// light-bg version (grey -> ink).
+const GREY: [number, number, number] = [0x3a, 0x3a, 0x40] // dim — unfilled, close to black bg
+const INK: [number, number, number] = [0xf2, 0xf0, 0xeb] // #F2F0EB (bone) — filled
 const AMBER: [number, number, number] = [0xc9, 0x7f, 0x3d] // #C97F3D — "and stay"
 
 // The fill only runs across the middle of the section's scroll range — it

@@ -274,6 +274,7 @@ export default function PreciosIndexSection() {
     <section
       ref={sectionRef}
       id="precios"
+      data-nav-dark
       className="relative min-h-screen flex items-center overflow-hidden py-24 bg-[#0a0a0a]"
     >
       <video

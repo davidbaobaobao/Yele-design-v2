@@ -87,7 +87,7 @@ function ScrollRow({ cards, xMotion, big }: { cards: CardData[]; xMotion: Motion
 }
 
 /* ── Desktop sticky-scroll gallery (fullScreen mode) ── */
-function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?: boolean }) {
+function DesktopGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; noBg?: boolean; dark?: boolean }) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const travelMV   = useMotionValue(0)
   const [wrapperH, setWrapperH] = useState('250vh')
@@ -130,7 +130,7 @@ function DesktopGallery({ rows, noBg }: { rows: [CardData[], CardData[]]; noBg?:
   const x  = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t))
   const x2 = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t) - t * 0.08)
 
-  const gradFrom = noBg ? 'from-white' : 'from-base'
+  const gradFrom = dark ? 'from-[#0A0A0A]' : noBg ? 'from-white' : 'from-base'
 
   return (
     <div ref={wrapperRef} style={{ height: wrapperH }}>
@@ -247,7 +247,7 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
   )
 }
 
-export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen }: { projects: ShowcaseProject[]; noHeader?: boolean; noBg?: boolean; fullScreen?: boolean }) {
+export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen, dark }: { projects: ShowcaseProject[]; noHeader?: boolean; noBg?: boolean; fullScreen?: boolean; dark?: boolean }) {
   const { t } = useLang()
   const [rows, setRows] = useState<[CardData[], CardData[]] | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
@@ -289,10 +289,14 @@ export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen }:
     </Link>
   )
 
-  const gradFrom = noBg ? 'from-white' : 'from-base'
+  const gradFrom = dark ? 'from-[#0A0A0A]' : noBg ? 'from-white' : 'from-base'
 
   return (
-    <section ref={sectionRef} id={noHeader ? undefined : 'trabajos'} className={noBg ? '' : 'bg-white'}>
+    <section
+      ref={sectionRef}
+      id={noHeader ? undefined : 'trabajos'}
+      className={dark ? 'bg-[#0A0A0A]' : noBg ? '' : 'bg-white'}
+    >
       {/* Desktop */}
       <div className={`hidden md:block ${noHeader ? (fullScreen ? '' : 'py-10') : 'py-32'}`}>
         {!noHeader && (
@@ -303,7 +307,7 @@ export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen }:
 
         {/* Sticky horizontal scroll on fullScreen; parallax on regular */}
         {fullScreen && rows ? (
-          <DesktopGallery rows={rows} noBg={noBg} />
+          <DesktopGallery rows={rows} noBg={noBg} dark={dark} />
         ) : (
           <div className="relative space-y-4 overflow-hidden">
             <div className={`pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r ${gradFrom} to-transparent`} />

@@ -290,7 +290,7 @@ export default function WhatWeDo() {
   }, [reduceMotion])
 
   return (
-    <section className="wwd-strip-vars relative bg-white">
+    <section data-nav-dark className="wwd-strip-vars relative bg-[#0A0A0A]">
       <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
       <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
       <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />

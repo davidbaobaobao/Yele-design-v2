@@ -58,7 +58,7 @@ function WhyYeleCard({
   const poster = `${VIDEO_DIR}/${card.videoBase}_poster.jpg`
 
   const inner = (
-    <div className="max-w-[380px] md:max-w-[420px] mx-auto">
+    <div className="max-w-[380px] mx-auto">
       <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#EEEDE9]">
         {reduceMotion ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -173,7 +173,7 @@ export default function WhyYele() {
         </h2>
         <div className="border-t border-hairline mt-8" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-16 mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
           {CARDS.map((card, i) => (
             <WhyYeleCard key={card.videoBase} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
           ))}

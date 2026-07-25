@@ -55,16 +55,16 @@ export default function Home() {
         </div>
         <Mission />
         <WhatWeDo />
+        <div id="trabajos" data-nav-dark>
+          <Showcase noHeader noBg fullScreen dark />
+        </div>
         <WhyYele />
         <HowWeWork />
         <BeyondWebsite />
-        <div id="trabajos">
-          <Showcase noHeader noBg fullScreen />
-        </div>
+        <PreciosIndexSection />
         <WeStackSection />
         <VideoSnapController />
         <ComoFunciona noBg />
-        <PreciosIndexSection />
         <WhySubscription />
         <ShowcaseFeatureCards />
         <DiferenciaSection />
