@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState, type Ref, type RefObject } from 'react'
+import { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 
 const AMBER_DARK = '#C97F3D'
-const PLACEHOLDER = '#DDDAD3'
+const VIDEO_DIR = '/media/wesection'
 
 // Function-form transform helper — framer-motion's range-array useTransform
 // (mv, [in], [out]) doesn't reliably track live scroll updates in this app
@@ -21,230 +21,270 @@ function linearMap(inMin: number, inMax: number, outMin: number, outMax: number)
 
 type CardData = {
   n: string
-  title: [string, string]
+  title: string
   bg: string
   description: string
-  capabilities: [string, string, string, string]
-  image: string
-  imageAlt: string
+  capabilities: string[]
+  videoBase: string
   closingLine?: string
 }
 
 const CARDS: CardData[] = [
   {
     n: '01',
-    title: ['WE', 'DESIGN'],
+    title: 'We design',
     bg: '#F6F3EC',
     description:
       "Bold, custom, no templates. A website designed from scratch for your business and nobody else's.",
     capabilities: ['ART DIRECTION', 'UX & LAYOUT', 'BRANDING', 'MOBILE-FIRST'],
-    image: '/media/pillars/01_swarm.webp',
-    imageAlt: 'Loose particle swarm',
+    videoBase: 'wedesign',
   },
   {
     n: '02',
-    title: ['WE', 'BUILD'],
+    title: 'We build',
     bg: '#E6EAE1',
     description: 'Fast, reliable, SEO-ready. Live in one week, built to perform from day one.',
     capabilities: ['NEXT-GEN STACK', 'LOCAL SEO', 'PERFORMANCE', 'HOSTING & DOMAIN'],
-    image: '/media/pillars/02_assembly.webp',
-    imageAlt: 'Particles aligning into blocks',
+    videoBase: 'webuild',
   },
   {
     n: '03',
-    title: ['WE', 'CREATE'],
+    title: 'We create',
     bg: '#E2E8EE',
     description:
       'Photography, video, copy and illustration. Content that makes your site stand out — included.',
     capabilities: ['PHOTO & VIDEO', 'COPYWRITING', 'ILLUSTRATION', 'SOCIAL ASSETS'],
-    image: '/media/pillars/03_structure.webp',
-    imageAlt: 'Half-formed block structure',
+    videoBase: 'wecreate',
   },
   {
     n: '04',
-    title: ['WE', 'MAINTAIN'],
+    title: 'We maintain',
     bg: '#F0E7DA',
     description:
       "Hosting, security, updates and every change you need. Handled forever — that's the point.",
     capabilities: ['24/7 SUPPORT', 'UPDATES INCLUDED', 'SECURITY', 'ALWAYS IMPROVING'],
-    image: '/media/pillars/04_monolith.webp',
-    imageAlt: 'Finished glowing block monolith',
+    videoBase: 'wemantain',
     closingLine: 'BUILT. STAYING.',
   },
 ]
 
-function PillarImage({ src, alt }: { src: string; alt: string }) {
-  const [errored, setErrored] = useState(false)
-
-  if (errored) {
-    return <div className="w-full h-full" style={{ backgroundColor: PLACEHOLDER }} aria-hidden="true" />
-  }
+function VideoPanel({
+  videoRef,
+  videoBase,
+  title,
+  reduceMotion,
+}: {
+  videoRef: React.Ref<HTMLVideoElement>
+  videoBase: string
+  title: string
+  reduceMotion: boolean
+}) {
+  const poster = `${VIDEO_DIR}/${videoBase}_poster.jpg`
 
   return (
-    <Image
-      src={src}
-      alt={alt}
-      fill
-      sizes="(max-width: 768px) 100vw, 50vw"
-      className="object-cover"
-      onError={() => setErrored(true)}
-    />
+    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-hairline">
+      {reduceMotion ? (
+        <Image src={poster} alt={title} fill sizes="(max-width: 768px) 100vw, 40vw" className="object-cover" />
+      ) : (
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={poster}
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src={`${VIDEO_DIR}/${videoBase}_hq.webm`} type="video/webm" />
+          <source src={`${VIDEO_DIR}/${videoBase}_hq.mp4`} type="video/mp4" />
+        </video>
+      )}
+    </div>
   )
 }
 
 function WhatWeDoCard({
   card,
-  cardRef,
-  nextRef,
-  isMobile,
+  index,
+  videoRef,
+  dim,
   reduceMotion,
+  rootRef,
 }: {
   card: CardData
-  cardRef: Ref<HTMLDivElement>
-  nextRef: RefObject<HTMLElement | null>
-  isMobile: boolean
+  index: number
+  videoRef: React.Ref<HTMLVideoElement>
+  dim: MotionValue<number> | null
   reduceMotion: boolean
+  rootRef?: React.Ref<HTMLDivElement>
 }) {
-  const { scrollYProgress } = useScroll({
-    target: nextRef,
-    offset: ['start end', 'start start'],
-  })
+  const stickyStyle = {
+    top: `calc(var(--wwd-nav-h) + ${index} * var(--wwd-strip-h))`,
+    height: `calc(100vh - var(--wwd-nav-h) - ${index} * var(--wwd-strip-h))`,
+  }
 
-  const targetScale = isMobile ? 0.97 : 0.94
-  const scale = useTransform(scrollYProgress, v => linearMap(0, 1, 1, targetScale)(v))
-  const translateY = useTransform(scrollYProgress, v => `${linearMap(0, 1, 0, -3)(v)}vh`)
-  const dim = useTransform(scrollYProgress, v => linearMap(0, 1, 0, 0.12)(v))
-
-  const content = (
-    <div className="relative h-full min-h-screen px-6 md:px-12 py-14 md:py-16 flex flex-col justify-between">
-      <div>
-        <p className="font-mono text-xs uppercase tracking-widest text-muted mb-6">
-          {card.n} — WHAT WE DO
-        </p>
-        <h2 className="font-display font-black uppercase text-ink leading-[0.9] tracking-tight text-[clamp(2.5rem,13vw,5rem)] md:text-[clamp(4rem,9vw,11rem)]">
-          <span className="md:hidden">
-            {card.title[0]}
-            <br />
-            {card.title[1]}
-          </span>
-          <span className="hidden md:inline whitespace-nowrap">
-            {card.title[0]} {card.title[1]}
-          </span>
-        </h2>
+  const inner = (
+    <div
+      style={{ backgroundColor: card.bg, willChange: 'transform' }}
+      className="relative flex flex-col h-full rounded-t-[2rem] border-t border-hairline overflow-hidden"
+    >
+      {/* Header strip — fixed height, stays visible when the card is
+          collapsed under later cards. */}
+      <div className="shrink-0 flex items-center justify-between px-8" style={{ height: 'var(--wwd-strip-h)' }}>
+        <h2 className="font-display font-bold text-ink text-[28px] md:text-[44px]">{card.title}</h2>
+        <span className="font-mono text-sm text-muted">{card.n}</span>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-end mt-10">
-        <div>
-          <p className="font-body text-ink max-w-md text-base md:text-lg leading-relaxed mb-6">
-            {card.description}
-          </p>
-          <div className="font-mono text-xs uppercase tracking-widest text-muted space-y-1.5">
+      {/* Body — the part that gets covered as the next card arrives. */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-10 min-h-0">
+        <div className="md:col-span-5 self-end">
+          <p className="font-body text-lg max-w-md text-ink">{card.description}</p>
+        </div>
+        <div className="md:col-start-6 md:col-span-2 self-end">
+          <div className="font-mono text-sm uppercase text-ink/70 space-y-1.5">
             {card.capabilities.map(c => (
               <div key={c}>{c}</div>
             ))}
           </div>
         </div>
-        <div className="relative aspect-[4/3] rounded-3xl border border-hairline overflow-hidden">
-          <PillarImage src={card.image} alt={card.imageAlt} />
+        <div className="md:col-start-8 md:col-span-5 self-center">
+          <VideoPanel videoRef={videoRef} videoBase={card.videoBase} title={card.title} reduceMotion={reduceMotion} />
         </div>
       </div>
 
       {card.closingLine && (
-        <p
-          className="font-mono text-sm md:text-base mt-10 text-right"
-          style={{ color: AMBER_DARK }}
-        >
+        <p className="absolute bottom-6 right-8 font-mono text-sm md:text-base" style={{ color: AMBER_DARK }}>
           {card.closingLine}
         </p>
+      )}
+
+      {dim && (
+        <motion.div style={{ opacity: dim }} className="absolute inset-0 bg-ink pointer-events-none" aria-hidden="true" />
       )}
     </div>
   )
 
   if (reduceMotion) {
     return (
-      <div
-        ref={cardRef}
-        className="min-h-screen rounded-t-[2.5rem] border-t border-hairline"
-        style={{ backgroundColor: card.bg }}
-      >
-        {content}
+      <div ref={rootRef} className="min-h-screen">
+        {inner}
       </div>
     )
   }
 
-  // The sticky positioning lives on a plain, untransformed outer element —
-  // applying the scale/translate transform directly to a position:sticky
-  // element corrupts its containing-block math (verified: it un-sticks and
-  // scrolls away early instead of staying pinned). The transform, rounded
-  // clipping and dim overlay all live on an inner wrapper instead.
+  // All four cards are direct siblings sharing the <section> as their
+  // sticky containing block — NOT individually wrapped. A sticky element
+  // stays pinned only while the *remaining space in its containing block*
+  // is still >= its own height, so sharing one large containing block gives
+  // cards 1-3 plenty of room to stay pinned as strips all the way through
+  // the rest of the section (verified: wrapping each card in its own
+  // min-h-screen box, which was tried first, caps each card's dwell to just
+  // its own slot — cards 1-3 then un-stick and scroll away instead of
+  // remaining stacked, breaking the effect). Card 4 is the one exception:
+  // as the last child its natural bottom always coincides with the
+  // section's end, giving it zero dwell — fixed with a trailing sentinel,
+  // see the bottom of the component below.
   return (
-    <div ref={cardRef} className="sticky top-0 min-h-screen">
-      <motion.div
-        style={{
-          scale,
-          y: translateY,
-          transformOrigin: 'center top',
-          willChange: 'transform',
-          backgroundColor: card.bg,
-        }}
-        className="relative min-h-screen rounded-t-[2.5rem] border-t border-hairline overflow-hidden"
-      >
-        {content}
-        <motion.div
-          style={{ opacity: dim }}
-          className="absolute inset-0 bg-ink pointer-events-none"
-          aria-hidden="true"
-        />
-      </motion.div>
+    <div ref={rootRef} className="sticky" style={stickyStyle}>
+      {inner}
     </div>
   )
 }
 
-export default function WhatWeDo() {
-  const reduceMotion = useReducedMotion()
-  const [isMobile, setIsMobile] = useState(false)
+// Dim driver for card `index`, based on how far the *next* card (nextRef)
+// has approached — same proven function-form useTransform pattern as
+// elsewhere in this app.
+function useCoverDim(nextRef: React.RefObject<HTMLElement | null>) {
+  const { scrollYProgress } = useScroll({ target: nextRef, offset: ['start end', 'start start'] })
+  return useTransform(scrollYProgress, v => linearMap(0, 1, 0, 0.15)(v))
+}
 
-  const card1Ref = useRef<HTMLDivElement>(null)
+export default function WhatWeDo() {
+  const reduceMotion = !!useReducedMotion()
+
   const card2Ref = useRef<HTMLDivElement>(null)
   const card3Ref = useRef<HTMLDivElement>(null)
   const card4Ref = useRef<HTMLDivElement>(null)
-  const sentinelRef = useRef<HTMLDivElement>(null)
 
-  const cardRefs = [card1Ref, card2Ref, card3Ref, card4Ref]
-  // Card i's contraction is driven by the element right after it — cards
-  // 1-3 target the next card, card 4 targets this trailing sentinel so its
-  // contraction is driven by whatever section follows WhatWeDo on the page,
-  // without WhatWeDo needing to know what that section is.
-  const nextRefs: RefObject<HTMLElement | null>[] = [card2Ref, card3Ref, card4Ref, sentinelRef]
+  const dim1 = useCoverDim(card2Ref)
+  const dim2 = useCoverDim(card3Ref)
+  const dim3 = useCoverDim(card4Ref)
 
+  const video1Ref = useRef<HTMLVideoElement>(null)
+  const video2Ref = useRef<HTMLVideoElement>(null)
+  const video3Ref = useRef<HTMLVideoElement>(null)
+  const video4Ref = useRef<HTMLVideoElement>(null)
+  const videoRefs = [video1Ref, video2Ref, video3Ref, video4Ref]
+
+  // One shared IntersectionObserver drives play/pause for all four videos —
+  // play once a card is >=30% visible, pause otherwise. The stacking means
+  // at most two cards are ever meaningfully on screen at once.
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)')
-    const update = () => setIsMobile(mq.matches)
-    update()
-    mq.addEventListener('change', update)
-    return () => mq.removeEventListener('change', update)
-  }, [])
+    if (reduceMotion) return
+    const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
+    if (videos.length === 0) return
+
+    videos.forEach(v => {
+      v.setAttribute('muted', '')
+      v.setAttribute('playsinline', '')
+      v.setAttribute('webkit-playsinline', '')
+      v.muted = true
+    })
+
+    const play = (v: HTMLVideoElement) => {
+      if (!v.paused && !v.ended) return
+      v.muted = true
+      if (v.ended) v.currentTime = 0
+      if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
+      v.play().catch(() => {
+        setTimeout(() => {
+          if (v.paused || v.ended) {
+            v.muted = true
+            v.play().catch(() => {})
+          }
+        }, 300)
+      })
+    }
+
+    const onEnded = (e: Event) => play(e.target as HTMLVideoElement)
+    videos.forEach(v => v.addEventListener('ended', onEnded))
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const v = entry.target as HTMLVideoElement
+          if (entry.isIntersecting) play(v)
+          else v.pause()
+        })
+      },
+      { threshold: 0.3 }
+    )
+    videos.forEach(v => observer.observe(v))
+
+    return () => {
+      observer.disconnect()
+      videos.forEach(v => v.removeEventListener('ended', onEnded))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion])
 
   return (
-    <section className="relative bg-[#0A0A0A]">
-      {CARDS.map((card, i) => (
-        <WhatWeDoCard
-          key={card.n}
-          card={card}
-          cardRef={cardRefs[i]}
-          nextRef={nextRefs[i]}
-          isMobile={isMobile}
-          reduceMotion={!!reduceMotion}
-        />
-      ))}
-      {/* Trailing buffer the same color as card 4: a sticky element whose
-          height equals the viewport has a zero-duration stuck window (it
-          releases the instant it arrives), which cards 1-3 mask because the
-          next card's normal-flow entry covers the release — card 4 has
-          nothing behind it to do that, so this gives it the same one-
-          viewport dwell/contraction room instead of exposing the section's
-          background for a frame. */}
-      <div ref={sentinelRef} className="h-screen" style={{ backgroundColor: CARDS[3].bg }} aria-hidden="true" />
+    <section className="wwd-strip-vars relative bg-[#0A0A0A]">
+      <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
+      <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
+      <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
+      <WhatWeDoCard card={CARDS[3]} index={3} videoRef={video4Ref} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
+      {/* Card 4, as the last child, has its natural bottom coincide exactly
+          with the section's own end — giving it zero dwell (verified: it
+          releases and scrolls away the instant it arrives, with no buffer).
+          This trailing sentinel, colored to match, gives it real hold time;
+          any release that still happens within it is invisible since the
+          color is identical. Not needed in the reduced-motion path, which
+          doesn't use sticky at all. */}
+      {!reduceMotion && (
+        <div className="h-screen" style={{ backgroundColor: CARDS[3].bg }} aria-hidden="true" />
+      )}
     </section>
   )
 }

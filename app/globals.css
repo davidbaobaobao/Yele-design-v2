@@ -124,3 +124,17 @@ html.sand-helix-page body {
 /* Hide scrollbar cross-browser */
 .hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* "What we do" stacked cards — collapsed-strip height, in one place so the
+   per-card sticky top/height calc()s (WhatWeDo.tsx) and the strip's own
+   fixed height agree at every breakpoint without JS. */
+.wwd-strip-vars {
+  --wwd-nav-h: 72px;
+  --wwd-strip-h: 88px;
+}
+@media (max-width: 767px) {
+  .wwd-strip-vars { --wwd-strip-h: 64px; }
+}
+@media (max-height: 699px) {
+  .wwd-strip-vars { --wwd-strip-h: 64px; }
+}
