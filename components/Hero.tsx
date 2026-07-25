@@ -173,7 +173,7 @@ export default function Hero() {
     <h1
       ref={headlineRef}
       className={`${headlineClass} absolute inset-x-0 top-[6vh] text-center text-bone px-4`}
-      style={{ fontSize: 'clamp(2.75rem, 9.8vw, 210px)', textShadow: 'none' }}
+      style={{ fontSize: 'clamp(4rem, 12vw, 290px)', textShadow: 'none' }}
     >
       BUILD TO<br className="md:hidden" /> STAY.
     </h1>
@@ -183,7 +183,7 @@ export default function Hero() {
     'Websites for small businesses — designed, built and maintained by Yele. You run the business. We run the website.'
 
   const captionCardClass =
-    'absolute bottom-0 inset-x-0 md:inset-x-auto md:right-0 font-body text-bone leading-relaxed bg-[#0A0A0A] p-8 text-lg md:text-xl max-w-md w-full md:w-auto rounded-t-2xl rounded-b-none md:rounded-tl-2xl md:rounded-tr-none md:rounded-bl-none'
+    'absolute bottom-0 inset-x-0 md:inset-x-auto md:right-0 font-body text-bone leading-snug bg-[#0A0A0A] p-10 text-xl md:text-2xl max-w-md w-full md:w-auto rounded-t-2xl rounded-b-none md:rounded-tl-3xl md:rounded-tr-none md:rounded-bl-3xl'
 
   // ---- Reduced-motion fallback: static layout, no parallax, no mask ----
   if (reduceMotion) {

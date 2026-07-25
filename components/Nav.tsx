@@ -63,7 +63,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
     <>
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
-          overHero ? 'bg-transparent' : 'backdrop-blur-xl bg-base/70 border-b border-hairline'
+          overHero ? 'bg-transparent' : 'backdrop-blur-xl bg-base/70'
         }`}
       >
         <nav className="relative flex items-center justify-between h-20 px-6 md:px-10">

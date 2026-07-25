@@ -1,9 +1,32 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion, useInView, type Variants } from 'framer-motion'
 
 const VIDEO_DIR = '/media/whyyele'
+
+// Sequenced reveal: bg color resolves first, then heading+cards fade in
+// after a delay — driven by explicit variants rather than scroll progress,
+// triggered once by useInView. "when: beforeChildren" + delayChildren is
+// what enforces the bg-then-content ordering.
+const sectionVariants: Variants = {
+  hidden: { backgroundColor: '#0A0A0A' },
+  visible: {
+    backgroundColor: '#F7F6F3',
+    transition: {
+      duration: 0.6,
+      ease: 'easeInOut',
+      when: 'beforeChildren',
+      staggerChildren: 0.08,
+      delayChildren: 0.5,
+    },
+  },
+}
+
+const childVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+}
 
 type CardData = {
   title: string
@@ -46,12 +69,10 @@ const CARDS: CardData[] = [
 
 function WhyYeleCard({
   card,
-  index,
   videoRef,
   reduceMotion,
 }: {
   card: CardData
-  index: number
   videoRef: React.Ref<HTMLVideoElement>
   reduceMotion: boolean
 }) {
@@ -89,20 +110,18 @@ function WhyYeleCard({
 
   if (reduceMotion) return inner
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
-    >
-      {inner}
-    </motion.div>
-  )
+  return <motion.div variants={childVariants}>{inner}</motion.div>
 }
 
 export default function WhyYele() {
   const reduceMotion = !!useReducedMotion()
+  const sectionRef = useRef<HTMLElement>(null)
+  const inView = useInView(sectionRef, { once: true, margin: '-20% 0px' })
+  const [entered, setEntered] = useState(false)
+
+  useEffect(() => {
+    if (inView) setEntered(true)
+  }, [inView])
 
   const videoRefs = [
     useRef<HTMLVideoElement>(null),
@@ -115,7 +134,7 @@ export default function WhyYele() {
 
   // One shared IntersectionObserver drives play/pause for all six videos —
   // play once a card is >=30% visible, pause otherwise, so we never force
-  // all six to decode/play at once.
+  // all six to decode/play at once. Independent of the entrance animation.
   useEffect(() => {
     if (reduceMotion) return
     const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
@@ -165,20 +184,48 @@ export default function WhyYele() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion])
 
+  const heading = (
+    <>
+      <h2 className="font-display text-ink text-[clamp(1.5rem,2.5vw,2.25rem)] leading-tight">
+        Everything included. Nothing hidden.
+      </h2>
+      <div className="border-t border-hairline mt-8" />
+    </>
+  )
+
+  // Reduced motion: no bg animation, static light bg, cards visible immediately.
+  if (reduceMotion) {
+    return (
+      <section className="relative bg-base py-28 px-6">
+        <div className="max-w-6xl mx-auto">
+          {heading}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
+            {CARDS.map((card, i) => (
+              <WhyYeleCard key={card.videoBase} card={card} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
-    <section className="bg-base py-28 px-6">
+    <motion.section
+      ref={sectionRef}
+      variants={sectionVariants}
+      initial="hidden"
+      animate={entered ? 'visible' : 'hidden'}
+      className="relative py-28 px-6"
+    >
       <div className="max-w-6xl mx-auto">
-        <h2 className="font-display text-ink text-[clamp(1.5rem,2.5vw,2.25rem)] leading-tight">
-          Everything included. Nothing hidden.
-        </h2>
-        <div className="border-t border-hairline mt-8" />
+        <motion.div variants={childVariants}>{heading}</motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
           {CARDS.map((card, i) => (
-            <WhyYeleCard key={card.videoBase} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
+            <WhyYeleCard key={card.videoBase} card={card} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }

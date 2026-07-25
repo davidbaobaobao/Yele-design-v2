@@ -135,7 +135,7 @@ function WhatWeDoCard({
     // section's total scroll length (the sticky containing-block dwell
     // math below doesn't need a separate wrapper div to achieve that — a
     // smaller fixed height already tightens it directly).
-    height: 'min(72vh, 640px)',
+    height: 'min(48vh, 440px)',
   }
 
   const inner = (
@@ -157,7 +157,7 @@ function WhatWeDoCard({
           from the very first frame, so bottom-anchored content (self-end)
           was getting truncated almost immediately instead of staying clear
           until the card actually starts collapsing. */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-8 pt-2 min-h-0">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-6 pt-2 min-h-0">
         <div className="md:col-span-5 self-start">
           <p className="font-body text-base md:text-lg max-w-md text-ink">{card.description}</p>
         </div>
@@ -187,7 +187,7 @@ function WhatWeDoCard({
 
   if (reduceMotion) {
     return (
-      <div ref={rootRef} className="min-h-screen">
+      <div ref={rootRef} className="min-h-[58vh]">
         {inner}
       </div>
     )
@@ -303,7 +303,7 @@ export default function WhatWeDo() {
           color is identical. Not needed in the reduced-motion path, which
           doesn't use sticky at all. */}
       {!reduceMotion && (
-        <div style={{ height: 'min(72vh, 640px)', backgroundColor: CARDS[3].bg }} aria-hidden="true" />
+        <div style={{ height: 'min(48vh, 440px)', backgroundColor: CARDS[3].bg }} aria-hidden="true" />
       )}
     </section>
   )

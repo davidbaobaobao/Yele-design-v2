@@ -1,9 +1,33 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion, useInView, type Variants } from 'framer-motion'
 
 const MEDIA_DIR = '/media/beyond'
+
+// Sequenced reveal — mirror of WhyYele's dark->light one, just inverted:
+// bg color resolves first (light -> dark), then heading+cards fade in
+// after a delay. Driven by explicit variants rather than scroll progress,
+// triggered once by useInView. "when: beforeChildren" + delayChildren is
+// what enforces the bg-then-content ordering.
+const sectionVariants: Variants = {
+  hidden: { backgroundColor: '#F7F6F3' },
+  visible: {
+    backgroundColor: '#0A0A0A',
+    transition: {
+      duration: 0.6,
+      ease: 'easeInOut',
+      when: 'beforeChildren',
+      staggerChildren: 0.08,
+      delayChildren: 0.5,
+    },
+  },
+}
+
+const childVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+}
 
 type CardData = {
   title: string
@@ -80,12 +104,10 @@ function Media({
 
 function BeyondCard({
   card,
-  index,
   videoRef,
   reduceMotion,
 }: {
   card: CardData
-  index: number
   videoRef: React.Ref<HTMLVideoElement>
   reduceMotion: boolean
 }) {
@@ -103,20 +125,18 @@ function BeyondCard({
 
   if (reduceMotion) return inner
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
-    >
-      {inner}
-    </motion.div>
-  )
+  return <motion.div variants={childVariants}>{inner}</motion.div>
 }
 
 export default function BeyondWebsite() {
   const reduceMotion = !!useReducedMotion()
+  const sectionRef = useRef<HTMLElement>(null)
+  const inView = useInView(sectionRef, { once: true, margin: '-20% 0px' })
+  const [entered, setEntered] = useState(false)
+
+  useEffect(() => {
+    if (inView) setEntered(true)
+  }, [inView])
 
   const videoRefs = [
     useRef<HTMLVideoElement>(null),
@@ -128,8 +148,9 @@ export default function BeyondWebsite() {
   ]
 
   // One shared IntersectionObserver drives play/pause for all six panels —
-  // play once a card is >=30% visible, pause otherwise. No-op today since
-  // the dummy media is all .jpg, but wired for when real .mp4s land.
+  // play once a card is >=30% visible, pause otherwise. Independent of the
+  // entrance animation. No-op today since the dummy media is all .jpg, but
+  // wired for when real .mp4s land.
   useEffect(() => {
     if (reduceMotion) return
     const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
@@ -179,24 +200,53 @@ export default function BeyondWebsite() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion])
 
+  const heading = (
+    <>
+      <span className="block font-mono text-sm text-[#8A8A92] mb-4">BEYOND THE WEBSITE</span>
+      <h2 className="font-display text-bone text-[clamp(1.75rem,2.5vw,2.5rem)] leading-tight">
+        Everything that makes your website work harder.
+      </h2>
+      <p className="font-body text-[#8A8A92] max-w-xl mt-4">
+        Growth services, included in Pro and Frontier.
+      </p>
+      <div className="border-t border-hairlineDark mt-8" />
+    </>
+  )
+
+  // Reduced motion: no bg animation, static dark bg, cards visible immediately.
+  if (reduceMotion) {
+    return (
+      <section data-nav-dark className="relative bg-[#0A0A0A] py-28 px-6">
+        <div className="max-w-6xl mx-auto">
+          {heading}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
+            {CARDS.map((card, i) => (
+              <BeyondCard key={card.media} card={card} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
-    <section data-nav-dark className="bg-[#0A0A0A] py-28 px-6">
+    <motion.section
+      ref={sectionRef}
+      data-nav-dark
+      variants={sectionVariants}
+      initial="hidden"
+      animate={entered ? 'visible' : 'hidden'}
+      className="relative py-28 px-6"
+    >
       <div className="max-w-6xl mx-auto">
-        <span className="block font-mono text-sm text-[#8A8A92] mb-4">BEYOND THE WEBSITE</span>
-        <h2 className="font-display text-bone text-[clamp(1.75rem,2.5vw,2.5rem)] leading-tight">
-          Everything that makes your website work harder.
-        </h2>
-        <p className="font-body text-[#8A8A92] max-w-xl mt-4">
-          Growth services, included in Pro and Frontier.
-        </p>
-        <div className="border-t border-hairlineDark mt-8" />
+        <motion.div variants={childVariants}>{heading}</motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
           {CARDS.map((card, i) => (
-            <BeyondCard key={card.media} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
+            <BeyondCard key={card.media} card={card} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
