@@ -33,7 +33,7 @@ const CARDS: CardData[] = [
   {
     n: '01',
     title: 'We design',
-    bg: '#F6F3EC',
+    bg: '#E8CE8F', // amber gold — matches wedesign video bg
     description:
       "Bold, custom, no templates. A website designed from scratch for your business and nobody else's.",
     capabilities: ['ART DIRECTION', 'UX & LAYOUT', 'BRANDING', 'MOBILE-FIRST'],
@@ -42,7 +42,7 @@ const CARDS: CardData[] = [
   {
     n: '02',
     title: 'We build',
-    bg: '#E6EAE1',
+    bg: '#B8C0E8', // periwinkle blue — matches webuild video bg
     description: 'Fast, reliable, SEO-ready. Live in one week, built to perform from day one.',
     capabilities: ['NEXT-GEN STACK', 'LOCAL SEO', 'PERFORMANCE', 'HOSTING & DOMAIN'],
     videoBase: 'webuild',
@@ -50,7 +50,7 @@ const CARDS: CardData[] = [
   {
     n: '03',
     title: 'We create',
-    bg: '#E2E8EE',
+    bg: '#EBC9DD', // pink iridescent — matches wecreate video bg
     description:
       'Photography, video, copy and illustration. Content that makes your site stand out — included.',
     capabilities: ['PHOTO & VIDEO', 'COPYWRITING', 'ILLUSTRATION', 'SOCIAL ASSETS'],
@@ -59,7 +59,7 @@ const CARDS: CardData[] = [
   {
     n: '04',
     title: 'We maintain',
-    bg: '#F0E7DA',
+    bg: '#C9D2E0', // pale sky blue — matches wemantain video bg
     description:
       "Hosting, security, updates and every change you need. Handled forever — that's the point.",
     capabilities: ['24/7 SUPPORT', 'UPDATES INCLUDED', 'SECURITY', 'ALWAYS IMPROVING'],
@@ -81,8 +81,16 @@ function VideoPanel({
 }) {
   const poster = `${VIDEO_DIR}/${videoBase}_poster.jpg`
 
+  // Borderless, larger radius, and a left-edge fade so the video's own
+  // background tone dissolves into the card bg behind it instead of
+  // showing a hard rectangle edge — frameless look.
+  const fadeMask = 'linear-gradient(to right, transparent 0%, black 12%)'
+
   return (
-    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-hairline">
+    <div
+      className="relative w-full aspect-video rounded-3xl overflow-hidden"
+      style={{ WebkitMaskImage: fadeMask, maskImage: fadeMask }}
+    >
       {reduceMotion ? (
         <Image src={poster} alt={title} fill sizes="(max-width: 768px) 100vw, 40vw" className="object-cover" />
       ) : (
@@ -121,7 +129,13 @@ function WhatWeDoCard({
 }) {
   const stickyStyle = {
     top: `calc(var(--wwd-nav-h) + ${index} * var(--wwd-strip-h))`,
-    height: `calc(100vh - var(--wwd-nav-h) - ${index} * var(--wwd-strip-h))`,
+    // Fixed height, same for every card (not decreasing per index like
+    // before) — rocketweblabs cards read as ~60-70vh, not near-full-
+    // viewport. This also shortens each card's own contribution to the
+    // section's total scroll length (the sticky containing-block dwell
+    // math below doesn't need a separate wrapper div to achieve that — a
+    // smaller fixed height already tightens it directly).
+    height: 'min(72vh, 640px)',
   }
 
   const inner = (
@@ -136,19 +150,25 @@ function WhatWeDoCard({
         <span className="font-mono text-sm text-muted">{card.n}</span>
       </div>
 
-      {/* Body — the part that gets covered as the next card arrives. */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-10 min-h-0">
-        <div className="md:col-span-5 self-end">
-          <p className="font-body text-lg max-w-md text-ink">{card.description}</p>
+      {/* Body — the part that gets covered as the next card arrives. Content
+          sits right below the strip (self-start), not anchored to the
+          bottom: now that cards are shorter than the viewport, the next
+          card's natural position already reaches partway up the screen
+          from the very first frame, so bottom-anchored content (self-end)
+          was getting truncated almost immediately instead of staying clear
+          until the card actually starts collapsing. */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-8 pt-2 min-h-0">
+        <div className="md:col-span-5 self-start">
+          <p className="font-body text-base md:text-lg max-w-md text-ink">{card.description}</p>
         </div>
-        <div className="md:col-start-6 md:col-span-2 self-end">
+        <div className="md:col-start-6 md:col-span-2 self-start">
           <div className="font-mono text-sm uppercase text-ink/70 space-y-1.5">
             {card.capabilities.map(c => (
               <div key={c}>{c}</div>
             ))}
           </div>
         </div>
-        <div className="md:col-start-8 md:col-span-5 self-center">
+        <div className="md:col-start-8 md:col-span-5 self-start">
           <VideoPanel videoRef={videoRef} videoBase={card.videoBase} title={card.title} reduceMotion={reduceMotion} />
         </div>
       </div>
@@ -270,7 +290,7 @@ export default function WhatWeDo() {
   }, [reduceMotion])
 
   return (
-    <section className="wwd-strip-vars relative bg-[#0A0A0A]">
+    <section className="wwd-strip-vars relative bg-white">
       <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
       <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
       <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
@@ -283,7 +303,7 @@ export default function WhatWeDo() {
           color is identical. Not needed in the reduced-motion path, which
           doesn't use sticky at all. */}
       {!reduceMotion && (
-        <div className="h-screen" style={{ backgroundColor: CARDS[3].bg }} aria-hidden="true" />
+        <div style={{ height: 'min(72vh, 640px)', backgroundColor: CARDS[3].bg }} aria-hidden="true" />
       )}
     </section>
   )

@@ -1,71 +1,108 @@
 'use client'
 
-import { Fragment, useMemo, useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { Fragment, useMemo, useState } from 'react'
+import { useMotionValueEvent, type MotionValue } from 'framer-motion'
 
 const GREY: [number, number, number] = [0xc9, 0xc6, 0xbf] // #C9C6BF — unfilled
 const INK: [number, number, number] = [0x16, 0x16, 0x1a] // #16161A — filled
 const AMBER: [number, number, number] = [0xc9, 0x7f, 0x3d] // #C97F3D — "and stay"
 
+// The fill only runs across the middle of the section's scroll range — it
+// starts just after the section pins and finishes just before it releases.
+const FILL_START = 0.05
+const FILL_END = 0.85
+// Characters within this many positions of the fill edge blend instead of
+// snapping, for a soft edge rather than a hard cut.
+const BOUNDARY_CHARS = 2
+
+type WordToken = {
+  word: string
+  isAmberTarget: boolean
+  chars: { ch: string; idx: number }[]
+}
+
 // Strip surrounding punctuation so "stay." matches the target word "stay".
 const bareWord = (w: string) => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')
-
-// Function-form transform — framer-motion's range-array useTransform (mv,
-// [in], [out]) doesn't reliably track live scroll updates in this app
-// (found and worked around the same way in Hero.tsx/WhatWeDo.tsx). Colors
-// are interpolated by hand instead of relying on useTransform's built-in
-// color tweening, which only works with the array form.
-function colorMap(to: [number, number, number]) {
-  return (v: number) => {
-    const t = Math.max(0, Math.min(1, v))
-    const r = Math.round(GREY[0] + (to[0] - GREY[0]) * t)
-    const g = Math.round(GREY[1] + (to[1] - GREY[1]) * t)
-    const b = Math.round(GREY[2] + (to[2] - GREY[2]) * t)
-    return `rgb(${r}, ${g}, ${b})`
-  }
-}
-
-function Word({ word, isAmberTarget, isLast }: { word: string; isAmberTarget: boolean; isLast: boolean }) {
-  const ref = useRef<HTMLSpanElement>(null)
-  // Progress 0 when the word's top hits 90% of viewport height (just
-  // entering from the bottom), 1 when it reaches 45% (upper-middle) — each
-  // word tracks its own position, not one shared section-level progress, so
-  // lines already on screen read as further along than lines just arriving.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.9', 'start 0.45'] })
-  const color = useTransform(scrollYProgress, colorMap(isAmberTarget ? AMBER : INK))
-
-  return (
-    <Fragment>
-      <motion.span ref={ref} style={{ color }} className="inline-block whitespace-nowrap">
-        {word}
-      </motion.span>
-      {!isLast ? ' ' : ''}
-    </Fragment>
-  )
-}
 
 function buildWords(text: string, amberPhrase: string) {
   const rawWords = text.split(' ')
   const amberWords = amberPhrase.split(' ').map(bareWord)
-  return rawWords.map((word, wi) => {
+  let globalIndex = 0
+
+  const words: WordToken[] = rawWords.map((word, wi) => {
     const isAmberTarget = amberWords.some((_, offset) => {
       const start = wi - offset
       if (start < 0) return false
       return amberWords.every((aw, k) => bareWord(rawWords[start + k] ?? '') === aw)
     })
-    return { word, isAmberTarget }
+    const chars = Array.from(word).map(ch => ({ ch, idx: globalIndex++ }))
+    return { word, isAmberTarget, chars }
   })
+
+  return { words, totalChars: globalIndex }
 }
 
-export default function MissionFillText({ text, amberPhrase }: { text: string; amberPhrase: string }) {
-  const words = useMemo(() => buildWords(text, amberPhrase), [text, amberPhrase])
+function mapProgressToFillIndex(p: number, totalChars: number) {
+  if (p <= FILL_START) return 0
+  if (p >= FILL_END) return totalChars
+  return (totalChars * (p - FILL_START)) / (FILL_END - FILL_START)
+}
+
+function mix(c1: [number, number, number], c2: [number, number, number], t: number) {
+  const k = Math.max(0, Math.min(1, t))
+  const r = Math.round(c1[0] + (c2[0] - c1[0]) * k)
+  const g = Math.round(c1[1] + (c2[1] - c1[1]) * k)
+  const b = Math.round(c1[2] + (c2[2] - c1[2]) * k)
+  return `rgb(${r}, ${g}, ${b})`
+}
+
+const rgbStr = (c: [number, number, number]) => `rgb(${c[0]}, ${c[1]}, ${c[2]})`
+
+// d = how far past this char the fill has progressed. d >= BOUNDARY_CHARS is
+// solid filled, d <= 0 is solid grey, in between blends for a soft edge.
+function charColor(charIndex: number, fillIndex: number, isAmberTarget: boolean): string {
+  const target = isAmberTarget ? AMBER : INK
+  const d = fillIndex - charIndex
+  if (d >= BOUNDARY_CHARS) return rgbStr(target)
+  if (d <= 0) return rgbStr(GREY)
+  return mix(GREY, target, d / BOUNDARY_CHARS)
+}
+
+export default function MissionFillText({
+  text,
+  amberPhrase,
+  scrollYProgress,
+}: {
+  text: string
+  amberPhrase: string
+  scrollYProgress: MotionValue<number>
+}) {
+  const { words, totalChars } = useMemo(() => buildWords(text, amberPhrase), [text, amberPhrase])
+
+  const [fillIndex, setFillIndex] = useState(() =>
+    Math.round(mapProgressToFillIndex(scrollYProgress.get(), totalChars))
+  )
+
+  useMotionValueEvent(scrollYProgress, 'change', v => {
+    const rounded = Math.round(mapProgressToFillIndex(v, totalChars))
+    setFillIndex(prev => (prev === rounded ? prev : rounded))
+  })
 
   return (
-    <p className="font-display font-bold leading-[1.25] tracking-tight max-w-[80vw] text-[clamp(1.75rem,3.2vw,3.25rem)]">
+    <p className="font-display font-bold leading-[1.3] tracking-tight max-w-[80vw] text-center text-[clamp(1.75rem,3vw,3rem)]">
       <span className="sr-only">{text}</span>
       <span aria-hidden="true">
         {words.map((w, wi) => (
-          <Word key={wi} word={w.word} isAmberTarget={w.isAmberTarget} isLast={wi === words.length - 1} />
+          <Fragment key={wi}>
+            <span className="inline-block whitespace-nowrap">
+              {w.chars.map(({ ch, idx }) => (
+                <span key={idx} style={{ color: charColor(idx, fillIndex, w.isAmberTarget) }}>
+                  {ch}
+                </span>
+              ))}
+            </span>
+            {wi < words.length - 1 ? ' ' : ''}
+          </Fragment>
         ))}
       </span>
     </p>
