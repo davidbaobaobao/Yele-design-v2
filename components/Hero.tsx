@@ -3,17 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
+import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 
 const POSTER = '/media/hero/hero2_poster.jpg'
 
 const headlineClass =
   'font-display font-black uppercase whitespace-nowrap leading-[0.9] tracking-tight'
 
-// Video sits low at rest (top: 55vh) and rises by the same distance during
-// phase 1, landing exactly at top:0 — see the resting offset below.
-const REST_TOP_VH = 55
-const RISE_VH = { desktop: 55, mobile: 30 }
+// Headline sits in the top ~25vh; video is visible for the remaining ~75%
+// below it at rest, and rises by the same distance during phase 1, landing
+// exactly at top:0 — see the resting offset below.
+const REST_TOP_VH = 25
+const RISE_VH = { desktop: 25, mobile: 15 }
 
 // Linear-map helper for scroll-linked values. framer-motion's range-array
 // form of useTransform (mv, [in], [out]) doesn't track live scroll updates
@@ -50,8 +51,8 @@ export default function Hero() {
 
   const reduceMotion = useReducedMotion()
 
-  useVideoAutoplay(colorVideoRef)
-  useVideoAutoplay(bwVideoRef)
+  useVideoAlwaysAutoplay(colorVideoRef)
+  useVideoAlwaysAutoplay(bwVideoRef)
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -63,9 +64,6 @@ export default function Hero() {
   const riseVh = isMobile ? RISE_VH.mobile : RISE_VH.desktop
   const videoY = useTransform(scrollYProgress, v => `${-riseVh * linearMap(0, 0.6, 0, 1)(v)}vh`)
   const videoScale = isMobile ? 1.15 : 1
-
-  // Subline fades out early, over the first third of phase 1.
-  const sublineOpacity = useTransform(scrollYProgress, linearMap(0.3, 0.5, 1, 0))
 
   // Phase 2 (0.55 → 0.8): caption card slides in bottom-right/bottom-sheet.
   const cardY = useTransform(scrollYProgress, linearMap(0.55, 0.8, 40, 0))
@@ -174,8 +172,8 @@ export default function Hero() {
   const headline = (
     <h1
       ref={headlineRef}
-      className={`${headlineClass} absolute inset-x-0 top-[27vh] md:top-[30vh] text-center text-bone px-4`}
-      style={{ fontSize: 'clamp(2.75rem, 9.8vw, 210px)' }}
+      className={`${headlineClass} absolute inset-x-0 top-[6vh] text-center text-bone px-4`}
+      style={{ fontSize: 'clamp(2.75rem, 9.8vw, 210px)', textShadow: 'none' }}
     >
       BUILD TO<br className="md:hidden" /> STAY.
     </h1>
@@ -184,20 +182,18 @@ export default function Hero() {
   const captionText =
     'Websites for small businesses — designed, built and maintained by Yele. You run the business. We run the website.'
 
+  const captionCardClass =
+    'absolute bottom-0 inset-x-0 md:inset-x-auto md:right-0 font-body text-bone leading-relaxed bg-[#0A0A0A] p-8 text-lg md:text-xl max-w-md w-full md:w-auto rounded-t-2xl rounded-b-none md:rounded-tl-2xl md:rounded-tr-none md:rounded-bl-none'
+
   // ---- Reduced-motion fallback: static layout, no parallax, no mask ----
   if (reduceMotion) {
     return (
       <section id="hero" className="relative h-screen w-full overflow-hidden bg-[#0A0A0A]">
         {headline}
-        <div className="absolute inset-x-0 bottom-0 top-[55vh] overflow-hidden">
+        <div className="absolute inset-x-0 bottom-0 top-[25vh] overflow-hidden">
           <Image src={POSTER} alt="" fill sizes="100vw" priority className="object-cover" />
         </div>
-        <p className="absolute bottom-24 left-6 md:bottom-10 md:left-10 z-10 font-body text-bone/90 text-base max-w-sm">
-          Design, content &amp; maintenance — one subscription. From $99/mo.
-        </p>
-        <div className="absolute bottom-6 inset-x-4 md:inset-x-auto md:right-6 z-10 font-body text-bone leading-relaxed bg-[#0A0A0A]/90 rounded-2xl p-6 max-w-sm">
-          {captionText}
-        </div>
+        <div className={`${captionCardClass} z-10`}>{captionText}</div>
       </section>
     )
   }
@@ -269,20 +265,10 @@ export default function Hero() {
             </motion.video>
           </div>
 
-          {/* Subline — bottom-left, fades out early in phase 1, hidden on mobile */}
-          <motion.p
-            style={{ opacity: sublineOpacity }}
-            className="hidden md:block absolute bottom-10 left-10 z-30 font-body text-bone/90 text-base max-w-sm"
-          >
-            Design, content &amp; maintenance — one subscription. From $99/mo.
-          </motion.p>
-
-          {/* Caption card — phase 2, bottom-right on desktop, full-width
-              bottom sheet (flush, flat bottom corners) on mobile */}
-          <motion.div
-            style={{ y: cardY, opacity: cardOpacity }}
-            className="absolute bottom-0 inset-x-0 md:inset-x-auto md:bottom-8 md:right-8 z-30 font-body text-bone leading-relaxed bg-[#0A0A0A]/90 p-6 max-w-sm w-full md:w-auto rounded-t-2xl rounded-b-none md:rounded-2xl"
-          >
+          {/* Caption card — phase 2, flush to the bottom-right corner (no
+              floating margin) on desktop, full-width bottom sheet on mobile.
+              Marks the end of the hero. */}
+          <motion.div style={{ y: cardY, opacity: cardOpacity }} className={`${captionCardClass} z-30`}>
             {captionText}
           </motion.div>
         </motion.div>

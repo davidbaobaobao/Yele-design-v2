@@ -14,9 +14,10 @@ const LINKS = [
   { label: 'FAQ', href: '#faq' },
 ]
 
-// hasHero: whether this page renders a <div id="dark-zone"> (hero + mission,
-// both dark sections) for the nav to watch. Pages without one (or once the
-// dark zone has fully scrolled past) render the solid/blurred nav state.
+// hasHero: whether this page renders a <div id="dark-zone"> (the dark hero
+// section) for the nav to watch. Pages without one (or once the dark zone
+// has fully scrolled past) render the solid/blurred nav state. Mission
+// isn't part of this zone — it's a light (bg-base) section now.
 export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
   const { t } = useLang()
   const pathname = usePathname()
@@ -30,9 +31,9 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
       setOverHero(false)
       return
     }
-    // The dark zone spans the hero's full 250vh block plus the mission
-    // section, so this stays true for that whole stretch and flips false
-    // only once its bottom edge passes the top of the viewport.
+    // The dark zone spans the hero's full 250vh block, so this stays true
+    // for that whole stretch and flips false only once its bottom edge
+    // passes the top of the viewport.
     const io = new IntersectionObserver(
       ([entry]) => setOverHero(entry.isIntersecting),
       { threshold: 0 }

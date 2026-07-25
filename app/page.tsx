@@ -49,15 +49,15 @@ export default function Home() {
       <main id="main-content">
         <div id="dark-zone">
           <Hero />
-          <Mission />
         </div>
+        <Mission />
         <WhatWeDo />
-        <WeStackSection />
-        <VideoSnapController />
-        <ComoFunciona noBg />
         <div id="trabajos">
           <Showcase noHeader noBg fullScreen />
         </div>
+        <WeStackSection />
+        <VideoSnapController />
+        <ComoFunciona noBg />
         <PreciosIndexSection />
         <WhySubscription />
         <ShowcaseFeatureCards />
