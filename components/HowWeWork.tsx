@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
-const MEDIA_DIR = '/media/howwework'
+const MEDIA_DIR = '/media/howwework2'
 const AMBER = '#C97F3D'
 
 type StepData = {
