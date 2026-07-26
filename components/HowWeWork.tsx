@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
@@ -12,7 +13,7 @@ type StepData = {
   lead: string
   leadAmber?: boolean
   description: string
-  media: string
+  videoBase: string
 }
 
 const STEPS: StepData[] = [
@@ -21,21 +22,21 @@ const STEPS: StepData[] = [
     title: 'Tell us about you',
     lead: 'One short form.',
     description: 'Ten minutes: what you do, who you serve, how you want to look.',
-    media: `${MEDIA_DIR}/step1.jpg`,
+    videoBase: 'howvideo1',
   },
   {
     n: '02',
     title: 'We build it',
     lead: 'Design and content, done for you.',
     description: 'You review and approve. No meetings, no back-and-forth.',
-    media: `${MEDIA_DIR}/step2.jpg`,
+    videoBase: 'howvideo2',
   },
   {
     n: '03',
     title: 'You go live',
     lead: 'Live in one week.',
     description: 'Your site publishes and starts working from day one.',
-    media: `${MEDIA_DIR}/step3.jpg`,
+    videoBase: 'howvideo3',
   },
   {
     n: '04',
@@ -43,31 +44,47 @@ const STEPS: StepData[] = [
     lead: 'Forever.',
     leadAmber: true,
     description: 'Hosting, updates, changes and improvements — handled, month after month.',
-    media: `${MEDIA_DIR}/step4.jpg`,
+    videoBase: 'howvideo4',
   },
 ]
 
-// Renders a video when `src` points at an .mp4, otherwise an image — so the
-// dummy step*.jpg placeholders can become step*.mp4 later with no layout
-// change, just a data swap in STEPS above.
-function Media({ src, alt }: { src: string; alt: string }) {
-  if (src.endsWith('.mp4')) {
-    return (
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-        aria-hidden="true"
-      >
-        <source src={src} type="video/mp4" />
-      </video>
-    )
-  }
-  return (
+// Reduced motion shows the poster only; otherwise a muted/looping video whose
+// play/pause is driven by the shared IntersectionObserver in HowWeWork below
+// (not a bare autoPlay attribute — iOS Safari needs the attribute set on the
+// element directly plus a play() retry, same pattern as every other video
+// section on this site).
+function Media({
+  videoBase,
+  alt,
+  videoRef,
+  reduceMotion,
+}: {
+  videoBase: string
+  alt: string
+  videoRef: React.Ref<HTMLVideoElement>
+  reduceMotion: boolean
+}) {
+  const poster = `${MEDIA_DIR}/${videoBase}_poster.jpg`
+
+  if (reduceMotion) {
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className="absolute inset-0 w-full h-full object-cover" />
+    return <img src={poster} alt={alt} className="absolute inset-0 w-full h-full object-cover" />
+  }
+
+  return (
+    <video
+      ref={videoRef}
+      muted
+      loop
+      playsInline
+      preload="none"
+      poster={poster}
+      className="absolute inset-0 w-full h-full object-cover"
+      aria-hidden="true"
+    >
+      <source src={`${MEDIA_DIR}/${videoBase}_hq.webm`} type="video/webm" />
+      <source src={`${MEDIA_DIR}/${videoBase}_hq.mp4`} type="video/mp4" />
+    </video>
   )
 }
 
@@ -89,16 +106,33 @@ function StepText({ step }: { step: StepData }) {
   )
 }
 
-function StepVisual({ step }: { step: StepData }) {
+function StepVisual({
+  step,
+  videoRef,
+  reduceMotion,
+}: {
+  step: StepData
+  videoRef: React.Ref<HTMLVideoElement>
+  reduceMotion: boolean
+}) {
   return (
     <div className="relative w-full max-w-[300px] md:max-w-[360px] mx-auto aspect-[9/16] rounded-2xl overflow-hidden bg-[#EEEDE9]">
-      <Media src={step.media} alt={step.title} />
+      <Media videoBase={step.videoBase} alt={step.title} videoRef={videoRef} reduceMotion={reduceMotion} />
     </div>
   )
 }
 
-function HowWeWorkStep({ step, index }: { step: StepData; index: number }) {
-  const reduceMotion = !!useHydratedReducedMotion()
+function HowWeWorkStep({
+  step,
+  index,
+  videoRef,
+  reduceMotion,
+}: {
+  step: StepData
+  index: number
+  videoRef: React.Ref<HTMLVideoElement>
+  reduceMotion: boolean
+}) {
   const visualFirst = index % 2 === 1
   const textOrder = visualFirst ? 'md:order-2' : 'md:order-1'
   const visualOrder = visualFirst ? 'md:order-1' : 'md:order-2'
@@ -110,7 +144,7 @@ function HowWeWorkStep({ step, index }: { step: StepData; index: number }) {
           <StepText step={step} />
         </div>
         <div className={visualOrder}>
-          <StepVisual step={step} />
+          <StepVisual step={step} videoRef={videoRef} reduceMotion={reduceMotion} />
         </div>
       </div>
     )
@@ -135,13 +169,75 @@ function HowWeWorkStep({ step, index }: { step: StepData; index: number }) {
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
       >
-        <StepVisual step={step} />
+        <StepVisual step={step} videoRef={videoRef} reduceMotion={reduceMotion} />
       </motion.div>
     </div>
   )
 }
 
 export default function HowWeWork() {
+  const reduceMotion = !!useHydratedReducedMotion()
+
+  const videoRefs = [
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+  ]
+
+  // One shared IntersectionObserver drives play/pause for all four videos —
+  // play once a step is >=30% visible, pause otherwise. Same iOS-safe
+  // attribute-setting + retry pattern used across the site's other video
+  // sections (WhatWeDo, WhyYele, BeyondWebsite).
+  useEffect(() => {
+    if (reduceMotion) return
+    const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
+    if (videos.length === 0) return
+
+    videos.forEach(v => {
+      v.setAttribute('muted', '')
+      v.setAttribute('playsinline', '')
+      v.setAttribute('webkit-playsinline', '')
+      v.muted = true
+    })
+
+    const play = (v: HTMLVideoElement) => {
+      if (!v.paused && !v.ended) return
+      v.muted = true
+      if (v.ended) v.currentTime = 0
+      if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
+      v.play().catch(() => {
+        setTimeout(() => {
+          if (v.paused || v.ended) {
+            v.muted = true
+            v.play().catch(() => {})
+          }
+        }, 300)
+      })
+    }
+
+    const onEnded = (e: Event) => play(e.target as HTMLVideoElement)
+    videos.forEach(v => v.addEventListener('ended', onEnded))
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const v = entry.target as HTMLVideoElement
+          if (entry.isIntersecting) play(v)
+          else v.pause()
+        })
+      },
+      { threshold: 0.3 }
+    )
+    videos.forEach(v => observer.observe(v))
+
+    return () => {
+      observer.disconnect()
+      videos.forEach(v => v.removeEventListener('ended', onEnded))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion])
+
   return (
     <section className="bg-base py-28 px-6">
       <div className="max-w-6xl mx-auto">
@@ -151,7 +247,7 @@ export default function HowWeWork() {
         </h2>
 
         {STEPS.map((step, i) => (
-          <HowWeWorkStep key={step.n} step={step} index={i} />
+          <HowWeWorkStep key={step.n} step={step} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
         ))}
       </div>
     </section>
