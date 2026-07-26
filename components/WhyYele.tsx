@@ -1,33 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { motion, useInView, type Variants } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const VIDEO_DIR = '/media/whyyele'
-
-// Section is now permanently black — the bg no longer crossfades, but the
-// same delayed-stagger timing is kept so the heading+cards still reveal in
-// sequence once the section scrolls into view, driven by explicit variants
-// rather than scroll progress, triggered once by useInView.
-const sectionVariants: Variants = {
-  hidden: { backgroundColor: '#0A0A0A' },
-  visible: {
-    backgroundColor: '#0A0A0A',
-    transition: {
-      duration: 0.6,
-      ease: 'easeInOut',
-      when: 'beforeChildren',
-      staggerChildren: 0.08,
-      delayChildren: 0.5,
-    },
-  },
-}
-
-const childVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-}
 
 type CardData = {
   title: string
@@ -70,10 +47,12 @@ const CARDS: CardData[] = [
 
 function WhyYeleCard({
   card,
+  index,
   videoRef,
   reduceMotion,
 }: {
   card: CardData
+  index: number
   videoRef: React.Ref<HTMLVideoElement>
   reduceMotion: boolean
 }) {
@@ -81,7 +60,7 @@ function WhyYeleCard({
 
   const inner = (
     <div>
-      <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#141418] border border-hairlineDark">
+      <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#16171C]">
         {reduceMotion ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
@@ -111,18 +90,20 @@ function WhyYeleCard({
 
   if (reduceMotion) return inner
 
-  return <motion.div variants={childVariants}>{inner}</motion.div>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
+    >
+      {inner}
+    </motion.div>
+  )
 }
 
 export default function WhyYele() {
   const reduceMotion = !!useHydratedReducedMotion()
-  const sectionRef = useRef<HTMLElement>(null)
-  const inView = useInView(sectionRef, { once: true, margin: '-20% 0px' })
-  const [entered, setEntered] = useState(false)
-
-  useEffect(() => {
-    if (inView) setEntered(true)
-  }, [inView])
 
   const videoRefs = [
     useRef<HTMLVideoElement>(null),
@@ -186,48 +167,26 @@ export default function WhyYele() {
   }, [reduceMotion])
 
   const heading = (
-    <>
-      <h2 className="font-display text-bone text-[clamp(1.5rem,2.5vw,2.25rem)] leading-tight">
-        Why yele
-      </h2>
-      <div className="border-t border-hairlineDark mt-8" />
-    </>
+    <h2 className="font-display leading-tight max-w-4xl text-[clamp(1.5rem,2.6vw,2.75rem)] mb-12">
+      <span className="text-[#8A8A92]">
+        Building a website used to be a headache — slow, big upfront bills, endless
+        back-and-forth.{' '}
+      </span>
+      <span className="text-bone">Not anymore.</span>
+    </h2>
   )
 
-  // Reduced motion: no bg animation, static dark bg, cards visible immediately.
-  if (reduceMotion) {
-    return (
-      <section data-nav-dark className="relative bg-[#0A0A0A] py-28 px-6">
-        <div className="max-w-6xl mx-auto">
-          {heading}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-14 mt-14">
-            {CARDS.map((card, i) => (
-              <WhyYeleCard key={card.videoBase} card={card} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   return (
-    <motion.section
-      ref={sectionRef}
-      data-nav-dark
-      variants={sectionVariants}
-      initial="hidden"
-      animate={entered ? 'visible' : 'hidden'}
-      className="relative py-28 px-6"
-    >
+    <section data-nav-dark className="relative bg-[#0D0E12] pt-12 md:pt-16 pb-24 px-6">
       <div className="max-w-6xl mx-auto">
-        <motion.div variants={childVariants}>{heading}</motion.div>
+        {heading}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-14 mt-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-14">
           {CARDS.map((card, i) => (
-            <WhyYeleCard key={card.videoBase} card={card} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
+            <WhyYeleCard key={card.videoBase} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
           ))}
         </div>
       </div>
-    </motion.section>
+    </section>
   )
 }
