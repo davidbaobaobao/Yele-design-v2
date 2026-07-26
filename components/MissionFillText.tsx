@@ -75,10 +75,14 @@ export default function MissionFillText({
   text,
   amberPhrase,
   scrollYProgress,
+  className,
+  style,
 }: {
   text: string
   amberPhrase: string
   scrollYProgress: MotionValue<number>
+  className?: string
+  style?: React.CSSProperties
 }) {
   const { words, totalChars } = useMemo(() => buildWords(text, amberPhrase), [text, amberPhrase])
 
@@ -92,7 +96,7 @@ export default function MissionFillText({
   })
 
   return (
-    <p className="font-display font-bold leading-[1.3] tracking-tight max-w-[80vw] text-center text-[clamp(1.75rem,3vw,3rem)]">
+    <p className={className} style={style}>
       <span className="sr-only">{text}</span>
       <span aria-hidden="true">
         {words.map((w, wi) => (

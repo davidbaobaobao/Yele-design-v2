@@ -8,8 +8,7 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const POSTER = '/media/hero/hero2_poster.jpg'
 
-const headlineClass =
-  'font-display font-black uppercase whitespace-nowrap leading-[0.9] tracking-tight'
+const headlineClass = 'font-display font-black uppercase whitespace-nowrap leading-[0.85]'
 
 // Headline sits in the top ~25vh; video is visible for the remaining ~75%
 // below it at rest, and rises by the same distance during phase 1, landing
@@ -65,6 +64,15 @@ export default function Hero() {
   const riseVh = isMobile ? RISE_VH.mobile : RISE_VH.desktop
   const videoY = useTransform(scrollYProgress, v => `${-riseVh * linearMap(0, 0.6, 0, 1)(v)}vh`)
   const videoScale = isMobile ? 1.15 : 1
+
+  // Headline descends from the top toward the caption card as the hero
+  // scrolls (hi-tide-style) — settles a touch before the very end so it
+  // reads as "arrived" alongside the caption card rather than still
+  // drifting during the phase-3 ease-out. The masked color-video layer
+  // shares this exact same transform (applied below) so it stays glued to
+  // the headline's new position — the mask bitmap itself is generated once
+  // at rest and only needs to translate as a whole, not redraw.
+  const headlineY = useTransform(scrollYProgress, v => `${linearMap(0, 0.85, 0, 62)(v)}vh`)
 
   // Phase 2 (0.55 → 0.8): caption card slides in bottom-right/bottom-sheet.
   const cardY = useTransform(scrollYProgress, linearMap(0.55, 0.8, 40, 0))
@@ -173,8 +181,8 @@ export default function Hero() {
   const headline = (
     <h1
       ref={headlineRef}
-      className={`${headlineClass} absolute inset-x-0 top-[6vh] text-center text-bone px-4`}
-      style={{ fontSize: 'clamp(4rem, 12vw, 290px)', textShadow: 'none' }}
+      className={`${headlineClass} absolute inset-x-0 top-20 text-center text-bone px-4`}
+      style={{ fontSize: 'clamp(4rem, 12.2vw, 16rem)', letterSpacing: '-0.03em' }}
     >
       BUILD TO<br className="md:hidden" /> STAY.
     </h1>
@@ -227,19 +235,25 @@ export default function Hero() {
           </div>
 
           {/* 2. Visible bone headline — sits above the B&W layer so it's
-              legible against the swarm as soon as the video reaches it. */}
-          <div className="absolute inset-0 z-10 pointer-events-none">{headline}</div>
+              legible against the swarm as soon as the video reaches it.
+              Descends via headlineY as the hero scrolls. */}
+          <motion.div style={{ y: headlineY }} className="absolute inset-0 z-10 pointer-events-none">
+            {headline}
+          </motion.div>
 
           {/* 3. Masked color video — topmost. The wrapper (mask carrier)
-              never moves and stays glued to the headline's fixed screen
-              position; only the video inside it translates. Until the
+              shares the exact same headlineY transform as the bone layer
+              above, so it stays glued to the headline's moving position —
+              the mask bitmap is generated once at rest and just translates
+              as a whole with the wrapper, no redraw needed. Until the
               rising video reaches the headline's height, this layer has no
               pixels there at all, so the bone headline underneath is all
               that's visible — exactly matching "bone h1 only fully visible
               while the video is still below the text". */}
-          <div
+          <motion.div
             className="absolute inset-0 overflow-hidden z-20 pointer-events-none transition-opacity duration-300"
             style={{
+              y: headlineY,
               opacity: maskUrl ? 1 : 0,
               WebkitMaskImage: maskUrl ? `url(${maskUrl})` : 'none',
               maskImage: maskUrl ? `url(${maskUrl})` : 'none',
@@ -264,7 +278,7 @@ export default function Hero() {
             >
               <SwarmSources />
             </motion.video>
-          </div>
+          </motion.div>
 
           {/* Caption card — phase 2, flush to the bottom-right corner (no
               floating margin) on desktop, full-width bottom sheet on mobile.
