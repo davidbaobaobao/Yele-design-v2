@@ -106,26 +106,6 @@ function DesktopGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; 
     return () => window.removeEventListener('resize', compute)
   }, [travelMV])
 
-  // Prevent fast trackpad/wheel flicks from jumping past the section
-  useEffect(() => {
-    const wrapper = wrapperRef.current
-    if (!wrapper) return
-    const MAX_DELTA = 80
-    function onWheel(e: WheelEvent) {
-      // Never run on mobile — avoids any interaction with iOS scroll/media behaviour
-      if (window.innerWidth < 768) return
-      const rect = wrapper!.getBoundingClientRect()
-      // Only active while the sticky animation is running (wrapper straddles the viewport)
-      if (rect.top > 0 || rect.bottom < window.innerHeight) return
-      if (Math.abs(e.deltaY) > MAX_DELTA) {
-        e.preventDefault()
-        window.scrollBy({ top: Math.sign(e.deltaY) * MAX_DELTA })
-      }
-    }
-    window.addEventListener('wheel', onWheel, { passive: false })
-    return () => window.removeEventListener('wheel', onWheel)
-  }, [])
-
   const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ['start start', 'end end'] })
   const x  = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t))
   const x2 = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t) - t * 0.08)
