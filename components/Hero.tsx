@@ -8,13 +8,13 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const POSTER = '/media/hero/hero2_poster.jpg'
 
-const headlineClass = 'font-display font-black uppercase whitespace-nowrap leading-[0.85]'
+const headlineClass = 'font-display font-black uppercase whitespace-nowrap leading-[0.8]'
 
-// Headline sits in the top ~25vh; video is visible for the remaining ~75%
-// below it at rest, and rises by the same distance during phase 1, landing
-// exactly at top:0 — see the resting offset below.
-const REST_TOP_VH = 25
+// Both videos now start at top:0 — full viewport coverage from the very
+// first frame, so the mask always has color-video content to reveal behind
+// the letters (no more "blank before the video rises" phase).
 const RISE_VH = { desktop: 25, mobile: 15 }
+const CARD_CLEARANCE_PX = 24
 
 // Linear-map helper for scroll-linked values. framer-motion's range-array
 // form of useTransform (mv, [in], [out]) doesn't track live scroll updates
@@ -44,10 +44,17 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
   const colorVideoRef = useRef<HTMLVideoElement>(null)
   const bwVideoRef = useRef<HTMLVideoElement>(null)
-  const headlineRef = useRef<HTMLHeadingElement>(null)
+  const headlineRef = useRef<HTMLDivElement>(null)
+  const captionRef = useRef<HTMLDivElement>(null)
 
   const [maskUrl, setMaskUrl] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  // How far the headline is allowed to descend (in vh) before its bottom
+  // edge would reach the caption card — measured from the real DOM so it
+  // adapts to however tall the caption card's wrapped text turns out to be.
+  // The conservative default only matters for the first paint before layout
+  // measurement runs.
+  const [maxDescentVh, setMaxDescentVh] = useState(50)
 
   const reduceMotion = useHydratedReducedMotion()
 
@@ -59,20 +66,26 @@ export default function Hero() {
     offset: ['start start', 'end end'],
   })
 
-  // Phase 1 (0 → 0.6): the swarm rises from its low resting position and
-  // slides behind the pinned headline.
+  // Phase 1 (0 → 0.6): the swarm continues rising/flowing (it already fully
+  // covers the viewport at rest — this just keeps the content moving).
   const riseVh = isMobile ? RISE_VH.mobile : RISE_VH.desktop
   const videoY = useTransform(scrollYProgress, v => `${-riseVh * linearMap(0, 0.6, 0, 1)(v)}vh`)
   const videoScale = isMobile ? 1.15 : 1
 
-  // Headline descends from the top toward the caption card as the hero
-  // scrolls (hi-tide-style) — settles a touch before the very end so it
-  // reads as "arrived" alongside the caption card rather than still
-  // drifting during the phase-3 ease-out. The masked color-video layer
-  // shares this exact same transform (applied below) so it stays glued to
-  // the headline's new position — the mask bitmap itself is generated once
-  // at rest and only needs to translate as a whole, not redraw.
-  const headlineY = useTransform(scrollYProgress, v => `${linearMap(0, 0.85, 0, 62)(v)}vh`)
+  // The mask reveals the color video at the headline's OWN independent
+  // on-screen position (headlineDescentVh), but the mask lives inside the
+  // same videoY-transformed group as the video it's masking (required so
+  // the color layer and B&W layer share pixel-for-pixel alignment — see the
+  // shared video group below). Since that group already moved by videoY,
+  // the mask's local position needs the *difference* between where the
+  // headline should appear and where the group itself has drifted to, so
+  // mask-position offsets by (headlineDescent − videoY), not by
+  // headlineDescent alone.
+  const maskPosition = useTransform(scrollYProgress, v => {
+    const headlineDescent = linearMap(0, 0.85, 0, maxDescentVh)(v)
+    const videoRise = riseVh * linearMap(0, 0.6, 0, 1)(v)
+    return `0px ${headlineDescent + videoRise}vh`
+  })
 
   // Phase 2 (0.55 → 0.8): caption card slides in bottom-right/bottom-sheet.
   const cardY = useTransform(scrollYProgress, linearMap(0.55, 0.8, 40, 0))
@@ -93,8 +106,10 @@ export default function Hero() {
   // Draw the headline glyphs onto an offscreen canvas — this becomes the
   // mask-image that lets the color video show through only where the
   // letters sit. White fill on a transparent canvas works for both alpha-
-  // and luminance-mode mask compositing. The mask is generated at the
-  // headline's live, fixed screen position and never moves.
+  // and luminance-mode mask compositing. Measured from the invisible
+  // (text-transparent) phantom headline div at its resting position — the
+  // mask is repositioned for scroll via the animated mask-position transform
+  // above, not by redrawing this bitmap.
   const drawMask = useCallback(() => {
     const el = headlineRef.current
     if (!el) return
@@ -125,10 +140,14 @@ export default function Hero() {
     // The headline is a single text run with one hard <br> (mobile-only via
     // CSS). getClientRects() naturally returns one rect on desktop (br
     // hidden) or two on mobile (br active) — matching the two known strings.
+    // The <br> element itself can also contribute its own degenerate
+    // (zero-width or zero-height) rect to the range — filter those out or
+    // they get mistaken for a real text line and a word gets drawn twice,
+    // overlapping the line above it.
     const range = document.createRange()
     range.selectNodeContents(el)
-    const rects = Array.from(range.getClientRects())
-    const lines = rects.length >= 2 ? ['BUILD TO', 'STAY.'] : ['BUILD TO STAY.']
+    const rects = Array.from(range.getClientRects()).filter(r => r.width > 0 && r.height > 0)
+    const lines = rects.length >= 2 ? ['BUILD TO', 'STAY'] : ['BUILD TO STAY']
 
     rects.forEach((rect, i) => {
       const text = lines[i] ?? lines[lines.length - 1]
@@ -138,30 +157,63 @@ export default function Hero() {
     setMaskUrl(canvas.toDataURL())
   }, [])
 
+  // Measures the headline's resting box and the caption card's rendered
+  // height to compute how far (in vh) the headline can descend before its
+  // bottom edge would land within CARD_CLEARANCE_PX of the card's top.
+  const measureDescentLimit = useCallback(() => {
+    const headlineEl = headlineRef.current
+    const captionEl = captionRef.current
+    if (!headlineEl || !captionEl) return
+    const vh = window.innerHeight
+    const headlineBottom = headlineEl.getBoundingClientRect().bottom
+    const captionHeight = captionEl.getBoundingClientRect().height
+    const allowedBottom = vh - captionHeight - CARD_CLEARANCE_PX
+    const maxDescentPx = Math.max(0, allowedBottom - headlineBottom)
+    setMaxDescentVh((maxDescentPx / vh) * 100)
+  }, [])
+
   useEffect(() => {
     if (reduceMotion) return
     let cancelled = false
     document.fonts.ready.then(() => {
-      if (!cancelled) drawMask()
+      if (cancelled) return
+      drawMask()
+      measureDescentLimit()
     })
     return () => {
       cancelled = true
     }
-  }, [drawMask, reduceMotion])
+  }, [drawMask, measureDescentLimit, reduceMotion])
 
+  // Recompute on ANY box change to the headline (not just a window resize —
+  // a font swap or layout shift can change its size/position too) via
+  // ResizeObserver, plus a plain resize listener as a fallback for browsers
+  // without it and to re-measure the caption card's height.
   useEffect(() => {
     if (reduceMotion) return
     let timer: number | undefined
-    const onResize = () => {
+    const recompute = () => {
       window.clearTimeout(timer)
-      timer = window.setTimeout(drawMask, 200)
+      timer = window.setTimeout(() => {
+        drawMask()
+        measureDescentLimit()
+      }, 150)
     }
-    window.addEventListener('resize', onResize)
+
+    window.addEventListener('resize', recompute)
+
+    let ro: ResizeObserver | undefined
+    if (headlineRef.current && 'ResizeObserver' in window) {
+      ro = new ResizeObserver(recompute)
+      ro.observe(headlineRef.current)
+    }
+
     return () => {
-      window.removeEventListener('resize', onResize)
+      window.removeEventListener('resize', recompute)
+      ro?.disconnect()
       window.clearTimeout(timer)
     }
-  }, [drawMask, reduceMotion])
+  }, [drawMask, measureDescentLimit, reduceMotion])
 
   // Keep the two videos in lockstep — checked once a second, corrected only
   // past a small drift threshold (not every frame).
@@ -178,15 +230,15 @@ export default function Hero() {
     return () => window.clearInterval(id)
   }, [reduceMotion])
 
-  const headline = (
-    <h1
-      ref={headlineRef}
-      className={`${headlineClass} absolute inset-x-0 top-20 text-center text-bone px-4`}
-      style={{ fontSize: 'clamp(4rem, 12.2vw, 16rem)', letterSpacing: '-0.03em' }}
-    >
-      BUILD TO<br className="md:hidden" /> STAY.
-    </h1>
-  )
+  // Mobile gets its own smaller clamp — the desktop 5rem floor is too wide
+  // for "BUILD TO" to fit one line on narrow phones without clipping (the
+  // whole point of clamp's min/preferred/max only works within one
+  // continuous range; mobile needs a genuinely different range, not just a
+  // smaller point on the same curve).
+  const headlineStyle = {
+    fontSize: isMobile ? 'clamp(3.5rem, 15vw, 4.5rem)' : 'clamp(5rem, 12.3vw, 18rem)',
+    letterSpacing: '-0.03em',
+  }
 
   const captionText =
     'Websites for small businesses — designed, built and maintained by Yele. You run the business. We run the website.'
@@ -198,8 +250,13 @@ export default function Hero() {
   if (reduceMotion) {
     return (
       <section id="hero" className="relative h-screen w-full overflow-hidden bg-[#0A0A0A]">
-        {headline}
-        <div className="absolute inset-x-0 bottom-0 top-[25vh] overflow-hidden">
+        <h1
+          className={`${headlineClass} absolute inset-x-0 top-20 text-center text-bone px-4`}
+          style={headlineStyle}
+        >
+          BUILD TO<br className="md:hidden" /> STAY
+        </h1>
+        <div className="absolute inset-0 overflow-hidden">
           <Image src={POSTER} alt="" fill sizes="100vw" priority className="object-cover" />
         </div>
         <div className={`${captionCardClass} z-10`}>{captionText}</div>
@@ -212,17 +269,18 @@ export default function Hero() {
     <section ref={sectionRef} id="hero" className="relative h-[250vh] w-full bg-[#0A0A0A]">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <motion.div style={{ opacity: sceneOpacity }} className="absolute inset-0">
-          {/* 1. B&W video — bottom layer */}
-          <div className="absolute inset-0 overflow-hidden z-0">
-            <motion.video
+          {/* Shared video group — the B&W background and the masked color
+              layer both live in here and share this ONE y:videoY transform,
+              so they move pixel-for-pixel together (this is what fixes the
+              old offset: previously the masked video had its own nested y
+              transform stacked on top of the mask wrapper's, drifting away
+              from the B&W layer as scroll progressed). */}
+          <motion.div style={{ y: videoY }} className="absolute inset-0 overflow-hidden z-0">
+            {/* 1. B&W video — bottom layer, full coverage from frame one */}
+            <video
               ref={bwVideoRef}
-              className="absolute inset-x-0 w-full h-[110vh] object-cover origin-center"
-              style={{
-                top: `${REST_TOP_VH}vh`,
-                y: videoY,
-                scale: videoScale,
-                filter: 'grayscale(1) contrast(1.05)',
-              }}
+              className="absolute inset-x-0 top-0 w-full h-[110vh] object-cover origin-center"
+              style={{ scale: videoScale, filter: 'grayscale(1) contrast(1.05)' }}
               muted
               loop
               playsInline
@@ -231,59 +289,69 @@ export default function Hero() {
               aria-hidden="true"
             >
               <SwarmSources />
-            </motion.video>
+            </video>
+
+            {/* 2. Masked color video — same position/size/scale as the B&W
+                video above (both direct children of the same transformed
+                group), topmost. mask-position is animated independently
+                (see maskPosition above) so the revealed letter-shapes track
+                the headline's own on-screen position, not this group's. */}
+            <motion.div
+              className="absolute inset-0 overflow-hidden pointer-events-none transition-opacity duration-300"
+              style={{
+                opacity: maskUrl ? 1 : 0,
+                WebkitMaskImage: maskUrl ? `url(${maskUrl})` : 'none',
+                maskImage: maskUrl ? `url(${maskUrl})` : 'none',
+                WebkitMaskRepeat: 'no-repeat',
+                maskRepeat: 'no-repeat',
+                WebkitMaskSize: '100% 100%',
+                maskSize: '100% 100%',
+                WebkitMaskPosition: maskPosition,
+                maskPosition: maskPosition,
+              }}
+            >
+              <video
+                ref={colorVideoRef}
+                className="absolute inset-x-0 top-0 w-full h-[110vh] object-cover origin-center"
+                style={{ scale: videoScale }}
+                muted
+                loop
+                playsInline
+                preload="auto"
+                poster={POSTER}
+                aria-hidden="true"
+              >
+                <SwarmSources />
+              </video>
+            </motion.div>
+          </motion.div>
+
+          {/* Phantom measurement headline — fully transparent, never
+              scroll-transformed (its resting box is the mask's reference
+              frame; the animated mask-position above handles the apparent
+              scroll movement instead). This is NOT the visible headline —
+              there is no visible headline painted at all; the masked color
+              video showing through the glyph shapes IS the headline. */}
+          <div
+            ref={headlineRef}
+            aria-hidden="true"
+            className={`${headlineClass} absolute inset-x-0 top-20 text-center text-transparent select-none px-4 pointer-events-none z-10`}
+            style={headlineStyle}
+          >
+            BUILD TO<br className="md:hidden" /> STAY
           </div>
 
-          {/* 2. Visible bone headline — sits above the B&W layer so it's
-              legible against the swarm as soon as the video reaches it.
-              Descends via headlineY as the hero scrolls. */}
-          <motion.div style={{ y: headlineY }} className="absolute inset-0 z-10 pointer-events-none">
-            {headline}
-          </motion.div>
-
-          {/* 3. Masked color video — topmost. The wrapper (mask carrier)
-              shares the exact same headlineY transform as the bone layer
-              above, so it stays glued to the headline's moving position —
-              the mask bitmap is generated once at rest and just translates
-              as a whole with the wrapper, no redraw needed. Until the
-              rising video reaches the headline's height, this layer has no
-              pixels there at all, so the bone headline underneath is all
-              that's visible — exactly matching "bone h1 only fully visible
-              while the video is still below the text". */}
-          <motion.div
-            className="absolute inset-0 overflow-hidden z-20 pointer-events-none transition-opacity duration-300"
-            style={{
-              y: headlineY,
-              opacity: maskUrl ? 1 : 0,
-              WebkitMaskImage: maskUrl ? `url(${maskUrl})` : 'none',
-              maskImage: maskUrl ? `url(${maskUrl})` : 'none',
-              WebkitMaskRepeat: 'no-repeat',
-              maskRepeat: 'no-repeat',
-              WebkitMaskSize: '100% 100%',
-              maskSize: '100% 100%',
-              WebkitMaskPosition: '0 0',
-              maskPosition: '0 0',
-            }}
-          >
-            <motion.video
-              ref={colorVideoRef}
-              className="absolute inset-x-0 w-full h-[110vh] object-cover origin-center"
-              style={{ top: `${REST_TOP_VH}vh`, y: videoY, scale: videoScale }}
-              muted
-              loop
-              playsInline
-              preload="auto"
-              poster={POSTER}
-              aria-hidden="true"
-            >
-              <SwarmSources />
-            </motion.video>
-          </motion.div>
+          {/* True semantic heading for SEO/a11y — visually hidden. */}
+          <h1 className="sr-only">BUILD TO STAY</h1>
 
           {/* Caption card — phase 2, flush to the bottom-right corner (no
               floating margin) on desktop, full-width bottom sheet on mobile.
               Marks the end of the hero. */}
-          <motion.div style={{ y: cardY, opacity: cardOpacity }} className={`${captionCardClass} z-30`}>
+          <motion.div
+            ref={captionRef}
+            style={{ y: cardY, opacity: cardOpacity }}
+            className={`${captionCardClass} z-30`}
+          >
             {captionText}
           </motion.div>
         </motion.div>
