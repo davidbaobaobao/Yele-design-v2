@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
-const VIDEO_DIR = '/media/whyyele'
+const VIDEO_DIR = '/media/whyyele2'
 
 type CardData = {
   title: string
