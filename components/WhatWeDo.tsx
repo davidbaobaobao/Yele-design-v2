@@ -1,11 +1,13 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { motion, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const PALE_GOLD = '#F0E6C8'
 const CARD_BG = '#0A0A0C'
+const VIDEO_DIR = '/media/wesection'
 
 // Function-form transform helper — framer-motion's range-array useTransform
 // (mv, [in], [out]) doesn't reliably track live scroll updates in this app
@@ -27,17 +29,26 @@ function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
+// A darker shade of the same hue (not a different color) — used for the
+// aurora's third blob so each card still reads as ONE dominant accent with
+// a little depth, rather than a multi-color mix.
+function darken(hex: string, amount: number) {
+  const n = parseInt(hex.slice(1), 16)
+  const r = Math.round(((n >> 16) & 255) * (1 - amount))
+  const g = Math.round(((n >> 8) & 255) * (1 - amount))
+  const b = Math.round((n & 255) * (1 - amount))
+  return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`
+}
+
 type CardData = {
   n: string
   title: string
   text: string
   description: string
   capabilities: string[]
+  videoBase: string
   closingLine?: string
-  // Aurora blob hues — accent is the card's primary color, accent2 a
-  // neighboring hue, so each card's glow reads as visually distinct.
   accent: string
-  accent2: string
 }
 
 const CARDS: CardData[] = [
@@ -48,8 +59,8 @@ const CARDS: CardData[] = [
     description:
       "Bold, custom, no templates. A website designed from scratch for your business and nobody else's.",
     capabilities: ['ART DIRECTION', 'UX & LAYOUT', 'BRANDING', 'MOBILE-FIRST'],
+    videoBase: 'wevideo1',
     accent: '#7B8CDE', // cornflower
-    accent2: '#3ED6C4', // teal
   },
   {
     n: '02',
@@ -57,8 +68,8 @@ const CARDS: CardData[] = [
     text: '#FFFFFF',
     description: 'Fast, reliable, SEO-ready. Live in one week, built to perform from day one.',
     capabilities: ['NEXT-GEN STACK', 'LOCAL SEO', 'PERFORMANCE', 'HOSTING & DOMAIN'],
+    videoBase: 'wevideo2',
     accent: '#D46FC8', // orchid pink
-    accent2: '#5B8CDE', // blue
   },
   {
     n: '03',
@@ -67,8 +78,8 @@ const CARDS: CardData[] = [
     description:
       'Photography, video, copy and illustration. Content that makes your site stand out — included.',
     capabilities: ['PHOTO & VIDEO', 'COPYWRITING', 'ILLUSTRATION', 'SOCIAL ASSETS'],
+    videoBase: 'wevideo3',
     accent: '#C7488F', // magenta-rose
-    accent2: '#9B5DE5', // violet
   },
   {
     n: '04',
@@ -77,9 +88,9 @@ const CARDS: CardData[] = [
     description:
       "Hosting, security, updates and every change you need. Handled forever — that's the point.",
     capabilities: ['24/7 SUPPORT', 'UPDATES INCLUDED', 'SECURITY', 'ALWAYS IMPROVING'],
+    videoBase: 'wevideo4',
     closingLine: 'BUILT. STAYING.',
     accent: '#5B4B9E', // violet-indigo
-    accent2: '#6E8FE0', // blue
   },
 ]
 
@@ -148,35 +159,34 @@ function useAuroraParallax(disabled: boolean) {
 }
 
 // Three blurred radial-gradient blobs near the card's bottom, each on its
-// own CSS keyframe drift (transform + opacity only — see globals.css) so
-// their overlaps constantly recombine instead of moving in lockstep. A
-// top-to-bottom black gradient keeps the top ~55% clean for text; the
-// aurora only reads in the bottom ~45%. Hover parallax (optional, cheap) is
-// a single wrapper offset — the blobs' own CSS animation is untouched by it.
+// own bold CSS keyframe drift (transform + opacity only — see globals.css)
+// so their overlaps constantly recombine instead of moving in lockstep. All
+// three share ONE dominant accent hue (the third uses a darker shade of the
+// same color for depth, not a different color) so each card still reads as
+// single-accent. A top-to-bottom black gradient keeps the top ~55% clean
+// for text. Hover parallax (optional, cheap) is a single wrapper offset —
+// the blobs' own CSS animation is untouched by it.
 function AuroraLayer({
   accent,
-  accent2,
   index,
   parallaxX,
   parallaxY,
 }: {
   accent: string
-  accent2: string
   index: number
   parallaxX: MotionValue<number>
   parallaxY: MotionValue<number>
 }) {
-  // useAuroraParallax already no-ops (values stay at 0) when disabled —
-  // these hooks are always called, never conditionally, regardless.
   const px = useTransform(parallaxX, v => v * 16)
   const py = useTransform(parallaxY, v => v * 12)
+  const accentDark = darken(accent, 0.4)
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       <motion.div className="absolute inset-0" style={{ x: px, y: py }}>
-        <div className="wwd-aurora-blob wwd-aurora-blob-a" style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 70%)`, animationDelay: `${index * -3.4}s` }} />
-        <div className="wwd-aurora-blob wwd-aurora-blob-b" style={{ background: `radial-gradient(circle, ${accent2} 0%, transparent 70%)`, animationDelay: `${index * -3.4 + 5}s` }} />
-        <div className="wwd-aurora-blob wwd-aurora-blob-c" style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 65%)`, animationDelay: `${index * -3.4 + 2.3}s` }} />
+        <div className="wwd-aurora-blob wwd-aurora-blob-a" style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 70%)`, animationDelay: `${index * -2.2}s` }} />
+        <div className="wwd-aurora-blob wwd-aurora-blob-b" style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 70%)`, animationDelay: `${index * -2.2 + 3}s` }} />
+        <div className="wwd-aurora-blob wwd-aurora-blob-c" style={{ background: `radial-gradient(circle, ${accentDark} 0%, transparent 65%)`, animationDelay: `${index * -2.2 + 1.5}s` }} />
       </motion.div>
       <div
         className="absolute inset-0"
@@ -186,15 +196,61 @@ function AuroraLayer({
   )
 }
 
+// Same treatment as every other video section on this site: borderless,
+// large radius, left-edge fade so the video's own background tone
+// dissolves into the card behind it, IntersectionObserver-driven play so
+// only on-screen cards decode video.
+function VideoPanel({
+  videoRef,
+  videoBase,
+  title,
+  reduceMotion,
+}: {
+  videoRef: React.Ref<HTMLVideoElement>
+  videoBase: string
+  title: string
+  reduceMotion: boolean
+}) {
+  const poster = `${VIDEO_DIR}/${videoBase}_poster.jpg`
+  const fadeMask = 'linear-gradient(to right, transparent 0%, black 12%)'
+
+  return (
+    <div
+      className="relative w-full aspect-video rounded-2xl overflow-hidden"
+      style={{ WebkitMaskImage: fadeMask, maskImage: fadeMask }}
+    >
+      {reduceMotion ? (
+        <Image src={poster} alt={title} fill sizes="(max-width: 768px) 100vw, 40vw" className="object-cover" />
+      ) : (
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          preload="none"
+          poster={poster}
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src={`${VIDEO_DIR}/${videoBase}_hq.webm`} type="video/webm" />
+          <source src={`${VIDEO_DIR}/${videoBase}_hq.mp4`} type="video/mp4" />
+        </video>
+      )}
+    </div>
+  )
+}
+
 function WhatWeDoCard({
   card,
   index,
+  videoRef,
   dim,
   reduceMotion,
   rootRef,
 }: {
   card: CardData
   index: number
+  videoRef: React.Ref<HTMLVideoElement>
   dim: MotionValue<number> | null
   reduceMotion: boolean
   rootRef?: React.Ref<HTMLDivElement>
@@ -229,13 +285,7 @@ function WhatWeDoCard({
           than removing the glow outright. Hover parallax only wires in
           when motion is allowed. */}
       <div className="absolute inset-0 z-0">
-        <AuroraLayer
-          accent={card.accent}
-          accent2={card.accent2}
-          index={index}
-          parallaxX={parallax.x}
-          parallaxY={parallax.y}
-        />
+        <AuroraLayer accent={card.accent} index={index} parallaxX={parallax.x} parallaxY={parallax.y} />
       </div>
 
       {/* Header strip — fixed height, stays visible when the card is
@@ -256,7 +306,8 @@ function WhatWeDoCard({
           card's natural position already reaches partway up the screen
           from the very first frame, so bottom-anchored content (self-end)
           was getting truncated almost immediately instead of staying clear
-          until the card actually starts collapsing. */}
+          until the card actually starts collapsing. Text stays on the
+          left, video panel on the right (~40% width). */}
       <div className="relative grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-6 pt-2 min-h-0">
         <div className="md:col-span-5 self-start">
           <p className="font-body text-base md:text-lg max-w-md" style={{ color: card.text }}>
@@ -269,6 +320,12 @@ function WhatWeDoCard({
               <div key={c}>{c}</div>
             ))}
           </div>
+        </div>
+        {/* z-10 keeps the video panel visually above the aurora (z-0,
+            positioned first) so the video's own content stays clean — the
+            aurora still glows around/behind it underneath. */}
+        <div className="relative z-10 md:col-start-8 md:col-span-5 self-start">
+          <VideoPanel videoRef={videoRef} videoBase={card.videoBase} title={card.title} reduceMotion={reduceMotion} />
         </div>
       </div>
 
@@ -334,12 +391,70 @@ export default function WhatWeDo() {
   const dim2 = useCoverDim(card3Ref)
   const dim3 = useCoverDim(card4Ref)
 
+  const video1Ref = useRef<HTMLVideoElement>(null)
+  const video2Ref = useRef<HTMLVideoElement>(null)
+  const video3Ref = useRef<HTMLVideoElement>(null)
+  const video4Ref = useRef<HTMLVideoElement>(null)
+  const videoRefs = [video1Ref, video2Ref, video3Ref, video4Ref]
+
+  // One shared IntersectionObserver drives play/pause for all four videos —
+  // play once a card is >=30% visible, pause otherwise. The stacking means
+  // at most two cards are ever meaningfully on screen at once.
+  useEffect(() => {
+    if (reduceMotion) return
+    const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
+    if (videos.length === 0) return
+
+    videos.forEach(v => {
+      v.setAttribute('muted', '')
+      v.setAttribute('playsinline', '')
+      v.setAttribute('webkit-playsinline', '')
+      v.muted = true
+    })
+
+    const play = (v: HTMLVideoElement) => {
+      if (!v.paused && !v.ended) return
+      v.muted = true
+      if (v.ended) v.currentTime = 0
+      if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
+      v.play().catch(() => {
+        setTimeout(() => {
+          if (v.paused || v.ended) {
+            v.muted = true
+            v.play().catch(() => {})
+          }
+        }, 300)
+      })
+    }
+
+    const onEnded = (e: Event) => play(e.target as HTMLVideoElement)
+    videos.forEach(v => v.addEventListener('ended', onEnded))
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const v = entry.target as HTMLVideoElement
+          if (entry.isIntersecting) play(v)
+          else v.pause()
+        })
+      },
+      { threshold: 0.3 }
+    )
+    videos.forEach(v => observer.observe(v))
+
+    return () => {
+      observer.disconnect()
+      videos.forEach(v => v.removeEventListener('ended', onEnded))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion])
+
   return (
     <section data-nav-dark className="wwd-strip-vars relative bg-[#0D0E12]">
-      <WhatWeDoCard card={CARDS[0]} index={0} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
-      <WhatWeDoCard card={CARDS[1]} index={1} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
-      <WhatWeDoCard card={CARDS[2]} index={2} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
-      <WhatWeDoCard card={CARDS[3]} index={3} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
+      <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
+      <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
+      <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
+      <WhatWeDoCard card={CARDS[3]} index={3} videoRef={video4Ref} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
       {/* Card 4, as the last child, has its natural bottom coincide exactly
           with the section's own end — giving it zero dwell (verified: it
           releases and scrolls away the instant it arrives, with no buffer).
