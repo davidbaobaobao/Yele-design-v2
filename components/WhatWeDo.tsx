@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
-const AMBER_DARK = '#C97F3D'
+const PALE_GOLD = '#F0E6C8'
 const VIDEO_DIR = '/media/wesection'
 
 // Function-form transform helper — framer-motion's range-array useTransform
@@ -29,50 +29,173 @@ type CardData = {
   capabilities: string[]
   videoBase: string
   closingLine?: string
+  // Multi-stop iridescent gradient, tuned per card to lean a different hue
+  // family so the four sheens read as distinct from one another even
+  // though they share the same mix-blend-mode/opacity treatment.
+  sheen: string
 }
 
 const CARDS: CardData[] = [
   {
     n: '01',
     title: 'We design',
-    bg: '#1A1815', // warm charcoal — tinted with the dimmed wevideo1 footage
-    text: '#F3EFE9',
+    bg: '#7B8CDE', // soft cornflower blue
+    text: '#FFFFFF',
     description:
       "Bold, custom, no templates. A website designed from scratch for your business and nobody else's.",
     capabilities: ['ART DIRECTION', 'UX & LAYOUT', 'BRANDING', 'MOBILE-FIRST'],
     videoBase: 'wevideo1',
+    sheen: 'linear-gradient(120deg, #7CFFE3 0%, #33C7B0 22%, #A8FFDB 45%, #4FD8FF 68%, #8CFFF0 100%)',
   },
   {
     n: '02',
     title: 'We build',
-    bg: '#14171C', // blue charcoal — tinted with the dimmed wevideo2 footage
-    text: '#EAEEF3',
+    bg: '#D46FC8', // bright orchid pink
+    text: '#FFFFFF',
     description: 'Fast, reliable, SEO-ready. Live in one week, built to perform from day one.',
     capabilities: ['NEXT-GEN STACK', 'LOCAL SEO', 'PERFORMANCE', 'HOSTING & DOMAIN'],
     videoBase: 'wevideo2',
+    sheen: 'linear-gradient(120deg, #FFE38C 0%, #C9E86B 25%, #FFF3B0 50%, #8FE0A0 75%, #FFD86B 100%)',
   },
   {
     n: '03',
     title: 'We create',
-    bg: '#1A1710', // ochre charcoal — tinted with the dimmed wevideo3 footage
-    text: '#F3EDDF',
+    bg: '#C7488F', // magenta-rose
+    text: '#FFFFFF',
     description:
       'Photography, video, copy and illustration. Content that makes your site stand out — included.',
     capabilities: ['PHOTO & VIDEO', 'COPYWRITING', 'ILLUSTRATION', 'SOCIAL ASSETS'],
     videoBase: 'wevideo3',
+    sheen: 'linear-gradient(120deg, #8AB4FF 0%, #B48CFF 25%, #6EE7FF 50%, #C39CFF 75%, #7CA8FF 100%)',
   },
   {
     n: '04',
     title: 'We maintain',
-    bg: '#161418', // violet charcoal — tinted with the dimmed wevideo4 footage
-    text: '#EFECF2',
+    bg: '#5B4B9E', // deep violet-indigo
+    text: '#FFFFFF',
     description:
       "Hosting, security, updates and every change you need. Handled forever — that's the point.",
     capabilities: ['24/7 SUPPORT', 'UPDATES INCLUDED', 'SECURITY', 'ALWAYS IMPROVING'],
     videoBase: 'wevideo4',
     closingLine: 'BUILT. STAYING.',
+    sheen: 'linear-gradient(120deg, #FFB3D9 0%, #FFD199 25%, #FF8CC6 50%, #FFE3A8 75%, #FF9ED4 100%)',
   },
 ]
+
+// True only for devices that can actually hover with a precise pointer —
+// touch gets the static sheen (no parallax to chase, nothing to throttle).
+function useFinePointer() {
+  const [fine, setFine] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const update = () => setFine(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+  return fine
+}
+
+// Raw pointer position (-0.5..0.5 on each axis, card-relative) updated at
+// most once per animation frame, then run through a spring so the sheen
+// glides toward the pointer while moving and eases back to center on
+// mouse leave — the "throttle with rAF" and "spring back on leave"
+// requirements share this one mechanism.
+function useSheenParallax(disabled: boolean) {
+  const rawX = useMotionValue(0)
+  const rawY = useMotionValue(0)
+  const x = useSpring(rawX, { stiffness: 120, damping: 20, mass: 0.6 })
+  const y = useSpring(rawY, { stiffness: 120, damping: 20, mass: 0.6 })
+  const rafRef = useRef<number | null>(null)
+  const pendingRef = useRef<{ x: number; y: number } | null>(null)
+
+  const onMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      if (disabled) return
+      const rect = e.currentTarget.getBoundingClientRect()
+      pendingRef.current = {
+        x: (e.clientX - rect.left) / rect.width - 0.5,
+        y: (e.clientY - rect.top) / rect.height - 0.5,
+      }
+      if (rafRef.current == null) {
+        rafRef.current = requestAnimationFrame(() => {
+          rafRef.current = null
+          if (pendingRef.current) {
+            rawX.set(pendingRef.current.x)
+            rawY.set(pendingRef.current.y)
+          }
+        })
+      }
+    },
+    [disabled, rawX, rawY]
+  )
+
+  const onMouseLeave = useCallback(() => {
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+    rawX.set(0)
+    rawY.set(0)
+  }, [rawX, rawY])
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+    }
+  }, [])
+
+  return { x, y, onMouseMove, onMouseLeave }
+}
+
+// Two gradient layers sharing one mask of hover-driven motion — the deep
+// layer moves roughly 2x as far as the shallow one for a sense of depth.
+// Both mix-blend:screen over the card so the flat brand color underneath
+// still reads through the sheen rather than being replaced by it.
+function SheenOverlay({ gradient, x, y }: { gradient: string; x: MotionValue<number>; y: MotionValue<number> }) {
+  const shallowPosX = useTransform(x, v => `${50 + v * 24}%`)
+  const shallowPosY = useTransform(y, v => `${50 + v * 24}%`)
+  const shallowX = useTransform(x, v => v * 8)
+  const shallowY = useTransform(y, v => v * 8)
+
+  const deepPosX = useTransform(x, v => `${50 - v * 46}%`)
+  const deepPosY = useTransform(y, v => `${50 - v * 46}%`)
+  const deepX = useTransform(x, v => v * -18)
+  const deepY = useTransform(y, v => v * -18)
+
+  return (
+    <>
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: gradient,
+          backgroundSize: '220% 220%',
+          backgroundPositionX: shallowPosX,
+          backgroundPositionY: shallowPosY,
+          x: shallowX,
+          y: shallowY,
+          mixBlendMode: 'screen',
+          opacity: 0.2,
+        }}
+      />
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: gradient,
+          backgroundSize: '320% 320%',
+          backgroundPositionX: deepPosX,
+          backgroundPositionY: deepPosY,
+          x: deepX,
+          y: deepY,
+          mixBlendMode: 'screen',
+          opacity: 0.14,
+        }}
+      />
+    </>
+  )
+}
 
 function VideoPanel({
   videoRef,
@@ -144,18 +267,29 @@ function WhatWeDoCard({
     height: 'min(48vh, 440px)',
   }
 
+  const finePointer = useFinePointer()
+  const sheenParallax = useSheenParallax(reduceMotion || !finePointer)
+
   const inner = (
     <div
       style={{ backgroundColor: card.bg, willChange: 'transform' }}
-      className="relative flex flex-col h-full rounded-t-[2rem] border-t border-hairlineDark overflow-hidden"
+      className="relative flex flex-col h-full rounded-t-[2rem] overflow-hidden"
+      onMouseMove={reduceMotion ? undefined : sheenParallax.onMouseMove}
+      onMouseLeave={reduceMotion ? undefined : sheenParallax.onMouseLeave}
     >
+      {!reduceMotion && (
+        <div className="absolute inset-0 z-0">
+          <SheenOverlay gradient={card.sheen} x={sheenParallax.x} y={sheenParallax.y} />
+        </div>
+      )}
+
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. */}
-      <div className="shrink-0 flex items-center justify-between px-8" style={{ height: 'var(--wwd-strip-h)' }}>
-        <h2 className="font-display font-bold text-[28px] md:text-[44px]" style={{ color: card.text }}>
+      <div className="relative shrink-0 flex items-center justify-between px-8" style={{ height: 'var(--wwd-strip-h)' }}>
+        <h2 className="font-display font-black leading-none text-[36px] md:text-[68px]" style={{ color: card.text }}>
           {card.title}
         </h2>
-        <span className="font-mono text-sm" style={{ color: card.text, opacity: 0.7 }}>
+        <span className="font-mono text-sm" style={{ color: card.text }}>
           {card.n}
         </span>
       </div>
@@ -167,32 +301,39 @@ function WhatWeDoCard({
           from the very first frame, so bottom-anchored content (self-end)
           was getting truncated almost immediately instead of staying clear
           until the card actually starts collapsing. */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-6 pt-2 min-h-0">
+      <div className="relative grid grid-cols-1 md:grid-cols-12 gap-8 px-8 pb-6 pt-2 min-h-0">
         <div className="md:col-span-5 self-start">
           <p className="font-body text-base md:text-lg max-w-md" style={{ color: card.text }}>
             {card.description}
           </p>
         </div>
         <div className="md:col-start-6 md:col-span-2 self-start">
-          <div className="font-mono text-sm uppercase space-y-1.5" style={{ color: card.text, opacity: 0.7 }}>
+          <div className="font-mono text-sm uppercase space-y-1.5" style={{ color: card.text, opacity: 0.75 }}>
             {card.capabilities.map(c => (
               <div key={c}>{c}</div>
             ))}
           </div>
         </div>
-        <div className="md:col-start-8 md:col-span-5 self-start">
+        {/* z-10 keeps the video panel visually above the sheen (which is
+            z-0, positioned first) so the video's own content stays clean —
+            the sheen still spans the full card underneath it. */}
+        <div className="relative z-10 md:col-start-8 md:col-span-5 self-start">
           <VideoPanel videoRef={videoRef} videoBase={card.videoBase} title={card.title} reduceMotion={reduceMotion} />
         </div>
       </div>
 
       {card.closingLine && (
-        <p className="absolute bottom-6 right-8 font-mono text-sm md:text-base" style={{ color: AMBER_DARK }}>
+        <p className="absolute bottom-6 right-8 font-mono text-sm md:text-base" style={{ color: PALE_GOLD }}>
           {card.closingLine}
         </p>
       )}
 
       {dim && (
-        <motion.div style={{ opacity: dim }} className="absolute inset-0 bg-ink pointer-events-none" aria-hidden="true" />
+        <motion.div
+          style={{ opacity: dim }}
+          className="absolute inset-0 z-20 bg-ink pointer-events-none"
+          aria-hidden="true"
+        />
       )}
     </div>
   )
