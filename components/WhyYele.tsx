@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import FeatureCard from './FeatureCard'
 
-const VIDEO_DIR = '/media/whyyele2'
+const VIDEO_DIR = '/media/whyyele3'
 
 type CardData = {
   title: string
