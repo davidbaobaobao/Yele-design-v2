@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import FeatureCard from './FeatureCard'
 
 const MEDIA_DIR = '/media/beyond'
 
@@ -44,62 +44,6 @@ const CARDS: CardData[] = [
     videoBase: 'AIchat',
   },
 ]
-
-function BeyondCard({
-  card,
-  index,
-  videoRef,
-  reduceMotion,
-}: {
-  card: CardData
-  index: number
-  videoRef: React.Ref<HTMLVideoElement>
-  reduceMotion: boolean
-}) {
-  const poster = `${MEDIA_DIR}/${card.videoBase}_poster.jpg`
-
-  const inner = (
-    <div>
-      <div className="relative aspect-[4/3] md:aspect-[3/4] rounded-2xl overflow-hidden bg-[#EEEDE9]">
-        {reduceMotion ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
-        ) : (
-          <video
-            ref={videoRef}
-            muted
-            loop
-            playsInline
-            preload="none"
-            poster={poster}
-            className="absolute inset-0 w-full h-full object-cover"
-            aria-hidden="true"
-          >
-            <source src={`${MEDIA_DIR}/${card.videoBase}_hq.webm`} type="video/webm" />
-            <source src={`${MEDIA_DIR}/${card.videoBase}_hq.mp4`} type="video/mp4" />
-          </video>
-        )}
-      </div>
-      <div className="mt-5">
-        <h3 className="font-display text-ink text-[18px]">{card.title}</h3>
-        <p className="font-body text-[14px] text-muted max-w-xs mt-1.5">{card.description}</p>
-      </div>
-    </div>
-  )
-
-  if (reduceMotion) return inner
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
-    >
-      {inner}
-    </motion.div>
-  )
-}
 
 export default function BeyondWebsite() {
   const reduceMotion = !!useHydratedReducedMotion()
@@ -179,7 +123,21 @@ export default function BeyondWebsite() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
           {CARDS.map((card, i) => (
-            <BeyondCard key={card.videoBase} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
+            <FeatureCard
+              key={card.videoBase}
+              card={{
+                title: card.title,
+                description: card.description,
+                poster: `${MEDIA_DIR}/${card.videoBase}_poster.jpg`,
+                webmSrc: `${MEDIA_DIR}/${card.videoBase}_hq.webm`,
+                mp4Src: `${MEDIA_DIR}/${card.videoBase}_hq.mp4`,
+              }}
+              index={i}
+              videoRef={videoRefs[i]}
+              reduceMotion={reduceMotion}
+              panelBg="bg-[#EEEDE9]"
+              titleColor="text-ink"
+            />
           ))}
         </div>
       </div>

@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import FeatureCard from './FeatureCard'
 
 const VIDEO_DIR = '/media/whyyele2'
 
@@ -44,63 +44,6 @@ const CARDS: CardData[] = [
     videoBase: 'whyyele6',
   },
 ]
-
-function WhyYeleCard({
-  card,
-  index,
-  videoRef,
-  reduceMotion,
-}: {
-  card: CardData
-  index: number
-  videoRef: React.Ref<HTMLVideoElement>
-  reduceMotion: boolean
-}) {
-  const poster = `${VIDEO_DIR}/${card.videoBase}_poster.jpg`
-
-  const inner = (
-    <div>
-      <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#16171C]">
-        {reduceMotion ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
-        ) : (
-          <video
-            ref={videoRef}
-            muted
-            loop
-            playsInline
-            preload="none"
-            poster={poster}
-            className="absolute inset-0 w-full h-full object-cover"
-            aria-hidden="true"
-          >
-            <source src={`${VIDEO_DIR}/${card.videoBase}.webm`} type="video/webm" />
-            <source src={`${VIDEO_DIR}/${card.videoBase}.mp4`} type="video/mp4" />
-          </video>
-        )}
-      </div>
-
-      <div className="mt-5">
-        <h3 className="font-display text-bone text-[19px]">{card.title}</h3>
-        <p className="font-body text-[14px] text-muted max-w-md mt-1.5">{card.description}</p>
-      </div>
-    </div>
-  )
-
-  if (reduceMotion) return inner
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
-    >
-      {inner}
-    </motion.div>
-  )
-}
 
 export default function WhyYele() {
   const reduceMotion = !!useHydratedReducedMotion()
@@ -181,9 +124,23 @@ export default function WhyYele() {
       <div className="max-w-6xl mx-auto">
         {heading}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
           {CARDS.map((card, i) => (
-            <WhyYeleCard key={card.videoBase} card={card} index={i} videoRef={videoRefs[i]} reduceMotion={reduceMotion} />
+            <FeatureCard
+              key={card.videoBase}
+              card={{
+                title: card.title,
+                description: card.description,
+                poster: `${VIDEO_DIR}/${card.videoBase}_poster.jpg`,
+                webmSrc: `${VIDEO_DIR}/${card.videoBase}.webm`,
+                mp4Src: `${VIDEO_DIR}/${card.videoBase}.mp4`,
+              }}
+              index={i}
+              videoRef={videoRefs[i]}
+              reduceMotion={reduceMotion}
+              panelBg="bg-[#16171C]"
+              titleColor="text-bone"
+            />
           ))}
         </div>
       </div>
