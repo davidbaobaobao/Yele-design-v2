@@ -270,16 +270,23 @@ function WhatWeDoCard({
   const parallax = useAuroraParallax(reduceMotion || !finePointer)
 
   const inner = (
+    // Shadow wrapper — carries the outer accent glow and the floating
+    // card's vertical inset (my-2: a sliver of the section's own black bg
+    // shows above/below, so stacked strips read as separated floating
+    // panels rather than edge-to-edge). Deliberately NOT overflow-hidden —
+    // box-shadow needs to spread freely into that surrounding black margin
+    // instead of being clipped at the card's own edge. Only the content
+    // div below (rounded the same amount) clips.
     <div
-      style={{
-        backgroundColor: CARD_BG,
-        willChange: 'transform',
-        boxShadow: `0 0 60px ${hexToRgba(card.accent, 0.18)}`,
-      }}
-      className="relative flex flex-col h-full rounded-t-[2rem] overflow-hidden border border-white/[0.08]"
-      onMouseMove={reduceMotion ? undefined : parallax.onMouseMove}
-      onMouseLeave={reduceMotion ? undefined : parallax.onMouseLeave}
+      style={{ boxShadow: `0 0 60px ${hexToRgba(card.accent, 0.18)}`, willChange: 'transform' }}
+      className="relative h-full my-2 rounded-3xl"
     >
+      <div
+        style={{ backgroundColor: CARD_BG }}
+        className="relative flex flex-col h-full rounded-3xl overflow-hidden border border-white/[0.08]"
+        onMouseMove={reduceMotion ? undefined : parallax.onMouseMove}
+        onMouseLeave={reduceMotion ? undefined : parallax.onMouseLeave}
+      >
       {/* Aurora renders in both branches — reduced motion freezes the CSS
           drift (see the prefers-reduced-motion rule in globals.css) rather
           than removing the glow outright. Hover parallax only wires in
@@ -342,6 +349,7 @@ function WhatWeDoCard({
           aria-hidden="true"
         />
       )}
+      </div>
     </div>
   )
 
@@ -451,18 +459,24 @@ export default function WhatWeDo() {
 
   return (
     <section data-nav-dark className="wwd-strip-vars relative bg-[#0D0E12]">
-      <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
-      <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
-      <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
-      <WhatWeDoCard card={CARDS[3]} index={3} videoRef={video4Ref} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
-      {/* Card 4, as the last child, has its natural bottom coincide exactly
-          with the section's own end — giving it zero dwell (verified: it
-          releases and scrolls away the instant it arrives, with no buffer).
-          This trailing sentinel, colored to match, gives it real hold time;
-          any release that still happens within it is invisible since the
-          color is identical. Not needed in the reduced-motion path, which
-          doesn't use sticky at all. */}
-      {!reduceMotion && <div style={{ height: 'min(48vh, 440px)', backgroundColor: CARD_BG }} aria-hidden="true" />}
+      {/* Horizontal inset only — sticky `top` offsets (vertical) are
+          unaffected by wrapping in a narrower, padded container, so the
+          stacking math above didn't need to change at all for the cards to
+          float with black margin on every side. */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6">
+        <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
+        <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
+        <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
+        <WhatWeDoCard card={CARDS[3]} index={3} videoRef={video4Ref} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
+        {/* Card 4, as the last child, has its natural bottom coincide exactly
+            with the section's own end — giving it zero dwell (verified: it
+            releases and scrolls away the instant it arrives, with no buffer).
+            This trailing sentinel, colored to match, gives it real hold time;
+            any release that still happens within it is invisible since the
+            color is identical. Not needed in the reduced-motion path, which
+            doesn't use sticky at all. */}
+        {!reduceMotion && <div style={{ height: 'min(48vh, 440px)', backgroundColor: CARD_BG }} aria-hidden="true" />}
+      </div>
     </section>
   )
 }
