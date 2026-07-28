@@ -28,7 +28,7 @@ export default function Mission() {
   // ---- Reduced-motion fallback: fully static, no fill ----
   if (reduceMotion) {
     return (
-      <section data-nav-dark className="bg-[#0A0A0A] py-16 md:py-20 px-6">
+      <section data-nav-dark className="bg-[#0D0E12] py-16 md:py-20 px-6">
         <p className={textClass} style={{ ...textIndentStyle, color: '#F2F0EB' }}>
           Other agencies build your website and disappear. We build it —{' '}
           <span className="text-[#C97F3D]">and stay</span>. Design, content, maintenance and
@@ -43,7 +43,7 @@ export default function Mission() {
   // math; it's driven by normalized scrollYProgress (0-1) from the offset
   // above, so it adapts automatically to this non-pinned scroll pattern. ----
   return (
-    <section ref={sectionRef} data-nav-dark className="bg-[#0A0A0A] py-16 md:py-20 px-6">
+    <section ref={sectionRef} data-nav-dark className="bg-[#0D0E12] py-16 md:py-20 px-6">
       <MissionFillText
         text={STATEMENT}
         amberPhrase="and stay"
