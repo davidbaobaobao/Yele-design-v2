@@ -6,9 +6,21 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
-const POSTER = '/media/hero/hero2_poster.jpg'
+const VIDEO_DIR = '/media/hero2'
+const POSTER = `${VIDEO_DIR}/hero2_poster.jpg`
 
 const headlineClass = 'font-display font-black uppercase whitespace-nowrap leading-[0.8]'
+
+// Headline letters are stretched 70% taller vertically only (scaleY), width
+// unchanged — the visible solid layer and the phantom mask-reference div
+// both apply this so the mask lines up with the rendered glyphs.
+const HEADLINE_SCALE_Y = 1.7
+
+// Both the solid-at-rest fill and the color-video reveal are drawn through
+// the SAME mask bitmap (see the shared mask wrapper below), so there is no
+// second independently-rendered layer for it to drift out of alignment
+// with — this stays at 1 (no erosion needed) as a result.
+const MASK_INSET = 1
 
 // Both videos now start at top:0 — full viewport coverage from the very
 // first frame, so the mask always has color-video content to reveal behind
@@ -32,10 +44,10 @@ function linearMap(inMin: number, inMax: number, outMin: number, outMax: number)
 function SwarmSources() {
   return (
     <>
-      <source media="(max-width: 767px)" src="/media/hero/hero2_mobile.webm" type="video/webm" />
-      <source media="(max-width: 767px)" src="/media/hero/hero2_mobile.mp4" type="video/mp4" />
-      <source src="/media/hero/hero2_hq.webm" type="video/webm" />
-      <source src="/media/hero/hero2_hq.mp4" type="video/mp4" />
+      <source media="(max-width: 767px)" src={`${VIDEO_DIR}/hero2_mobile.webm`} type="video/webm" />
+      <source media="(max-width: 767px)" src={`${VIDEO_DIR}/hero2_mobile.mp4`} type="video/mp4" />
+      <source src={`${VIDEO_DIR}/hero2_hq.webm`} type="video/webm" />
+      <source src={`${VIDEO_DIR}/hero2_hq.mp4`} type="video/mp4" />
     </>
   )
 }
@@ -71,6 +83,12 @@ export default function Hero() {
   const riseVh = isMobile ? RISE_VH.mobile : RISE_VH.desktop
   const videoY = useTransform(scrollYProgress, v => `${-riseVh * linearMap(0, 0.6, 0, 1)(v)}vh`)
   const videoScale = isMobile ? 1.15 : 1
+  // The video is taller than the sticky viewport by exactly the max rise
+  // distance — that overrun is the buffer that keeps the video's bottom
+  // edge flush with the section bottom even after the group translates up
+  // by riseVh during phase 1 (a shorter fixed buffer used to run out before
+  // the rise finished, exposing an empty gap below the video).
+  const videoHeightVh = 100 + riseVh
 
   // The mask reveals the color video at the headline's OWN independent
   // on-screen position (headlineDescentVh), but the mask lives inside the
@@ -86,6 +104,11 @@ export default function Hero() {
     const videoRise = riseVh * linearMap(0, 0.6, 0, 1)(v)
     return `0px ${headlineDescent + videoRise}vh`
   })
+
+  // Solid bone headline starts fully opaque (hiding the color-masked layer
+  // beneath it entirely) and fades out over the first ~35% of hero scroll,
+  // letting the particle video show through the letter shapes underneath.
+  const solidHeadlineOpacity = useTransform(scrollYProgress, linearMap(0, 0.35, 1, 0))
 
   // Phase 2 (0.55 → 0.8): caption card slides in bottom-right/bottom-sheet.
   const cardY = useTransform(scrollYProgress, linearMap(0.55, 0.8, 40, 0))
@@ -129,29 +152,34 @@ export default function Hero() {
     ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
     ctx.textBaseline = 'middle'
     ctx.textAlign = 'center'
-    if ('letterSpacing' in ctx) {
-      try {
-        ;(ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = cs.letterSpacing
-      } catch {
-        // letterSpacing on Canvas2D isn't universally supported — safe to skip.
+
+    // Canvas's own text-layout engine (width/letter-spacing/kerning) never
+    // matches the browser's exactly — drawing a whole string with
+    // ctx.fillText and centering it via textAlign left a consistent
+    // horizontal drift once the 1.7x vertical stretch made it visible
+    // against the solid h1 on top. Sidestep canvas layout entirely: walk
+    // every character in the DOM, get ITS OWN true on-screen position via a
+    // one-character Range, and stamp just that glyph there. Canvas is only
+    // used for glyph shape now, never for positioning — so letter-spacing,
+    // kerning and canvas/CSS width differences can't cause any drift.
+    el.childNodes.forEach(node => {
+      if (node.nodeType !== Node.TEXT_NODE) return
+      const text = node.textContent ?? ''
+      for (let i = 0; i < text.length; i++) {
+        const range = document.createRange()
+        range.setStart(node, i)
+        range.setEnd(node, i + 1)
+        const rects = Array.from(range.getClientRects()).filter(r => r.width > 0 && r.height > 0)
+        rects.forEach(rect => {
+          const cx = rect.left + rect.width / 2
+          const cy = rect.top + rect.height / 2
+          ctx.save()
+          ctx.translate(cx, cy)
+          ctx.scale(MASK_INSET, HEADLINE_SCALE_Y * MASK_INSET)
+          ctx.fillText(text[i], 0, 0)
+          ctx.restore()
+        })
       }
-    }
-
-    // The headline is a single text run with one hard <br> (mobile-only via
-    // CSS). getClientRects() naturally returns one rect on desktop (br
-    // hidden) or two on mobile (br active) — matching the two known strings.
-    // The <br> element itself can also contribute its own degenerate
-    // (zero-width or zero-height) rect to the range — filter those out or
-    // they get mistaken for a real text line and a word gets drawn twice,
-    // overlapping the line above it.
-    const range = document.createRange()
-    range.selectNodeContents(el)
-    const rects = Array.from(range.getClientRects()).filter(r => r.width > 0 && r.height > 0)
-    const lines = rects.length >= 2 ? ['BUILD TO', 'STAY'] : ['BUILD TO STAY']
-
-    rects.forEach((rect, i) => {
-      const text = lines[i] ?? lines[lines.length - 1]
-      ctx.fillText(text, rect.left + rect.width / 2, rect.top + rect.height / 2)
     })
 
     setMaskUrl(canvas.toDataURL())
@@ -240,11 +268,24 @@ export default function Hero() {
     letterSpacing: '-0.03em',
   }
 
+  // Vertical-only stretch, shared by every rendered/measured copy of the
+  // headline (visible solid layer + phantom mask reference) so they all
+  // stay pixel-aligned.
+  const headlineTransformStyle = {
+    transform: `scaleY(${HEADLINE_SCALE_Y})`,
+    transformOrigin: 'center',
+  }
+
   const captionText =
     'Websites for small businesses — designed, built and maintained by Yele. You run the business. We run the website.'
 
+  // Card is flush against the viewport's right edge (no rounding needed on
+  // that side — it reads as the true edge); the left side floats inward, so
+  // both its corners are rounded. Bottom stays flush/sharp against the
+  // mission section beneath (see Mission.tsx bg match) so the card reads as
+  // attached rather than floating above it.
   const captionCardClass =
-    'absolute bottom-0 inset-x-0 md:inset-x-auto md:right-0 font-body text-bone leading-snug bg-[#0A0A0A] p-10 text-xl md:text-2xl max-w-md w-full md:w-auto rounded-t-2xl rounded-b-none md:rounded-tl-3xl md:rounded-tr-none md:rounded-bl-3xl'
+    'absolute bottom-0 inset-x-0 md:inset-x-auto md:right-0 font-body text-bone leading-snug bg-[#0A0A0A] p-10 text-xl md:text-2xl max-w-md w-full md:w-auto rounded-t-2xl rounded-b-none md:rounded-tl-3xl md:rounded-tr-none md:rounded-bl-3xl md:rounded-br-none'
 
   // ---- Reduced-motion fallback: static layout, no parallax, no mask ----
   if (reduceMotion) {
@@ -252,7 +293,7 @@ export default function Hero() {
       <section id="hero" className="relative h-screen w-full overflow-hidden bg-[#0A0A0A]">
         <h1
           className={`${headlineClass} absolute inset-x-0 top-20 text-center text-bone px-4`}
-          style={headlineStyle}
+          style={{ ...headlineStyle, ...headlineTransformStyle }}
         >
           BUILD TO<br className="md:hidden" /> STAY
         </h1>
@@ -276,11 +317,15 @@ export default function Hero() {
               transform stacked on top of the mask wrapper's, drifting away
               from the B&W layer as scroll progressed). */}
           <motion.div style={{ y: videoY }} className="absolute inset-0 overflow-hidden z-0">
-            {/* 1. B&W video — bottom layer, full coverage from frame one */}
+            {/* 1. B&W video — bottom layer, full coverage from frame one.
+                Height overruns the viewport by riseVh so the bottom edge
+                stays flush with the section bottom through the whole rise
+                (see videoHeightVh above) — object-bottom keeps the video's
+                own bottom content the anchor point within that taller box. */}
             <video
               ref={bwVideoRef}
-              className="absolute inset-x-0 top-0 w-full h-[110vh] object-cover origin-center"
-              style={{ scale: videoScale, filter: 'grayscale(1) contrast(1.05)' }}
+              className="absolute inset-x-0 top-0 w-full object-cover object-bottom origin-center"
+              style={{ height: `${videoHeightVh}vh`, scale: videoScale, filter: 'grayscale(1) contrast(1.05)' }}
               muted
               loop
               playsInline
@@ -291,11 +336,17 @@ export default function Hero() {
               <SwarmSources />
             </video>
 
-            {/* 2. Masked color video — same position/size/scale as the B&W
-                video above (both direct children of the same transformed
-                group), topmost. mask-position is animated independently
-                (see maskPosition above) so the revealed letter-shapes track
-                the headline's own on-screen position, not this group's. */}
+            {/* 2. Single mask wrapper — the color video AND the solid bone
+                fill both live inside this ONE mask, so they always share
+                exactly the same letter-shaped cutout and the same animated
+                mask-position. A separate solid <h1> layered on top with its
+                own CSS transform was tried first, but two different text
+                renderers (canvas fillText vs native CSS text) never
+                rasterize a glyph identically, and the 1.7x vertical stretch
+                turned that normally-invisible mismatch into a visible color
+                rim — putting both fills through one mask makes any mismatch
+                a non-issue, since there's only one shape now, not two to
+                align. */}
             <motion.div
               className="absolute inset-0 overflow-hidden pointer-events-none transition-opacity duration-300"
               style={{
@@ -312,8 +363,8 @@ export default function Hero() {
             >
               <video
                 ref={colorVideoRef}
-                className="absolute inset-x-0 top-0 w-full h-[110vh] object-cover origin-center"
-                style={{ scale: videoScale }}
+                className="absolute inset-x-0 top-0 w-full object-cover object-bottom origin-center"
+                style={{ height: `${videoHeightVh}vh`, scale: videoScale }}
                 muted
                 loop
                 playsInline
@@ -323,25 +374,35 @@ export default function Hero() {
               >
                 <SwarmSources />
               </video>
+
+              {/* Solid bone fill — fully opaque at rest (hides the color
+                  video beneath entirely through the same cutout: no
+                  particles show at scroll 0). Fades out over the first
+                  ~35% of hero scroll via solidHeadlineOpacity, revealing
+                  the video through the exact same letter shapes as it
+                  goes — same mask, so it can't drift out of alignment. */}
+              <motion.div style={{ opacity: solidHeadlineOpacity }} className="absolute inset-0 bg-bone" />
             </motion.div>
           </motion.div>
 
           {/* Phantom measurement headline — fully transparent, never
               scroll-transformed (its resting box is the mask's reference
               frame; the animated mask-position above handles the apparent
-              scroll movement instead). This is NOT the visible headline —
-              there is no visible headline painted at all; the masked color
-              video showing through the glyph shapes IS the headline. */}
+              scroll movement instead). This is the only rendered copy of
+              the headline glyphs — both the solid-at-rest and revealed-on-
+              scroll states are just different fills shown through the one
+              mask generated from this element. */}
           <div
             ref={headlineRef}
             aria-hidden="true"
             className={`${headlineClass} absolute inset-x-0 top-20 text-center text-transparent select-none px-4 pointer-events-none z-10`}
-            style={headlineStyle}
+            style={{ ...headlineStyle, ...headlineTransformStyle }}
           >
             BUILD TO<br className="md:hidden" /> STAY
           </div>
 
-          {/* True semantic heading for SEO/a11y — visually hidden. */}
+          {/* Real semantic heading for SEO/a11y — visually hidden (the
+              masked fill above is the visual representation). */}
           <h1 className="sr-only">BUILD TO STAY</h1>
 
           {/* Caption card — phase 2, flush to the bottom-right corner (no
