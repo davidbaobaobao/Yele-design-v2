@@ -29,7 +29,7 @@ const STEPS: StepData[] = [
     title: 'We build it',
     lead: 'Design and content, done for you.',
     description: 'You review and approve. No meetings, no back-and-forth.',
-    videoBase: 'howvideo2',
+    videoBase: 'howvideo2-2',
   },
   {
     n: '03',
