@@ -101,7 +101,7 @@ export default function MissionFillText({
       <span aria-hidden="true">
         {words.map((w, wi) => (
           <Fragment key={wi}>
-            <span className="inline-block whitespace-nowrap">
+            <span className="inline whitespace-nowrap">
               {w.chars.map(({ ch, idx }) => (
                 <span key={idx} style={{ color: charColor(idx, fillIndex, w.isAmberTarget) }}>
                   {ch}

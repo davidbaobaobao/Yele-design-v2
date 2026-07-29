@@ -130,13 +130,13 @@ html.sand-helix-page body {
    fixed height agree at every breakpoint without JS. */
 .wwd-strip-vars {
   --wwd-nav-h: 72px;
-  --wwd-strip-h: 88px;
+  --wwd-strip-h: 136px;
 }
 @media (max-width: 767px) {
-  .wwd-strip-vars { --wwd-strip-h: 64px; }
+  .wwd-strip-vars { --wwd-strip-h: 92px; }
 }
 @media (max-height: 699px) {
-  .wwd-strip-vars { --wwd-strip-h: 64px; }
+  .wwd-strip-vars { --wwd-strip-h: 92px; }
 }
 
 /* "What we do" aurora glow — bold, clearly-moving blob drift behind each

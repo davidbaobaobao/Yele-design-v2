@@ -258,12 +258,11 @@ function WhatWeDoCard({
   const stickyStyle = {
     top: `calc(var(--wwd-nav-h) + ${index} * var(--wwd-strip-h))`,
     // Fixed height, same for every card (not decreasing per index like
-    // before) — rocketweblabs cards read as ~60-70vh, not near-full-
-    // viewport. This also shortens each card's own contribution to the
+    // before). This also shortens each card's own contribution to the
     // section's total scroll length (the sticky containing-block dwell
     // math below doesn't need a separate wrapper div to achieve that — a
     // smaller fixed height already tightens it directly).
-    height: 'min(48vh, 440px)',
+    height: 'min(70vh, 640px)',
   }
 
   const finePointer = useFinePointer()
@@ -297,9 +296,13 @@ function WhatWeDoCard({
 
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. Pure black background (no aurora
-          reaches this high) for clean text reading. */}
-      <div className="relative shrink-0 flex items-center justify-between px-8" style={{ height: 'var(--wwd-strip-h)' }}>
-        <h2 className="font-display font-black leading-none text-[36px] md:text-[68px]" style={{ color: card.text }}>
+          reaches this high) for clean text reading. Padding-top > padding-
+          bottom (both inside items-center) so the title's centered position
+          shifts down within the strip — more breathing room above it,
+          without losing the title/index baseline alignment items-center
+          already gave them. */}
+      <div className="relative shrink-0 flex items-center justify-between px-8 pt-8 pb-2" style={{ height: 'var(--wwd-strip-h)' }}>
+        <h2 className="font-display font-medium leading-none text-[44px] md:text-[84px]" style={{ color: card.text }}>
           {card.title}
         </h2>
         <span className="font-mono text-sm" style={{ color: card.text }}>
@@ -355,7 +358,7 @@ function WhatWeDoCard({
 
   if (reduceMotion) {
     return (
-      <div ref={rootRef} className="min-h-[58vh]">
+      <div ref={rootRef} className="min-h-[85vh]">
         {inner}
       </div>
     )
@@ -458,12 +461,18 @@ export default function WhatWeDo() {
   }, [reduceMotion])
 
   return (
-    <section data-nav-dark className="wwd-strip-vars relative bg-[#0D0E12]">
+    // pt-px: the first card's own my-2 top margin has nothing (no padding
+    // or border) to stop it collapsing through this section onto Mission's
+    // bottom edge otherwise — a classic CSS margin-collapse case that was
+    // showing up as an 8px gap of the page's own (light) background between
+    // the two dark sections. Any nonzero padding here breaks the collapse;
+    // 1px is visually imperceptible.
+    <section data-nav-dark className="wwd-strip-vars relative bg-[#0D0E12] pt-px">
       {/* Horizontal inset only — sticky `top` offsets (vertical) are
           unaffected by wrapping in a narrower, padded container, so the
           stacking math above didn't need to change at all for the cards to
           float with black margin on every side. */}
-      <div className="max-w-6xl mx-auto px-4 md:px-6">
+      <div className="max-w-[80vw] mx-auto">
         <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
         <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
         <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
@@ -475,7 +484,7 @@ export default function WhatWeDo() {
             any release that still happens within it is invisible since the
             color is identical. Not needed in the reduced-motion path, which
             doesn't use sticky at all. */}
-        {!reduceMotion && <div style={{ height: 'min(48vh, 440px)', backgroundColor: CARD_BG }} aria-hidden="true" />}
+        {!reduceMotion && <div style={{ height: 'min(70vh, 640px)', backgroundColor: CARD_BG }} aria-hidden="true" />}
       </div>
     </section>
   )
