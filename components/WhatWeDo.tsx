@@ -240,6 +240,19 @@ function VideoPanel({
   )
 }
 
+// Each card is wider than the last (centered, mx-auto on both breakpoints)
+// so as later cards stack over earlier ones, the growing width overhangs the
+// narrower card beneath on both edges — a layered 3D tier effect. Desktop
+// widths are capped at 1500px so the widest card still keeps side margin on
+// very large screens; mobile stays near-full-width with the same small
+// per-card increment so the tiering still reads without overflow.
+const CARD_WIDTH_CLASS = [
+  'w-[90vw] md:w-[min(74vw,1500px)] mx-auto',
+  'w-[92vw] md:w-[min(78vw,1500px)] mx-auto',
+  'w-[94vw] md:w-[min(82vw,1500px)] mx-auto',
+  'w-[96vw] md:w-[min(86vw,1500px)] mx-auto',
+]
+
 function WhatWeDoCard({
   card,
   index,
@@ -255,6 +268,7 @@ function WhatWeDoCard({
   reduceMotion: boolean
   rootRef?: React.Ref<HTMLDivElement>
 }) {
+  const widthClass = CARD_WIDTH_CLASS[index]
   const stickyStyle = {
     top: `calc(var(--wwd-nav-h) + ${index} * var(--wwd-strip-h))`,
     // Fixed height, same for every card (not decreasing per index like
@@ -358,7 +372,7 @@ function WhatWeDoCard({
 
   if (reduceMotion) {
     return (
-      <div ref={rootRef} className="min-h-[85vh]">
+      <div ref={rootRef} className={`min-h-[85vh] ${widthClass}`}>
         {inner}
       </div>
     )
@@ -377,7 +391,7 @@ function WhatWeDoCard({
   // section's end, giving it zero dwell — fixed with a trailing sentinel,
   // see the bottom of the component below.
   return (
-    <div ref={rootRef} className="sticky" style={stickyStyle}>
+    <div ref={rootRef} className={`sticky ${widthClass}`} style={stickyStyle}>
       {inner}
     </div>
   )
@@ -468,24 +482,31 @@ export default function WhatWeDo() {
     // the two dark sections. Any nonzero padding here breaks the collapse;
     // 1px is visually imperceptible.
     <section data-nav-dark className="wwd-strip-vars relative bg-[#0D0E12] pt-px">
-      {/* Horizontal inset only — sticky `top` offsets (vertical) are
-          unaffected by wrapping in a narrower, padded container, so the
-          stacking math above didn't need to change at all for the cards to
-          float with black margin on every side. */}
-      <div className="max-w-[80vw] mx-auto">
-        <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
-        <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
-        <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
-        <WhatWeDoCard card={CARDS[3]} index={3} videoRef={video4Ref} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
-        {/* Card 4, as the last child, has its natural bottom coincide exactly
-            with the section's own end — giving it zero dwell (verified: it
-            releases and scrolls away the instant it arrives, with no buffer).
-            This trailing sentinel, colored to match, gives it real hold time;
-            any release that still happens within it is invisible since the
-            color is identical. Not needed in the reduced-motion path, which
-            doesn't use sticky at all. */}
-        {!reduceMotion && <div style={{ height: 'min(70vh, 640px)', backgroundColor: CARD_BG }} aria-hidden="true" />}
-      </div>
+      {/* No shared width wrapper here — each card now carries its own
+          per-index width class (mx-auto) directly on its own sticky div, so
+          widths can grow index-over-index while every card still centers on
+          the same axis. Adding width/mx-auto to an *existing* element (the
+          sticky div itself) rather than introducing a new wrapping box keeps
+          the vertical stacking math untouched, exactly like the old shared
+          wrapper's horizontal-only inset did. */}
+      <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
+      <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
+      <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
+      <WhatWeDoCard card={CARDS[3]} index={3} videoRef={video4Ref} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
+      {/* Card 4, as the last child, has its natural bottom coincide exactly
+          with the section's own end — giving it zero dwell (verified: it
+          releases and scrolls away the instant it arrives, with no buffer).
+          This trailing sentinel, colored to match and matching card 4's
+          width, gives it real hold time; any release that still happens
+          within it is invisible since the color is identical. Not needed in
+          the reduced-motion path, which doesn't use sticky at all. */}
+      {!reduceMotion && (
+        <div
+          className={CARD_WIDTH_CLASS[3]}
+          style={{ height: 'min(70vh, 640px)', backgroundColor: CARD_BG }}
+          aria-hidden="true"
+        />
+      )}
     </section>
   )
 }
