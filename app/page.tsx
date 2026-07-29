@@ -10,15 +10,10 @@ const WhatWeDo             = dynamic(() => import('@/components/WhatWeDo'))
 const WhyYele              = dynamic(() => import('@/components/WhyYele'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
-const WeStackSection       = dynamic(() => import('@/components/WeStackSection'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
-const ComoFunciona         = dynamic(() => import('@/components/ComoFunciona'))
 const Showcase             = dynamic(() => import('@/components/Showcase'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
 const WhySubs              = dynamic(() => import('@/components/WhySubs'))
-const WhySubscription      = dynamic(() => import('@/components/WhySubscription'))
-const ShowcaseFeatureCards = dynamic(() => import('@/app/presupuesto/_components/ShowcaseFeatureCards'))
-const DiferenciaSection    = dynamic(() => import('@/app/presupuesto/_components/DiferenciaSection'))
 const Testimonios          = dynamic(() => import('@/components/Testimonios'))
 const TablaComparativa     = dynamic(() => import('@/components/TablaComparativa'))
 const ContactForm          = dynamic(() => import('@/components/ContactForm'))
@@ -64,12 +59,7 @@ export default function Home() {
         <BeyondWebsite />
         <PreciosIndexSection />
         <WhySubs />
-        <WeStackSection />
         <VideoSnapController />
-        <ComoFunciona noBg />
-        <WhySubscription />
-        <ShowcaseFeatureCards />
-        <DiferenciaSection />
         <Testimonios noBg />
         <TablaComparativa />
         <ContactForm />
