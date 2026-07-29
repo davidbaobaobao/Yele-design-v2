@@ -5,7 +5,6 @@ import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, typ
 import { Check } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
-import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 const plans = [
   {
@@ -224,9 +223,6 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
 export default function PreciosIndexSection() {
   const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
-  const videoRef   = useRef<HTMLVideoElement>(null)
-
-  useVideoAutoplay(videoRef)
 
   useEffect(() => {
     const el = sectionRef.current
@@ -274,27 +270,8 @@ export default function PreciosIndexSection() {
     <section
       ref={sectionRef}
       id="precios"
-      data-nav-dark
-      className="relative min-h-screen flex items-center overflow-hidden py-24 bg-[#0a0a0a]"
+      className="relative min-h-screen flex items-center overflow-hidden py-24 bg-white"
     >
-      <video
-        ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover"
-        autoPlay muted loop playsInline preload="none"
-        poster="/media/pricing3/pricing3_poster.jpg"
-        aria-hidden="true"
-      >
-        <source src="/media/pricing3/pricing3_hq.webm" type="video/webm" />
-        <source src="/media/pricing3/pricing3_hq.mp4"  type="video/mp4" />
-      </video>
-
-      {/* Scrim — top opacity matches WhySubscription bottom for a seamless visual join */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.40) 50%, rgba(0,0,0,0.65) 100%)' }}
-        aria-hidden="true"
-      />
-
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -304,7 +281,7 @@ export default function PreciosIndexSection() {
           className="text-center mb-10"
         >
           <h2
-            className="font-display font-semibold text-white tracking-tight"
+            className="font-display font-semibold text-ink tracking-tight"
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}
           >
             {t('Precios', 'Pricing')}
@@ -317,14 +294,14 @@ export default function PreciosIndexSection() {
           ))}
         </div>
 
-        <p className="text-center font-body text-sm font-bold text-white mt-6">
+        <p className="text-center font-body text-sm font-bold text-ink mt-6">
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
 
         <div className="text-center mt-4">
           <button
             onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-            className="font-body text-sm font-semibold text-white underline underline-offset-4 hover:text-white/80 transition-colors cursor-pointer"
+            className="font-body text-sm font-semibold text-ink underline underline-offset-4 hover:text-ink/80 transition-colors cursor-pointer"
           >
             {t('Ayúdame a decidir', 'Help me decide')}
           </button>

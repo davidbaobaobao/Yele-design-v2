@@ -47,6 +47,17 @@ function mixRgba(from: string, to: string, t: number) {
   return `rgba(${r}, ${g}, ${b}, ${a.toFixed(3)})`
 }
 
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
+// The actual color flip only happens across this narrow slice of the
+// section's own [0,1] entry progress — dark before FLIP_BAND[0], white after
+// FLIP_BAND[1], a quick eased snap in between. linearMap already clamps
+// outside the band, so no separate clamp step is needed.
+const FLIP_BAND: [number, number] = [0.12, 0.22]
+const flipBand = (v: number) => easeInOutCubic(linearMap(FLIP_BAND[0], FLIP_BAND[1], 0, 1)(v))
+
 // Mercury effect: the section enters dark (#0D0E12, seamless from the
 // previous dark "Showcase" section above it) then fades to white as the
 // user scrolls past the header, with text flipping white -> ink. Reversible
@@ -324,14 +335,23 @@ export default function HowWeWork() {
   const [fadeStart, setFadeStart] = useState(0)
   const [fadeEnd, setFadeEnd] = useState(1)
 
+  // Equivalent to offset ["start end", "start 0.85"]: progress 0 when the
+  // section's top just reaches the viewport's bottom edge (barely entering),
+  // progress 1 when it's reached 85% down the viewport — roughly half as far
+  // into the viewport as the old trigger (which waited for the top to reach
+  // the viewport's own top edge, 0%, before starting at all). The actual
+  // color flip is a further-compressed sub-band of this (see FLIP_BAND)
+  // below, so it reads as a quick snap right as the section appears, not a
+  // fade spread across the whole time it's scrolling into view.
   useEffect(() => {
     const measure = () => {
       const el = sectionRef.current
       if (!el) return
       const rect = el.getBoundingClientRect()
       const pageTop = rect.top + window.scrollY
-      setFadeStart(pageTop)
-      setFadeEnd(pageTop + window.innerHeight * 0.4)
+      const vh = window.innerHeight
+      setFadeStart(pageTop - vh)
+      setFadeEnd(pageTop - vh * 0.85)
     }
     measure()
     window.addEventListener('resize', measure)
@@ -339,27 +359,28 @@ export default function HowWeWork() {
   }, [])
 
   const progress = useTransform(scrollY, v => linearMap(fadeStart, fadeEnd, 0, 1)(v))
-  const bgColor = useTransform(progress, v => mixHex(DARK_BG, LIGHT_BG, v))
-  const primaryColor = useTransform(progress, v => mixHex(DARK_TEXT, LIGHT_TEXT, v))
-  const secondaryColor = useTransform(progress, v => mixRgba(DARK_SECONDARY, LIGHT_SECONDARY, v))
-  const hairlineColor = useTransform(progress, v => mixRgba(DARK_HAIRLINE, LIGHT_HAIRLINE, v))
+  const bgColor = useTransform(progress, v => mixHex(DARK_BG, LIGHT_BG, flipBand(v)))
+  const primaryColor = useTransform(progress, v => mixHex(DARK_TEXT, LIGHT_TEXT, flipBand(v)))
+  const secondaryColor = useTransform(progress, v => mixRgba(DARK_SECONDARY, LIGHT_SECONDARY, flipBand(v)))
+  const hairlineColor = useTransform(progress, v => mixRgba(DARK_HAIRLINE, LIGHT_HAIRLINE, flipBand(v)))
 
   // Nav integration — this section is excluded from the generic always-dark
   // [data-nav-dark] observer (marked data-nav-fade instead, see Nav.tsx)
-  // since it isn't uniformly dark: only the first half of its scroll range
-  // is. Report the "which mode should the nav be in" boolean only when it
-  // actually changes, so scrolling back up flips the nav back at the same
-  // point it flipped forward.
+  // since it isn't uniformly dark: only the bg's own FLIP_BAND is. Flips at
+  // the band's midpoint, in step with the bg/text snap, and reports the
+  // change only when it actually happens so scrolling back up flips the nav
+  // back at the same point it flipped forward.
+  const flipBandMid = (FLIP_BAND[0] + FLIP_BAND[1]) / 2
   useEffect(() => {
     if (reduceMotion) return
-    const dark = progress.get() <= 0.5
+    const dark = progress.get() <= flipBandMid
     lastDarkRef.current = dark
     window.dispatchEvent(new CustomEvent('howwework:navmode', { detail: { dark } }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion])
 
   useMotionValueEvent(progress, 'change', v => {
-    const dark = v <= 0.5
+    const dark = v <= flipBandMid
     if (dark !== lastDarkRef.current) {
       lastDarkRef.current = dark
       window.dispatchEvent(new CustomEvent('howwework:navmode', { detail: { dark } }))
