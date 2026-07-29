@@ -1,0 +1,221 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+
+const VIDEO_DIR = '/media/whysubs'
+const POSTER = `${VIDEO_DIR}/whysubs_poster.jpg`
+
+// Vertical gap (px) between adjacent reasons in the right-hand list — the
+// unit the continuous scroll-driven offset is measured in.
+const SLOT_HEIGHT = 108
+
+const REASONS = [
+  { title: 'Fixed monthly price', subtitle: 'One flat rate. No surprises, no end-of-month invoices.' },
+  { title: 'Low entry barrier', subtitle: 'No big upfront cost. Start for as little as $99/month.' },
+  { title: 'Cancel anytime', subtitle: 'No lock-in, no penalties. Stay because it works.' },
+  { title: 'Constant maintenance', subtitle: 'Hosting, security and updates, handled continuously.' },
+  { title: 'Constant improvement', subtitle: 'Your site keeps evolving — never outdated.' },
+  { title: 'Constant support', subtitle: "We're here whenever you need us, 24/7." },
+]
+
+// ffmpeg -i wesubs.mp4 -vf "select=eq(n\,0)" -frames:v 1 whysubs_poster.jpg
+// ffmpeg -i in.mp4 -vf "scale=1920:-2" -c:v libx264 -profile:v high -crf 24
+//   -preset slow -pix_fmt yuv420p -movflags +faststart -an whysubs.mp4
+// (+ webm sibling — came out smaller here, 252KB vs 868KB, so webm-first)
+function BgSources() {
+  return (
+    <>
+      <source src={`${VIDEO_DIR}/whysubs.webm`} type="video/webm" />
+      <source src={`${VIDEO_DIR}/whysubs.mp4`} type="video/mp4" />
+    </>
+  )
+}
+
+// One reason in the right-hand list. Every item is absolutely stacked at the
+// SAME center point (its own natural/untransformed position); the shared
+// scroll progress drives each one's OWN y/opacity/scale as a continuous
+// function of its distance from the current focus index, so items smoothly
+// fade and shrink as they approach or leave the center focus line — never a
+// hard cut between "active" and "inactive".
+function ReasonItem({ index, title, continuousIndex }: { index: number; title: string; continuousIndex: MotionValue<number> }) {
+  const y = useTransform(continuousIndex, v => (index - v) * SLOT_HEIGHT)
+  const opacity = useTransform(continuousIndex, v => Math.max(0, 1 - Math.abs(index - v) * 0.75))
+  const scale = useTransform(continuousIndex, v => Math.max(0.75, 1 - Math.abs(index - v) * 0.18))
+
+  return (
+    <motion.div
+      className="absolute inset-0 flex items-center justify-end md:justify-end"
+      style={{ y, opacity, scale }}
+    >
+      <span className="font-display text-bone text-[clamp(1.5rem,3.6vw,3.25rem)] leading-none whitespace-nowrap text-right">
+        {title}
+      </span>
+    </motion.div>
+  )
+}
+
+export default function WhySubs() {
+  const reduceMotion = !!useHydratedReducedMotion()
+  const sectionRef = useRef<HTMLElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+
+  // 0 -> reason 0 sits exactly at the center focus line (right at the top of
+  // the pin), 1 -> the last reason does (right as the pin is about to
+  // release) — evenly spaced in between, continuous (not stepped), so the
+  // list glides rather than jumps.
+  const continuousIndex = useTransform(scrollYProgress, v => v * (REASONS.length - 1))
+
+  useEffect(() => {
+    if (reduceMotion) return
+    setActiveIndex(Math.round(continuousIndex.get()))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion])
+
+  useMotionValueEvent(continuousIndex, 'change', v => {
+    const idx = Math.max(0, Math.min(REASONS.length - 1, Math.round(v)))
+    setActiveIndex(prev => (prev === idx ? prev : idx))
+  })
+
+  // Pause the bg video once the (very tall) section is nowhere near the
+  // viewport — it's always visible while any part of the section is on
+  // screen (that's the whole point of the pin), so no per-frame play/pause
+  // logic is needed beyond this coarse on/off.
+  useEffect(() => {
+    if (reduceMotion) return
+    const el = sectionRef.current
+    const video = videoRef.current
+    if (!el || !video) return
+
+    video.setAttribute('muted', '')
+    video.setAttribute('playsinline', '')
+    video.setAttribute('webkit-playsinline', '')
+    video.muted = true
+
+    const play = () => {
+      video.muted = true
+      if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load()
+      video.play().catch(() => {})
+    }
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) play()
+          else video.pause()
+        })
+      },
+      { threshold: 0, rootMargin: '200px 0px' }
+    )
+    observer.observe(el)
+
+    const onLoadedMetadata = () => {
+      video.muted = true
+      if (video.paused) play()
+    }
+    video.addEventListener('loadedmetadata', onLoadedMetadata)
+
+    return () => {
+      observer.disconnect()
+      video.removeEventListener('loadedmetadata', onLoadedMetadata)
+    }
+  }, [reduceMotion])
+
+  const heading = (
+    <h2 className="font-display text-bone text-left leading-tight text-[clamp(1.75rem,3.2vw,3rem)] max-w-md">
+      Why subscription is better?
+    </h2>
+  )
+
+  // ---- Reduced motion: static list, no scroll-jack, no rotate — just the
+  // reasons stacked plainly with the first subtitle shown. ----
+  if (reduceMotion) {
+    return (
+      <section data-nav-dark className="relative overflow-hidden py-24 px-6" style={{ backgroundColor: '#0A0A0C' }}>
+        <div className="absolute inset-0">
+          <img src={POSTER} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto flex flex-col md:flex-row gap-12 md:gap-20">
+          <div className="md:w-[40%] shrink-0">{heading}</div>
+          <div className="flex-1 flex flex-col gap-6">
+            {REASONS.map((r, i) => (
+              <div key={r.title}>
+                <p className={`font-display text-[clamp(1.25rem,2.4vw,1.75rem)] leading-tight ${i === 0 ? 'text-bone' : 'text-bone/40'}`}>
+                  {r.title}
+                </p>
+                {i === 0 && <p className="font-body text-bone/70 text-sm mt-1">{r.subtitle}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section ref={sectionRef} data-nav-dark className="relative" style={{ height: `${(REASONS.length + 1) * 100}vh` }}>
+      <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ backgroundColor: '#0A0A0C' }}>
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster={POSTER}
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <BgSources />
+        </video>
+        {/* Subtle dark overlay for text legibility over the video. */}
+        <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
+
+        {/* Heading and list are both absolutely positioned within the same
+            full-height box (rather than sharing a flex row) so the list's
+            own vertical center always lands on true 100vh center regardless
+            of the heading's height at any breakpoint — a flex-col stack on
+            mobile would otherwise shrink the list's available box and shift
+            its focus line away from the heading's. */}
+        <div className="relative z-10 h-full max-w-6xl mx-auto px-6">
+          {/* LEFT — fixed, never moves while the section is pinned. */}
+          <div className="absolute top-24 left-6 md:top-1/2 md:-translate-y-1/2 md:left-6 md:w-[40%]">{heading}</div>
+
+          {/* RIGHT — the scrolling list. */}
+          <div className="absolute inset-0">
+            {REASONS.map((r, i) => (
+              <ReasonItem key={r.title} index={i} title={r.title} continuousIndex={continuousIndex} />
+            ))}
+          </div>
+        </div>
+
+        {/* Subtitle — cross-fades with the active reason, no abrupt swap.
+            Anchored near the bottom of the viewport rather than relative to
+            the center focus line, so it never collides with a dimmed
+            neighbor item sitting just below the active one in the list. */}
+        <div className="absolute inset-x-0 bottom-12 md:bottom-16 z-10 max-w-6xl mx-auto px-6 flex justify-end">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={activeIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="font-body text-bone/70 text-sm md:text-base text-right max-w-sm"
+            >
+              {REASONS[activeIndex].subtitle}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  )
+}

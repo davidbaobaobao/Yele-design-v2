@@ -15,6 +15,7 @@ const VideoSnapController  = dynamic(() => import('@/components/VideoSnapControl
 const ComoFunciona         = dynamic(() => import('@/components/ComoFunciona'))
 const Showcase             = dynamic(() => import('@/components/Showcase'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
+const WhySubs              = dynamic(() => import('@/components/WhySubs'))
 const WhySubscription      = dynamic(() => import('@/components/WhySubscription'))
 const ShowcaseFeatureCards = dynamic(() => import('@/app/presupuesto/_components/ShowcaseFeatureCards'))
 const DiferenciaSection    = dynamic(() => import('@/app/presupuesto/_components/DiferenciaSection'))
@@ -62,6 +63,7 @@ export default function Home() {
         <HowWeWork />
         <BeyondWebsite />
         <PreciosIndexSection />
+        <WhySubs />
         <WeStackSection />
         <VideoSnapController />
         <ComoFunciona noBg />

@@ -6,15 +6,17 @@ import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-mot
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
-const VIDEO_DIR = '/media/hero3'
-const DARK_POSTER = `${VIDEO_DIR}/Hero_dark-3_poster.jpg`
-const BRIGHT_POSTER = `${VIDEO_DIR}/Hero_bright-3_poster.jpg`
+const VIDEO_DIR = '/media/hero4'
+const DARK_POSTER = `${VIDEO_DIR}/hero4_poster.jpg`
+const BRIGHT_POSTER = `${VIDEO_DIR}/hero4_bright_poster.jpg`
 const WHITE = '#F2F0EB'
 const SECTION_BG = '#0D0E12'
 const CARD_CLEARANCE_PX = 24
 const MASK_ID = 'heroTextMask'
 const GLYPHS_ID = 'heroHeadlineGlyphs'
-const LINES = ['BUILD', 'TO', 'LAST']
+// Single line now (was three stacked lines) — the headline shrank to fit
+// "BUILD TO LAST" on one row instead of wrapping.
+const LINES = ['BUILD TO LAST']
 
 function linearMap(inMin: number, inMax: number, outMin: number, outMax: number) {
   return (v: number) => {
@@ -28,25 +30,28 @@ function clampNum(v: number, min: number, max: number) {
   return Math.min(Math.max(v, min), max)
 }
 
-// ffmpeg -i in.mp4 -vf "scale=-2:1280" -c:v libx264 -crf 26 -preset slow
-//   -movflags +faststart -an -pix_fmt yuv420p out.mp4  (portrait 9:16 source)
+// Webm-first for dark (smaller at hq: 197KB vs 257KB) and mobile (106KB vs
+// 125KB); mp4-first for bright (871KB vs 2.1MB at hq, 510KB vs 1.3MB mobile)
+// — verified by comparing actual output file sizes, not assumed from the
+// usual webm-first convention.
 function DarkSources() {
   return (
     <>
-      <source src={`${VIDEO_DIR}/Hero_dark-3_hq.webm`} type="video/webm" />
-      <source src={`${VIDEO_DIR}/Hero_dark-3_hq.mp4`} type="video/mp4" />
+      <source media="(max-width: 767px)" src={`${VIDEO_DIR}/hero4_dark_mobile.webm`} type="video/webm" />
+      <source media="(max-width: 767px)" src={`${VIDEO_DIR}/hero4_dark_mobile.mp4`} type="video/mp4" />
+      <source src={`${VIDEO_DIR}/hero4_dark_hq.webm`} type="video/webm" />
+      <source src={`${VIDEO_DIR}/hero4_dark_hq.mp4`} type="video/mp4" />
     </>
   )
 }
 
 function BrightSources() {
-  // MP4-first here specifically: for this footage H.264 came out smaller
-  // than VP9 at matched quality (1.7MB vs 1.9MB) — verified by comparing
-  // actual output file sizes, not assumed from the usual webm-first default.
   return (
     <>
-      <source src={`${VIDEO_DIR}/Hero_bright-3_hq.mp4`} type="video/mp4" />
-      <source src={`${VIDEO_DIR}/Hero_bright-3_hq.webm`} type="video/webm" />
+      <source media="(max-width: 767px)" src={`${VIDEO_DIR}/hero4_bright_mobile.mp4`} type="video/mp4" />
+      <source media="(max-width: 767px)" src={`${VIDEO_DIR}/hero4_bright_mobile.webm`} type="video/webm" />
+      <source src={`${VIDEO_DIR}/hero4_bright_hq.mp4`} type="video/mp4" />
+      <source src={`${VIDEO_DIR}/hero4_bright_hq.webm`} type="video/webm" />
     </>
   )
 }
@@ -220,13 +225,14 @@ export default function Hero() {
 
   const { width: vw, height: vh } = viewport
   const oneThirdVw = vw / 3
-  // Chosen so "BUILD" (the widest line, 5 caps) is already close to
-  // oneThirdVw at its natural width — the textLength forcing below then only
-  // needs a small corrective nudge rather than a heavy stretch/squash.
-  const fontSizePx = clampNum(oneThirdVw / 3.1, 40, 200)
+  // Same target width as before (oneThirdVw) but now spread across all 13
+  // characters of "BUILD TO LAST" on one line instead of just "BUILD" (5
+  // caps) stacked over 3 lines — the divisor scales by the character-count
+  // ratio (13/5) so the single line still naturally lands close to
+  // oneThirdVw before the textLength forcing below nudges it exact.
+  const fontSizePx = clampNum(oneThirdVw / 8.06, 24, 120)
   const leftInset = Math.max(24, vw * 0.045)
   const topInset = Math.max(64, vh * 0.1)
-  const lineHeight = fontSizePx * 0.98
   const baselineOffset = fontSizePx * 0.82
 
   // ---- Reduced-motion fallback: static poster, solid white, no reveal ----
@@ -234,14 +240,10 @@ export default function Hero() {
     return (
       <section id="hero" className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: SECTION_BG }}>
         <div
-          className="absolute top-16 left-6 md:top-24 md:left-8 z-10 font-display font-black uppercase leading-[0.95]"
-          style={{ fontSize: 'clamp(2.25rem, 8vw, 5rem)', width: '33vw', minWidth: '180px', color: WHITE }}
+          className="absolute top-16 left-6 md:top-24 md:left-8 z-10 font-display font-black uppercase leading-none whitespace-nowrap"
+          style={{ fontSize: 'clamp(1.5rem, 4vw, 3rem)', color: WHITE }}
         >
-          BUILD
-          <br />
-          TO
-          <br />
-          LAST
+          BUILD TO LAST
         </div>
         <div className="absolute inset-0">
           <Image src={DARK_POSTER} alt="" fill sizes="100vw" priority className="object-cover" />
@@ -322,15 +324,15 @@ export default function Hero() {
           >
             <defs>
               <g id={GLYPHS_ID} ref={glyphsRef}>
-                {LINES.map((line, i) => (
+                {LINES.map(line => (
                   <text
                     key={line}
                     x={leftInset}
-                    y={topInset + baselineOffset + i * lineHeight}
+                    y={topInset + baselineOffset}
                     fontSize={fontSizePx}
                     className="font-display font-black uppercase"
-                    textLength={line === 'BUILD' ? oneThirdVw : undefined}
-                    lengthAdjust={line === 'BUILD' ? 'spacingAndGlyphs' : undefined}
+                    textLength={oneThirdVw}
+                    lengthAdjust="spacingAndGlyphs"
                   >
                     {line}
                   </text>

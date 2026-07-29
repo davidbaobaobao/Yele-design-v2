@@ -480,8 +480,10 @@ export default function WhatWeDo() {
     // bottom edge otherwise — a classic CSS margin-collapse case that was
     // showing up as an 8px gap of the page's own (light) background between
     // the two dark sections. Any nonzero padding here breaks the collapse;
-    // 1px is visually imperceptible.
-    <section data-nav-dark className="wwd-strip-vars relative bg-[#0D0E12] pt-px">
+    // 1px is visually imperceptible. pb-40: room for card 4's outer glow
+    // shadow (which spreads past its own box into this section's own bg)
+    // plus breathing space before the next section.
+    <section data-nav-dark className="wwd-strip-vars relative bg-[#0D0E12] pt-px pb-40">
       {/* No shared width wrapper here — each card now carries its own
           per-index width class (mx-auto) directly on its own sticky div, so
           widths can grow index-over-index while every card still centers on
