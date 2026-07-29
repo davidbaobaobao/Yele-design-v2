@@ -24,6 +24,14 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [overHero, setOverHero] = useState(hasHero)
+  // HowWeWork's Mercury background fade isn't uniformly dark — only the
+  // first half of its scroll range is — so it reports its own current
+  // dark/light mode via a custom event instead of the plain always-dark
+  // [data-nav-dark] boolean below. fadeIntersecting gates it: while
+  // HowWeWork isn't on screen at all, fadeDark has no say and overHero
+  // (from the OTHER, uniformly-dark zones) decides as usual.
+  const [fadeIntersecting, setFadeIntersecting] = useState(false)
+  const [fadeDark, setFadeDark] = useState(true)
 
   useEffect(() => {
     if (!hasHero) return
@@ -50,6 +58,37 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
     return () => io.disconnect()
   }, [hasHero])
 
+  useEffect(() => {
+    const fadeZones = document.querySelectorAll('[data-nav-fade]')
+    if (fadeZones.length === 0 || !('IntersectionObserver' in window)) return
+
+    const intersecting = new Set<Element>()
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) intersecting.add(entry.target)
+          else intersecting.delete(entry.target)
+        })
+        setFadeIntersecting(intersecting.size > 0)
+      },
+      { threshold: 0 }
+    )
+    fadeZones.forEach(el => io.observe(el))
+
+    const onFadeMode = (e: Event) => {
+      const detail = (e as CustomEvent<{ dark: boolean }>).detail
+      setFadeDark(detail.dark)
+    }
+    window.addEventListener('howwework:navmode', onFadeMode)
+
+    return () => {
+      io.disconnect()
+      window.removeEventListener('howwework:navmode', onFadeMode)
+    }
+  }, [])
+
+  const showBoneText = fadeIntersecting ? fadeDark : overHero
+
   const scrollTo = (href: string) => {
     setOpen(false)
     const el = document.querySelector(href)
@@ -63,14 +102,14 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
     <>
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
-          overHero ? 'bg-transparent' : 'backdrop-blur-xl bg-base/70'
+          showBoneText ? 'bg-transparent' : 'backdrop-blur-xl bg-base/70'
         }`}
       >
         <nav className="relative flex items-center justify-between h-20 px-6 md:px-10">
           <Link
             href="/"
             className={`font-display font-bold text-lg lowercase tracking-tight transition-colors focus-visible:outline-none ${
-              overHero ? 'text-bone' : 'text-ink'
+              showBoneText ? 'text-bone' : 'text-ink'
             }`}
           >
             yele
@@ -82,7 +121,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
                 key={link.href}
                 onClick={() => scrollTo(link.href)}
                 className={`font-body text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline ${
-                  overHero ? 'text-bone/80 hover:text-bone' : 'text-muted hover:text-ink'
+                  showBoneText ? 'text-bone/80 hover:text-bone' : 'text-muted hover:text-ink'
                 }`}
               >
                 {link.label}
@@ -94,7 +133,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
             <Link
               href={langHref}
               className={`font-body text-xs font-medium px-2.5 py-1 rounded-lg transition-colors focus-visible:outline-none ${
-                overHero ? 'text-bone/80 hover:text-bone bg-white/10' : 'text-muted hover:text-ink bg-ink/5'
+                showBoneText ? 'text-bone/80 hover:text-bone bg-white/10' : 'text-muted hover:text-ink bg-ink/5'
               }`}
               aria-label={pathname === '/' ? 'Versión en español' : 'English version'}
             >
@@ -110,7 +149,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
           </div>
 
           <button
-            className={`md:hidden p-1 cursor-pointer transition-colors ${overHero ? 'text-bone' : 'text-ink'}`}
+            className={`md:hidden p-1 cursor-pointer transition-colors ${showBoneText ? 'text-bone' : 'text-ink'}`}
             onClick={() => setOpen(o => !o)}
             aria-label={open ? 'Close menu' : 'Open menu'}
           >
