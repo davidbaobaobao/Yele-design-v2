@@ -14,10 +14,14 @@ const STATEMENT =
 // fallback anyway — leading-tight, clamp(1.75rem,2.5vw,2.5rem)).
 const textClass = 'font-display text-left leading-tight max-w-[85%] text-[clamp(1.75rem,2.5vw,2.5rem)]'
 const textIndentStyle = { textIndent: '3ch' }
-const sectionClass = 'bg-[#0D0E12] min-h-[65vh] flex items-center px-6 py-10'
+const sectionClass = 'relative bg-[#0D0E12] min-h-[65vh] flex items-center px-6 py-10'
 // ~3 lines of empty space after the text at this size/leading (2.5rem *
 // 1.25 leading * 3 lines), before the next section.
 const spacerStyle = { height: '9.375rem' }
+// Blends the hero video's dominant edge (deep blue/purple twilight) down
+// into the mission's own dark bg over 200px, so the boundary between them
+// reads as a gradient rather than a hard line.
+const topBlendStyle = { background: 'linear-gradient(to bottom, #1A1B2E 0%, #0D0E12 100%)', height: '200px' }
 
 export default function Mission() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -36,6 +40,7 @@ export default function Mission() {
   if (reduceMotion) {
     return (
       <section data-nav-dark className={sectionClass}>
+        <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
         <div className="w-full">
           <p className={textClass} style={{ ...textIndentStyle, color: '#F2F0EB' }}>
             Other agencies build your website and disappear. We build it —{' '}
@@ -54,6 +59,7 @@ export default function Mission() {
   // above, so it adapts automatically to this non-pinned scroll pattern. ----
   return (
     <section ref={sectionRef} data-nav-dark className={sectionClass}>
+      <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
       <div className="w-full">
         <MissionFillText
           text={STATEMENT}

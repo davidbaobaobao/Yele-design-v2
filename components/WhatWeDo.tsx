@@ -246,11 +246,20 @@ function VideoPanel({
 // widths are capped at 1500px so the widest card still keeps side margin on
 // very large screens; mobile stays near-full-width with the same small
 // per-card increment so the tiering still reads without overflow.
+// Desktop (74/78/82/86vw, +4vw/card) was already measuring out correctly
+// per card — verified via getBoundingClientRect: 1065.6/1123.2/1180.8/
+// 1238.4px at a 1440px viewport, an obvious tier on screen. The mobile
+// values (previously 90/92/94/96vw, +2vw/card) were ALSO applying correctly
+// per card, just too subtle to read as "progressively wider" at phone
+// widths — a 2vw step is only ~7.8px at 390px, barely perceptible next to
+// full-bleed text/video content. Widened the mobile step to +6vw/card
+// (76/82/88/94vw = ~23.4px/step at 390px) so the tiering actually reads
+// there too, while still keeping cards close to full width as intended.
 const CARD_WIDTH_CLASS = [
-  'w-[90vw] md:w-[min(74vw,1500px)] mx-auto',
-  'w-[92vw] md:w-[min(78vw,1500px)] mx-auto',
-  'w-[94vw] md:w-[min(82vw,1500px)] mx-auto',
-  'w-[96vw] md:w-[min(86vw,1500px)] mx-auto',
+  'w-[76vw] md:w-[min(74vw,1500px)] mx-auto',
+  'w-[82vw] md:w-[min(78vw,1500px)] mx-auto',
+  'w-[88vw] md:w-[min(82vw,1500px)] mx-auto',
+  'w-[94vw] md:w-[min(86vw,1500px)] mx-auto',
 ]
 
 function WhatWeDoCard({

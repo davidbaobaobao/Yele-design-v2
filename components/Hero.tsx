@@ -69,8 +69,16 @@ function TypewriterWord({ reduceMotion }: { reduceMotion: boolean }) {
     return () => window.clearTimeout(timer)
   }, [text, phase, index, reduceMotion])
 
+  // text is only ever '' at the two moments a soft fade should happen: the
+  // very first mount (before typing starts) and the brief gap between one
+  // word finishing its erase and the next word's first character — so
+  // driving opacity off text.length directly (with a CSS transition) gets
+  // the fade-out/fade-in for free with no extra state or timers.
   return (
-    <span className="inline-block" style={{ minWidth: `${LONGEST_CH}ch` }}>
+    <span
+      className="inline-block"
+      style={{ minWidth: `${LONGEST_CH}ch`, opacity: text.length === 0 ? 0 : 1, transition: 'opacity 300ms ease' }}
+    >
       <span style={{ color: ACCENT }}>{text}</span>
       {!reduceMotion && (
         <span
@@ -116,7 +124,10 @@ export default function Hero() {
 
       <div className="relative z-10 h-full flex items-center justify-start pl-8 md:pl-16">
         <div className="max-w-[60%]">
-          <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(2.5rem, 6vw, 6rem)', color: WHITE }}>
+          {/* Clamp max lowered ~12.5% (6rem -> 5.25rem, min/preferred scaled
+              the same amount) so "Delivering websites that" ends before the
+              video's curved monitor shape instead of running into it. */}
+          <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(2.25rem, 5.25vw, 5.25rem)', color: WHITE }}>
             {/* Real, static text for SEO/a11y — the animated span below is
                 purely decorative and hidden from assistive tech so its
                 rapidly-changing partial-word states are never announced. */}
@@ -130,16 +141,27 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="font-body mt-6 text-lg md:text-xl" style={{ color: 'rgba(242, 240, 235, 0.7)' }}>
-            Design, content &amp; maintenance — one subscription. From $99/mo.
+          <p className="font-body mt-6 text-lg md:text-xl leading-snug" style={{ color: 'rgba(242, 240, 235, 0.7)' }}>
+            Website design, maintenance &amp; content creation
+            <br />
+            One subscription. From $99/mo.
           </p>
 
-          <a
-            href="/registro"
-            className="inline-block mt-8 font-body text-sm font-medium bg-bone text-ink px-6 py-3 rounded-full cursor-pointer transition-transform active:scale-95"
-          >
-            Start for free
-          </a>
+          <div className="flex flex-wrap items-center gap-4 mt-8">
+            <a
+              href="/registro"
+              className="inline-block font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer transition-transform active:scale-95"
+              style={{ background: 'linear-gradient(90deg, #D46FC8 0%, #5B4B9E 55%, #7B8CDE 100%)' }}
+            >
+              Start for free
+            </a>
+            <a
+              href="#contacto"
+              className="inline-block font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
+            >
+              Contact us
+            </a>
+          </div>
         </div>
       </div>
     </section>
