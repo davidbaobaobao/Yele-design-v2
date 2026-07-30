@@ -5,7 +5,6 @@ import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue 
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const MEDIA_DIR = '/media/howwework2'
-const AMBER = '#C97F3D'
 
 function linearMap(inMin: number, inMax: number, outMin: number, outMax: number) {
   return (v: number) => {
@@ -72,12 +71,15 @@ const LIGHT_SECONDARY = 'rgba(22, 22, 26, 0.6)'
 const DARK_HAIRLINE = 'rgba(255, 255, 255, 0.15)'
 const LIGHT_HAIRLINE = 'rgba(0, 0, 0, 0.1)'
 
+type StepPoint = {
+  lead: string
+  description: string
+}
+
 type StepData = {
   n: string
   title: string
-  lead: string
-  leadAmber?: boolean
-  description: string
+  points: StepPoint[]
   videoBase: string
 }
 
@@ -85,30 +87,74 @@ const STEPS: StepData[] = [
   {
     n: '01',
     title: 'Tell us about you',
-    lead: 'One short form.',
-    description: 'Ten minutes: what you do, who you serve, how you want to look.',
+    points: [
+      {
+        lead: 'Fill one short form',
+        description: 'What you do, who you serve, and the look you want. Ten minutes, no meetings.',
+      },
+      {
+        lead: 'Send what you have',
+        description: "Logo, photos, text — or nothing at all. If you don't have it, we create it for you.",
+      },
+    ],
     videoBase: 'howvideo1',
   },
   {
     n: '02',
-    title: 'We build it',
-    lead: 'Design and content, done for you.',
-    description: 'You review and approve. No meetings, no back-and-forth.',
+    title: 'We design & build it',
+    points: [
+      {
+        lead: 'Custom design, done for you',
+        description: 'Built from scratch for your business. You review, we refine.',
+      },
+      {
+        lead: 'Content included',
+        description: 'Photos, copy and visuals created for you, so your site looks complete from day one.',
+      },
+      {
+        lead: 'First proposal in one week',
+        description: "Then we refine it together until it's perfect and ready to ship.",
+      },
+    ],
     videoBase: 'howvideo2-2',
   },
   {
     n: '03',
     title: 'You go live',
-    lead: 'Live in one week.',
-    description: 'Your site publishes and starts working from day one.',
+    points: [
+      {
+        lead: 'Live from day one',
+        description: 'You approve, we publish. Your site is online and working from day one.',
+      },
+      {
+        lead: 'Working from day one',
+        description: 'Optimized for Google and mobile, so your site starts bringing in customers immediately.',
+      },
+      {
+        lead: 'Built to win customers',
+        description: 'Fast, mobile-first and search-ready, designed to turn visitors into calls and bookings.',
+      },
+    ],
     videoBase: 'howvideo3',
   },
   {
     n: '04',
-    title: 'We stay',
-    lead: 'Forever.',
-    leadAmber: true,
-    description: 'Hosting, updates, changes and improvements — handled, month after month.',
+    title: 'We keep improving it',
+    points: [
+      {
+        lead: 'Always online',
+        description:
+          'Hosting, security and monitoring handled around the clock. Your site never goes down, you never touch a thing.',
+      },
+      {
+        lead: 'Changes whenever you need',
+        description: 'Request edits anytime; we make them, no extra invoice.',
+      },
+      {
+        lead: 'Growing with you',
+        description: 'Ongoing improvements and marketing so your site keeps getting better every month.',
+      },
+    ],
     videoBase: 'howvideo4',
   },
 ]
@@ -181,13 +227,17 @@ function StepText({
             {step.title}
           </h3>
         </div>
-        <div className="border-t pt-6 mt-12" style={{ borderColor: hairlineColor as string }}>
-          <p className="font-body font-medium" style={{ color: step.leadAmber ? AMBER : (primaryColor as string) }}>
-            {step.lead}
-          </p>
-          <p className="font-body max-w-sm mt-2" style={{ color: secondaryColor as string }}>
-            {step.description}
-          </p>
+        <div className="mt-12">
+          {step.points.map((point, i) => (
+            <div key={point.lead} className={`border-t pt-6 ${i > 0 ? 'mt-6' : ''}`} style={{ borderColor: hairlineColor as string }}>
+              <p className="font-body font-semibold" style={{ color: primaryColor as string }}>
+                {point.lead}
+              </p>
+              <p className="font-body max-w-sm mt-2" style={{ color: secondaryColor as string }}>
+                {point.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -204,17 +254,18 @@ function StepText({
         </motion.h3>
       </div>
 
-      <motion.div className="border-t pt-6 mt-12" style={{ borderColor: hairlineColor }}>
-        <motion.p
-          className="font-body font-medium"
-          style={{ color: step.leadAmber ? AMBER : primaryColor }}
-        >
-          {step.lead}
-        </motion.p>
-        <motion.p className="font-body max-w-sm mt-2" style={{ color: secondaryColor }}>
-          {step.description}
-        </motion.p>
-      </motion.div>
+      <div className="mt-12">
+        {step.points.map((point, i) => (
+          <motion.div key={point.lead} className={`border-t pt-6 ${i > 0 ? 'mt-6' : ''}`} style={{ borderColor: hairlineColor }}>
+            <motion.p className="font-body font-semibold" style={{ color: primaryColor }}>
+              {point.lead}
+            </motion.p>
+            <motion.p className="font-body max-w-sm mt-2" style={{ color: secondaryColor }}>
+              {point.description}
+            </motion.p>
+          </motion.div>
+        ))}
+      </div>
     </div>
   )
 }
