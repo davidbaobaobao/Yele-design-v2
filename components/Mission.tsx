@@ -6,22 +6,23 @@ import MissionFillText from './MissionFillText'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const STATEMENT =
-  'Other agencies build your website and disappear. We build it — and stay. Design, content, maintenance and growth, handled forever.'
+  "Getting a professional website shouldn't mean big bills, long waits or being left on your own. We design, build and run yours for one flat monthly price — live in a week, no upfront cost, cancel anytime. You run your business; we take care of the website."
 
 // Matches the other sections' own header size/weight/leading (e.g. WhyYele,
 // BeyondWebsite: font-display, no explicit weight utility — the font-display
 // face only ships 700/800/900, so it renders bold by nearest-weight
-// fallback anyway — leading-tight, clamp(1.75rem,2.5vw,2.5rem)).
-const textClass = 'font-display text-left leading-tight max-w-[85%] text-[clamp(1.75rem,2.5vw,2.5rem)]'
-const textIndentStyle = { textIndent: '3ch' }
+// fallback anyway — leading-tight, clamp(1.75rem,2.5vw,2.5rem)). Centered
+// now (was left-aligned), so the old left-align-only first-line text-indent
+// is gone too.
+const textClass = 'font-display text-center leading-tight max-w-4xl mx-auto text-[clamp(1.75rem,2.5vw,2.5rem)]'
 const sectionClass = 'relative bg-[#0D0E12] min-h-[65vh] flex items-center px-6 py-10'
 // ~3 lines of empty space after the text at this size/leading (2.5rem *
 // 1.25 leading * 3 lines), before the next section.
 const spacerStyle = { height: '9.375rem' }
 // Blends the hero video's dominant edge (deep blue/purple twilight) down
-// into the mission's own dark bg over 200px, so the boundary between them
+// into the mission's own dark bg over ~240px, so the boundary between them
 // reads as a gradient rather than a hard line.
-const topBlendStyle = { background: 'linear-gradient(to bottom, #1A1B2E 0%, #0D0E12 100%)', height: '200px' }
+const topBlendStyle = { background: 'linear-gradient(to bottom, #1A1B2E 0%, #0D0E12 100%)', height: '240px' }
 
 export default function Mission() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -42,10 +43,8 @@ export default function Mission() {
       <section data-nav-dark className={sectionClass}>
         <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
         <div className="w-full">
-          <p className={textClass} style={{ ...textIndentStyle, color: '#F2F0EB' }}>
-            Other agencies build your website and disappear. We build it —{' '}
-            <span className="text-[#C97F3D]">and stay</span>. Design, content, maintenance and
-            growth, handled forever.
+          <p className={textClass} style={{ color: '#F2F0EB' }}>
+            {STATEMENT}
           </p>
           <div aria-hidden="true" style={spacerStyle} />
         </div>
@@ -61,13 +60,7 @@ export default function Mission() {
     <section ref={sectionRef} data-nav-dark className={sectionClass}>
       <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
       <div className="w-full">
-        <MissionFillText
-          text={STATEMENT}
-          amberPhrase="and stay"
-          scrollYProgress={scrollYProgress}
-          className={textClass}
-          style={textIndentStyle}
-        />
+        <MissionFillText text={STATEMENT} scrollYProgress={scrollYProgress} className={textClass} />
         <div aria-hidden="true" style={spacerStyle} />
       </div>
     </section>

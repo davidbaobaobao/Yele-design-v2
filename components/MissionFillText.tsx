@@ -3,45 +3,34 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useMotionValueEvent, type MotionValue } from 'framer-motion'
 
-// Inverted for the black section bg: unfilled starts dim (close to the
-// black bg) and fills up to bone (light), the reverse of the original
-// light-bg version (grey -> ink).
-const GREY: [number, number, number] = [0x3a, 0x3a, 0x40] // dim — unfilled, close to black bg
-const INK: [number, number, number] = [0xf2, 0xf0, 0xeb] // #F2F0EB (bone) — filled
-const AMBER: [number, number, number] = [0xc9, 0x7f, 0x3d] // #C97F3D — "and stay"
+// Unfilled characters sit at this light warm grey (not a dim near-invisible
+// tone — the fill reads as grey -> pink -> white, so the "unfilled" state
+// needs to be clearly visible on its own).
+const GREY: [number, number, number] = [0xc9, 0xc6, 0xbf]
+const WHITE: [number, number, number] = [0xf2, 0xf0, 0xeb] // #F2F0EB — filled
+const PINK: [number, number, number] = [0xd4, 0x6f, 0xc8] // #D46FC8 — traveling tip accent
 
 // The fill only runs across the middle of the section's scroll range — it
 // starts just after the section pins and finishes just before it releases.
 const FILL_START = 0.05
 const FILL_END = 0.85
-// Characters within this many positions of the fill edge blend instead of
-// snapping, for a soft edge rather than a hard cut.
-const BOUNDARY_CHARS = 2
+// Width (in characters) of the glowing tip zone a character passes through
+// as the fill boundary crosses it: grey -> pink (first half) -> white
+// (second half), pink peaking at the zone's midpoint.
+const TIP_CHARS = 3
+const TIP_HALF = TIP_CHARS / 2
 
 type WordToken = {
   word: string
-  isAmberTarget: boolean
   chars: { ch: string; idx: number }[]
 }
 
-// Strip surrounding punctuation so "stay." matches the target word "stay".
-const bareWord = (w: string) => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')
-
-function buildWords(text: string, amberPhrase: string) {
-  const rawWords = text.split(' ')
-  const amberWords = amberPhrase.split(' ').map(bareWord)
+function buildWords(text: string) {
   let globalIndex = 0
-
-  const words: WordToken[] = rawWords.map((word, wi) => {
-    const isAmberTarget = amberWords.some((_, offset) => {
-      const start = wi - offset
-      if (start < 0) return false
-      return amberWords.every((aw, k) => bareWord(rawWords[start + k] ?? '') === aw)
-    })
+  const words: WordToken[] = text.split(' ').map(word => {
     const chars = Array.from(word).map(ch => ({ ch, idx: globalIndex++ }))
-    return { word, isAmberTarget, chars }
+    return { word, chars }
   })
-
   return { words, totalChars: globalIndex }
 }
 
@@ -61,30 +50,42 @@ function mix(c1: [number, number, number], c2: [number, number, number], t: numb
 
 const rgbStr = (c: [number, number, number]) => `rgb(${c[0]}, ${c[1]}, ${c[2]})`
 
-// d = how far past this char the fill has progressed. d >= BOUNDARY_CHARS is
-// solid filled, d <= 0 is solid grey, in between blends for a soft edge.
-function charColor(charIndex: number, fillIndex: number, isAmberTarget: boolean): string {
-  const target = isAmberTarget ? AMBER : INK
+// d = how far past this char the fill has progressed. d <= 0: still grey
+// (not reached yet). 0 < d < TIP_CHARS: inside the traveling tip — ramps
+// grey -> pink over the first half, then pink -> white over the second half,
+// so pink peaks at the zone's midpoint rather than at a hard edge. d >=
+// TIP_CHARS: fully filled, solid white.
+function charColor(charIndex: number, fillIndex: number): string {
   const d = fillIndex - charIndex
-  if (d >= BOUNDARY_CHARS) return rgbStr(target)
   if (d <= 0) return rgbStr(GREY)
-  return mix(GREY, target, d / BOUNDARY_CHARS)
+  if (d >= TIP_CHARS) return rgbStr(WHITE)
+  if (d <= TIP_HALF) return mix(GREY, PINK, d / TIP_HALF)
+  return mix(PINK, WHITE, (d - TIP_HALF) / (TIP_CHARS - TIP_HALF))
+}
+
+// Subtle pink glow on just the tip chars, strongest at the zone's midpoint
+// (peak pink) and fading to none at both edges — extra drama on top of the
+// color shift itself.
+function charGlow(charIndex: number, fillIndex: number): string | undefined {
+  const d = fillIndex - charIndex
+  if (d <= 0 || d >= TIP_CHARS) return undefined
+  const intensity = 1 - Math.abs(d - TIP_HALF) / TIP_HALF
+  if (intensity <= 0) return undefined
+  return `0 0 10px rgba(212, 111, 200, ${(intensity * 0.75).toFixed(2)})`
 }
 
 export default function MissionFillText({
   text,
-  amberPhrase,
   scrollYProgress,
   className,
   style,
 }: {
   text: string
-  amberPhrase: string
   scrollYProgress: MotionValue<number>
   className?: string
   style?: React.CSSProperties
 }) {
-  const { words, totalChars } = useMemo(() => buildWords(text, amberPhrase), [text, amberPhrase])
+  const { words, totalChars } = useMemo(() => buildWords(text), [text])
 
   const [fillIndex, setFillIndex] = useState(() =>
     Math.round(mapProgressToFillIndex(scrollYProgress.get(), totalChars))
@@ -103,7 +104,10 @@ export default function MissionFillText({
           <Fragment key={wi}>
             <span className="inline whitespace-nowrap">
               {w.chars.map(({ ch, idx }) => (
-                <span key={idx} style={{ color: charColor(idx, fillIndex, w.isAmberTarget) }}>
+                <span
+                  key={idx}
+                  style={{ color: charColor(idx, fillIndex), textShadow: charGlow(idx, fillIndex) }}
+                >
                   {ch}
                 </span>
               ))}
