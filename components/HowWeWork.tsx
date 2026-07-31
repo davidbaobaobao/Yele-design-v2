@@ -510,7 +510,7 @@ export default function HowWeWork() {
             HOW IT WORKS
           </span>
           <h2 className="font-display text-[clamp(1.75rem,2.8vw,2.75rem)] leading-tight mb-20" style={{ color: LIGHT_TEXT }}>
-            From brief to live in one week. Then we stay.
+            From brief to live in one week. Then we keep it growing.
           </h2>
 
           {STEPS.map((step, i) => (
@@ -545,7 +545,7 @@ export default function HowWeWork() {
           className="font-display text-[clamp(1.75rem,2.8vw,2.75rem)] leading-tight mb-20"
           style={{ color: primaryColor }}
         >
-          From brief to live in one week. Then we stay.
+          From brief to live in one week. Then we keep it growing.
         </motion.h2>
 
         {STEPS.map((step, i) => (

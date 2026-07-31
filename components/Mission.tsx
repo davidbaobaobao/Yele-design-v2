@@ -2,11 +2,12 @@
 
 import { useRef } from 'react'
 import { useScroll } from 'framer-motion'
-import MissionFillText from './MissionFillText'
+import TextReveal from './TextReveal'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const STATEMENT =
   "Getting a professional website shouldn't mean big bills, long waits or being left on your own. We design, build and run yours for one flat monthly price — live in a week, no upfront cost, cancel anytime. You run your business; we take care of the website."
+const HIGHLIGHT = 'we take care of the website'
 
 // Matches the other sections' own header size/weight/leading (e.g. WhyYele,
 // BeyondWebsite: font-display, no explicit weight utility — the font-display
@@ -28,23 +29,28 @@ export default function Mission() {
   const sectionRef = useRef<HTMLElement>(null)
   const reduceMotion = useHydratedReducedMotion()
 
-  // Not pinned — the fill is driven purely by the section's own position as
-  // it scrolls through the viewport like a normal paragraph (hi-tide style):
-  // progress 0 when its top is 90% down the viewport (just entering), 1 when
-  // its top reaches 35% down (comfortably on screen).
+  // Not pinned — the reveal is driven purely by the section's own position
+  // as it scrolls through the viewport like a normal paragraph (hi-tide
+  // style): progress 0 when its top is 90% down the viewport (just
+  // entering), 1 when its top reaches 35% down (comfortably on screen).
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start 0.9', 'start 0.35'],
   })
 
-  // ---- Reduced-motion fallback: fully static, no fill ----
+  // ---- Reduced-motion fallback: fully static, no reveal animation ----
   if (reduceMotion) {
     return (
       <section data-nav-dark className={sectionClass}>
         <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
         <div className="w-full">
           <p className={textClass} style={{ color: '#F2F0EB' }}>
-            {STATEMENT}
+            {STATEMENT.split(HIGHLIGHT).map((chunk, i, arr) => (
+              <span key={i}>
+                {chunk}
+                {i < arr.length - 1 && <span style={{ color: '#D46FC8' }}>{HIGHLIGHT}</span>}
+              </span>
+            ))}
           </p>
           <div aria-hidden="true" style={spacerStyle} />
         </div>
@@ -52,15 +58,19 @@ export default function Mission() {
     )
   }
 
-  // ---- Scroll-linked character fill — a short, tight band right after the
-  // hero, not a pinned/full-screen section. See MissionFillText for the fill
-  // math; it's driven by normalized scrollYProgress (0-1) from the offset
-  // above, so it adapts automatically to this non-pinned scroll pattern. ----
+  // ---- Scroll-linked word-by-word reveal (custom build standing in for
+  // Skiper UI's skiper70, a paid component we don't have a license for —
+  // see TextReveal.tsx) — a short, tight band right after the hero, not a
+  // pinned/full-screen section. Driven by normalized scrollYProgress (0-1)
+  // from the offset above, so it adapts automatically to this non-pinned
+  // scroll pattern. ----
   return (
     <section ref={sectionRef} data-nav-dark className={sectionClass}>
       <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
       <div className="w-full">
-        <MissionFillText text={STATEMENT} scrollYProgress={scrollYProgress} className={textClass} />
+        <TextReveal highlight={HIGHLIGHT} scrollYProgress={scrollYProgress} className={textClass}>
+          {STATEMENT}
+        </TextReveal>
         <div aria-hidden="true" style={spacerStyle} />
       </div>
     </section>
