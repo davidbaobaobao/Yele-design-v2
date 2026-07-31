@@ -50,12 +50,11 @@ function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 }
 
-// The actual color flip only happens across this narrow slice of the
-// section's own [0,1] entry progress — dark before FLIP_BAND[0], white after
-// FLIP_BAND[1], a quick eased snap in between. linearMap already clamps
-// outside the band, so no separate clamp step is needed.
-const FLIP_BAND: [number, number] = [0.12, 0.22]
-const flipBand = (v: number) => easeInOutCubic(linearMap(FLIP_BAND[0], FLIP_BAND[1], 0, 1)(v))
+// The flip fires over this many pixels of scroll — small enough to read as
+// a quick snap rather than a slow fade, but wide enough (70px) that normal
+// scroll speeds still render a few transitional frames instead of a single
+// wheel tick skipping over the whole thing.
+const FLIP_RANGE_PX = 70
 
 // Mercury effect: the section enters dark (#0D0E12, seamless from the
 // previous dark "Showcase" section above it) then fades to white as the
@@ -370,6 +369,7 @@ function HowWeWorkStep({
 export default function HowWeWork() {
   const reduceMotion = !!useHydratedReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
+  const headerRef = useRef<HTMLHeadingElement>(null)
   const lastDarkRef = useRef(true)
 
   const videoRefs = [
@@ -382,64 +382,74 @@ export default function HowWeWork() {
   // useScroll's target+offset keyword syntax (e.g. ['start start','start
   // center']) was found to leave scrollYProgress permanently stuck at 0 in
   // this app whenever the second breakpoint resolves to a scroll position
-  // BEFORE the first one — which "start center" does here, since the
-  // section's top crosses the viewport's center on the way to crossing its
-  // top edge, not after (verified directly: scrollYProgress.get() never left
-  // 0 across a full scroll pass with that offset, while the plain default
-  // offset and other combinations updated normally). Sidestepping it with
-  // the same fix already proven elsewhere in this codebase (Hero.tsx,
-  // WhatWeDo.tsx): a plain page-wide scrollY MotionValue plus a manually
-  // measured pixel range, run through the function-form transform helper.
+  // BEFORE the first one (verified directly: scrollYProgress.get() never
+  // left 0 across a full scroll pass with an out-of-order pair, while the
+  // plain default offset and correctly-ordered combinations updated
+  // normally). Sidestepping it with the same fix already proven elsewhere
+  // in this codebase (Hero.tsx, WhatWeDo.tsx): a plain page-wide scrollY
+  // MotionValue plus a manually measured pixel range, run through the
+  // function-form transform helper.
   const { scrollY } = useScroll()
-  const [fadeStart, setFadeStart] = useState(0)
-  const [fadeEnd, setFadeEnd] = useState(1)
+  const [flipStart, setFlipStart] = useState(0)
+  const [flipEnd, setFlipEnd] = useState(1)
 
-  // Equivalent to offset ["start end", "start 0.85"]: progress 0 when the
-  // section's top just reaches the viewport's bottom edge (barely entering),
-  // progress 1 when it's reached 85% down the viewport — roughly half as far
-  // into the viewport as the old trigger (which waited for the top to reach
-  // the viewport's own top edge, 0%, before starting at all). The actual
-  // color flip is a further-compressed sub-band of this (see FLIP_BAND)
-  // below, so it reads as a quick snap right as the section appears, not a
-  // fade spread across the whole time it's scrolling into view.
+  // Anchored on the HEADER itself, not the section's top edge — the flip
+  // fires as "HOW IT WORKS" / the h2 reach the top of the viewport, which is
+  // the moment the user is actually looking at that content, not while it's
+  // still mostly below the fold. flipEnd = scrollY at which the header's own
+  // top is flush with the viewport's top edge; flipStart is FLIP_RANGE_PX
+  // earlier (smaller scrollY, reached first on the way down).
+  //
+  // A single mount-time measurement isn't enough: everything ABOVE this
+  // section (hero video, WhatWeDo videos/images, the Content showcase's own
+  // media) can still be loading and reflowing the page well after this
+  // effect first runs, silently shifting the header hundreds of pixels
+  // below where it was measured — invisible with the old wide flip window,
+  // but glaring with this one now that it's narrow and precisely anchored.
+  // A ResizeObserver on <body> catches any of that and re-measures.
   useEffect(() => {
     const measure = () => {
-      const el = sectionRef.current
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const pageTop = rect.top + window.scrollY
-      const vh = window.innerHeight
-      setFadeStart(pageTop - vh)
-      setFadeEnd(pageTop - vh * 0.85)
+      const header = headerRef.current
+      if (!header) return
+      const rect = header.getBoundingClientRect()
+      const headerPageTop = rect.top + window.scrollY
+      setFlipEnd(headerPageTop)
+      setFlipStart(headerPageTop - FLIP_RANGE_PX)
     }
     measure()
     window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
+    window.addEventListener('load', measure)
+    const ro = new ResizeObserver(measure)
+    ro.observe(document.body)
+    return () => {
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('load', measure)
+      ro.disconnect()
+    }
   }, [])
 
-  const progress = useTransform(scrollY, v => linearMap(fadeStart, fadeEnd, 0, 1)(v))
-  const bgColor = useTransform(progress, v => mixHex(DARK_BG, LIGHT_BG, flipBand(v)))
-  const primaryColor = useTransform(progress, v => mixHex(DARK_TEXT, LIGHT_TEXT, flipBand(v)))
-  const secondaryColor = useTransform(progress, v => mixRgba(DARK_SECONDARY, LIGHT_SECONDARY, flipBand(v)))
-  const hairlineColor = useTransform(progress, v => mixRgba(DARK_HAIRLINE, LIGHT_HAIRLINE, flipBand(v)))
+  const progress = useTransform(scrollY, v => easeInOutCubic(linearMap(flipStart, flipEnd, 0, 1)(v)))
+  const bgColor = useTransform(progress, v => mixHex(DARK_BG, LIGHT_BG, v))
+  const primaryColor = useTransform(progress, v => mixHex(DARK_TEXT, LIGHT_TEXT, v))
+  const secondaryColor = useTransform(progress, v => mixRgba(DARK_SECONDARY, LIGHT_SECONDARY, v))
+  const hairlineColor = useTransform(progress, v => mixRgba(DARK_HAIRLINE, LIGHT_HAIRLINE, v))
 
   // Nav integration — this section is excluded from the generic always-dark
   // [data-nav-dark] observer (marked data-nav-fade instead, see Nav.tsx)
-  // since it isn't uniformly dark: only the bg's own FLIP_BAND is. Flips at
-  // the band's midpoint, in step with the bg/text snap, and reports the
+  // since it isn't uniformly dark: only the bg's own flip window is. Flips
+  // at the window's midpoint, in step with the bg/text snap, and reports the
   // change only when it actually happens so scrolling back up flips the nav
   // back at the same point it flipped forward.
-  const flipBandMid = (FLIP_BAND[0] + FLIP_BAND[1]) / 2
   useEffect(() => {
     if (reduceMotion) return
-    const dark = progress.get() <= flipBandMid
+    const dark = progress.get() <= 0.5
     lastDarkRef.current = dark
     window.dispatchEvent(new CustomEvent('howwework:navmode', { detail: { dark } }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion])
 
   useMotionValueEvent(progress, 'change', v => {
-    const dark = v <= flipBandMid
+    const dark = v <= 0.5
     if (dark !== lastDarkRef.current) {
       lastDarkRef.current = dark
       window.dispatchEvent(new CustomEvent('howwework:navmode', { detail: { dark } }))
@@ -542,6 +552,7 @@ export default function HowWeWork() {
           HOW IT WORKS
         </motion.span>
         <motion.h2
+          ref={headerRef}
           className="font-display text-[clamp(1.75rem,2.8vw,2.75rem)] leading-tight mb-20"
           style={{ color: primaryColor }}
         >
