@@ -116,6 +116,15 @@ const CARDS: CardData[] = [
   },
 ]
 
+// Per-card two-color accent gradient — each card's own accent blended with
+// the next card's (wrapping around), so the palette reads as one continuous
+// sequence across the four cards rather than four unrelated hues.
+function cardGradient(index: number): string {
+  const from = CARDS[index].accent
+  const to = CARDS[(index + 1) % CARDS.length].accent
+  return `linear-gradient(315deg, ${from}, ${to})`
+}
+
 // True only for devices that can actually hover with a precise pointer —
 // touch gets the static (still animating) aurora, no parallax to chase.
 function useFinePointer() {
@@ -314,25 +323,53 @@ function WhatWeDoCard({
 
   const finePointer = useFinePointer()
   const parallax = useAuroraParallax(reduceMotion || !finePointer)
+  const gradient = cardGradient(index)
 
   const inner = (
     // Shadow wrapper — carries the outer accent glow and the floating
     // card's vertical inset (my-2: a sliver of the section's own black bg
     // shows above/below, so stacked strips read as separated floating
     // panels rather than edge-to-edge). Deliberately NOT overflow-hidden —
-    // box-shadow needs to spread freely into that surrounding black margin
-    // instead of being clipped at the card's own edge. Only the content
-    // div below (rounded the same amount) clips.
+    // box-shadow (and the blurred hover-glow layer below) needs to spread
+    // freely into that surrounding black margin instead of being clipped at
+    // the card's own edge. Only the content div below (rounded the same
+    // amount) clips. `group` scopes the two hover glow layers below,
+    // wherever they sit in the tree — the lift + shadow stay on this
+    // wrapper since box-shadow doesn't survive the inner div's clip.
     <div
       style={{ boxShadow: `0 0 60px ${hexToRgba(card.accent, 0.18)}`, willChange: 'transform' }}
-      className="relative h-full my-2 rounded-3xl"
+      className={`group relative h-full my-2 rounded-3xl ${reduceMotion ? '' : 'transition-transform duration-500 hover:-translate-y-1'}`}
     >
+      {/* Glow bloom — same accent gradient as the sharp panel below, blurred
+          heavily and living OUTSIDE the inner div's overflow-hidden clip so
+          it can bleed past the card's own edges into the floating margin
+          around it, like a halo. Opacity-only transition, cheap. */}
+      {!reduceMotion && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 rounded-3xl blur-[40px] opacity-0 group-hover:opacity-60 transition-opacity duration-500 pointer-events-none"
+          style={{ background: gradient, willChange: 'opacity' }}
+        />
+      )}
+
       <div
         style={{ backgroundColor: CARD_BG }}
         className="relative flex flex-col h-full rounded-3xl overflow-hidden border border-white/[0.08]"
         onMouseMove={reduceMotion ? undefined : parallax.onMouseMove}
         onMouseLeave={reduceMotion ? undefined : parallax.onMouseLeave}
       >
+      {/* Sharp gradient panel — same gradient, no blur, sits on top of the
+          card's own dark background and under the aurora/content (DOM order
+          only, no explicit z-index needed since it's the first child here).
+          Fades in as a colored wash across the card face on hover. */}
+      {!reduceMotion && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-0 group-hover:opacity-50 transition-opacity duration-500 pointer-events-none"
+          style={{ background: gradient, willChange: 'opacity' }}
+        />
+      )}
+
       {/* Aurora renders in both branches — reduced motion freezes the CSS
           drift (see the prefers-reduced-motion rule in globals.css) rather
           than removing the glow outright. Hover parallax only wires in
