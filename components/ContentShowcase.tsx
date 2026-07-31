@@ -54,28 +54,40 @@ function gridTarget(index: number, cols: number, rows: number) {
   }
 }
 
-// Scattered, distant cluster position for the pre-scroll "pyramid" — low in
-// the viewport, loosely circular scatter so tiles don't stack exactly on
-// top of each other, small scale + heavy negative Z (far from camera).
-function pyramidStart(index: number, count: number) {
-  const angle = (index / count) * Math.PI * 2.4
-  const radius = 6 + (index % 5) * 2.2
-  return {
-    x: 50 + Math.cos(angle) * radius,
-    y: 86 + Math.sin(angle) * radius * 0.4,
-    z: -900,
-    scale: 0.22,
-  }
+// Tiles occupy this fraction of their grid cell — <1 leaves a tight, even
+// gutter between tiles instead of the cell's full width/height.
+const GRID_GAP_FACTOR = 0.95
+function tileSize(cols: number, rows: number) {
+  return { width: `${(100 / cols) * GRID_GAP_FACTOR}vw`, height: `${(100 / rows) * GRID_GAP_FACTOR}vh` }
 }
 
+// Phase 1 entry: every tile starts well below the viewport (positive
+// translateY) and rises straight up its own column into its grid slot.
+// IMAGE_START_Y is in the same 0-100 "% of viewport" scale as gridTarget's
+// output — 145 puts it comfortably below the 100 (bottom edge) mark.
+const IMAGE_START_Y = 145
+const IMAGE_START_SCALE = 0.94
+// Extra, transient vertical offset added to outer columns during the rise
+// (per column-step away from center, faded out via (1 - t) so every tile
+// still settles into the same flat grid row) — this is what makes the
+// in-progress formation read as a pyramid/triangle peaking at the center
+// columns rather than a flat sheet rising evenly.
+const PYRAMID_COLUMN_GAP = 9
+// Per-tile start delay: symmetric around the center column (so center and
+// outer columns rise in a matching V-shape, not a left-to-right cascade)
+// plus a small per-row offset for a gentle wave. Column term dominates.
+const COL_STAGGER = 0.035
+const ROW_STAGGER = 0.02
+
 // Phase boundaries, in overall section scroll progress (0-1).
-const PHASE1_END = 0.38
-const TEXT_IN_START = 0.4
-const TEXT_IN_END = 0.48
-const TEXT_OUT_START = 0.54
-const TEXT_OUT_END = 0.6
-const PHASE3_START = 0.58
-const IMAGE_STAGGER = 0.017
+const PHASE1_END = 0.36
+const IMAGE_FADE_START = 0.3
+const IMAGE_FADE_END = 0.38
+// The headline scrolls through as one continuous translateY move: below the
+// viewport at TEXT_RANGE_START, through center, off the top by TEXT_RANGE_END.
+const TEXT_RANGE_START = 0.32
+const TEXT_RANGE_END = 0.62
+const PHASE3_START = 0.55
 const IMAGE_SPAN = 0.55
 const VIDEO_STAGGER = 0.016
 const VIDEO_SPAN = 0.5
@@ -113,8 +125,11 @@ function ImageTile({
   tileHeight: string
 }) {
   const target = gridTarget(index, cols, rows)
-  const start = pyramidStart(index, IMAGE_COUNT)
-  const tileStart = index * IMAGE_STAGGER
+  const col = index % cols
+  const row = Math.floor(index / cols)
+  const centerCol = (cols - 1) / 2
+  const colDistance = Math.abs(col - centerCol)
+  const tileStart = colDistance * COL_STAGGER + row * ROW_STAGGER
   const tileEnd = tileStart + IMAGE_SPAN
 
   const t = useTransform(progress, v => {
@@ -122,10 +137,14 @@ function ImageTile({
     return easeOutCubic(linearMap(tileStart, tileEnd, 0, 1)(local))
   })
 
-  const x = useTransform(t, tv => `${start.x + (target.x - start.x) * tv - 50}vw`)
-  const y = useTransform(t, tv => `${start.y + (target.y - start.y) * tv - 50}vh`)
-  const z = useTransform(t, tv => start.z + (0 - start.z) * tv)
-  const scale = useTransform(t, tv => start.scale + (1 - start.scale) * tv)
+  // Straight vertical rise — the column never moves horizontally, only up.
+  const x = `${target.x - 50}vw`
+  const y = useTransform(t, tv => {
+    const base = IMAGE_START_Y + (target.y - IMAGE_START_Y) * tv
+    const pyramidLift = colDistance * PYRAMID_COLUMN_GAP * (1 - tv)
+    return `${base + pyramidLift - 50}vh`
+  })
+  const scale = useTransform(t, tv => IMAGE_START_SCALE + (1 - IMAGE_START_SCALE) * tv)
   const opacity = t
 
   const n = index + 1
@@ -141,7 +160,6 @@ function ImageTile({
         height: tileHeight,
         x,
         y,
-        z,
         scale,
         opacity,
       }}
@@ -177,6 +195,7 @@ function VideoTile({
   const videoRef = useRef<HTMLVideoElement>(null)
   const n = index + 1
   const poster = `${VIDEO_DIR}/${n}_poster.jpg`
+  const { width, height } = tileSize(VIDEO_COLS, VIDEO_ROWS)
 
   useEffect(() => {
     if (!mounted) return
@@ -211,14 +230,14 @@ function VideoTile({
 
   return (
     <motion.div
-      className="absolute rounded-lg overflow-hidden pointer-events-none bg-[#16171C]"
+      className="absolute rounded-lg overflow-hidden pointer-events-none bg-[#ECECEC]"
       style={{
         left: `${target.x}%`,
         top: `${target.y}%`,
         x: '-50%',
         y: '-50%',
-        width: '17vw',
-        height: '21vh',
+        width,
+        height,
         scale,
         opacity,
       }}
@@ -278,10 +297,10 @@ function ContentShowcaseReduced() {
   }, [])
 
   return (
-    <section data-nav-dark className="relative py-24 px-6" style={{ backgroundColor: '#0D0E12' }}>
+    <section className="relative py-24 px-6" style={{ backgroundColor: '#FFFFFF' }}>
       <div className="max-w-6xl mx-auto">
         <motion.div
-          className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-2 mb-24"
+          className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-1 mb-24"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
@@ -299,7 +318,7 @@ function ContentShowcaseReduced() {
 
         <motion.h2
           className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)] mb-24"
-          style={{ color: '#F2F0EB' }}
+          style={{ color: '#16161A' }}
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
@@ -309,7 +328,7 @@ function ContentShowcaseReduced() {
         </motion.h2>
 
         <motion.div
-          className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2"
+          className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-1"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
@@ -318,7 +337,7 @@ function ContentShowcaseReduced() {
           {Array.from({ length: VIDEO_COUNT }, (_, i) => {
             const n = i + 1
             return (
-              <div key={n} className="relative aspect-[4/5] rounded-lg overflow-hidden bg-[#16171C]">
+              <div key={n} className="relative aspect-[4/5] rounded-lg overflow-hidden bg-[#ECECEC]">
                 <video
                   ref={el => {
                     videoRefs.current[i] = el
@@ -349,8 +368,7 @@ export default function ContentShowcase() {
   const isNarrow = useIsNarrowViewport()
   const imageCols = isNarrow ? 3 : IMAGE_COLS
   const imageRows = isNarrow ? 7 : IMAGE_ROWS
-  const imageTileWidth = isNarrow ? '28vw' : '12.5vw'
-  const imageTileHeight = isNarrow ? '12vh' : '28vh'
+  const { width: imageTileWidth, height: imageTileHeight } = tileSize(imageCols, imageRows)
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -361,28 +379,20 @@ export default function ContentShowcase() {
     if (v > 0.5) setVideosMounted(mounted => mounted || true)
   })
 
-  const imageLayerOpacity = useTransform(scrollYProgress, linearMap(0.34, 0.44, 1, 0))
-  const textOpacity = useTransform(scrollYProgress, v => {
-    if (v < TEXT_IN_START) return 0
-    if (v < TEXT_IN_END) return linearMap(TEXT_IN_START, TEXT_IN_END, 0, 1)(v)
-    if (v < TEXT_OUT_START) return 1
-    return linearMap(TEXT_OUT_START, TEXT_OUT_END, 1, 0)(v)
-  })
-  const textScale = useTransform(scrollYProgress, v => {
-    if (v < TEXT_IN_START) return 0.9
-    if (v < TEXT_IN_END) return linearMap(TEXT_IN_START, TEXT_IN_END, 0.9, 1)(v)
-    return 1
-  })
+  const imageLayerOpacity = useTransform(scrollYProgress, linearMap(IMAGE_FADE_START, IMAGE_FADE_END, 1, 0))
+  // Enters from below (100vh), passes through center (0), exits off the top
+  // (-100vh) — one continuous scroll-through move, not a fade.
+  const textY = useTransform(scrollYProgress, v => `${linearMap(TEXT_RANGE_START, TEXT_RANGE_END, 100, -100)(v)}vh`)
 
   if (reduceMotion) return <ContentShowcaseReduced />
 
   return (
-    <section ref={sectionRef} data-nav-dark className="relative" style={{ height: '300vh' }}>
+    <section ref={sectionRef} className="relative" style={{ height: '300vh' }}>
       <div
         className="sticky top-0 h-screen w-full overflow-hidden"
-        style={{ backgroundColor: '#0D0E12', perspective: '1000px' }}
+        style={{ backgroundColor: '#FFFFFF', perspective: '1000px' }}
       >
-        {/* Phase 1 — image pyramid -> 3x7 grid */}
+        {/* Phase 1 — images rise from below into a pyramid -> 3x7 grid */}
         <motion.div className="absolute inset-0" style={{ opacity: imageLayerOpacity, transformStyle: 'preserve-3d' }} aria-hidden="true">
           {Array.from({ length: IMAGE_COUNT }, (_, i) => (
             <ImageTile
@@ -397,27 +407,23 @@ export default function ContentShowcase() {
           ))}
         </motion.div>
 
-        {/* Phase 2 — centered headline */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none"
-          style={{ opacity: textOpacity }}
-          aria-hidden="true"
-        >
-          <motion.h2
-            className="font-display text-center leading-tight text-[clamp(2rem,4.5vw,4.5rem)] max-w-4xl"
-            style={{ color: '#F2F0EB', scale: textScale }}
-          >
-            Want content? We create any content you need.
-          </motion.h2>
-        </motion.div>
-        <h2 className="sr-only">Want content? We create any content you need.</h2>
-
-        {/* Phase 3 — video grid fills in */}
+        {/* Phase 3 — video grid fills in, underneath the scrolling headline */}
         <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d' }} aria-hidden="true">
           {Array.from({ length: VIDEO_COUNT }, (_, i) => (
             <VideoTile key={i} index={i} progress={scrollYProgress} mounted={videosMounted} />
           ))}
         </div>
+
+        {/* Phase 2 — headline scrolls up through center and off the top */}
+        <div className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none" aria-hidden="true">
+          <motion.h2
+            className="font-display text-center leading-tight text-[clamp(2rem,4.5vw,4.5rem)] max-w-4xl"
+            style={{ color: '#16161A', y: textY }}
+          >
+            Want content? We create any content you need.
+          </motion.h2>
+        </div>
+        <h2 className="sr-only">Want content? We create any content you need.</h2>
       </div>
     </section>
   )
