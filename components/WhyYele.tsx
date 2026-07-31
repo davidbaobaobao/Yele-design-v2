@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { TextGradient } from '@/components/ui/text-gradient'
 import FeatureCard from './FeatureCard'
 
 const VIDEO_DIR = '/media/whyyele3'
@@ -115,8 +116,7 @@ export default function WhyYele() {
         Building a website used to be a headache — slow, big upfront bills, endless
         back-and-forth.{' '}
       </span>
-      {/* Same soft pink glow used on the mission fill's traveling tip. */}
-      <span style={{ color: '#D46FC8', textShadow: '0 0 20px rgba(212, 111, 200, 0.55)' }}>Not anymore.</span>
+      <TextGradient as="span">Not anymore.</TextGradient>
     </h2>
   )
 
