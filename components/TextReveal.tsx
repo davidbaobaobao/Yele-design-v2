@@ -14,16 +14,6 @@ import { TextGradient } from '@/components/ui/text-gradient'
 // highlightBgClass / className) so swapping in the real component later,
 // if a license is ever purchased, only means changing the import.
 
-// Fill boundary: each word's leading edge sweeps through the accent
-// gradient (pink -> purple -> blue) before settling to solid white, via an
-// animated background-clip-text gradient rather than a flat grey->white
-// color mix — driven by the word's own local reveal fraction `t so the
-// gradient's background-position slides from its dim/unrevealed stops (t=0)
-// through the colorful sweep (t~0.5) to its white stops (t=1).
-const SWEEP_GRADIENT =
-  'linear-gradient(90deg, rgba(242,240,235,0.32) 0%, rgba(242,240,235,0.32) 26%, ' +
-  '#D46FC8 40%, #5B4B9E 50%, #7B8CDE 60%, #F2F0EB 74%, #F2F0EB 100%)'
-
 const REVEAL_START = 0.05
 const REVEAL_END = 0.85
 const TIP_WORDS = 1.5
@@ -62,22 +52,6 @@ function mapProgressToRevealIndex(p: number, totalWords: number) {
   return (totalWords * (p - REVEAL_START)) / (REVEAL_END - REVEAL_START)
 }
 
-// Bell curve peaking at t=0.5 (mid-sweep) and zero at both ends — scales the
-// chromatic-aberration wash so it only shows up while a word is actively
-// transitioning, not once it's settled.
-function boundaryIntensity(t: number) {
-  return 4 * t * (1 - t)
-}
-
-function chromaticWash(t: number): string | undefined {
-  const k = boundaryIntensity(t)
-  if (k < 0.05) return undefined
-  return (
-    `-${(k * 1.5).toFixed(2)}px 0 ${(k * 5).toFixed(1)}px rgba(212, 111, 200, ${(k * 0.55).toFixed(2)}), ` +
-    `${(k * 1.5).toFixed(2)}px 0 ${(k * 5).toFixed(1)}px rgba(123, 140, 222, ${(k * 0.55).toFixed(2)})`
-  )
-}
-
 export default function TextReveal({
   children,
   highlight,
@@ -114,11 +88,8 @@ export default function TextReveal({
           return (
             <Fragment key={wi}>
               {w.highlighted ? (
-                // The accent phrase never settles to flat white — once its
-                // fade-in starts, it's rendered as the same flowing
-                // pink -> purple -> blue TextGradient used elsewhere on the
-                // site, so it stays a persistent highlight rather than a
-                // one-time sweep.
+                // The accent phrase is always the pink -> purple -> blue
+                // TextGradient, never plain white like the rest of the text.
                 <span className="inline-block whitespace-nowrap" style={wordStyle}>
                   <TextGradient as="span" duration={4}>
                     {w.word}
@@ -126,15 +97,8 @@ export default function TextReveal({
                 </span>
               ) : (
                 <span
-                  className="inline-block whitespace-nowrap bg-clip-text text-transparent"
-                  style={{
-                    ...wordStyle,
-                    backgroundImage: SWEEP_GRADIENT,
-                    backgroundSize: '300% 100%',
-                    backgroundPosition: `${t * 100}% 0%`,
-                    WebkitTextFillColor: 'transparent',
-                    textShadow: chromaticWash(t),
-                  }}
+                  className="inline-block whitespace-nowrap"
+                  style={{ ...wordStyle, color: '#F2F0EB' }}
                 >
                   {w.word}
                 </span>

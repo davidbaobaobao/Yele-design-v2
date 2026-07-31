@@ -16,10 +16,9 @@ const HIGHLIGHT = 'we take care of the website'
 // fallback anyway — leading-tight, clamp(1.75rem,2.5vw,2.5rem)). Left-aligned,
 // not centered as a block (no mx-auto) — matches Hero's own left alignment.
 const textClass = 'font-display text-left leading-tight max-w-4xl text-[clamp(1.75rem,2.5vw,2.5rem)]'
-const sectionClass = 'relative bg-[#0D0E12] min-h-[65vh] flex items-center px-6 py-10'
-// ~3 lines of empty space after the text at this size/leading (2.5rem *
-// 1.25 leading * 3 lines), before the next section.
-const spacerStyle = { height: '9.375rem' }
+// pb-32 matches the standard bottom gap other sections use before handing
+// off to whatever comes next (e.g. BeyondWebsite's py-28, WhyYele's pb-24).
+const sectionClass = 'relative bg-[#0D0E12] min-h-[65vh] flex items-center px-6 pt-10 pb-32'
 // Blends the hero video's dominant edge (deep blue/purple twilight) down
 // into the mission's own dark bg over ~240px, so the boundary between them
 // reads as a gradient rather than a hard line.
@@ -52,7 +51,6 @@ export default function Mission() {
               </span>
             ))}
           </p>
-          <div aria-hidden="true" style={spacerStyle} />
         </div>
       </section>
     )
@@ -71,7 +69,6 @@ export default function Mission() {
         <TextReveal highlight={HIGHLIGHT} scrollYProgress={scrollYProgress} className={textClass}>
           {STATEMENT}
         </TextReveal>
-        <div aria-hidden="true" style={spacerStyle} />
       </div>
     </section>
   )
