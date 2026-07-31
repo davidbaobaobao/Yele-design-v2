@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { useScroll } from 'framer-motion'
 import TextReveal from './TextReveal'
+import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const STATEMENT =
@@ -12,10 +13,9 @@ const HIGHLIGHT = 'we take care of the website'
 // Matches the other sections' own header size/weight/leading (e.g. WhyYele,
 // BeyondWebsite: font-display, no explicit weight utility — the font-display
 // face only ships 700/800/900, so it renders bold by nearest-weight
-// fallback anyway — leading-tight, clamp(1.75rem,2.5vw,2.5rem)). Centered
-// now (was left-aligned), so the old left-align-only first-line text-indent
-// is gone too.
-const textClass = 'font-display text-center leading-tight max-w-4xl mx-auto text-[clamp(1.75rem,2.5vw,2.5rem)]'
+// fallback anyway — leading-tight, clamp(1.75rem,2.5vw,2.5rem)). Left-aligned,
+// not centered as a block (no mx-auto) — matches Hero's own left alignment.
+const textClass = 'font-display text-left leading-tight max-w-4xl text-[clamp(1.75rem,2.5vw,2.5rem)]'
 const sectionClass = 'relative bg-[#0D0E12] min-h-[65vh] flex items-center px-6 py-10'
 // ~3 lines of empty space after the text at this size/leading (2.5rem *
 // 1.25 leading * 3 lines), before the next section.
@@ -48,7 +48,7 @@ export default function Mission() {
             {STATEMENT.split(HIGHLIGHT).map((chunk, i, arr) => (
               <span key={i}>
                 {chunk}
-                {i < arr.length - 1 && <span style={{ color: '#D46FC8' }}>{HIGHLIGHT}</span>}
+                {i < arr.length - 1 && <TextGradient as="span">{HIGHLIGHT}</TextGradient>}
               </span>
             ))}
           </p>

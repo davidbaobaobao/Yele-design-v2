@@ -2,6 +2,7 @@
 
 import { Fragment, useMemo, useState } from 'react'
 import { useMotionValueEvent, type MotionValue } from 'framer-motion'
+import { TextGradient } from '@/components/ui/text-gradient'
 
 // Custom-built equivalent of Skiper UI's skiper70 "text reveal box"
 // (https://skiper-ui.com/v1/skiper70) — that component is a paid Pro item
@@ -13,16 +14,18 @@ import { useMotionValueEvent, type MotionValue } from 'framer-motion'
 // highlightBgClass / className) so swapping in the real component later,
 // if a license is ever purchased, only means changing the import.
 
-const GREY: [number, number, number] = [0xc9, 0xc6, 0xbf] // unrevealed
-const WHITE: [number, number, number] = [0xf2, 0xf0, 0xeb] // #F2F0EB — revealed
-const PINK: [number, number, number] = [0xd4, 0x6f, 0xc8] // #D46FC8 — revealed + highlighted
+// Fill boundary: each word's leading edge sweeps through the accent
+// gradient (pink -> purple -> blue) before settling to solid white, via an
+// animated background-clip-text gradient rather than a flat grey->white
+// color mix — driven by the word's own local reveal fraction `t so the
+// gradient's background-position slides from its dim/unrevealed stops (t=0)
+// through the colorful sweep (t~0.5) to its white stops (t=1).
+const SWEEP_GRADIENT =
+  'linear-gradient(90deg, rgba(242,240,235,0.32) 0%, rgba(242,240,235,0.32) 26%, ' +
+  '#D46FC8 40%, #5B4B9E 50%, #7B8CDE 60%, #F2F0EB 74%, #F2F0EB 100%)'
 
-// The reveal only runs across the middle of the section's scroll range — it
-// starts just after the section enters and finishes just before it's past.
 const REVEAL_START = 0.05
 const REVEAL_END = 0.85
-// Width (in words) of the soft transition each word passes through as the
-// reveal boundary crosses it — a smooth blend, not a hard cut.
 const TIP_WORDS = 1.5
 
 type WordToken = {
@@ -59,23 +62,20 @@ function mapProgressToRevealIndex(p: number, totalWords: number) {
   return (totalWords * (p - REVEAL_START)) / (REVEAL_END - REVEAL_START)
 }
 
-function mix(c1: [number, number, number], c2: [number, number, number], t: number) {
-  const k = Math.max(0, Math.min(1, t))
-  const r = Math.round(c1[0] + (c2[0] - c1[0]) * k)
-  const g = Math.round(c1[1] + (c2[1] - c1[1]) * k)
-  const b = Math.round(c1[2] + (c2[2] - c1[2]) * k)
-  return `rgb(${r}, ${g}, ${b})`
+// Bell curve peaking at t=0.5 (mid-sweep) and zero at both ends — scales the
+// chromatic-aberration wash so it only shows up while a word is actively
+// transitioning, not once it's settled.
+function boundaryIntensity(t: number) {
+  return 4 * t * (1 - t)
 }
 
-// t: 0 = word not yet reached (grey), 1 = fully revealed (white, or pink if
-// this word is part of the highlighted phrase).
-function wordColor(t: number, highlighted: boolean): string {
-  return mix(GREY, highlighted ? PINK : WHITE, t)
-}
-
-function wordGlow(t: number, highlighted: boolean): string | undefined {
-  if (!highlighted || t <= 0) return undefined
-  return `0 0 ${Math.round(14 * t)}px rgba(212, 111, 200, ${(t * 0.6).toFixed(2)})`
+function chromaticWash(t: number): string | undefined {
+  const k = boundaryIntensity(t)
+  if (k < 0.05) return undefined
+  return (
+    `-${(k * 1.5).toFixed(2)}px 0 ${(k * 5).toFixed(1)}px rgba(212, 111, 200, ${(k * 0.55).toFixed(2)}), ` +
+    `${(k * 1.5).toFixed(2)}px 0 ${(k * 5).toFixed(1)}px rgba(123, 140, 222, ${(k * 0.55).toFixed(2)})`
+  )
 }
 
 export default function TextReveal({
@@ -106,20 +106,39 @@ export default function TextReveal({
         {words.map((w, wi) => {
           const d = revealIndex - w.idx
           const t = Math.max(0, Math.min(1, d / TIP_WORDS))
+          const wordStyle = {
+            opacity: 0.4 + 0.6 * t,
+            filter: `blur(${(1 - t) * 3}px)`,
+            transform: `translateY(${(1 - t) * 6}px)`,
+          }
           return (
             <Fragment key={wi}>
-              <span
-                className="inline-block whitespace-nowrap"
-                style={{
-                  color: wordColor(t, w.highlighted),
-                  textShadow: wordGlow(t, w.highlighted),
-                  opacity: 0.4 + 0.6 * t,
-                  filter: `blur(${(1 - t) * 3}px)`,
-                  transform: `translateY(${(1 - t) * 6}px)`,
-                }}
-              >
-                {w.word}
-              </span>
+              {w.highlighted ? (
+                // The accent phrase never settles to flat white — once its
+                // fade-in starts, it's rendered as the same flowing
+                // pink -> purple -> blue TextGradient used elsewhere on the
+                // site, so it stays a persistent highlight rather than a
+                // one-time sweep.
+                <span className="inline-block whitespace-nowrap" style={wordStyle}>
+                  <TextGradient as="span" duration={4}>
+                    {w.word}
+                  </TextGradient>
+                </span>
+              ) : (
+                <span
+                  className="inline-block whitespace-nowrap bg-clip-text text-transparent"
+                  style={{
+                    ...wordStyle,
+                    backgroundImage: SWEEP_GRADIENT,
+                    backgroundSize: '300% 100%',
+                    backgroundPosition: `${t * 100}% 0%`,
+                    WebkitTextFillColor: 'transparent',
+                    textShadow: chromaticWash(t),
+                  }}
+                >
+                  {w.word}
+                </span>
+              )}
               {wi < words.length - 1 ? ' ' : ''}
             </Fragment>
           )
