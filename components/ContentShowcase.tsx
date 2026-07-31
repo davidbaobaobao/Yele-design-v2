@@ -17,8 +17,12 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 const IMAGE_DIR = '/media/animationimages'
 const VIDEO_DIR = '/media/animationvideos'
 const IMAGE_COUNT = 21
-const IMAGE_COLS = 7
-const IMAGE_ROWS = 3
+// 5x5 (25 slots, last row 1/5 full) lands closest to a 16:9 cell at typical
+// desktop widths among the options that still tile edge-to-edge — 21's only
+// clean factor pairs (3x7 / 7x3) come out either ~3.7:1 or ~0.7:1, both far
+// from 16:9, where 5 cols x 5 rows measures ~1.6:1 at 1440x900.
+const IMAGE_COLS = 5
+const IMAGE_ROWS = 5
 const VIDEO_COUNT = 20
 const VIDEO_COLS = 5
 const VIDEO_ROWS = 4
@@ -54,25 +58,28 @@ function gridTarget(index: number, cols: number, rows: number) {
   }
 }
 
-// Tiles occupy this fraction of their grid cell — <1 leaves a tight, even
-// gutter between tiles instead of the cell's full width/height.
-const GRID_GAP_FACTOR = 0.95
+// Tiles occupy this fraction of their grid cell — very close to 1 so only a
+// tiny gutter separates tiles, for a dense full-bleed mosaic.
+const GRID_GAP_FACTOR = 0.985
 function tileSize(cols: number, rows: number) {
   return { width: `${(100 / cols) * GRID_GAP_FACTOR}vw`, height: `${(100 / rows) * GRID_GAP_FACTOR}vh` }
 }
 
-// Phase 1 entry: every tile starts well below the viewport (positive
+// Phase 1 entry: every tile starts just below the viewport (positive
 // translateY) and rises straight up its own column into its grid slot.
 // IMAGE_START_Y is in the same 0-100 "% of viewport" scale as gridTarget's
-// output — 145 puts it comfortably below the 100 (bottom edge) mark.
-const IMAGE_START_Y = 145
+// output — 112 is only just past the 100 (bottom edge) mark, so tiles start
+// entering frame almost immediately instead of spending a big chunk of the
+// phase invisibly below the fold.
+const IMAGE_START_Y = 112
 const IMAGE_START_SCALE = 0.94
 // Extra, transient vertical offset added to outer columns during the rise
 // (per column-step away from center, faded out via (1 - t) so every tile
 // still settles into the same flat grid row) — this is what makes the
 // in-progress formation read as a pyramid/triangle peaking at the center
-// columns rather than a flat sheet rising evenly.
-const PYRAMID_COLUMN_GAP = 9
+// columns rather than a flat sheet rising evenly. Large so the step between
+// columns is clearly visible, not just a subtle stagger.
+const PYRAMID_COLUMN_GAP = 22
 // Per-tile start delay: symmetric around the center column (so center and
 // outer columns rise in a matching V-shape, not a left-to-right cascade)
 // plus a small per-row offset for a gentle wave. Column term dominates.
@@ -152,7 +159,7 @@ function ImageTile({
 
   return (
     <motion.div
-      className="absolute rounded-lg overflow-hidden pointer-events-none"
+      className="absolute overflow-hidden pointer-events-none"
       style={{
         left: '50%',
         top: '50%',
@@ -230,7 +237,7 @@ function VideoTile({
 
   return (
     <motion.div
-      className="absolute rounded-lg overflow-hidden pointer-events-none bg-[#ECECEC]"
+      className="absolute overflow-hidden pointer-events-none bg-[#ECECEC]"
       style={{
         left: `${target.x}%`,
         top: `${target.y}%`,
@@ -309,7 +316,7 @@ function ContentShowcaseReduced() {
           {Array.from({ length: IMAGE_COUNT }, (_, i) => {
             const n = i + 1
             return (
-              <div key={n} className="relative aspect-[3/4] rounded-lg overflow-hidden">
+              <div key={n} className="relative aspect-video overflow-hidden">
                 <Image src={`${IMAGE_DIR}/${n}.${IMAGE_EXT[n] ?? 'jpeg'}`} alt="" fill sizes="15vw" className="object-cover" />
               </div>
             )
@@ -337,7 +344,7 @@ function ContentShowcaseReduced() {
           {Array.from({ length: VIDEO_COUNT }, (_, i) => {
             const n = i + 1
             return (
-              <div key={n} className="relative aspect-[4/5] rounded-lg overflow-hidden bg-[#ECECEC]">
+              <div key={n} className="relative aspect-[4/5] overflow-hidden bg-[#ECECEC]">
                 <video
                   ref={el => {
                     videoRefs.current[i] = el
@@ -387,7 +394,7 @@ export default function ContentShowcase() {
   if (reduceMotion) return <ContentShowcaseReduced />
 
   return (
-    <section ref={sectionRef} className="relative" style={{ height: '300vh' }}>
+    <section ref={sectionRef} className="relative" style={{ height: '550vh' }}>
       <div
         className="sticky top-0 h-screen w-full overflow-hidden"
         style={{ backgroundColor: '#FFFFFF', perspective: '1000px' }}
