@@ -21,6 +21,28 @@ function linearMap(inMin: number, inMax: number, outMin: number, outMax: number)
   }
 }
 
+// Resolves `vw` to a live pixel value in JS instead of leaving it as a raw
+// CSS `vw` unit on the card's own inline width. Chrome has documented bugs
+// around `position: sticky` elements not reliably recomputing viewport-unit
+// widths while sibling elements receive continuous scroll-driven style
+// writes (exactly what's happening here — every card's `dim` opacity is a
+// framer-motion value updated on every scroll frame) — Safari doesn't show
+// the same issue. A stable, JS-resolved pixel width sidesteps that class of
+// bug entirely instead of depending on the browser to keep re-deriving `vw`
+// correctly mid-scroll. Undefined until mounted so SSR/first paint still
+// renders (falls back to the `vw` string below), then swaps to px once
+// resolved and again on resize.
+function useViewportWidthPx() {
+  const [vw, setVw] = useState<number | undefined>(undefined)
+  useEffect(() => {
+    const update = () => setVw(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  return vw
+}
+
 function hexToRgba(hex: string, alpha: number) {
   const n = parseInt(hex.slice(1), 16)
   const r = (n >> 16) & 255
@@ -251,12 +273,14 @@ function VideoPanel({
 // CSS not matching what's actually applied at runtime). An inline style is
 // computed fresh on every render, directly from `index`, with nothing for
 // a build step to get out of sync with.
-function cardWidthStyle(index: number): React.CSSProperties {
+function cardWidthStyle(index: number, viewportWidthPx?: number): React.CSSProperties {
+  const pct = (74 + index * 4) / 100
   return {
-    width: `${74 + index * 4}vw`,
+    width: viewportWidthPx != null ? `${Math.min(Math.round(viewportWidthPx * pct), 1500)}px` : `${pct * 100}vw`,
     maxWidth: '1500px',
     marginLeft: 'auto',
     marginRight: 'auto',
+    boxSizing: 'border-box',
   }
 }
 
@@ -275,7 +299,8 @@ function WhatWeDoCard({
   reduceMotion: boolean
   rootRef?: React.Ref<HTMLDivElement>
 }) {
-  const widthStyle = cardWidthStyle(index)
+  const viewportWidthPx = useViewportWidthPx()
+  const widthStyle = cardWidthStyle(index, viewportWidthPx)
   const stickyStyle = {
     ...widthStyle,
     top: `calc(var(--wwd-nav-h) + ${index} * var(--wwd-strip-h))`,
@@ -415,6 +440,7 @@ function useCoverDim(nextRef: React.RefObject<HTMLElement | null>) {
 
 export default function WhatWeDo() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const viewportWidthPx = useViewportWidthPx()
 
   const card2Ref = useRef<HTMLDivElement>(null)
   const card3Ref = useRef<HTMLDivElement>(null)
@@ -512,7 +538,7 @@ export default function WhatWeDo() {
           the reduced-motion path, which doesn't use sticky at all. */}
       {!reduceMotion && (
         <div
-          style={{ ...cardWidthStyle(3), height: 'min(70vh, 640px)', backgroundColor: CARD_BG }}
+          style={{ ...cardWidthStyle(3, viewportWidthPx), height: 'min(70vh, 640px)', backgroundColor: CARD_BG }}
           aria-hidden="true"
         />
       )}
