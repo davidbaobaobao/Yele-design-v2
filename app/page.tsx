@@ -12,6 +12,7 @@ const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
 const ContentShowcase      = dynamic(() => import('@/components/ContentShowcase'))
 const DealStatement        = dynamic(() => import('@/components/DealStatement'))
+const StatsBold            = dynamic(() => import('@/components/StatsBold'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
 const Showcase             = dynamic(() => import('@/components/Showcase'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
@@ -61,6 +62,7 @@ export default function Home() {
         <BeyondWebsite />
         <ContentShowcase />
         <DealStatement />
+        <StatsBold />
         <PreciosIndexSection />
         <WhySubs />
         <VideoSnapController />
