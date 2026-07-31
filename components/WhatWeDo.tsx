@@ -240,27 +240,25 @@ function VideoPanel({
   )
 }
 
-// Each card is wider than the last (centered, mx-auto on both breakpoints)
-// so as later cards stack over earlier ones, the growing width overhangs the
-// narrower card beneath on both edges — a layered 3D tier effect. Desktop
-// widths are capped at 1500px so the widest card still keeps side margin on
-// very large screens; mobile stays near-full-width with the same small
-// per-card increment so the tiering still reads without overflow.
-// Desktop (74/78/82/86vw, +4vw/card) was already measuring out correctly
-// per card — verified via getBoundingClientRect: 1065.6/1123.2/1180.8/
-// 1238.4px at a 1440px viewport, an obvious tier on screen. The mobile
-// values (previously 90/92/94/96vw, +2vw/card) were ALSO applying correctly
-// per card, just too subtle to read as "progressively wider" at phone
-// widths — a 2vw step is only ~7.8px at 390px, barely perceptible next to
-// full-bleed text/video content. Widened the mobile step to +6vw/card
-// (76/82/88/94vw = ~23.4px/step at 390px) so the tiering actually reads
-// there too, while still keeping cards close to full width as intended.
-const CARD_WIDTH_CLASS = [
-  'w-[76vw] md:w-[min(74vw,1500px)] mx-auto',
-  'w-[82vw] md:w-[min(78vw,1500px)] mx-auto',
-  'w-[88vw] md:w-[min(82vw,1500px)] mx-auto',
-  'w-[94vw] md:w-[min(86vw,1500px)] mx-auto',
-]
+// Each card is wider than the last (centered via auto margins) so as later
+// cards stack over earlier ones, the growing width overhangs the narrower
+// card beneath on both edges — a layered 3D tier effect. Applied as an
+// INLINE style computed straight from the index, not a Tailwind arbitrary-
+// value class — Tailwind classes are resolved to CSS at build time from
+// static strings it can find via source scanning, which makes them fragile
+// for a value that's genuinely a function of `index` (any indirection
+// between the literal class string and its use point risks the generated
+// CSS not matching what's actually applied at runtime). An inline style is
+// computed fresh on every render, directly from `index`, with nothing for
+// a build step to get out of sync with.
+function cardWidthStyle(index: number): React.CSSProperties {
+  return {
+    width: `${74 + index * 4}vw`,
+    maxWidth: '1500px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  }
+}
 
 function WhatWeDoCard({
   card,
@@ -277,8 +275,9 @@ function WhatWeDoCard({
   reduceMotion: boolean
   rootRef?: React.Ref<HTMLDivElement>
 }) {
-  const widthClass = CARD_WIDTH_CLASS[index]
+  const widthStyle = cardWidthStyle(index)
   const stickyStyle = {
+    ...widthStyle,
     top: `calc(var(--wwd-nav-h) + ${index} * var(--wwd-strip-h))`,
     // Fixed height, same for every card (not decreasing per index like
     // before). This also shortens each card's own contribution to the
@@ -381,7 +380,7 @@ function WhatWeDoCard({
 
   if (reduceMotion) {
     return (
-      <div ref={rootRef} className={`min-h-[85vh] ${widthClass}`}>
+      <div ref={rootRef} className="min-h-[85vh]" style={widthStyle}>
         {inner}
       </div>
     )
@@ -400,7 +399,7 @@ function WhatWeDoCard({
   // section's end, giving it zero dwell — fixed with a trailing sentinel,
   // see the bottom of the component below.
   return (
-    <div ref={rootRef} className={`sticky ${widthClass}`} style={stickyStyle}>
+    <div ref={rootRef} className="sticky" style={stickyStyle}>
       {inner}
     </div>
   )
@@ -513,8 +512,7 @@ export default function WhatWeDo() {
           the reduced-motion path, which doesn't use sticky at all. */}
       {!reduceMotion && (
         <div
-          className={CARD_WIDTH_CLASS[3]}
-          style={{ height: 'min(70vh, 640px)', backgroundColor: CARD_BG }}
+          style={{ ...cardWidthStyle(3), height: 'min(70vh, 640px)', backgroundColor: CARD_BG }}
           aria-hidden="true"
         />
       )}

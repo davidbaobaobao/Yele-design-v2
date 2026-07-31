@@ -176,10 +176,17 @@ function Media({
   reduceMotion: boolean
 }) {
   const poster = `${MEDIA_DIR}/${videoBase}_poster.jpg`
+  // howvideo2-2 (step 02's clip) has a faint 1-2px grey fringe baked into
+  // its own source frame edges (visible on close inspection of its poster
+  // — an export/compression artifact, not a CSS border; none of the other
+  // three clips have it). A small over-scale pushes that fringe outside the
+  // panel's own overflow-hidden clip instead of needing to re-encode the
+  // source file. Harmless on the other three at this size.
+  const scaleStyle = { transform: 'scale(1.03)' }
 
   if (reduceMotion) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={poster} alt={alt} className="absolute inset-0 w-full h-full object-cover" />
+    return <img src={poster} alt={alt} className="absolute inset-0 w-full h-full object-cover" style={scaleStyle} />
   }
 
   return (
@@ -191,6 +198,7 @@ function Media({
       preload="none"
       poster={poster}
       className="absolute inset-0 w-full h-full object-cover"
+      style={scaleStyle}
       aria-hidden="true"
     >
       <source src={`${MEDIA_DIR}/${videoBase}_hq.webm`} type="video/webm" />

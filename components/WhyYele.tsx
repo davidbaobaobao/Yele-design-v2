@@ -111,11 +111,12 @@ export default function WhyYele() {
 
   const heading = (
     <h2 className="font-display leading-tight max-w-4xl text-[clamp(1.5rem,2.6vw,2.75rem)] mb-12">
-      <span className="text-[#8A8A92]">
+      <span style={{ color: '#F2F0EB' }}>
         Building a website used to be a headache — slow, big upfront bills, endless
         back-and-forth.{' '}
       </span>
-      <span className="text-bone">Not anymore.</span>
+      {/* Same soft pink glow used on the mission fill's traveling tip. */}
+      <span style={{ color: '#D46FC8', textShadow: '0 0 20px rgba(212, 111, 200, 0.55)' }}>Not anymore.</span>
     </h2>
   )
 

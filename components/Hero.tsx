@@ -150,10 +150,18 @@ export default function Hero() {
           <div className="flex flex-wrap items-center gap-4 mt-8">
             <a
               href="/registro"
-              className="inline-block font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer transition-transform active:scale-95"
+              className="group relative inline-block overflow-hidden font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(212,111,200,0.4)] active:scale-95"
               style={{ background: 'linear-gradient(90deg, #D46FC8 0%, #5B4B9E 55%, #7B8CDE 100%)' }}
             >
-              Start for free
+              {/* Reversed-gradient overlay, faded in on hover — brightens/
+                  shifts the button rather than swapping to a flat color, so
+                  it still reads as the same gradient, just livelier. */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ background: 'linear-gradient(90deg, #7B8CDE 0%, #5B4B9E 45%, #D46FC8 100%)' }}
+              />
+              <span className="relative">Start for free</span>
             </a>
             <a
               href="#contacto"

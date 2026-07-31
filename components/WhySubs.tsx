@@ -200,8 +200,10 @@ export default function WhySubs() {
         {/* Subtitle — cross-fades with the active reason, no abrupt swap.
             Anchored near the bottom of the viewport rather than relative to
             the center focus line, so it never collides with a dimmed
-            neighbor item sitting just below the active one in the list. */}
-        <div className="absolute inset-x-0 bottom-12 md:bottom-16 z-10 max-w-6xl mx-auto px-6 flex justify-end">
+            neighbor item sitting just below the active one in the list.
+            Raised ~50px from the previous bottom-12/16 so it isn't so close
+            to the bottom edge. */}
+        <div className="absolute inset-x-0 bottom-[100px] md:bottom-[120px] z-10 max-w-6xl mx-auto px-6 flex justify-end">
           <AnimatePresence mode="wait">
             <motion.p
               key={activeIndex}

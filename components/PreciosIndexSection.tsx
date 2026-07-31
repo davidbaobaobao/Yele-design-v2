@@ -200,15 +200,16 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
 
       <motion.a
         href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)}
-        className={`relative overflow-hidden block text-center font-body font-medium text-sm py-3.5 rounded-xl cursor-pointer ${
-          plan.highlighted ? 'bg-white text-ink' : 'bg-ink text-white'
+        className={`relative overflow-hidden block text-center font-body font-medium text-sm py-3.5 rounded-xl cursor-pointer text-white ${
+          plan.highlighted ? '' : 'bg-ink'
         }`}
+        style={plan.highlighted ? { background: 'linear-gradient(90deg, #5B4B9E 0%, #7B8CDE 100%)' } : undefined}
         whileHover="hover"
         whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}
         initial="rest"
       >
         <motion.span
-          className={`absolute inset-0 ${plan.highlighted ? 'bg-base' : 'bg-black'}`}
+          className={`absolute inset-0 ${plan.highlighted ? 'bg-ink' : 'bg-black'}`}
           variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
           transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
           style={{ originX: 0 }}
