@@ -1,13 +1,16 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
+import { CTAButton } from '@/components/ui/cta-button'
 
 const BG_VIDEO_DIR = '/media/pricing'
+
+type Feature = { text: string; tooltip?: string }
 
 const plans = [
   {
@@ -20,27 +23,34 @@ const plans = [
       name: 'Starter',
       desc: 'Tu primera presencia online. Funcional, profesional y sin complicaciones.',
       features: [
-        'Web funcional, sin límite de páginas',
-        'Dominio personalizado',
-        'Panel de control, actualiza tu contenido',
-        'SEO on-page e indexación',
-        'Email personalizado',
-        'Creación de contenido multimedia — básico',
-        'Soporte 24/7',
-      ],
+        { text: 'Web funcional, sin límite de páginas' },
+        { text: 'Dominio personalizado' },
+        { text: 'Panel de control, actualiza tu contenido' },
+        { text: 'SEO on-page e indexación' },
+        { text: 'Email personalizado' },
+        {
+          text: 'Creación de contenido multimedia — básico',
+          tooltip: 'Creamos todos los vídeos e imágenes necesarios para que tu web luzca espectacular y única.',
+        },
+        { text: 'Soporte 24/7' },
+      ] as Feature[],
     },
     en: {
       name: 'Starter',
       desc: 'Your first step online. Functional, professional and hassle-free.',
       features: [
-        'Functional website, no page limit',
-        'Custom domain',
-        'Control panel, update your content',
-        'On-page SEO & indexing',
-        'Custom email',
-        'Media creation — basic',
-        '24/7 support',
-      ],
+        { text: 'Functional website, no page limit' },
+        { text: 'Custom domain' },
+        { text: 'Control panel, update your content' },
+        { text: 'On-page SEO & indexing' },
+        { text: 'Custom email' },
+        {
+          text: 'Media creation — basic',
+          tooltip:
+            "We create all the required videos and image content so your website looks stunning and unlike anyone else's.",
+        },
+        { text: '24/7 support' },
+      ] as Feature[],
     },
   },
   {
@@ -53,27 +63,39 @@ const plans = [
       name: 'Pro',
       desc: 'Todo lo que necesitas para crecer. Branding, pagos y automatización.',
       features: [
-        'Todo lo de Starter, más:',
-        'Branding',
-        'Sistema de pagos',
-        'Calendario y reservas',
-        'Rediseño periódico de elementos',
-        'Optimización Google Business Profile',
-        'Asistente de chat IA automático',
-      ],
+        { text: 'Todo lo de Starter, más:' },
+        { text: 'Branding', tooltip: 'Modernización y renovación de la marca de tu empresa.' },
+        { text: 'Sistema de pagos', tooltip: 'Acepta pagos de tus productos.' },
+        { text: 'Calendario y reservas' },
+        {
+          text: 'Rediseño periódico de elementos',
+          tooltip: 'Cada tres meses, distintos elementos pueden reajustarse o rediseñarse.',
+        },
+        {
+          text: 'Creación de contenido — Avanzado',
+          tooltip: 'Hasta 1 vídeo + 20 imágenes al mes, bajo demanda.',
+        },
+        { text: 'SEO avanzado' },
+      ] as Feature[],
     },
     en: {
       name: 'Pro',
       desc: 'Everything you need to grow. Branding, payments and automation.',
       features: [
-        'Everything in Starter, plus:',
-        'Branding',
-        'Payment system',
-        'Calendar & reservations',
-        'Periodic redesign of website elements',
-        'Google Business Profile optimization',
-        'AI automatic chat assistant',
-      ],
+        { text: 'Everything in Starter, plus:' },
+        { text: 'Branding', tooltip: 'Company brand modernization and revamp.' },
+        { text: 'Payment system', tooltip: 'Accept payments for your products.' },
+        { text: 'Calendar & reservations' },
+        {
+          text: 'Periodic redesign of website elements',
+          tooltip: 'Every three months, different elements can be readjusted or redesigned.',
+        },
+        {
+          text: 'Media creation — Advanced',
+          tooltip: 'Up to 1 video + 20 images per month, on demand.',
+        },
+        { text: 'Advanced SEO optimization' },
+      ] as Feature[],
     },
   },
   {
@@ -86,27 +108,53 @@ const plans = [
       name: 'Frontier',
       desc: 'Marketing activo, SEO avanzado y contenido continuo para líderes del sector.',
       features: [
-        'Todo lo de Pro, más:',
-        'Creación de contenido multimedia — mensual',
-        'Campañas de marketing — mensual',
-        'SEO avanzado backlinks (cloud stacks)',
-        'Generación de artículos y contenido — semanal',
-        'Gestión Google Ads — bajo demanda',
-        'Notas de prensa (1/trimestre)',
-      ],
+        { text: 'Todo lo de Pro, más:' },
+        {
+          text: 'Creación de contenido — Frontier',
+          tooltip: 'Hasta 4 vídeos y 80 imágenes al mes, bajo demanda.',
+        },
+        {
+          text: 'Campañas de marketing',
+          tooltip: 'Campaña de marketing mensual, con todo el material completo.',
+        },
+        { text: 'SEO avanzado backlinks (cloud stacks)' },
+        {
+          text: 'Generación de artículos y contenido',
+          tooltip: 'Mensual: 1 artículo para mejorar el posicionamiento en índices.',
+        },
+        { text: 'Gestión de Google Ads', tooltip: 'Bajo demanda — 1 campaña incluida.' },
+        {
+          text: 'Chatbot IA y recepcionista telefónico IA',
+          tooltip:
+            'Bajo demanda, configuración con inteligencia artificial. Coste adicional desde $10 por 1M tokens para chatbots, y desde $0.25 por minuto para llamadas telefónicas con IA.',
+        },
+      ] as Feature[],
     },
     en: {
       name: 'Frontier',
       desc: 'Active marketing, advanced SEO and continuous content for industry leaders.',
       features: [
-        'Everything in Pro, plus:',
-        'Media content creation — monthly',
-        'Marketing campaigns — monthly',
-        'Advanced SEO backlinks (cloud stacks)',
-        'Article and content generation — weekly',
-        'Google Ads management — on demand',
-        'Press releases (1/quarter)',
-      ],
+        { text: 'Everything in Pro, plus:' },
+        {
+          text: 'Media creation — Frontier',
+          tooltip: 'Up to 4 videos and 80 images per month, on demand.',
+        },
+        {
+          text: 'Marketing campaigns',
+          tooltip: 'Monthly marketing campaign, complete material set.',
+        },
+        { text: 'Advanced SEO backlinks (cloud stacks)' },
+        {
+          text: 'Article and content generation',
+          tooltip: 'Monthly: 1 article to improve index positioning.',
+        },
+        { text: 'Google Ads management', tooltip: 'On demand — 1 campaign included.' },
+        {
+          text: 'AI chatbot and AI phone receptionist',
+          tooltip:
+            'On demand, AI intelligence setup. Additional cost from $10 per 1M tokens for chatbots, and from $0.25 per minute for AI phone calls.',
+        },
+      ] as Feature[],
     },
   },
 ]
@@ -114,7 +162,56 @@ const plans = [
 type Plan = typeof plans[0]
 type TFn = (es: string, en: string) => string
 
+// Click-to-toggle info popover for a single feature — accessible (button +
+// aria-expanded, closes on outside click or Esc) rather than a hover-only
+// tooltip, which doesn't work on touch devices.
+function FeatureTooltip({ text, dark }: { text: string; dark: boolean }) {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onPointerDown = (e: PointerEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open])
+
+  return (
+    <span ref={wrapRef} className="relative inline-flex flex-shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        aria-label="More info"
+        className={`inline-flex items-center justify-center w-4 h-4 rounded-full border text-[10px] leading-none font-body cursor-pointer transition-opacity ${
+          dark ? 'border-white/40 text-white/70 hover:opacity-100' : 'border-ink/40 text-ink/70 hover:opacity-100'
+        } opacity-70`}
+      >
+        ?
+      </button>
+      {open && (
+        <span
+          role="tooltip"
+          className="absolute z-30 left-1/2 -translate-x-1/2 bottom-full mb-2 w-56 rounded-lg bg-[#1C1D24] text-white text-xs leading-relaxed p-3 shadow-[0_12px_32px_rgba(0,0,0,0.45)] ring-1 ring-white/10"
+        >
+          {text}
+        </span>
+      )}
+    </span>
+  )
+}
+
 function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) {
+  const { lang } = useLang()
   const ref = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -134,7 +231,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
   }
   function handleMouseLeave() { mouseX.set(0); mouseY.set(0) }
 
-  const features = t(plan.es.features.join('||'), plan.en.features.join('||')).split('||')
+  const features = lang === 'es' ? plan.es.features : plan.en.features
 
   return (
     <motion.div
@@ -187,39 +284,43 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
 
       <ul className="relative flex-1 flex flex-col gap-3 mb-8">
         {features.map(feat => {
-          const isHeader = feat.includes('plus:') || feat.includes('más:')
+          const isHeader = feat.text.includes('plus:') || feat.text.includes('más:')
           return (
-            <li key={feat} className="flex items-start gap-2.5">
+            <li key={feat.text} className="flex items-start gap-2.5">
               {!isHeader && (
                 <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />
               )}
-              <span className={`font-body text-sm ${plan.highlighted ? 'text-white/80' : 'text-ink'} ${isHeader ? 'font-bold' : ''}`}>
-                {feat}
+              <span className={`font-body text-sm inline-flex items-center gap-1.5 ${plan.highlighted ? 'text-white/80' : 'text-ink'} ${isHeader ? 'font-bold' : ''}`}>
+                {feat.text}
+                {feat.tooltip && <FeatureTooltip text={feat.tooltip} dark={plan.highlighted} />}
               </span>
             </li>
           )
         })}
       </ul>
 
-      <motion.a
-        href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)}
-        className={`relative overflow-hidden block text-center font-body font-medium text-sm py-3.5 rounded-xl cursor-pointer text-white ${
-          plan.highlighted ? '' : 'bg-ink'
-        }`}
-        style={plan.highlighted ? { background: 'linear-gradient(90deg, #5B4B9E 0%, #7B8CDE 100%)' } : undefined}
-        whileHover="hover"
-        whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}
-        initial="rest"
-      >
-        <motion.span
-          className={`absolute inset-0 ${plan.highlighted ? 'bg-ink' : 'bg-black'}`}
-          variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-          transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
-          style={{ originX: 0 }}
-          aria-hidden="true"
-        />
-        <span className="relative z-10">{t('Empezar gratis', 'Try for free')}</span>
-      </motion.a>
+      {plan.highlighted ? (
+        <CTAButton href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)} variant="light" className="w-full">
+          {t('Empezar gratis', 'Try for free')}
+        </CTAButton>
+      ) : (
+        <motion.a
+          href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)}
+          className="relative overflow-hidden block text-center font-body font-medium text-sm py-3.5 rounded-xl cursor-pointer text-white bg-ink"
+          whileHover="hover"
+          whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}
+          initial="rest"
+        >
+          <motion.span
+            className="absolute inset-0 bg-black"
+            variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+            transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
+            style={{ originX: 0 }}
+            aria-hidden="true"
+          />
+          <span className="relative z-10">{t('Empezar gratis', 'Try for free')}</span>
+        </motion.a>
+      )}
     </motion.div>
   )
 }
@@ -309,6 +410,14 @@ export default function PreciosIndexSection() {
         <source src={`${BG_VIDEO_DIR}/pricing_hq.mp4`} type="video/mp4" />
       </video>
       <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13, 14, 18, 0.55)' }} aria-hidden="true" />
+      {/* Fades the video's own top edge into solid black so it dissolves
+          into the previous (StatsBold, #0D0E12) section instead of starting
+          abruptly right at the boundary. */}
+      <div
+        className="absolute inset-x-0 top-0 h-[200px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, #0D0E12 0%, transparent 100%)' }}
+        aria-hidden="true"
+      />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div
