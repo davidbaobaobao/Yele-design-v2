@@ -1,11 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
-const CARD_BG = '#0A0A0C'
+const CARD_BG = '#16171C'
 const VIDEO_DIR = '/media/wesection'
 
 // Function-form transform helper — framer-motion's range-array useTransform
@@ -48,17 +48,6 @@ function hexToRgba(hex: string, alpha: number) {
   const g = (n >> 8) & 255
   const b = n & 255
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
-}
-
-// A darker shade of the same hue (not a different color) — used for the
-// aurora's third blob so each card still reads as ONE dominant accent with
-// a little depth, rather than a multi-color mix.
-function darken(hex: string, amount: number) {
-  const n = parseInt(hex.slice(1), 16)
-  const r = Math.round(((n >> 16) & 255) * (1 - amount))
-  const g = Math.round(((n >> 8) & 255) * (1 - amount))
-  const b = Math.round((n & 255) * (1 - amount))
-  return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`
 }
 
 type CardData = {
@@ -120,108 +109,6 @@ function cardGradient(index: number): string {
   const from = CARDS[index].accent
   const to = CARDS[(index + 1) % CARDS.length].accent
   return `linear-gradient(315deg, ${from}, ${to})`
-}
-
-// True only for devices that can actually hover with a precise pointer —
-// touch gets the static (still animating) aurora, no parallax to chase.
-function useFinePointer() {
-  const [fine, setFine] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
-    const update = () => setFine(mq.matches)
-    update()
-    mq.addEventListener('change', update)
-    return () => mq.removeEventListener('change', update)
-  }, [])
-  return fine
-}
-
-// Raw pointer position (-0.5..0.5 on each axis, card-relative), rAF-
-// throttled and run through a spring so the aurora glides toward the
-// pointer while moving and eases back to center on mouse leave.
-function useAuroraParallax(disabled: boolean) {
-  const rawX = useMotionValue(0)
-  const rawY = useMotionValue(0)
-  const x = useSpring(rawX, { stiffness: 100, damping: 20, mass: 0.7 })
-  const y = useSpring(rawY, { stiffness: 100, damping: 20, mass: 0.7 })
-  const rafRef = useRef<number | null>(null)
-  const pendingRef = useRef<{ x: number; y: number } | null>(null)
-
-  const onMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
-      if (disabled) return
-      const rect = e.currentTarget.getBoundingClientRect()
-      pendingRef.current = {
-        x: (e.clientX - rect.left) / rect.width - 0.5,
-        y: (e.clientY - rect.top) / rect.height - 0.5,
-      }
-      if (rafRef.current == null) {
-        rafRef.current = requestAnimationFrame(() => {
-          rafRef.current = null
-          if (pendingRef.current) {
-            rawX.set(pendingRef.current.x)
-            rawY.set(pendingRef.current.y)
-          }
-        })
-      }
-    },
-    [disabled, rawX, rawY]
-  )
-
-  const onMouseLeave = useCallback(() => {
-    if (rafRef.current != null) {
-      cancelAnimationFrame(rafRef.current)
-      rafRef.current = null
-    }
-    rawX.set(0)
-    rawY.set(0)
-  }, [rawX, rawY])
-
-  useEffect(() => {
-    return () => {
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
-    }
-  }, [])
-
-  return { x, y, onMouseMove, onMouseLeave }
-}
-
-// Three blurred radial-gradient blobs near the card's bottom, each on its
-// own bold CSS keyframe drift (transform + opacity only — see globals.css)
-// so their overlaps constantly recombine instead of moving in lockstep. All
-// three share ONE dominant accent hue (the third uses a darker shade of the
-// same color for depth, not a different color) so each card still reads as
-// single-accent. A top-to-bottom black gradient keeps the top ~55% clean
-// for text. Hover parallax (optional, cheap) is a single wrapper offset —
-// the blobs' own CSS animation is untouched by it.
-function AuroraLayer({
-  accent,
-  index,
-  parallaxX,
-  parallaxY,
-}: {
-  accent: string
-  index: number
-  parallaxX: MotionValue<number>
-  parallaxY: MotionValue<number>
-}) {
-  const px = useTransform(parallaxX, v => v * 16)
-  const py = useTransform(parallaxY, v => v * 12)
-  const accentDark = darken(accent, 0.4)
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-      <motion.div className="absolute inset-0" style={{ x: px, y: py }}>
-        <div className="wwd-aurora-blob wwd-aurora-blob-a" style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 70%)`, animationDelay: `${index * -2.2}s` }} />
-        <div className="wwd-aurora-blob wwd-aurora-blob-b" style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 70%)`, animationDelay: `${index * -2.2 + 3}s` }} />
-        <div className="wwd-aurora-blob wwd-aurora-blob-c" style={{ background: `radial-gradient(circle, ${accentDark} 0%, transparent 65%)`, animationDelay: `${index * -2.2 + 1.5}s` }} />
-      </motion.div>
-      <div
-        className="absolute inset-0"
-        style={{ background: `linear-gradient(to bottom, ${CARD_BG} 0%, ${CARD_BG} 55%, transparent 100%)` }}
-      />
-    </div>
-  )
 }
 
 // Same treatment as every other video section on this site: borderless,
@@ -318,70 +205,47 @@ function WhatWeDoCard({
     height: 'min(70vh, 640px)',
   }
 
-  const finePointer = useFinePointer()
-  const parallax = useAuroraParallax(reduceMotion || !finePointer)
   const gradient = cardGradient(index)
 
   const inner = (
-    // Shadow wrapper — carries the outer accent glow and the floating
+    // Shadow wrapper — carries the outer accent glow halo and the floating
     // card's vertical inset (my-2: a sliver of the section's own black bg
     // shows above/below, so stacked strips read as separated floating
     // panels rather than edge-to-edge). Deliberately NOT overflow-hidden —
-    // box-shadow (and the blurred hover-glow layer below) needs to spread
+    // box-shadow (and the blurred glow-bloom layer below) needs to spread
     // freely into that surrounding black margin instead of being clipped at
     // the card's own edge. Only the content div below (rounded the same
-    // amount) clips. `group` scopes the two hover glow layers below,
-    // wherever they sit in the tree — the lift + shadow stay on this
-    // wrapper since box-shadow doesn't survive the inner div's clip.
+    // amount) clips. `group` scopes the glow bloom's hover intensification
+    // below — the lift + shadow stay on this wrapper since box-shadow
+    // doesn't survive the inner div's clip.
     <div
       style={{ boxShadow: `0 0 60px ${hexToRgba(card.accent, 0.18)}`, willChange: 'transform' }}
       className={`group relative h-full my-2 rounded-3xl ${reduceMotion ? '' : 'transition-transform duration-500 hover:-translate-y-1'}`}
     >
-      {/* Glow bloom — same accent gradient as the sharp panel below, blurred
-          heavily and living OUTSIDE the inner div's overflow-hidden clip so
-          it can bleed past the card's own edges into the floating margin
-          around it, like a halo. Opacity-only transition, cheap. */}
-      {!reduceMotion && (
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 rounded-3xl blur-[40px] opacity-0 group-hover:opacity-60 transition-opacity duration-500 pointer-events-none"
-          style={{ background: gradient, willChange: 'opacity' }}
-        />
-      )}
+      {/* Glow halo — GitHub workflow-card style: a soft accent bloom that's
+          ALWAYS partially visible outside the card's own edges (not just on
+          hover), intensifying further on hover. Blurred heavily and living
+          OUTSIDE the inner div's overflow-hidden clip so it bleeds into the
+          floating margin around the card. Opacity-only transition, cheap. */}
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-30' : 'opacity-30 group-hover:opacity-60 transition-opacity duration-500'}`}
+        style={{ background: gradient, willChange: reduceMotion ? undefined : 'opacity' }}
+      />
 
+      {/* Inside: a plain flat dark-grey surface (CARD_BG) — no aurora, no
+          interior gradient wash, no video glow. Just the glass border above,
+          the flat surface, and the header/body/video content on top of it. */}
       <div
         style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)' }}
-        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[1.5px] border-white/15 ring-1 ring-white/5"
-        onMouseMove={reduceMotion ? undefined : parallax.onMouseMove}
-        onMouseLeave={reduceMotion ? undefined : parallax.onMouseLeave}
+        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-2 border-white/15 ring-1 ring-white/5"
       >
-      {/* Sharp gradient panel — same gradient, no blur, sits on top of the
-          card's own dark background and under the aurora/content (DOM order
-          only, no explicit z-index needed since it's the first child here).
-          Fades in as a colored wash across the card face on hover. */}
-      {!reduceMotion && (
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 opacity-0 group-hover:opacity-50 transition-opacity duration-500 pointer-events-none"
-          style={{ background: gradient, willChange: 'opacity' }}
-        />
-      )}
-
-      {/* Aurora renders in both branches — reduced motion freezes the CSS
-          drift (see the prefers-reduced-motion rule in globals.css) rather
-          than removing the glow outright. Hover parallax only wires in
-          when motion is allowed. */}
-      <div className="absolute inset-0 z-0">
-        <AuroraLayer accent={card.accent} index={index} parallaxX={parallax.x} parallaxY={parallax.y} />
-      </div>
-
       {/* Header strip — fixed height, stays visible when the card is
-          collapsed under later cards. Pure black background (no aurora
-          reaches this high) for clean text reading. Padding-top > padding-
-          bottom (both inside items-center) so the title's centered position
-          shifts down within the strip — more breathing room above it,
-          without losing the title/index baseline alignment items-center
-          already gave them. */}
+          collapsed under later cards. Padding-top > padding-bottom (both
+          inside items-center) so the title's centered position shifts down
+          within the strip — more breathing room above it, without losing
+          the title/index baseline alignment items-center already gave
+          them. */}
       <div className="relative shrink-0 flex items-center justify-between px-8 pt-8 pb-2" style={{ height: 'var(--wwd-strip-h)' }}>
         <h2 className="font-display font-medium leading-none text-[44px] md:text-[84px]" style={{ color: card.text }}>
           {card.title}
