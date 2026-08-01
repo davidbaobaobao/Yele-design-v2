@@ -68,9 +68,9 @@ function YeleCell({ value }: { value: CellValue }) {
       </span>
     )
   }
-  if (value === false) return <X size={16} className="text-muted mx-auto" aria-label="No" />
+  if (value === false) return <X size={16} className="text-bone/40 mx-auto" aria-label="No" />
   return (
-    <span className="font-body text-sm font-bold text-ink">
+    <span className="font-body text-sm font-bold text-bone">
       {t(value.es, value.en)}
     </span>
   )
@@ -79,9 +79,9 @@ function YeleCell({ value }: { value: CellValue }) {
 function OtherCell({ value }: { value: CellValue }) {
   const { t } = useLang()
   if (value === true) return <Check size={18} className="text-[#34C759] mx-auto" aria-label="Sí" />
-  if (value === false) return <X size={18} className="text-muted mx-auto" aria-label="No" />
+  if (value === false) return <X size={18} className="text-bone/40 mx-auto" aria-label="No" />
   return (
-    <span className="font-body text-sm text-muted">
+    <span className="font-body text-sm text-bone/60">
       {t(value.es, value.en)}
     </span>
   )
@@ -101,7 +101,7 @@ export default function TablaComparativa({
   const { t } = useLang()
 
   return (
-    <section className={`pt-10 md:pt-14 pb-24 md:pb-32 ${noBg ? '' : 'bg-white'}`}>
+    <section data-nav-dark className={`pt-10 md:pt-14 pb-24 md:pb-32 ${noBg ? '' : ''}`} style={noBg ? undefined : { backgroundColor: '#0D0E12' }}>
       <div className="max-w-6xl mx-auto px-6">
 
         <motion.div
@@ -111,8 +111,8 @@ export default function TablaComparativa({
           viewport={{ once: true, margin: '-80px' }}
           className="mb-12"
         >
-          <h2 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight mb-4">
-            {headingLine1 ?? t('¿Por qué no una agencia', 'Why not an agency')}<br />
+          <h2 className="font-display font-semibold text-4xl md:text-5xl text-bone tracking-tight mb-4">
+            {headingLine1 ?? t('¿Por qué no otra agencia', 'Why not another agency')}<br />
             {headingLine2 ?? t('o hacerlo tú mismo?', 'or DIY?')}
           </h2>
         </motion.div>
@@ -123,12 +123,12 @@ export default function TablaComparativa({
           transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
           viewport={{ once: true, margin: '-80px' }}
         >
-        <div className="overflow-x-auto rounded-2xl border border-hairline">
+        <div className="overflow-x-auto rounded-2xl border border-hairlineDark">
           <table className="w-full min-w-[600px]">
             <thead>
               <tr>
-                <th className="bg-white text-left font-body text-sm text-muted px-6 py-4 font-normal rounded-tl-2xl w-[40%]" />
-                <th className="bg-ink text-center px-4 py-4">
+                <th className="text-left font-body text-sm text-bone/60 px-6 py-4 font-normal rounded-tl-2xl w-[40%]" style={{ backgroundColor: '#0D0E12' }} />
+                <th className="text-center px-4 py-4" style={{ backgroundColor: '#1C1D24' }}>
                   <span className="inline-flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34C759] opacity-75" />
@@ -137,10 +137,10 @@ export default function TablaComparativa({
                     <span className="font-display font-semibold text-sm text-white">Yele</span>
                   </span>
                 </th>
-                <th className="bg-white text-center font-body text-sm text-muted px-4 py-4 font-normal">
+                <th className="text-center font-body text-sm text-bone/60 px-4 py-4 font-normal" style={{ backgroundColor: '#0D0E12' }}>
                   {agencyLabel ?? t('Agencia', 'Agency')}
                 </th>
-                <th className="bg-white text-center font-body text-sm text-muted px-4 py-4 font-normal rounded-tr-2xl">
+                <th className="text-center font-body text-sm text-bone/60 px-4 py-4 font-normal rounded-tr-2xl" style={{ backgroundColor: '#0D0E12' }}>
                   {t('Tú mismo (DIY)', 'You (DIY)')}
                 </th>
               </tr>
@@ -149,16 +149,17 @@ export default function TablaComparativa({
               {rows.map((row, i) => (
                 <motion.tr
                   key={i}
-                  className={`border-t border-hairline group ${i % 2 === 0 ? 'bg-base' : 'bg-white'}`}
+                  className="border-t border-hairlineDark group"
+                  style={{ backgroundColor: i % 2 === 0 ? '#0D0E12' : '#111217' }}
                   whileHover="hover"
                 >
                   <motion.td
-                    className="px-6 py-4 font-body text-sm text-ink relative"
+                    className="px-6 py-4 font-body text-sm text-bone relative"
                     variants={{ hover: { x: 4 } }}
                     transition={{ duration: 0.2 }}
                   >
                     <motion.div
-                      className="absolute left-0 top-0 bottom-0 w-0.5 bg-ink rounded-r"
+                      className="absolute left-0 top-0 bottom-0 w-0.5 bg-bone rounded-r"
                       variants={{ hover: { opacity: 1, scaleY: 1 } }}
                       initial={{ opacity: 0, scaleY: 0 }}
                       style={{ originY: 0.5 }}
@@ -167,8 +168,9 @@ export default function TablaComparativa({
                     {t(row.es, row.en)}
                   </motion.td>
                   <motion.td
-                    className="px-4 py-4 text-center bg-ink/[0.03]"
-                    variants={{ hover: { backgroundColor: 'rgba(29,29,31,0.07)' } }}
+                    className="px-4 py-4 text-center"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
+                    variants={{ hover: { backgroundColor: 'rgba(255,255,255,0.07)' } }}
                     transition={{ duration: 0.2 }}
                   >
                     <YeleCell value={row.yele as CellValue} />
