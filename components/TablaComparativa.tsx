@@ -62,7 +62,7 @@ function YeleCell({ value }: { value: CellValue }) {
   const { t } = useLang()
   if (value === true) {
     return (
-      <span className="inline-flex items-center gap-1 bg-[#34C759]/10 text-[#34C759] text-xs font-body font-medium px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center gap-1 bg-[#D46FC8]/10 text-[#D46FC8] text-xs font-body font-medium px-2.5 py-1 rounded-full">
         <Check size={11} strokeWidth={2.5} aria-hidden="true" />
         {t('Sí', 'Yes')}
       </span>
@@ -78,7 +78,7 @@ function YeleCell({ value }: { value: CellValue }) {
 
 function OtherCell({ value }: { value: CellValue }) {
   const { t } = useLang()
-  if (value === true) return <Check size={18} className="text-[#34C759] mx-auto" aria-label="Sí" />
+  if (value === true) return <Check size={18} className="text-[#D46FC8] mx-auto" aria-label="Sí" />
   if (value === false) return <X size={18} className="text-bone/40 mx-auto" aria-label="No" />
   return (
     <span className="font-body text-sm text-bone/60">
@@ -131,8 +131,8 @@ export default function TablaComparativa({
                 <th className="text-center px-4 py-4" style={{ backgroundColor: '#1C1D24' }}>
                   <span className="inline-flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34C759] opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#34C759]" />
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D46FC8] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D46FC8]" />
                     </span>
                     <span className="font-display font-semibold text-sm text-white">Yele</span>
                   </span>
