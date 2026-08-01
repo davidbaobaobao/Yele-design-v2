@@ -11,11 +11,13 @@ import {
   animate,
 } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { TextGradient } from '@/components/ui/text-gradient'
 
 const BONE = '#F2F0EB'
 const MUTED = '#8A8A92'
 const ACCENT_GRADIENT_CSS = 'linear-gradient(135deg, #D46FC8 0%, #5B4B9E 50%, #7B8CDE 100%)'
+const BOLDSTATS_DIR = '/media/boldstats'
 
 const bigNumberClass = 'block font-display text-[clamp(2.5rem,5vw,4.5rem)] leading-none'
 const labelClass = 'block font-mono text-xs md:text-sm uppercase tracking-wide mt-3'
@@ -153,6 +155,8 @@ function usePanelTilt(disabled: boolean) {
 function GradientPanel({ disabled }: { disabled: boolean }) {
   const { x, y, rx, ry, hoverT, onMouseMove, onMouseLeave } = usePanelTilt(disabled)
   const brightness = useTransform(hoverT, v => 1 + v * 0.12)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  useVideoAutoplay(videoRef)
 
   const transform = useMotionTemplate`perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`
   const filter = useMotionTemplate`brightness(${brightness})`
@@ -165,7 +169,26 @@ function GradientPanel({ disabled }: { disabled: boolean }) {
       onMouseMove={disabled ? undefined : onMouseMove}
       onMouseLeave={disabled ? undefined : onMouseLeave}
     >
-      <div className="absolute inset-0" style={{ background: ACCENT_GRADIENT_CSS }} aria-hidden="true" />
+      <video
+        ref={videoRef}
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster={`${BOLDSTATS_DIR}/boldstats_poster.jpg`}
+        className="absolute inset-0 w-full h-full object-cover"
+        aria-hidden="true"
+      >
+        <source src={`${BOLDSTATS_DIR}/boldstats_hq.webm`} type="video/webm" />
+        <source src={`${BOLDSTATS_DIR}/boldstats_hq.mp4`} type="video/mp4" />
+      </video>
+      {/* Same pink/purple/blue accent as the rest of the panel, blended over
+          the video as a tint rather than a flat cover. */}
+      <div
+        className="absolute inset-0 mix-blend-overlay opacity-70"
+        style={{ background: ACCENT_GRADIENT_CSS }}
+        aria-hidden="true"
+      />
       {!disabled && (
         <motion.div
           className="absolute inset-0"
