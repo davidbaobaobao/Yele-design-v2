@@ -457,7 +457,7 @@ export default function HowWeWork() {
   if (reduceMotion) {
     return (
       <section className="bg-white py-28 px-6">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto" style={{ transform: 'translateY(-40px)' }}>
           <span className="block font-mono text-sm mb-4" style={{ color: LIGHT_SECONDARY }}>
             HOW IT WORKS
           </span>
@@ -494,7 +494,12 @@ export default function HowWeWork() {
         aria-hidden="true"
       />
 
-      <div className="max-w-6xl mx-auto">
+      {/* translateY(-40px): nudges the whole section's content up ~1
+          line-height, per request — the scroll-linked dark/light trigger
+          below (headerRef.getBoundingClientRect()) already accounts for CSS
+          transforms, so it stays correctly synced with this shifted
+          position without any other change to that logic. */}
+      <div className="max-w-6xl mx-auto" style={{ transform: 'translateY(-40px)' }}>
         <motion.span
           className="block font-mono text-sm mb-4"
           animate={{ color: secondaryColor }}
