@@ -22,12 +22,12 @@ const CARDS: CardData[] = [
   {
     title: 'Yours to control',
     description: 'Edit prices, photos and content anytime from your dashboard.',
-    videoBase: 'whyyele2',
+    videoBase: 'whyyele3',
   },
   {
     title: 'One flat price',
     description: 'Hosting, domain, changes and support — all included in one monthly rate.',
-    videoBase: 'whyyele3',
+    videoBase: 'whyyele6',
   },
   {
     title: 'No lock-in',
@@ -37,12 +37,12 @@ const CARDS: CardData[] = [
   {
     title: 'Live in days',
     description: 'Your site ready in a week, not months. Updates in hours.',
-    videoBase: 'whyyele5',
+    videoBase: 'whyyele2',
   },
   {
     title: 'Built to convert',
     description: 'Designed to turn visitors into calls, bookings and customers.',
-    videoBase: 'whyyele6',
+    videoBase: 'whyyele5',
   },
 ]
 
