@@ -117,9 +117,6 @@ export default function BeyondWebsite() {
         <h2 className="font-display text-ink text-[clamp(1.75rem,2.5vw,2.5rem)] leading-tight">
           Everything that makes your website work <TextGradient as="span">harder</TextGradient>.
         </h2>
-        <p className="font-body text-muted max-w-xl mt-4">
-          Growth services, included in Pro and Frontier.
-        </p>
         <div className="border-t border-hairline mt-8" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
