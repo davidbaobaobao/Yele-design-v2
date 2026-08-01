@@ -7,20 +7,51 @@ import { TextGradient } from '@/components/ui/text-gradient'
 // Custom-built equivalent of Skiper UI's skiper70 "text reveal box"
 // (https://skiper-ui.com/v1/skiper70) — that component is a paid Pro item
 // behind a Skiper UI license key we don't have, so this reimplements the
-// same described behavior (scroll-triggered, word-by-word reveal with a
-// highlighted phrase) directly with framer-motion, which this codebase
-// already depends on everywhere else. API is deliberately close to
-// skiper70's own (children / highlight / highlightTextClass /
-// highlightBgClass / className) so swapping in the real component later,
-// if a license is ever purchased, only means changing the import.
+// same described behavior (scroll-triggered, per-character reveal with a
+// glowing pink tip at the fill boundary, plus an optional highlighted
+// phrase) directly with framer-motion, which this codebase already depends
+// on everywhere else.
 
-const REVEAL_START = 0.05
+// REVEAL_START pushed from 0.05 -> 0.15 — the fill used to start almost
+// immediately; this delays it until the text is roughly a line into view.
+const REVEAL_START = 0.15
 const REVEAL_END = 0.85
-const TIP_WORDS = 1.5
+// Width, in CHARACTERS, of the glowing tip — reveal is now per-character
+// (was per-word), so this is a much narrower window than the old TIP_WORDS.
+const TIP_CHARS = 2.5
+
+const GREY: [number, number, number] = [0xc9, 0xc6, 0xc0] // #C9C6C0-ish unrevealed grey (#C9C6BF)
+const PINK: [number, number, number] = [0xd4, 0x6f, 0xc8] // #D46FC8 — brightest, at the exact boundary
+const WHITE: [number, number, number] = [0xf2, 0xf0, 0xeb] // #F2F0EB — fully revealed
+
+function mix(a: [number, number, number], b: [number, number, number], t: number) {
+  const k = Math.max(0, Math.min(1, t))
+  const r = Math.round(a[0] + (b[0] - a[0]) * k)
+  const g = Math.round(a[1] + (b[1] - a[1]) * k)
+  const bch = Math.round(a[2] + (b[2] - a[2]) * k)
+  return `rgb(${r}, ${g}, ${bch})`
+}
+
+// Grey -> pink (0->0.5) -> white (0.5->1), so the pink shows as a genuine
+// peak traveling THROUGH the text rather than a flat grey->white blend.
+function charColor(t: number) {
+  if (t <= 0.5) return mix(GREY, PINK, t / 0.5)
+  return mix(PINK, WHITE, (t - 0.5) / 0.5)
+}
+
+// Soft blurred pink glow, peaking exactly where the color peaks (t=0.5) and
+// fading out toward both ends — a triangle, not a plateau, so it reads as a
+// tip travelling past rather than a static highlight.
+function charGlow(t: number): string | undefined {
+  const k = 1 - Math.abs(t - 0.5) * 2
+  if (k < 0.08) return undefined
+  return `0 0 ${(8 * k).toFixed(1)}px rgba(212, 111, 200, ${(0.75 * k).toFixed(2)})`
+}
 
 type WordToken = {
   word: string
-  idx: number
+  chars: string[]
+  charStart: number
   highlighted: boolean
 }
 
@@ -30,26 +61,33 @@ function buildWords(text: string, highlight?: string) {
   const rawWords = text.split(' ')
   const highlightWords = highlight ? highlight.split(' ').map(bareWord) : []
 
-  // A word at index `wi` is part of the highlighted phrase if there's SOME
-  // start position (wi - offset, for offset in [0, phrase length)) from
-  // which the phrase matches — i.e. `wi` falls somewhere inside a matching
-  // run, not just at its start.
+  let charCursor = 0
   const words: WordToken[] = rawWords.map((word, wi) => {
+    if (word === '\n') {
+      return { word: '\n', chars: [], charStart: charCursor, highlighted: false }
+    }
+    // A word at index `wi` is part of the highlighted phrase if there's SOME
+    // start position (wi - offset, for offset in [0, phrase length)) from
+    // which the phrase matches — i.e. `wi` falls somewhere inside a matching
+    // run, not just at its start.
     const highlighted = highlightWords.some((_, offset) => {
       const start = wi - offset
       if (start < 0) return false
       return highlightWords.every((hw, k) => bareWord(rawWords[start + k] ?? '') === hw)
     })
-    return { word, idx: wi, highlighted }
+    const chars = Array.from(word)
+    const token = { word, chars, charStart: charCursor, highlighted }
+    charCursor += chars.length
+    return token
   })
 
-  return { words, totalWords: words.length }
+  return { words, totalChars: charCursor }
 }
 
-function mapProgressToRevealIndex(p: number, totalWords: number) {
+function mapProgressToRevealIndex(p: number, totalChars: number) {
   if (p <= REVEAL_START) return 0
-  if (p >= REVEAL_END) return totalWords
-  return (totalWords * (p - REVEAL_START)) / (REVEAL_END - REVEAL_START)
+  if (p >= REVEAL_END) return totalChars
+  return (totalChars * (p - REVEAL_START)) / (REVEAL_END - REVEAL_START)
 }
 
 export default function TextReveal({
@@ -63,14 +101,14 @@ export default function TextReveal({
   className?: string
   scrollYProgress: MotionValue<number>
 }) {
-  const { words, totalWords } = useMemo(() => buildWords(children, highlight), [children, highlight])
+  const { words, totalChars } = useMemo(() => buildWords(children, highlight), [children, highlight])
 
   const [revealIndex, setRevealIndex] = useState(() =>
-    mapProgressToRevealIndex(scrollYProgress.get(), totalWords)
+    mapProgressToRevealIndex(scrollYProgress.get(), totalChars)
   )
 
   useMotionValueEvent(scrollYProgress, 'change', v => {
-    setRevealIndex(mapProgressToRevealIndex(v, totalWords))
+    setRevealIndex(mapProgressToRevealIndex(v, totalChars))
   })
 
   return (
@@ -84,29 +122,39 @@ export default function TextReveal({
           // strings still reveal in one continuous sweep across all lines.
           if (w.word === '\n') return <br key={wi} />
 
-          const d = revealIndex - w.idx
-          const t = Math.max(0, Math.min(1, d / TIP_WORDS))
-          const wordStyle = {
-            opacity: 0.4 + 0.6 * t,
-            filter: `blur(${(1 - t) * 3}px)`,
-            transform: `translateY(${(1 - t) * 6}px)`,
-          }
           return (
             <Fragment key={wi}>
               {w.highlighted ? (
-                // The accent phrase is always the pink -> purple -> blue
-                // TextGradient, never plain white like the rest of the text.
-                <span className="inline-block whitespace-nowrap" style={wordStyle}>
+                // The accent phrase (if a `highlight` is passed — unused by
+                // Mission currently) is always the pink -> purple -> blue
+                // TextGradient, never resolving to flat white like the rest.
+                <span className="inline-block whitespace-nowrap">
                   <TextGradient as="span" duration={4}>
                     {w.word}
                   </TextGradient>
                 </span>
               ) : (
-                <span
-                  className="inline-block whitespace-nowrap"
-                  style={{ ...wordStyle, color: '#F2F0EB' }}
-                >
-                  {w.word}
+                <span className="inline-block whitespace-nowrap">
+                  {w.chars.map((ch, ci) => {
+                    const globalIdx = w.charStart + ci
+                    const d = revealIndex - globalIdx
+                    const t = Math.max(0, Math.min(1, d / TIP_CHARS))
+                    return (
+                      <span
+                        key={ci}
+                        className="inline-block"
+                        style={{
+                          color: charColor(t),
+                          textShadow: charGlow(t),
+                          opacity: 0.4 + 0.6 * t,
+                          filter: `blur(${(1 - t) * 3}px)`,
+                          transform: `translateY(${(1 - t) * 6}px)`,
+                        }}
+                      >
+                        {ch}
+                      </span>
+                    )
+                  })}
                 </span>
               )}
               {wi < words.length - 1 ? ' ' : ''}
