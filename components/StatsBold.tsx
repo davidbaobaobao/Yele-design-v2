@@ -7,7 +7,6 @@ import {
   useMotionTemplate,
   useMotionValue,
   useSpring,
-  useTransform,
   animate,
 } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
@@ -84,25 +83,18 @@ function CountUpNumber({
   )
 }
 
-// Pointer-driven tilt + gradient-follow for the featured panel: rawX/rawY
-// track cursor position as a 0-100 percentage (for the radial gradient's
-// center), rawRX/rawRY derive a few degrees of rotateX/rotateY from the same
-// position, and hoverT is a simple 0/1 spring used to fade in the radial
-// overlay and brighten the panel. Everything is sprung, not snapped, and the
-// mousemove handler is rAF-throttled — same pattern as WhatWeDo's aurora
-// parallax hook.
+// Pointer-driven tilt for the featured panel: rawRX/rawRY derive a few
+// degrees of rotateX/rotateY straight from cursor position within the
+// panel. Sprung, not snapped, and the mousemove handler is rAF-throttled —
+// same pattern as WhatWeDo's aurora parallax hook. (Used to also drive a
+// cursor-follow radial "spotlight" highlight and a brightness bump; both
+// removed — this panel now shows the video plainly, tilt only.)
 function usePanelTilt(disabled: boolean) {
-  const rawX = useMotionValue(50)
-  const rawY = useMotionValue(50)
   const rawRX = useMotionValue(0)
   const rawRY = useMotionValue(0)
-  const rawHover = useMotionValue(0)
   const spring = { stiffness: 120, damping: 20, mass: 0.6 }
-  const x = useSpring(rawX, spring)
-  const y = useSpring(rawY, spring)
   const rx = useSpring(rawRX, spring)
   const ry = useSpring(rawRY, spring)
-  const hoverT = useSpring(rawHover, { stiffness: 150, damping: 22 })
 
   const rafRef = useRef<number | null>(null)
   const pendingRef = useRef<{ px: number; py: number } | null>(null)
@@ -120,15 +112,12 @@ function usePanelTilt(disabled: boolean) {
           rafRef.current = null
           const p = pendingRef.current
           if (!p) return
-          rawX.set(p.px * 100)
-          rawY.set(p.py * 100)
           rawRY.set((p.px - 0.5) * 14)
           rawRX.set((0.5 - p.py) * 14)
-          rawHover.set(1)
         })
       }
     },
-    [disabled, rawX, rawY, rawRX, rawRY, rawHover]
+    [disabled, rawRX, rawRY]
   )
 
   const onMouseLeave = useCallback(() => {
@@ -136,12 +125,9 @@ function usePanelTilt(disabled: boolean) {
       cancelAnimationFrame(rafRef.current)
       rafRef.current = null
     }
-    rawX.set(50)
-    rawY.set(50)
     rawRX.set(0)
     rawRY.set(0)
-    rawHover.set(0)
-  }, [rawX, rawY, rawRX, rawRY, rawHover])
+  }, [rawRX, rawRY])
 
   useEffect(() => {
     return () => {
@@ -149,23 +135,20 @@ function usePanelTilt(disabled: boolean) {
     }
   }, [])
 
-  return { x, y, rx, ry, hoverT, onMouseMove, onMouseLeave }
+  return { rx, ry, onMouseMove, onMouseLeave }
 }
 
 function GradientPanel({ disabled }: { disabled: boolean }) {
-  const { x, y, rx, ry, hoverT, onMouseMove, onMouseLeave } = usePanelTilt(disabled)
-  const brightness = useTransform(hoverT, v => 1 + v * 0.12)
+  const { rx, ry, onMouseMove, onMouseLeave } = usePanelTilt(disabled)
   const videoRef = useRef<HTMLVideoElement>(null)
   useVideoAutoplay(videoRef)
 
   const transform = useMotionTemplate`perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`
-  const filter = useMotionTemplate`brightness(${brightness})`
-  const overlayBackground = useMotionTemplate`radial-gradient(circle at ${x}% ${y}%, rgba(212,111,200,0.85) 0%, rgba(91,75,158,0.45) 40%, transparent 72%)`
 
   return (
     <motion.div
       className="relative w-full md:w-[45%] aspect-video rounded-2xl overflow-hidden"
-      style={disabled ? undefined : { transform, filter, willChange: 'transform, filter' }}
+      style={disabled ? undefined : { transform, willChange: 'transform' }}
       onMouseMove={disabled ? undefined : onMouseMove}
       onMouseLeave={disabled ? undefined : onMouseLeave}
     >
@@ -189,13 +172,6 @@ function GradientPanel({ disabled }: { disabled: boolean }) {
         style={{ background: ACCENT_GRADIENT_CSS }}
         aria-hidden="true"
       />
-      {!disabled && (
-        <motion.div
-          className="absolute inset-0"
-          style={{ background: overlayBackground, opacity: hoverT, willChange: 'opacity' }}
-          aria-hidden="true"
-        />
-      )}
     </motion.div>
   )
 }
