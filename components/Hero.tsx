@@ -124,10 +124,11 @@ export default function Hero() {
 
       <div className="relative z-10 h-full flex items-center justify-start pl-8 md:pl-16">
         <div className="max-w-[60%]">
-          {/* Clamp max lowered ~12.5% (6rem -> 5.25rem, min/preferred scaled
-              the same amount) so "Delivering websites that" ends before the
-              video's curved monitor shape instead of running into it. */}
-          <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(2.25rem, 5.25vw, 5.25rem)', color: WHITE }}>
+          {/* Clamp lowered further (5.25rem -> 3.75rem max, min/preferred
+              scaled the same ~0.71 ratio) so "Delivering websites that" fits
+              on a single line at the current max-w-[60%] width instead of
+              wrapping to a 3rd line — the animated word stays the 2nd line. */}
+          <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(1.6rem, 3.75vw, 3.75rem)', color: WHITE }}>
             {/* Real, static text for SEO/a11y — the animated span below is
                 purely decorative and hidden from assistive tech so its
                 rapidly-changing partial-word states are never announced. */}
