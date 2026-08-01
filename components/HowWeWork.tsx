@@ -1,66 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useMotionValueEvent, useScroll, type Transition } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const MEDIA_DIR = '/media/howwework2'
 
-function linearMap(inMin: number, inMax: number, outMin: number, outMax: number) {
-  return (v: number) => {
-    if (v <= inMin) return outMin
-    if (v >= inMax) return outMax
-    return outMin + ((outMax - outMin) * (v - inMin)) / (inMax - inMin)
-  }
-}
-
-function hexToRgb(hex: string): [number, number, number] {
-  const n = parseInt(hex.slice(1), 16)
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
-}
-
-function parseRgba(v: string): [number, number, number, number] {
-  const m = v.match(/rgba?\(([^)]+)\)/)
-  const parts = (m?.[1] ?? '0,0,0,1').split(',').map(s => parseFloat(s.trim()))
-  return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0, parts[3] ?? 1]
-}
-
-function mixHex(from: string, to: string, t: number) {
-  const k = Math.max(0, Math.min(1, t))
-  const [r1, g1, b1] = hexToRgb(from)
-  const [r2, g2, b2] = hexToRgb(to)
-  const r = Math.round(r1 + (r2 - r1) * k)
-  const g = Math.round(g1 + (g2 - g1) * k)
-  const b = Math.round(b1 + (b2 - b1) * k)
-  return `rgb(${r}, ${g}, ${b})`
-}
-
-function mixRgba(from: string, to: string, t: number) {
-  const k = Math.max(0, Math.min(1, t))
-  const [r1, g1, b1, a1] = parseRgba(from)
-  const [r2, g2, b2, a2] = parseRgba(to)
-  const r = Math.round(r1 + (r2 - r1) * k)
-  const g = Math.round(g1 + (g2 - g1) * k)
-  const b = Math.round(b1 + (b2 - b1) * k)
-  const a = a1 + (a2 - a1) * k
-  return `rgba(${r}, ${g}, ${b}, ${a.toFixed(3)})`
-}
-
-function easeInOutCubic(t: number) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
-}
-
-// The flip fires over this many pixels of scroll. Doubled from 70 to 140 —
-// the original was too fast/scroll-sensitive (a small scroll jumped straight
-// from dark to white); this spans roughly twice the scroll distance so it
-// reads as a smoother, more deliberate transition.
-const FLIP_RANGE_PX = 140
-
-// Mercury effect: the section enters dark (#0D0E12, seamless from the
-// previous dark "Showcase" section above it) then fades to white as the
-// user scrolls past the header, with text flipping white -> ink. Reversible
-// (tied to scrollYProgress, not a once:true trigger) — scrolling back up
-// fades it back to dark.
+// One-shot 500ms fade, not a continuous scroll-progress drive: the whole
+// bg/text flip is just these two color pairs, crossfaded by framer-motion's
+// own `animate` prop whenever `pastThreshold` flips — no manual color
+// mixing math needed, framer-motion interpolates the color strings itself.
 const DARK_BG = '#0D0E12'
 const LIGHT_BG = '#FFFFFF'
 const DARK_TEXT = '#F2F0EB'
@@ -69,6 +18,7 @@ const DARK_SECONDARY = 'rgba(242, 240, 235, 0.7)'
 const LIGHT_SECONDARY = 'rgba(22, 22, 26, 0.6)'
 const DARK_HAIRLINE = 'rgba(255, 255, 255, 0.15)'
 const LIGHT_HAIRLINE = 'rgba(0, 0, 0, 0.1)'
+const FLIP_TRANSITION: Transition = { duration: 0.5, ease: 'easeInOut' }
 
 type StepPoint = {
   lead: string
@@ -207,9 +157,9 @@ function Media({
 }
 
 // Colors below are either static (reduced-motion / video panel, unaffected
-// by the flip) or live MotionValues shared from the section's own scroll
-// progress — passed down so every step binds to the SAME transforms rather
-// than each running its own scroll listener.
+// by the flip) or the current flip target string, passed down so every step
+// binds to the SAME `animate` target — each motion element tweens to it
+// independently over FLIP_TRANSITION whenever the string changes.
 function StepText({
   step,
   reduceMotion,
@@ -219,28 +169,28 @@ function StepText({
 }: {
   step: StepData
   reduceMotion: boolean
-  primaryColor: MotionValue<string> | string
-  secondaryColor: MotionValue<string> | string
-  hairlineColor: MotionValue<string> | string
+  primaryColor: string
+  secondaryColor: string
+  hairlineColor: string
 }) {
   if (reduceMotion) {
     return (
       <div className="flex flex-col justify-between h-full">
         <div>
-          <span className="block font-mono text-sm mb-4" style={{ color: secondaryColor as string }}>
+          <span className="block font-mono text-sm mb-4" style={{ color: secondaryColor }}>
             {step.n}
           </span>
-          <h3 className="font-display text-[clamp(1.5rem,2vw,2rem)]" style={{ color: primaryColor as string }}>
+          <h3 className="font-display text-[clamp(1.5rem,2vw,2rem)]" style={{ color: primaryColor }}>
             {step.title}
           </h3>
         </div>
         <div className="mt-12">
           {step.points.map((point, i) => (
-            <div key={point.lead} className={`border-t pt-6 ${i > 0 ? 'mt-6' : ''}`} style={{ borderColor: hairlineColor as string }}>
-              <p className="font-body font-semibold" style={{ color: primaryColor as string }}>
+            <div key={point.lead} className={`border-t pt-6 ${i > 0 ? 'mt-6' : ''}`} style={{ borderColor: hairlineColor }}>
+              <p className="font-body font-semibold" style={{ color: primaryColor }}>
                 {point.lead}
               </p>
-              <p className="font-body max-w-sm mt-2" style={{ color: secondaryColor as string }}>
+              <p className="font-body max-w-sm mt-2" style={{ color: secondaryColor }}>
                 {point.description}
               </p>
             </div>
@@ -253,21 +203,30 @@ function StepText({
   return (
     <div className="flex flex-col justify-between h-full">
       <div>
-        <motion.span className="block font-mono text-sm mb-4" style={{ color: secondaryColor }}>
+        <motion.span className="block font-mono text-sm mb-4" animate={{ color: secondaryColor }} transition={FLIP_TRANSITION}>
           {step.n}
         </motion.span>
-        <motion.h3 className="font-display text-[clamp(1.5rem,2vw,2rem)]" style={{ color: primaryColor }}>
+        <motion.h3
+          className="font-display text-[clamp(1.5rem,2vw,2rem)]"
+          animate={{ color: primaryColor }}
+          transition={FLIP_TRANSITION}
+        >
           {step.title}
         </motion.h3>
       </div>
 
       <div className="mt-12">
         {step.points.map((point, i) => (
-          <motion.div key={point.lead} className={`border-t pt-6 ${i > 0 ? 'mt-6' : ''}`} style={{ borderColor: hairlineColor }}>
-            <motion.p className="font-body font-semibold" style={{ color: primaryColor }}>
+          <motion.div
+            key={point.lead}
+            className={`border-t pt-6 ${i > 0 ? 'mt-6' : ''}`}
+            animate={{ borderColor: hairlineColor }}
+            transition={FLIP_TRANSITION}
+          >
+            <motion.p className="font-body font-semibold" animate={{ color: primaryColor }} transition={FLIP_TRANSITION}>
               {point.lead}
             </motion.p>
-            <motion.p className="font-body max-w-sm mt-2" style={{ color: secondaryColor }}>
+            <motion.p className="font-body max-w-sm mt-2" animate={{ color: secondaryColor }} transition={FLIP_TRANSITION}>
               {point.description}
             </motion.p>
           </motion.div>
@@ -308,9 +267,9 @@ function HowWeWorkStep({
   index: number
   videoRef: React.Ref<HTMLVideoElement>
   reduceMotion: boolean
-  primaryColor: MotionValue<string> | string
-  secondaryColor: MotionValue<string> | string
-  hairlineColor: MotionValue<string> | string
+  primaryColor: string
+  secondaryColor: string
+  hairlineColor: string
 }) {
   const visualFirst = index % 2 === 1
   const textOrder = visualFirst ? 'md:order-2' : 'md:order-1'
@@ -370,7 +329,7 @@ export default function HowWeWork() {
   const reduceMotion = !!useHydratedReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLHeadingElement>(null)
-  const lastDarkRef = useRef(true)
+  const headerPageTopRef = useRef(0)
 
   const videoRefs = [
     useRef<HTMLVideoElement>(null),
@@ -379,42 +338,30 @@ export default function HowWeWork() {
     useRef<HTMLVideoElement>(null),
   ]
 
-  // useScroll's target+offset keyword syntax (e.g. ['start start','start
-  // center']) was found to leave scrollYProgress permanently stuck at 0 in
-  // this app whenever the second breakpoint resolves to a scroll position
-  // BEFORE the first one (verified directly: scrollYProgress.get() never
-  // left 0 across a full scroll pass with an out-of-order pair, while the
-  // plain default offset and correctly-ordered combinations updated
-  // normally). Sidestepping it with the same fix already proven elsewhere
-  // in this codebase (Hero.tsx, WhatWeDo.tsx): a plain page-wide scrollY
-  // MotionValue plus a manually measured pixel range, run through the
-  // function-form transform helper.
-  const { scrollY } = useScroll()
-  const [flipStart, setFlipStart] = useState(0)
-  const [flipEnd, setFlipEnd] = useState(1)
+  // pastThreshold is a plain boolean, not a continuous scroll-driven value —
+  // the flip is triggered (crossing the header's own top-of-viewport point)
+  // and then animates as a fixed-duration tween via each motion element's
+  // own `animate`/`transition` props, independent of further scrolling.
+  const [pastThreshold, setPastThreshold] = useState(false)
 
   // Anchored on the HEADER itself, not the section's top edge — the flip
   // fires as "HOW IT WORKS" / the h2 reach the top of the viewport, which is
   // the moment the user is actually looking at that content, not while it's
-  // still mostly below the fold. flipEnd = scrollY at which the header's own
-  // top is flush with the viewport's top edge; flipStart is FLIP_RANGE_PX
-  // earlier (smaller scrollY, reached first on the way down).
+  // still mostly below the fold.
   //
   // A single mount-time measurement isn't enough: everything ABOVE this
   // section (hero video, WhatWeDo videos/images, the Content showcase's own
   // media) can still be loading and reflowing the page well after this
   // effect first runs, silently shifting the header hundreds of pixels
-  // below where it was measured — invisible with the old wide flip window,
-  // but glaring with this one now that it's narrow and precisely anchored.
-  // A ResizeObserver on <body> catches any of that and re-measures.
+  // below where it was measured. A ResizeObserver on <body> catches any of
+  // that and re-measures. Kept in a ref (not state) since it only feeds a
+  // scroll-event comparison, not a render.
   useEffect(() => {
     const measure = () => {
       const header = headerRef.current
       if (!header) return
       const rect = header.getBoundingClientRect()
-      const headerPageTop = rect.top + window.scrollY
-      setFlipEnd(headerPageTop)
-      setFlipStart(headerPageTop - FLIP_RANGE_PX)
+      headerPageTopRef.current = rect.top + window.scrollY
     }
     measure()
     window.addEventListener('resize', measure)
@@ -428,33 +375,27 @@ export default function HowWeWork() {
     }
   }, [])
 
-  const progress = useTransform(scrollY, v => easeInOutCubic(linearMap(flipStart, flipEnd, 0, 1)(v)))
-  const bgColor = useTransform(progress, v => mixHex(DARK_BG, LIGHT_BG, v))
-  const primaryColor = useTransform(progress, v => mixHex(DARK_TEXT, LIGHT_TEXT, v))
-  const secondaryColor = useTransform(progress, v => mixRgba(DARK_SECONDARY, LIGHT_SECONDARY, v))
-  const hairlineColor = useTransform(progress, v => mixRgba(DARK_HAIRLINE, LIGHT_HAIRLINE, v))
+  const { scrollY } = useScroll()
+  useMotionValueEvent(scrollY, 'change', v => {
+    const past = v >= headerPageTopRef.current
+    setPastThreshold(prev => (prev === past ? prev : past))
+  })
+
+  const bgColor = pastThreshold ? LIGHT_BG : DARK_BG
+  const primaryColor = pastThreshold ? LIGHT_TEXT : DARK_TEXT
+  const secondaryColor = pastThreshold ? LIGHT_SECONDARY : DARK_SECONDARY
+  const hairlineColor = pastThreshold ? LIGHT_HAIRLINE : DARK_HAIRLINE
 
   // Nav integration — this section is excluded from the generic always-dark
   // [data-nav-dark] observer (marked data-nav-fade instead, see Nav.tsx)
-  // since it isn't uniformly dark: only the bg's own flip window is. Flips
-  // at the window's midpoint, in step with the bg/text snap, and reports the
-  // change only when it actually happens so scrolling back up flips the nav
-  // back at the same point it flipped forward.
+  // since it isn't uniformly dark: only fires while still on the dark side
+  // of the flip. Reports the change only when it actually happens so
+  // scrolling back up flips the nav back at the same point it flipped
+  // forward.
   useEffect(() => {
     if (reduceMotion) return
-    const dark = progress.get() <= 0.5
-    lastDarkRef.current = dark
-    window.dispatchEvent(new CustomEvent('howwework:navmode', { detail: { dark } }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduceMotion])
-
-  useMotionValueEvent(progress, 'change', v => {
-    const dark = v <= 0.5
-    if (dark !== lastDarkRef.current) {
-      lastDarkRef.current = dark
-      window.dispatchEvent(new CustomEvent('howwework:navmode', { detail: { dark } }))
-    }
-  })
+    window.dispatchEvent(new CustomEvent('howwework:navmode', { detail: { dark: !pastThreshold } }))
+  }, [pastThreshold, reduceMotion])
 
   // One shared IntersectionObserver drives play/pause for all four videos —
   // play once a step is >=30% visible, pause otherwise. Same iOS-safe
@@ -545,16 +486,26 @@ export default function HowWeWork() {
       {/* Single full-section background layer behind the content — cheaper
           than animating the section's own background-color directly, and
           keeps the color transform isolated from the content's own layout. */}
-      <motion.div className="absolute inset-0 -z-10" style={{ backgroundColor: bgColor }} aria-hidden="true" />
+      <motion.div
+        className="absolute inset-0 -z-10"
+        animate={{ backgroundColor: bgColor }}
+        transition={FLIP_TRANSITION}
+        aria-hidden="true"
+      />
 
       <div className="max-w-6xl mx-auto">
-        <motion.span className="block font-mono text-sm mb-4" style={{ color: secondaryColor }}>
+        <motion.span
+          className="block font-mono text-sm mb-4"
+          animate={{ color: secondaryColor }}
+          transition={FLIP_TRANSITION}
+        >
           HOW IT WORKS
         </motion.span>
         <motion.h2
           ref={headerRef}
           className="font-display text-[clamp(1.75rem,2.8vw,2.75rem)] leading-tight mb-20"
-          style={{ color: primaryColor }}
+          animate={{ color: primaryColor }}
+          transition={FLIP_TRANSITION}
         >
           From brief to live in one week. Then we keep it growing.
         </motion.h2>
