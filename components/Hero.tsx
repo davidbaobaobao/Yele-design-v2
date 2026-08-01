@@ -1,9 +1,13 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { Check } from 'lucide-react'
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { TextGradient } from '@/components/ui/text-gradient'
+import { CTAButton } from '@/components/ui/cta-button'
+
+const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
 
 const VIDEO_DIR = '/media/hero_new'
 const POSTER = `${VIDEO_DIR}/hero_new_poster.jpg`
@@ -149,27 +153,32 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center gap-4 mt-8">
-            <a
-              href="/registro"
-              className="group relative inline-block overflow-hidden font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(212,111,200,0.4)] active:scale-95"
-              style={{ background: 'linear-gradient(90deg, #D46FC8 0%, #5B4B9E 55%, #7B8CDE 100%)' }}
-            >
-              {/* Reversed-gradient overlay, faded in on hover — brightens/
-                  shifts the button rather than swapping to a flat color, so
-                  it still reads as the same gradient, just livelier. */}
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{ background: 'linear-gradient(90deg, #7B8CDE 0%, #5B4B9E 45%, #D46FC8 100%)' }}
-              />
-              <span className="relative">Start for free</span>
-            </a>
+            <CTAButton href="/registro" variant="light">
+              Start for free
+            </CTAButton>
             <a
               href="#contacto"
               className="inline-block font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
             >
               Contact us
             </a>
+          </div>
+
+          {/* Reassurance row — kept well clear of the buttons above (mt-10)
+              so it doesn't read as part of the same cluster. */}
+          <div
+            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-10 font-body text-xs"
+            style={{ color: 'rgba(242, 240, 235, 0.55)' }}
+          >
+            {REASSURANCES.map((phrase, i) => (
+              <span key={phrase} className="inline-flex items-center gap-3">
+                {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-50">·</span>}
+                <span className="inline-flex items-center gap-1.5">
+                  <Check size={13} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+                  {phrase}
+                </span>
+              </span>
+            ))}
           </div>
         </div>
       </div>
