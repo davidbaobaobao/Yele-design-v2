@@ -7,8 +7,9 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 // Adapted from the "Text Gradient" component (21st.dev / Cnippet) — an
 // animated background-clip gradient flowing through the text. Recolored to
-// the site's own pink -> light-pink -> white shine/gloss shimmer (was
-// pink -> purple -> blue).
+// the site's own pink shine/gloss shimmer (was pink -> purple -> blue, then
+// pink -> light-pink -> white). The lightest stop is a faint pink, never
+// pure white, so the shine stays subtle rather than flashing bright white.
 
 interface TextGradientProps {
   children: ReactNode
@@ -21,7 +22,7 @@ interface TextGradientProps {
 export function TextGradient({
   children,
   as = 'span',
-  colors = ['#D46FC8', '#F0A8DE', '#FFFFFF', '#F0A8DE', '#D46FC8'],
+  colors = ['#D46FC8', '#E08AD0', '#F3D0EA', '#E08AD0', '#D46FC8'],
   duration = 5,
   className,
 }: TextGradientProps) {
