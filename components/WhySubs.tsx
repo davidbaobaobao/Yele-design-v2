@@ -142,6 +142,9 @@ export default function WhySubs() {
       <section className="relative overflow-hidden py-24 px-6" style={{ backgroundColor: '#F7F6F3' }}>
         <div className="absolute inset-0">
           <img src={POSTER} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          {/* Darkens the video itself (richer/moodier) before the white wash
+              on top handles overall legibility for the black text. */}
+          <div className="absolute inset-0 bg-black/25" aria-hidden="true" />
           <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
         </div>
         <div className="relative z-10 max-w-6xl mx-auto flex flex-col md:flex-row gap-12 md:gap-20">
@@ -153,7 +156,11 @@ export default function WhySubs() {
                 <p className={`font-display text-[clamp(1.25rem,2.4vw,1.75rem)] leading-tight ${i === 0 ? 'text-ink' : 'text-ink/40'}`}>
                   {r.title}
                 </p>
-                {i === 0 && <p className="font-body text-ink/70 text-sm mt-1">{r.subtitle}</p>}
+                {i === 0 && (
+                  <p className="relative z-10 font-body text-sm mt-1" style={{ color: '#16161A' }}>
+                    {r.subtitle}
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -178,8 +185,9 @@ export default function WhySubs() {
         >
           <BgSources />
         </video>
-        {/* Light overlay so the now-dark (ink) text stays legible over the
-            video, instead of the dark scrim this used when text was bone. */}
+        {/* Darkens the video itself (richer/moodier) first, then the white
+            wash on top handles overall legibility for the black text. */}
+        <div className="absolute inset-0 bg-black/25" aria-hidden="true" />
         <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
 
         {/* Heading and list are both absolutely positioned within the same
@@ -206,7 +214,7 @@ export default function WhySubs() {
             neighbor item sitting just below the active one in the list.
             Raised ~50px from the previous bottom-12/16 so it isn't so close
             to the bottom edge. */}
-        <div className="absolute inset-x-0 bottom-[100px] md:bottom-[120px] z-10 max-w-6xl mx-auto px-6 flex flex-col items-end gap-4">
+        <div className="absolute inset-x-0 bottom-[100px] md:bottom-[120px] z-20 max-w-6xl mx-auto px-6 flex flex-col items-end gap-4">
           <div className="w-full max-w-sm border-t border-ink/10" aria-hidden="true" />
           <AnimatePresence mode="wait">
             <motion.p
@@ -215,7 +223,8 @@ export default function WhySubs() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="font-body text-ink/70 text-sm md:text-base text-right max-w-sm"
+              className="relative z-20 font-body text-sm md:text-base text-right max-w-sm"
+              style={{ color: '#16161A' }}
             >
               {REASONS[activeIndex].subtitle}
             </motion.p>
