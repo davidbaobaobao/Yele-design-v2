@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { TextGradient } from '@/components/ui/text-gradient'
 import FeatureCard from './FeatureCard'
 
 const MEDIA_DIR = '/media/beyond'
@@ -114,7 +115,7 @@ export default function BeyondWebsite() {
       <div className="max-w-6xl mx-auto">
         <span className="block font-mono text-sm text-muted mb-4">BEYOND THE WEBSITE</span>
         <h2 className="font-display text-ink text-[clamp(1.75rem,2.5vw,2.5rem)] leading-tight">
-          Everything that makes your website work harder.
+          Everything that makes your website work <TextGradient as="span">harder</TextGradient>.
         </h2>
         <p className="font-body text-muted max-w-xl mt-4">
           Growth services, included in Pro and Frontier.

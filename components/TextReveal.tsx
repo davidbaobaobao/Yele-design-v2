@@ -21,7 +21,8 @@ const REVEAL_END = 0.85
 const TIP_CHARS = 2.5
 
 const GREY: [number, number, number] = [0xc9, 0xc6, 0xc0] // #C9C6C0-ish unrevealed grey (#C9C6BF)
-const PINK: [number, number, number] = [0xd4, 0x6f, 0xc8] // #D46FC8 — brightest, at the exact boundary
+const PINK: [number, number, number] = [0xd4, 0x6f, 0xc8] // #D46FC8 — deep pink
+const LIGHT_PINK: [number, number, number] = [0xf0, 0xa8, 0xde] // #F0A8DE — shine highlight, brightest point
 const WHITE: [number, number, number] = [0xf2, 0xf0, 0xeb] // #F2F0EB — fully revealed
 
 function mix(a: [number, number, number], b: [number, number, number], t: number) {
@@ -32,20 +33,23 @@ function mix(a: [number, number, number], b: [number, number, number], t: number
   return `rgb(${r}, ${g}, ${bch})`
 }
 
-// Grey -> pink (0->0.5) -> white (0.5->1), so the pink shows as a genuine
-// peak traveling THROUGH the text rather than a flat grey->white blend.
+// Grey -> pink -> light-pink (shine) -> white, so the tip reads as the same
+// pink/light-pink/white shine sweeping through the text, resolving to a
+// plain white "revealed" state rather than a flat grey->white blend.
 function charColor(t: number) {
-  if (t <= 0.5) return mix(GREY, PINK, t / 0.5)
-  return mix(PINK, WHITE, (t - 0.5) / 0.5)
+  if (t <= 0.35) return mix(GREY, PINK, t / 0.35)
+  if (t <= 0.65) return mix(PINK, LIGHT_PINK, (t - 0.35) / 0.3)
+  return mix(LIGHT_PINK, WHITE, (t - 0.65) / 0.35)
 }
 
-// Soft blurred pink glow, peaking exactly where the color peaks (t=0.5) and
-// fading out toward both ends — a triangle, not a plateau, so it reads as a
-// tip travelling past rather than a static highlight.
+// Soft blurred glow, peaking exactly where the color peaks (t=0.5, the
+// light-pink shine highlight) and fading out toward both ends — a triangle,
+// not a plateau, so it reads as a tip travelling past rather than a static
+// highlight.
 function charGlow(t: number): string | undefined {
   const k = 1 - Math.abs(t - 0.5) * 2
   if (k < 0.08) return undefined
-  return `0 0 ${(8 * k).toFixed(1)}px rgba(212, 111, 200, ${(0.75 * k).toFixed(2)})`
+  return `0 0 ${(8 * k).toFixed(1)}px rgba(240, 168, 222, ${(0.75 * k).toFixed(2)})`
 }
 
 type WordToken = {
@@ -125,10 +129,14 @@ export default function TextReveal({
           return (
             <Fragment key={wi}>
               {w.highlighted ? (
-                // The accent phrase (if a `highlight` is passed — unused by
-                // Mission currently) is always the pink -> purple -> blue
-                // TextGradient, never resolving to flat white like the rest.
-                <span className="inline-block whitespace-nowrap">
+                // The accent phrase (if a `highlight` is passed) is always
+                // the pink -> light-pink -> white shine TextGradient, never
+                // resolving to flat white like the rest. `isolation: isolate`
+                // forces this into its own stacking/compositing context —
+                // without it, Chromium sometimes fails to paint a
+                // background-clip:text sibling when surrounded by the
+                // filter-blurred reveal chars, rendering it fully invisible.
+                <span className="inline-block whitespace-nowrap" style={{ isolation: 'isolate' }}>
                   <TextGradient as="span" duration={4}>
                     {w.word}
                   </TextGradient>

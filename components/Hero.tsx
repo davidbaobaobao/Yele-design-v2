@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { TextGradient } from '@/components/ui/text-gradient'
 
 const VIDEO_DIR = '/media/hero_new'
 const POSTER = `${VIDEO_DIR}/hero_new_poster.jpg`
 const WHITE = '#F2F0EB'
-const ACCENT = '#D46FC8'
 
 const WORDS = ['Last', 'Stand out', 'Perform', 'Convert', 'Endure', 'Grow']
 const TYPE_MS = 70
@@ -79,7 +79,7 @@ function TypewriterWord({ reduceMotion }: { reduceMotion: boolean }) {
       className="inline-block"
       style={{ minWidth: `${LONGEST_CH}ch`, opacity: text.length === 0 ? 0 : 1, transition: 'opacity 300ms ease' }}
     >
-      <span style={{ color: ACCENT }}>{text}</span>
+      <TextGradient as="span">{text}</TextGradient>
       {!reduceMotion && (
         <span
           aria-hidden="true"

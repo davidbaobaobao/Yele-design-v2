@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValueEvent, useScroll, type Transition } from 'framer-motion'
+import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const MEDIA_DIR = '/media/howwework2'
@@ -461,7 +462,7 @@ export default function HowWeWork() {
             HOW IT WORKS
           </span>
           <h2 className="font-display text-[clamp(1.75rem,2.8vw,2.75rem)] leading-tight mb-20" style={{ color: LIGHT_TEXT }}>
-            From brief to live in one week. Then we keep it growing.
+            From brief to live in <TextGradient as="span">one week</TextGradient>. Then we keep it growing.
           </h2>
 
           {STEPS.map((step, i) => (
@@ -507,7 +508,7 @@ export default function HowWeWork() {
           animate={{ color: primaryColor }}
           transition={FLIP_TRANSITION}
         >
-          From brief to live in one week. Then we keep it growing.
+          From brief to live in <TextGradient as="span">one week</TextGradient>. Then we keep it growing.
         </motion.h2>
 
         {STEPS.map((step, i) => (

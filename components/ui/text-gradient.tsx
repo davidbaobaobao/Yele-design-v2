@@ -7,7 +7,8 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 // Adapted from the "Text Gradient" component (21st.dev / Cnippet) — an
 // animated background-clip gradient flowing through the text. Recolored to
-// the site's own pink -> purple -> blue accent instead of the default violet.
+// the site's own pink -> light-pink -> white shine/gloss shimmer (was
+// pink -> purple -> blue).
 
 interface TextGradientProps {
   children: ReactNode
@@ -20,7 +21,7 @@ interface TextGradientProps {
 export function TextGradient({
   children,
   as = 'span',
-  colors = ['#D46FC8', '#5B4B9E', '#7B8CDE', '#D46FC8'],
+  colors = ['#D46FC8', '#F0A8DE', '#FFFFFF', '#F0A8DE', '#D46FC8'],
   duration = 5,
   className,
 }: TextGradientProps) {

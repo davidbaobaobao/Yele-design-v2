@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { useScroll } from 'framer-motion'
 import TextReveal from './TextReveal'
+import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 // Three explicit lines, joined with a standalone " \n " token — split(' ')
@@ -53,7 +54,18 @@ export default function Mission() {
           <p className={textClass} style={{ color: '#F2F0EB' }}>
             {STATEMENT_LINES.map((line, i) => (
               <span key={i}>
-                {line}
+                {/* Line 0 is the only one containing "subscription" — split
+                    around it once so the reduced-motion fallback still shows
+                    the same highlighted word as the animated reveal below. */}
+                {i === 0 ? (
+                  <>
+                    {line.split('subscription')[0]}
+                    <TextGradient as="span">subscription</TextGradient>
+                    {line.split('subscription')[1]}
+                  </>
+                ) : (
+                  line
+                )}
                 {i < STATEMENT_LINES.length - 1 && <br />}
               </span>
             ))}
@@ -73,7 +85,7 @@ export default function Mission() {
     <section ref={sectionRef} data-nav-dark className={sectionClass}>
       <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
       <div className="w-full">
-        <TextReveal scrollYProgress={scrollYProgress} className={textClass}>
+        <TextReveal scrollYProgress={scrollYProgress} className={textClass} highlight="subscription">
           {STATEMENT}
         </TextReveal>
       </div>
