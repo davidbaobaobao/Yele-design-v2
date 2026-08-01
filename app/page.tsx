@@ -21,7 +21,6 @@ const Testimonios          = dynamic(() => import('@/components/Testimonios'))
 const TablaComparativa     = dynamic(() => import('@/components/TablaComparativa'))
 const ContactForm          = dynamic(() => import('@/components/ContactForm'))
 const FAQ                  = dynamic(() => import('@/components/FAQ'))
-const FinaleSection        = dynamic(() => import('@/app/presupuesto/_components/FinaleSection'))
 const Footer               = dynamic(() => import('@/components/Footer'))
 const WhatsAppButton       = dynamic(() => import('@/components/WhatsAppButton'))
 
@@ -69,8 +68,7 @@ export default function Home() {
         <Testimonios noBg />
         <TablaComparativa />
         <ContactForm />
-        <FAQ noBg />
-        <FinaleSection />
+        <FAQ dark />
       </main>
       <Footer />
       <WhatsAppButton />
