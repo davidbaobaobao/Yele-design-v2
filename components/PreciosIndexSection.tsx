@@ -284,22 +284,31 @@ export default function PreciosIndexSection() {
       className="relative min-h-screen flex items-center overflow-hidden py-24"
       style={{ backgroundColor: '#0D0E12' }}
     >
-      {/* Subtle background video — kept dim behind a dark overlay so the
-          cards/text (rendered above at z-10) stay fully readable. */}
+      {/* Background video — kept behind a dark overlay so the cards/text
+          (rendered above at z-10) stay fully readable. `autoPlay` is set as
+          a literal attribute (not just via useVideoAutoplay's JS .play()
+          call) since some browsers apply looser autoplay heuristics to
+          video elements that have the attribute at parse time. The previous
+          opacity-40 video under a 0.72-opaque scrim compounded down to
+          about 11% effective visibility — technically playing (verified via
+          currentTime advancing) but indistinguishable from a static/paused
+          frame, which read as "not playing" — rebalanced so it's clearly
+          visible in motion while cards/text stay just as readable. */}
       <video
         ref={videoRef}
+        autoPlay
         muted
         loop
         playsInline
         preload="auto"
         poster={`${BG_VIDEO_DIR}/pricing_poster.jpg`}
-        className="absolute inset-0 w-full h-full object-cover opacity-40"
+        className="absolute inset-0 w-full h-full object-cover opacity-70"
         aria-hidden="true"
       >
         <source src={`${BG_VIDEO_DIR}/pricing_hq.webm`} type="video/webm" />
         <source src={`${BG_VIDEO_DIR}/pricing_hq.mp4`} type="video/mp4" />
       </video>
-      <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13, 14, 18, 0.72)' }} aria-hidden="true" />
+      <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13, 14, 18, 0.55)' }} aria-hidden="true" />
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div
