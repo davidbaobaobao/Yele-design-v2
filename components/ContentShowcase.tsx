@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useInView, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { TextGradient } from '@/components/ui/text-gradient'
+import TubesCursor from '@/components/ui/tubes-cursor'
 
 // Recreates the described behavior of Skiper UI's skiper32 "3D perspective
 // scroll gallery" (https://skiper-ui.com/v1/skiper32) — a paid Pro component
@@ -83,20 +84,15 @@ function tileSize(cols: number, rows: number) {
 // Phase 1 entry: every tile starts just below the viewport (positive
 // translateY) and rises straight up its own column into its grid slot.
 // IMAGE_START_Y is in the same 0-100 "% of viewport" scale as gridTarget's
-// output — 104 is only just past the 100 (bottom edge) mark, so tiles start
-// entering frame almost immediately instead of spending a chunk of the
-// phase invisibly below the fold.
-const IMAGE_START_Y = 104
+// output — 100 is right at the bottom edge, so tiles start entering frame
+// immediately instead of spending any of the phase invisibly below the
+// fold.
+const IMAGE_START_Y = 100
 const IMAGE_START_SCALE = 0.94
-// Extra, transient vertical offset added to outer columns during the rise
-// (per column-step away from center, faded out via (1 - t) so every tile
-// still settles into the same flat grid row) — this is what makes the
-// in-progress formation read as a pyramid/triangle peaking at the center
-// columns rather than a flat sheet rising evenly.
-const PYRAMID_COLUMN_GAP = 22
-// Per-tile start delay: symmetric around the center column (so center and
-// outer columns rise in a matching V-shape, not a left-to-right cascade)
-// plus a small per-row offset for a gentle wave. Column term dominates.
+// Per-tile start delay, straight left-to-right by column index (was
+// symmetric-around-center for a pyramid shape) plus a small per-row offset
+// for a gentle wave — columns now visibly reveal left to right instead of
+// peaking in the middle.
 const COL_STAGGER = 0.035
 const ROW_STAGGER = 0.02
 
@@ -158,9 +154,7 @@ function ImageTile({
   const target = gridTarget(index, cols, rows)
   const col = index % cols
   const row = Math.floor(index / cols)
-  const centerCol = (cols - 1) / 2
-  const colDistance = Math.abs(col - centerCol)
-  const tileStart = colDistance * COL_STAGGER + row * ROW_STAGGER
+  const tileStart = col * COL_STAGGER + row * ROW_STAGGER
   const tileEnd = tileStart + IMAGE_SPAN
 
   const t = useTransform(progress, v => {
@@ -170,11 +164,7 @@ function ImageTile({
 
   // Straight vertical rise — the column never moves horizontally, only up.
   const x = `${target.x - 50}vw`
-  const y = useTransform(t, tv => {
-    const base = IMAGE_START_Y + (target.y - IMAGE_START_Y) * tv
-    const pyramidLift = colDistance * PYRAMID_COLUMN_GAP * (1 - tv)
-    return `${base + pyramidLift - 50}vh`
-  })
+  const y = useTransform(t, tv => `${IMAGE_START_Y + (target.y - IMAGE_START_Y) * tv - 50}vh`)
   const scale = useTransform(t, tv => IMAGE_START_SCALE + (1 - IMAGE_START_SCALE) * tv)
   const opacity = t
 
@@ -403,6 +393,15 @@ function ContentShowcaseReduced() {
 export default function ContentShowcase() {
   const reduceMotion = !!useHydratedReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
+  const stickyRef = useRef<HTMLDivElement>(null)
+  // Scopes the tube-cursor effect to only this section: on while >=30% of
+  // the PINNED viewport-sized inner box is on screen, off (and fully
+  // disposed, see TubesCursor) otherwise. Deliberately observes the sticky
+  // inner div, not the 750vh outer section — an IntersectionObserver ratio
+  // is intersecting-area / target's-own-area, so for the 750vh outer
+  // section even a full-viewport overlap only ever reaches ~13% (100/750),
+  // never the 30% threshold, so it would never fire.
+  const sectionInView = useInView(stickyRef, { amount: 0.3 })
   const [videosMounted, setVideosMounted] = useState(false)
   const isNarrow = useIsNarrowViewport()
   const imageCols = isNarrow ? 4 : IMAGE_COLS
@@ -433,6 +432,7 @@ export default function ContentShowcase() {
   return (
     <section ref={sectionRef} className="relative" style={{ height: '750vh' }}>
       <motion.div
+        ref={stickyRef}
         className="sticky top-0 h-screen w-full overflow-hidden"
         style={{ backgroundColor: bgColor, perspective: '1000px' }}
       >
@@ -459,16 +459,38 @@ export default function ContentShowcase() {
           ))}
         </div>
 
-        {/* Phase 2 — headline scrolls up through center and off the top */}
+        {/* Cursor tube trails — DOM order puts this above the image/video
+            layers but below the text block further down, matching the rest
+            of this component's stacking-by-DOM-order convention. Scoped to
+            this section only via sectionInView; fully torn down when it's
+            not (see TubesCursor's own active-flag effect). */}
+        <TubesCursor active={sectionInView} />
+
+        {/* Phase 2 — headline (+ arrow below it) scrolls up through center
+            and off the top as one group, sharing the same textY. */}
         <div className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none" aria-hidden="true">
-          <motion.h2
-            className="font-display text-center leading-tight text-[clamp(2rem,4.5vw,4.5rem)] max-w-4xl"
-            style={{ color: '#16161A', y: textY }}
-          >
-            Want content?
-            <br />
-            We create <TextGradient as="span">any</TextGradient> content you need
-          </motion.h2>
+          <motion.div className="flex flex-col items-center" style={{ y: textY }}>
+            <h2 className="font-display text-center leading-tight text-[clamp(1.75rem,3.75vw,3.75rem)] max-w-4xl" style={{ color: '#16161A' }}>
+              Want content?
+              <br />
+              We create <TextGradient as="span">any</TextGradient> content you need
+            </h2>
+            <motion.svg
+              className="mt-10"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#16161A"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <path d="M6 9l6 6 6-6" />
+            </motion.svg>
+          </motion.div>
         </div>
         <h2 className="sr-only">Want content? We create any content you need</h2>
       </motion.div>
