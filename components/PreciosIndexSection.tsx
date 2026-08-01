@@ -145,7 +145,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
       viewport={{ once: true, margin: '-80px' }}
       className={`relative flex flex-col rounded-3xl cursor-default ${
         plan.highlighted
-          ? 'px-8 py-12 bg-ink text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] ring-1 ring-white/10'
+          ? 'px-8 py-12 bg-[#1C1D24] text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] ring-1 ring-[#7B8CDE]/30'
           : 'p-8 bg-base text-ink shadow-[0_16px_56px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07]'
       }`}
     >
@@ -271,7 +271,9 @@ export default function PreciosIndexSection() {
     <section
       ref={sectionRef}
       id="precios"
-      className="relative min-h-screen flex items-center overflow-hidden py-24 bg-white"
+      data-nav-dark
+      className="relative min-h-screen flex items-center overflow-hidden py-24"
+      style={{ backgroundColor: '#0D0E12' }}
     >
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div
@@ -282,7 +284,7 @@ export default function PreciosIndexSection() {
           className="text-center mb-10"
         >
           <h2
-            className="font-display font-semibold text-ink tracking-tight"
+            className="font-display font-semibold text-bone tracking-tight"
             style={{ fontSize: 'clamp(32px, 5vw, 60px)' }}
           >
             {t('Precios', 'Pricing')}
@@ -295,14 +297,14 @@ export default function PreciosIndexSection() {
           ))}
         </div>
 
-        <p className="text-center font-body text-sm font-bold text-ink mt-6">
+        <p className="text-center font-body text-sm font-bold text-bone mt-6">
           {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
         </p>
 
         <div className="text-center mt-4">
           <button
             onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-            className="font-body text-sm font-semibold text-ink underline underline-offset-4 hover:text-ink/80 transition-colors cursor-pointer"
+            className="font-body text-sm font-semibold text-bone underline underline-offset-4 hover:text-bone/80 transition-colors cursor-pointer"
           >
             {t('Ayúdame a decidir', 'Help me decide')}
           </button>
