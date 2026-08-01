@@ -4,6 +4,7 @@ import { useRef, useCallback, useEffect } from 'react'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useMotionTemplate } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
+import { CTAButton } from '@/components/ui/cta-button'
 
 export default function DiferenciaSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -149,13 +150,13 @@ export default function DiferenciaSection() {
             viewport={{ once: true }}
             className="flex flex-wrap gap-3"
           >
-            <a
+            <CTAButton
               href={t('/registro?lang=es', '/registro')}
-              className="font-body font-semibold text-base bg-white text-ink
-                         px-8 py-3.5 rounded-xl hover:bg-base transition-colors"
+              variant="light"
+              className="text-base font-semibold px-8 py-3.5"
             >
               {t('Empezar gratis', 'Start for free')}
-            </a>
+            </CTAButton>
             <a
               href="#contacto"
               className="font-body font-semibold text-base text-white

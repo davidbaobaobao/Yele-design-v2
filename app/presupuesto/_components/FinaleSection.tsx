@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
+import { CTAButton } from '@/components/ui/cta-button'
 
 export default function FinaleSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -49,13 +50,13 @@ export default function FinaleSection() {
           transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
           viewport={{ once: true }}
         >
-          <a
+          <CTAButton
             href={t('/registro?lang=es', '/registro')}
-            className="font-body font-semibold text-lg bg-white text-ink
-                       px-10 py-4 rounded-2xl hover:bg-base transition-colors"
+            variant="light"
+            className="text-lg font-semibold px-10 py-4"
           >
             {t('Empezar gratis', 'Start for free')}
-          </a>
+          </CTAButton>
         </motion.div>
 
       </div>

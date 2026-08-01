@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useLang } from '@/context/LanguageContext'
 import { X, Menu } from 'lucide-react'
+import { CTAButton } from '@/components/ui/cta-button'
 
 export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}) {
   const { lang, toggleLang, t } = useLang()
@@ -118,18 +119,17 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
               {t('Ingresar', 'Log in')}
             </a>
 
-            <Link
+            <CTAButton
               href={t('/registro?lang=es', '/registro')}
               prefetch={false}
-              className={`flex items-center gap-1.5 font-body text-sm font-medium px-4 py-2 rounded-xl transition-colors active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC] ${
-                isDark ? 'bg-white text-ink hover:bg-base' : 'bg-ink text-white hover:bg-black'
-              }`}
+              variant={isDark ? 'light' : 'dark'}
+              className="text-xs px-4 py-2"
             >
               {t('Empezar gratis', 'Start for free')}
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                 <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </Link>
+            </CTAButton>
           </div>
 
           {/* Mobile hamburger */}
@@ -178,14 +178,15 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
               >
                 {t('Ingresar', 'Log in')}
               </a>
-              <Link
+              <CTAButton
                 href={t('/registro?lang=es', '/registro')}
                 prefetch={false}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-1.5 font-body text-sm font-medium bg-ink text-white px-4 py-2 rounded-xl cursor-pointer"
+                variant="dark"
+                className="text-xs px-4 py-2"
               >
                 {t('Empezar gratis', 'Start for free')}
-              </Link>
+              </CTAButton>
             </div>
           </motion.div>
         )}

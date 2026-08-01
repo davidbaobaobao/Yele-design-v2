@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
+import { CTAButton } from '@/components/ui/cta-button'
 
 const LINKS = [
   { label: 'How it works', href: '#como-funciona' },
@@ -139,13 +140,9 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
             >
               {pathname === '/' ? 'ES' : 'EN'}
             </Link>
-            <Link
-              href={ctaHref}
-              prefetch={false}
-              className="font-body text-sm font-medium bg-bone text-ink px-5 py-2.5 rounded-full cursor-pointer transition-transform active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
-            >
+            <CTAButton href={ctaHref} prefetch={false} variant="light" className="text-xs px-5 py-2.5">
               {t('Empezar gratis', 'Start for free')}
-            </Link>
+            </CTAButton>
           </div>
 
           <button
@@ -180,14 +177,15 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
               <Link href={langHref} className="font-body text-xs text-muted cursor-pointer">
                 {pathname === '/' ? 'ES' : 'EN'}
               </Link>
-              <Link
+              <CTAButton
                 href={ctaHref}
                 prefetch={false}
                 onClick={() => setOpen(false)}
-                className="flex-1 text-center font-body text-sm font-medium bg-ink text-white px-4 py-2.5 rounded-full cursor-pointer"
+                variant="dark"
+                className="flex-1 text-xs px-4 py-2.5"
               >
                 {t('Empezar gratis', 'Start for free')}
-              </Link>
+              </CTAButton>
             </div>
           </motion.div>
         )}
