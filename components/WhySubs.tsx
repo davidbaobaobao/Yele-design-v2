@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { TextGradient } from '@/components/ui/text-gradient'
 
 const VIDEO_DIR = '/media/whysubs'
 const POSTER = `${VIDEO_DIR}/whysubs_poster.jpg`
@@ -49,7 +50,7 @@ function ReasonItem({ index, title, continuousIndex }: { index: number; title: s
       className="absolute inset-0 flex items-center justify-end md:justify-end"
       style={{ y, opacity, scale }}
     >
-      <span className="font-display text-bone text-[clamp(1.5rem,3.6vw,3.25rem)] leading-none whitespace-nowrap text-right">
+      <span className="font-display text-ink text-[clamp(1.5rem,3.6vw,3.25rem)] leading-none whitespace-nowrap text-right">
         {title}
       </span>
     </motion.div>
@@ -129,8 +130,8 @@ export default function WhySubs() {
   }, [reduceMotion])
 
   const heading = (
-    <h2 className="font-display text-bone text-left leading-tight text-[clamp(1.75rem,3.2vw,3rem)] max-w-md">
-      Why subscription is better?
+    <h2 className="font-display text-ink text-left leading-tight text-[clamp(1.75rem,3.2vw,3rem)] max-w-md">
+      Why subscription is <TextGradient as="span">better?</TextGradient>
     </h2>
   )
 
@@ -138,20 +139,21 @@ export default function WhySubs() {
   // reasons stacked plainly with the first subtitle shown. ----
   if (reduceMotion) {
     return (
-      <section data-nav-dark className="relative overflow-hidden py-24 px-6" style={{ backgroundColor: '#0A0A0C' }}>
+      <section className="relative overflow-hidden py-24 px-6" style={{ backgroundColor: '#F7F6F3' }}>
         <div className="absolute inset-0">
           <img src={POSTER} alt="" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
+          <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
         </div>
         <div className="relative z-10 max-w-6xl mx-auto flex flex-col md:flex-row gap-12 md:gap-20">
           <div className="md:w-[40%] shrink-0">{heading}</div>
           <div className="flex-1 flex flex-col gap-6">
+            <div className="border-t border-hairline" aria-hidden="true" />
             {REASONS.map((r, i) => (
               <div key={r.title}>
-                <p className={`font-display text-[clamp(1.25rem,2.4vw,1.75rem)] leading-tight ${i === 0 ? 'text-bone' : 'text-bone/40'}`}>
+                <p className={`font-display text-[clamp(1.25rem,2.4vw,1.75rem)] leading-tight ${i === 0 ? 'text-ink' : 'text-ink/40'}`}>
                   {r.title}
                 </p>
-                {i === 0 && <p className="font-body text-bone/70 text-sm mt-1">{r.subtitle}</p>}
+                {i === 0 && <p className="font-body text-ink/70 text-sm mt-1">{r.subtitle}</p>}
               </div>
             ))}
           </div>
@@ -161,8 +163,8 @@ export default function WhySubs() {
   }
 
   return (
-    <section ref={sectionRef} data-nav-dark className="relative" style={{ height: `${(REASONS.length + 1) * 100}vh` }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ backgroundColor: '#0A0A0C' }}>
+    <section ref={sectionRef} className="relative" style={{ height: `${(REASONS.length + 1) * 100}vh` }}>
+      <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ backgroundColor: '#F7F6F3' }}>
         <video
           ref={videoRef}
           autoPlay
@@ -176,8 +178,9 @@ export default function WhySubs() {
         >
           <BgSources />
         </video>
-        {/* Subtle dark overlay for text legibility over the video. */}
-        <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
+        {/* Light overlay so the now-dark (ink) text stays legible over the
+            video, instead of the dark scrim this used when text was bone. */}
+        <div className="absolute inset-0 bg-white/70" aria-hidden="true" />
 
         {/* Heading and list are both absolutely positioned within the same
             full-height box (rather than sharing a flex row) so the list's
@@ -203,7 +206,8 @@ export default function WhySubs() {
             neighbor item sitting just below the active one in the list.
             Raised ~50px from the previous bottom-12/16 so it isn't so close
             to the bottom edge. */}
-        <div className="absolute inset-x-0 bottom-[100px] md:bottom-[120px] z-10 max-w-6xl mx-auto px-6 flex justify-end">
+        <div className="absolute inset-x-0 bottom-[100px] md:bottom-[120px] z-10 max-w-6xl mx-auto px-6 flex flex-col items-end gap-4">
+          <div className="w-full max-w-sm border-t border-ink/10" aria-hidden="true" />
           <AnimatePresence mode="wait">
             <motion.p
               key={activeIndex}
@@ -211,7 +215,7 @@ export default function WhySubs() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="font-body text-bone/70 text-sm md:text-base text-right max-w-sm"
+              className="font-body text-ink/70 text-sm md:text-base text-right max-w-sm"
             >
               {REASONS[activeIndex].subtitle}
             </motion.p>
