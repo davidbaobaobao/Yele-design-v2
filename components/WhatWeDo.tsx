@@ -238,7 +238,7 @@ function WhatWeDoCard({
           the flat surface, and the header/body/video content on top of it. */}
       <div
         style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)' }}
-        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-2 border-white/15 ring-1 ring-white/5"
+        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[6px] border-white/12 ring-1 ring-white/5"
       >
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. Padding-top > padding-bottom (both
