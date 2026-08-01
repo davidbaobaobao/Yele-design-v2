@@ -2,7 +2,13 @@
 
 import { useEffect, type RefObject } from 'react'
 
-export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
+// `threshold` (IntersectionObserver ratio, default 0.5) is overridable for
+// videos that fill a section taller than the viewport — the ratio is
+// intersecting-area / the TARGET's OWN area, so a video absolutely filling
+// a section significantly taller than the viewport can mathematically never
+// reach 0.5 (e.g. a 2000px-tall mobile section can only ever show ~40% of
+// itself in an 844px viewport), leaving it permanently paused.
+export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>, threshold = 0.5) {
   useEffect(() => {
     const v = ref.current
     if (!v) return
@@ -59,7 +65,7 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
           }
         })
       },
-      { threshold: 0.5 }
+      { threshold }
     )
     observer.observe(v)
 
@@ -81,5 +87,5 @@ export function useVideoAutoplay(ref: RefObject<HTMLVideoElement | null>) {
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pageshow', onPageShow as EventListener)
     }
-  }, [ref])
+  }, [ref, threshold])
 }

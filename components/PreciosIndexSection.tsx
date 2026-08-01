@@ -5,6 +5,9 @@ import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, typ
 import { Check } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
+
+const BG_VIDEO_DIR = '/media/pricing'
 
 const plans = [
   {
@@ -224,6 +227,12 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
 export default function PreciosIndexSection() {
   const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  // Lower threshold: this video fills the whole (min-h-screen, often
+  // taller-than-viewport on mobile with 3 stacked cards) section, so it can
+  // never reach the default 0.5 intersection ratio — see the hook's own
+  // comment for why.
+  useVideoAutoplay(videoRef, 0.15)
 
   useEffect(() => {
     const el = sectionRef.current
@@ -275,6 +284,23 @@ export default function PreciosIndexSection() {
       className="relative min-h-screen flex items-center overflow-hidden py-24"
       style={{ backgroundColor: '#0D0E12' }}
     >
+      {/* Subtle background video — kept dim behind a dark overlay so the
+          cards/text (rendered above at z-10) stay fully readable. */}
+      <video
+        ref={videoRef}
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster={`${BG_VIDEO_DIR}/pricing_poster.jpg`}
+        className="absolute inset-0 w-full h-full object-cover opacity-40"
+        aria-hidden="true"
+      >
+        <source src={`${BG_VIDEO_DIR}/pricing_hq.webm`} type="video/webm" />
+        <source src={`${BG_VIDEO_DIR}/pricing_hq.mp4`} type="video/mp4" />
+      </video>
+      <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13, 14, 18, 0.72)' }} aria-hidden="true" />
+
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
