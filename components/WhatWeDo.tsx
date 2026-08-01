@@ -102,13 +102,12 @@ const CARDS: CardData[] = [
   },
 ]
 
-// Per-card two-color accent gradient — each card's own accent blended with
-// the next card's (wrapping around), so the palette reads as one continuous
-// sequence across the four cards rather than four unrelated hues.
+// Per-card accent glow, brightest at the top and fading out toward the
+// bottom (was an omnidirectional diagonal blend with the next card's
+// color) — a top-down light source, like the GitHub reference.
 function cardGradient(index: number): string {
-  const from = CARDS[index].accent
-  const to = CARDS[(index + 1) % CARDS.length].accent
-  return `linear-gradient(315deg, ${from}, ${to})`
+  const accent = CARDS[index].accent
+  return `linear-gradient(180deg, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.35)} 55%, transparent 100%)`
 }
 
 // Same treatment as every other video section on this site: borderless,
@@ -226,30 +225,35 @@ function WhatWeDoCard({
           ALWAYS partially visible outside the card's own edges (not just on
           hover), intensifying further on hover. Blurred heavily and living
           OUTSIDE the inner div's overflow-hidden clip so it bleeds into the
-          floating margin around the card. Slowly drifts (same keyframe as
-          the CTA button's glow, staggered per-card so all four don't move
-          in lockstep) so it reads as a living aurora, not a static bloom;
-          opacity/scale still transition separately on hover. */}
+          floating margin around the card. Drifts (same keyframe as the CTA
+          button's glow, staggered per-card so all four don't move in
+          lockstep, sped up to a 5s loop) so it reads as a living aurora,
+          not a static bloom; opacity/scale still transition on hover. */}
       <div
         aria-hidden="true"
-        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-35' : 'opacity-35 group-hover:opacity-65 transition-[opacity] duration-500 motion-safe:animate-[cta-glow-drift_11s_ease-in-out_infinite]'}`}
+        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-35' : 'opacity-35 group-hover:opacity-65 transition-[opacity] duration-500 motion-safe:animate-[cta-glow-drift_5s_ease-in-out_infinite]'}`}
         style={{
           background: gradient,
           willChange: reduceMotion ? undefined : 'opacity, transform',
-          animationDelay: reduceMotion ? undefined : `${index * -2.7}s`,
+          animationDelay: reduceMotion ? undefined : `${index * -1.3}s`,
         }}
       />
 
       {/* Inside: a plain flat dark-grey surface (CARD_BG) — no aurora, no
           interior gradient wash, no video glow. Just the glass border above,
           the flat surface, and the header/body/video content on top of it.
-          The border itself is wide + low-opacity + backdrop-blurred, so it
-          reads as a genuine frosted-glass frame (the blur only affects the
-          border ring — CARD_BG is fully opaque, so backdrop-filter has
-          nothing translucent to blur over the interior). */}
+          The border is wide + low-opacity + backdrop-blurred so the glow
+          above diffuses THROUGH it, like frosted glass — bg-clip-padding is
+          the key fix: the default background-clip (border-box) paints
+          CARD_BG all the way under the border too, which fully hides
+          whatever backdrop-blur reveals there, leaving just a flat
+          off-white line instead of the intended diffused glow. Clipping the
+          background to the padding box keeps CARD_BG solid across the
+          interior while leaving the border ring's own area free for the
+          blurred backdrop to actually show through. */}
       <div
         style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)' }}
-        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[8px] border-white/8 backdrop-blur-md ring-1 ring-white/5"
+        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[8px] border-white/10 backdrop-blur-lg bg-clip-padding ring-1 ring-white/5"
       >
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. Padding-top > padding-bottom (both
