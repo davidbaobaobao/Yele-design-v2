@@ -31,20 +31,25 @@ const PILL_CLASS =
 // Irregular/offset (not evenly inset) blurred pink bloom — bigger on one
 // side than the other so it reads as ambient light spilling from behind the
 // pill, not a centered ring. Slowly drifts on its own via a CSS keyframe
-// (transform: translate, ~9s loop — see cta-glow-drift in globals.css) and
-// separately brightens/grows (opacity + blur, no transform, so the two
-// animations never fight over the same property) on hover. pointer-events
-// none so it never intercepts the click itself.
+// (transform: translate, ~4.5s loop — twice the speed of the old 9s — see
+// cta-glow-drift in globals.css) and separately grows further (bigger
+// inset spread + more blur, no transform property overlap with the drift
+// animation) on hover. The resting footprint/opacity/blur is what used to
+// be the HOVER state (it read as the right size); hover now grows past
+// that rather than past the old, larger default. pointer-events-none so it
+// never intercepts the click itself.
 function Glow() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute -z-10 rounded-full opacity-70 blur-xl transition-[opacity,filter] duration-300 ease-out group-hover:opacity-100 group-hover:blur-2xl motion-safe:animate-[cta-glow-drift_9s_ease-in-out_infinite]"
+      className={cn(
+        'pointer-events-none absolute -z-10 rounded-full opacity-100 blur-2xl',
+        'top-[-10px] left-[-7px] right-[-15px] bottom-[-8px]',
+        'transition-[filter,top,left,right,bottom] duration-300 ease-out',
+        'group-hover:blur-3xl group-hover:top-[-20px] group-hover:left-[-14px] group-hover:right-[-30px] group-hover:bottom-[-16px]',
+        'motion-safe:animate-[cta-glow-drift_4.5s_ease-in-out_infinite]'
+      )}
       style={{
-        top: '-20px',
-        left: '-14px',
-        right: '-30px',
-        bottom: '-16px',
         background:
           'radial-gradient(60% 70% at 38% 35%, rgba(212,111,200,1) 0%, rgba(212,111,200,0.55) 55%, transparent 78%)',
       }}
