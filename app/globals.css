@@ -62,6 +62,16 @@ html.sand-helix-page body {
   animation: we-subtitle-wave 3.5s ease-in-out infinite;
 }
 
+/* CTAButton's background glow — slow, irregular drift so the pink bloom
+   behind the pill reads as ambient light rather than a static halo. */
+@keyframes cta-glow-drift {
+  0%   { transform: translate(0px, 0px); }
+  25%  { transform: translate(10px, -8px); }
+  50%  { transform: translate(-6px, 10px); }
+  75%  { transform: translate(-10px, -5px); }
+  100% { transform: translate(0px, 0px); }
+}
+
 /* Scroll-hint arrow — Y-flip with spring bounce + animated orange gradient pill */
 @keyframes spinY {
   0%   { transform: rotateY(0deg)   translateY(0); }

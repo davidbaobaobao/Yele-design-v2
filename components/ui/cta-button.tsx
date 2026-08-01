@@ -7,31 +7,39 @@ import { cn } from '@/lib/utils'
 // it (offset/asymmetric rather than a perfectly centered halo, so it reads
 // like ambient light rather than a UI ring). `variant` picks the surface —
 // "light" (bone) reads best on dark sections, "dark" (near-black) on light
-// sections, same as the rest of the site's own light/dark pairing.
+// sections, same as the rest of the site's own light/dark pairing. The
+// surface itself never takes on any pink tint, even on hover — only the
+// glow behind it does; hover just lifts the surface's own lightness a touch.
 const VARIANT_CLASS = {
-  light: 'bg-[#F2F0EB] text-[#16161A] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_-2px_5px_rgba(0,0,0,0.07)]',
-  dark: 'bg-[#1A1A1F] text-[#F2F0EB] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-2px_5px_rgba(0,0,0,0.35)]',
+  light:
+    'bg-[#F2F0EB] hover:bg-[#F8F7F4] text-[#16161A] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_-2px_5px_rgba(0,0,0,0.07)]',
+  dark: 'bg-[#1A1A1F] hover:bg-[#26262C] text-[#F2F0EB] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-2px_5px_rgba(0,0,0,0.35)]',
 } as const
 
 type Variant = keyof typeof VARIANT_CLASS
 
+// No box-shadow (and so no pink) on the pill itself — the Glow span below is
+// the sole source of the ambient pink light, kept fully separate from the
+// button's own surface/fill.
 const PILL_CLASS =
   'group relative inline-flex items-center justify-center gap-1.5 rounded-full cursor-pointer ' +
   'font-body text-sm font-medium px-6 py-3 whitespace-nowrap ' +
   'transition-all duration-300 ease-out ' +
-  'shadow-[0_8px_36px_-6px_rgba(212,111,200,0.55)] hover:shadow-[0_14px_56px_-8px_rgba(212,111,200,0.85)] ' +
-  'hover:-translate-y-0.5 active:translate-y-0 active:scale-95 active:shadow-[0_4px_16px_-6px_rgba(212,111,200,0.4)] ' +
+  'hover:-translate-y-0.5 active:translate-y-0 active:scale-95 ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D46FC8]'
 
 // Irregular/offset (not evenly inset) blurred pink bloom — bigger on one
 // side than the other so it reads as ambient light spilling from behind the
-// pill, not a centered ring. Intensifies (bigger, brighter, more blur) on
-// hover; pointer-events-none so it never intercepts the click itself.
+// pill, not a centered ring. Slowly drifts on its own via a CSS keyframe
+// (transform: translate, ~9s loop — see cta-glow-drift in globals.css) and
+// separately brightens/grows (opacity + blur, no transform, so the two
+// animations never fight over the same property) on hover. pointer-events
+// none so it never intercepts the click itself.
 function Glow() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute -z-10 rounded-full opacity-70 blur-xl transition-all duration-300 ease-out group-hover:opacity-100 group-hover:blur-2xl group-hover:scale-110"
+      className="pointer-events-none absolute -z-10 rounded-full opacity-70 blur-xl transition-[opacity,filter] duration-300 ease-out group-hover:opacity-100 group-hover:blur-2xl motion-safe:animate-[cta-glow-drift_9s_ease-in-out_infinite]"
       style={{
         top: '-20px',
         left: '-14px',
