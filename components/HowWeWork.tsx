@@ -50,11 +50,11 @@ function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 }
 
-// The flip fires over this many pixels of scroll — small enough to read as
-// a quick snap rather than a slow fade, but wide enough (70px) that normal
-// scroll speeds still render a few transitional frames instead of a single
-// wheel tick skipping over the whole thing.
-const FLIP_RANGE_PX = 70
+// The flip fires over this many pixels of scroll. Doubled from 70 to 140 —
+// the original was too fast/scroll-sensitive (a small scroll jumped straight
+// from dark to white); this spans roughly twice the scroll distance so it
+// reads as a smoother, more deliberate transition.
+const FLIP_RANGE_PX = 140
 
 // Mercury effect: the section enters dark (#0D0E12, seamless from the
 // previous dark "Showcase" section above it) then fades to white as the
