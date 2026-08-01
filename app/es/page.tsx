@@ -17,7 +17,6 @@ import Showcase from '@/components/Showcase'
 import DiferenciaSection from '@/app/presupuesto/_components/DiferenciaSection'
 import FinaleSection from '@/app/presupuesto/_components/FinaleSection'
 import Footer from '@/components/Footer'
-import WhatsAppButton from '@/components/WhatsAppButton'
 import { EsLangProvider } from '@/components/LangProvider'
 
 const Testimonios      = dynamic(() => import('@/components/Testimonios'))
@@ -72,7 +71,6 @@ export default function EsHome() {
         <Noticias />
       </main>
       <Footer />
-      <WhatsAppButton />
     </EsLangProvider>
   )
 }

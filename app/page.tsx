@@ -22,7 +22,6 @@ const TablaComparativa     = dynamic(() => import('@/components/TablaComparativa
 const ContactForm          = dynamic(() => import('@/components/ContactForm'))
 const FAQ                  = dynamic(() => import('@/components/FAQ'))
 const Footer               = dynamic(() => import('@/components/Footer'))
-const WhatsAppButton       = dynamic(() => import('@/components/WhatsAppButton'))
 
 export const metadata: Metadata = {
   title: 'Professional website design from $99/mo | Yele',
@@ -71,7 +70,6 @@ export default function Home() {
         <FAQ dark />
       </main>
       <Footer />
-      <WhatsAppButton />
     </EnLangProvider>
   )
 }

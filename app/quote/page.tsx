@@ -17,7 +17,6 @@ import PreciosIndexSection from '@/components/PreciosIndexSection'
 import Showcase from '@/components/Showcase'
 import FinaleSection from '@/app/presupuesto/_components/FinaleSection'
 import Footer from '@/components/Footer'
-import WhatsAppButton from '@/components/WhatsAppButton'
 import { EnLangProvider } from '@/components/LangProvider'
 
 const Testimonios      = dynamic(() => import('@/components/Testimonios'))
@@ -71,7 +70,6 @@ export default function QuotePage() {
         <FinaleSection />
       </main>
       <Footer />
-      <WhatsAppButton />
     </EnLangProvider>
   )
 }

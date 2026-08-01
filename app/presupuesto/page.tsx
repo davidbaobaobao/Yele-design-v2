@@ -17,7 +17,6 @@ import PreciosIndexSection from '@/components/PreciosIndexSection'
 import Showcase from '@/components/Showcase'
 import FinaleSection from './_components/FinaleSection'
 import Footer from '@/components/Footer'
-import WhatsAppButton from '@/components/WhatsAppButton'
 import ClarityScript from '@/components/ClarityScript'
 import { EsLangProvider } from '@/components/LangProvider'
 
@@ -61,7 +60,6 @@ export default function PresupuestoPage() {
         <FinaleSection />
       </main>
       <Footer />
-      <WhatsAppButton />
     </EsLangProvider>
   )
 }
