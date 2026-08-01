@@ -11,7 +11,7 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 // the scroll reveal sweeps continuously across all three lines in one pass
 // instead of needing three separate reveal instances.
 const STATEMENT_LINES = [
-  'We design, build and maintain your website for one monthly subscription price. Live in a week, no upfront cost, cancel anytime.',
+  'In Yele, we design, build and maintain your website for one monthly subscription price. Live in a week, no upfront cost, cancel anytime.',
   "Getting a professional website shouldn't mean big bills, long waits or being left on your own.",
   'You run your business; we take care of the website.',
 ]
@@ -19,8 +19,10 @@ const STATEMENT = STATEMENT_LINES.join(' \n ')
 
 // Matches the other sections' own header size/weight/leading, one step up
 // from the previous clamp (1.75rem,2.5vw,2.5rem). Centered as a block
-// (mx-auto) but the text itself stays left-justified within it.
-const textClass = 'font-display text-left leading-tight max-w-4xl mx-auto text-[clamp(2rem,2.75vw,2.75rem)]'
+// (mx-auto) but the text itself stays left-justified within it. max-w-5xl
+// (was 4xl) — a touch wider, while staying narrower than WhatWeDo's first
+// card just below it.
+const textClass = 'font-display text-left leading-tight max-w-5xl mx-auto text-[clamp(2rem,2.75vw,2.75rem)]'
 // py-24 both top and bottom — was pt-10/pb-32, too tight against Hero above
 // and WhatWeDo below.
 const sectionClass = 'relative bg-[#0D0E12] min-h-[65vh] flex items-center px-6 py-24'

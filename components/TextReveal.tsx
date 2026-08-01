@@ -89,9 +89,16 @@ function buildWords(text: string, highlight?: string) {
 }
 
 function mapProgressToRevealIndex(p: number, totalChars: number) {
+  // A char's `t` only reaches 1 (fully white) once revealIndex is TIP_CHARS
+  // past its own index (see the `d / TIP_CHARS` below) — capping the max
+  // reveal index at `totalChars` meant the last ~TIP_CHARS characters could
+  // never get there, so they stayed stuck mid-blend (pink) even once
+  // scrolled fully past REVEAL_END. Extending the ceiling to
+  // `totalChars - 1 + TIP_CHARS` lets the very last character reach t=1.
+  const maxIndex = totalChars - 1 + TIP_CHARS
   if (p <= REVEAL_START) return 0
-  if (p >= REVEAL_END) return totalChars
-  return (totalChars * (p - REVEAL_START)) / (REVEAL_END - REVEAL_START)
+  if (p >= REVEAL_END) return maxIndex
+  return (maxIndex * (p - REVEAL_START)) / (REVEAL_END - REVEAL_START)
 }
 
 export default function TextReveal({
