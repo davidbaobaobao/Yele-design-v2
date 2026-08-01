@@ -165,16 +165,18 @@ export default function Hero() {
           </div>
 
           {/* Reassurance row — kept well clear of the buttons above (mt-10)
-              so it doesn't read as part of the same cluster. */}
+              so it doesn't read as part of the same cluster. Sized to match
+              the hero subtitle (text-lg/md:text-xl) rather than a small
+              caption, so it still reads as a real trust signal. */}
           <div
-            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-10 font-body text-xs"
+            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body text-lg md:text-xl"
             style={{ color: 'rgba(242, 240, 235, 0.55)' }}
           >
             {REASSURANCES.map((phrase, i) => (
-              <span key={phrase} className="inline-flex items-center gap-3">
+              <span key={phrase} className="inline-flex items-center gap-4">
                 {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-50">·</span>}
-                <span className="inline-flex items-center gap-1.5">
-                  <Check size={13} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+                <span className="inline-flex items-center gap-2">
+                  <Check size={18} className="opacity-70 flex-shrink-0" aria-hidden="true" />
                   {phrase}
                 </span>
               </span>
