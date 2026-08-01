@@ -180,7 +180,14 @@ function GradientPanel({ disabled }: { disabled: boolean }) {
 const SMALL_STATS: Array<{ label: string; node: (reduceMotion: boolean) => React.ReactNode }> = [
   {
     label: 'FLAT MONTHLY PRICE',
-    node: () => <CountUpNumber prefix="from $" target={99} className={bigNumberClass} style={{ color: BONE }} />,
+    node: () => (
+      <span className="inline-flex items-baseline justify-center gap-2">
+        <span className="font-mono text-sm md:text-base uppercase" style={{ color: MUTED }}>
+          from
+        </span>
+        <CountUpNumber prefix="$" target={99} className={bigNumberClass} style={{ color: BONE }} />
+      </span>
+    ),
   },
   {
     label: 'MONITORING & SUPPORT',
@@ -218,14 +225,9 @@ export default function StatsBold() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
         >
           <div className="flex-1">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-              <TextGradient as="span" className="font-display text-[clamp(3rem,7vw,7rem)] leading-none">
-                <CountUpNumber target={7} suffix=" days" />
-              </TextGradient>
-              <span className="font-mono text-sm md:text-base font-bold uppercase tracking-wide" style={{ color: MUTED }}>
-                FROM BRIEF TO LIVE
-              </span>
-            </div>
+            <TextGradient as="span" className="font-display text-[clamp(3rem,7vw,7rem)] leading-none">
+              <CountUpNumber target={7} suffix=" days" />
+            </TextGradient>
             <p className="font-body mt-4 max-w-md" style={{ color: MUTED }}>
               From first brief to a live website — in a single week, not months.
             </p>
@@ -237,7 +239,7 @@ export default function StatsBold() {
         <div className="border-t mt-16 pt-16" style={{ borderColor: 'rgba(255, 255, 255, 0.12)' }}>
           {/* Bottom row — 3 smaller stats */}
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8 text-center"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
