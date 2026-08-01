@@ -33,6 +33,11 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
   // (from the OTHER, uniformly-dark zones) decides as usual.
   const [fadeIntersecting, setFadeIntersecting] = useState(false)
   const [fadeDark, setFadeDark] = useState(true)
+  // Sections that want the nav fully out of the way (currently just
+  // ContentShowcase's pinned scroll-jack) mark themselves with
+  // data-nav-hide; the header hides while any of them is on screen and
+  // reappears once they've scrolled past.
+  const [navHidden, setNavHidden] = useState(false)
 
   useEffect(() => {
     if (!hasHero) return
@@ -88,6 +93,25 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
     }
   }, [])
 
+  useEffect(() => {
+    const hideZones = document.querySelectorAll('[data-nav-hide]')
+    if (hideZones.length === 0 || !('IntersectionObserver' in window)) return
+
+    const intersecting = new Set<Element>()
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) intersecting.add(entry.target)
+          else intersecting.delete(entry.target)
+        })
+        setNavHidden(intersecting.size > 0)
+      },
+      { threshold: 0 }
+    )
+    hideZones.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
   const showBoneText = fadeIntersecting ? fadeDark : overHero
 
   const scrollTo = (href: string) => {
@@ -104,7 +128,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
           showBoneText ? 'bg-transparent' : 'backdrop-blur-xl bg-base/70'
-        }`}
+        } ${navHidden ? 'opacity-0 pointer-events-none transition-opacity duration-300' : 'opacity-100 transition-opacity duration-300'}`}
       >
         <nav className="relative flex items-center justify-between h-20 px-6 md:px-10">
           <Link

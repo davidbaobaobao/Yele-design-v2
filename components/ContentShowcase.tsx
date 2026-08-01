@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, useInView, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { TextGradient } from '@/components/ui/text-gradient'
-import TubesCursor from '@/components/ui/tubes-cursor'
+
+// Image numbers (1-indexed, matching the filenames) rendered in black &
+// white instead of color — a deliberate accent among the color tiles.
+const GRAYSCALE_IMAGE_NUMBERS = new Set([4, 12, 14])
 
 // Recreates the described behavior of Skiper UI's skiper32 "3D perspective
 // scroll gallery" (https://skiper-ui.com/v1/skiper32) — a paid Pro component
@@ -64,27 +67,40 @@ function mixHex(from: string, to: string, t: number) {
   return `rgb(${r}, ${g}, ${b})`
 }
 
-// Center point (in % of viewport) of the grid cell for tile `index`.
-function gridTarget(index: number, cols: number, rows: number) {
+// Every tile's box, entirely in %-of-parent-container units (left/top/
+// width/height) — never vw/vh. vw in particular runs a few pixels wider
+// than the container's own true width whenever the page has a vertical
+// scrollbar (Chrome/Firefox include the scrollbar in 100vw; the container's
+// own 100%-wide box never does), which was silently misaligning the vw/vh
+// image grid against the already %-based video grid.
+//
+// GAP_PCT is the gap BETWEEN adjacent tiles, in % of the container — edge
+// tiles lose it only on their INNER side, so the grid still runs flush to
+// the screen edge with zero gap there (matching a native CSS-grid `gap`,
+// which is interior-only) instead of the old approach of shrinking every
+// tile uniformly around its own center, which left a gap at the edges too.
+const GAP_PCT = 0.3
+function tileGeometry(index: number, cols: number, rows: number) {
   const col = index % cols
   const row = Math.floor(index / cols)
+  const cellW = 100 / cols
+  const cellH = 100 / rows
+  const left = col * cellW + (col === 0 ? 0 : GAP_PCT / 2)
+  const right = (col + 1) * cellW - (col === cols - 1 ? 0 : GAP_PCT / 2)
+  const top = row * cellH + (row === 0 ? 0 : GAP_PCT / 2)
+  const bottom = (row + 1) * cellH - (row === rows - 1 ? 0 : GAP_PCT / 2)
   return {
-    x: ((col + 0.5) / cols) * 100,
-    y: ((row + 0.5) / rows) * 100,
+    width: right - left,
+    height: bottom - top,
+    centerX: (left + right) / 2,
+    centerY: (top + bottom) / 2,
   }
-}
-
-// Tiles occupy this fraction of their grid cell — very close to 1 so only a
-// tiny gutter separates tiles, for a dense full-bleed mosaic.
-const GRID_GAP_FACTOR = 0.985
-function tileSize(cols: number, rows: number) {
-  return { width: `${(100 / cols) * GRID_GAP_FACTOR}vw`, height: `${(100 / rows) * GRID_GAP_FACTOR}vh` }
 }
 
 // Phase 1 entry: every tile starts just below the viewport (positive
 // translateY) and rises straight up its own column into its grid slot.
-// IMAGE_START_Y is in the same 0-100 "% of viewport" scale as gridTarget's
-// output — 100 is right at the bottom edge, so tiles start entering frame
+// IMAGE_START_Y is in the same 0-100 "% of parent" scale as tileGeometry's
+// centerY — 100 is right at the bottom edge, so tiles start entering frame
 // immediately instead of spending any of the phase invisibly below the
 // fold.
 const IMAGE_START_Y = 100
@@ -97,27 +113,39 @@ const COL_STAGGER = 0.035
 const ROW_STAGGER = 0.02
 
 // ---- Phase boundaries, in overall section scroll progress (0-1). Total
-// section height is 750vh, so each fraction below still spans a lot more
-// real scroll distance than the numbers alone suggest. ----
-const PHASE1_END = 0.24
+// section height is 630vh (was 750vh — see below), so each fraction below
+// still spans a lot more real scroll distance than the numbers alone
+// suggest.
+//
+// The text phase used to run 240vh (0.32 of the old 750vh total) and felt
+// like too much empty scrolling for a two-line headline, so it's now
+// halved to 120vh. Every boundary from TEXT_RANGE_END onward is
+// recalculated so its ABSOLUTE vh position — and so the video phase's own
+// pacing — stays exactly what it was before; only the text phase itself,
+// and the total height it removed, actually changed:
+//   old total 750vh -> new total 630vh (-120vh, exactly the text-phase cut)
+//   every *_new fraction below = (old fraction * 750 [+/- the 120vh cut if
+//   it falls after the cut]) / 630 ----
+const PHASE1_END = 180 / 630 // was 0.24 of 750vh -> same 180vh of 630vh
 // Image grid EXIT: scrolls straight up and off the top (no fade) as the
 // text arrives, instead of the old opacity fade-out.
-const IMAGE_EXIT_START = 0.24
-const IMAGE_EXIT_END = 0.34
+const IMAGE_EXIT_START = 180 / 630 // was 0.24 of 750vh -> same 180vh
+const IMAGE_EXIT_END = 255 / 630 // was 0.34 of 750vh -> same 255vh
 // Headline scrolls through as one continuous translateY move: below the
-// viewport at TEXT_RANGE_START, through center, off the top by TEXT_RANGE_END.
-const TEXT_RANGE_START = 0.3
-const TEXT_RANGE_END = 0.62
+// viewport at TEXT_RANGE_START, through center, off the top by
+// TEXT_RANGE_END — that span is now 120vh (was 240vh).
+const TEXT_RANGE_START = 225 / 630 // was 0.3 of 750vh -> same 225vh
+const TEXT_RANGE_END = 345 / 630 // 225vh + the new (halved) 120vh span
 // Video tiles start arriving right as the text has fully cleared the top.
-const PHASE3_START = 0.62
+const PHASE3_START = 345 / 630 // matches TEXT_RANGE_END, same as before
 const IMAGE_SPAN = 0.55
-const VIDEO_STAGGER = 0.008
-const VIDEO_SPAN = 0.22
+const VIDEO_STAGGER = 6 / 630 // was 0.008 of 750vh (6vh) -> same 6vh
+const VIDEO_SPAN = 165 / 630 // was 0.22 of 750vh (165vh) -> same 165vh
 // Section bg fades white -> black over this window, timed so it's well
 // underway by the time video tiles are substantially visible, and doesn't
 // overlap the headline's own visible (centered, ink-on-white) moment.
-const BG_DARK_START = 0.6
-const BG_DARK_END = 0.72
+const BG_DARK_START = 330 / 630 // was 0.6 of 750vh (450vh) -> same 330vh
+const BG_DARK_END = 420 / 630 // was 0.72 of 750vh (540vh) -> same 420vh
 
 // Below this width, the desktop 5x4 image grid produces awkward cells —
 // swap to a 4x5 layout instead (clean factor pair of 20, taller/narrower
@@ -141,17 +169,13 @@ function ImageTile({
   progress,
   cols,
   rows,
-  tileWidth,
-  tileHeight,
 }: {
   index: number
   progress: MotionValue<number>
   cols: number
   rows: number
-  tileWidth: string
-  tileHeight: string
 }) {
-  const target = gridTarget(index, cols, rows)
+  const { width, height, centerX, centerY } = tileGeometry(index, cols, rows)
   const col = index % cols
   const row = Math.floor(index / cols)
   const tileStart = col * COL_STAGGER + row * ROW_STAGGER
@@ -163,24 +187,27 @@ function ImageTile({
   })
 
   // Straight vertical rise — the column never moves horizontally, only up.
-  const x = `${target.x - 50}vw`
-  const y = useTransform(t, tv => `${IMAGE_START_Y + (target.y - IMAGE_START_Y) * tv - 50}vh`)
+  // left/top are %-of-parent (never vw/vh — see tileGeometry); x/y here are
+  // the standard translate(-50%,-50%) self-centering trick, which IS
+  // relative to the tile's own box, not the viewport.
+  const top = useTransform(t, tv => `${IMAGE_START_Y + (centerY - IMAGE_START_Y) * tv}%`)
   const scale = useTransform(t, tv => IMAGE_START_SCALE + (1 - IMAGE_START_SCALE) * tv)
   const opacity = t
 
   const n = index + 1
   const ext = IMAGE_EXT[n] ?? 'jpeg'
+  const grayscale = GRAYSCALE_IMAGE_NUMBERS.has(n)
 
   return (
     <motion.div
       className="absolute overflow-hidden pointer-events-none"
       style={{
-        left: '50%',
-        top: '50%',
-        width: tileWidth,
-        height: tileHeight,
-        x,
-        y,
+        left: `${centerX}%`,
+        top,
+        width: `${width}%`,
+        height: `${height}%`,
+        x: '-50%',
+        y: '-50%',
         scale,
         opacity,
       }}
@@ -190,7 +217,7 @@ function ImageTile({
         alt=""
         fill
         sizes="20vw"
-        className="object-cover"
+        className={grayscale ? 'object-cover grayscale' : 'object-cover'}
       />
     </motion.div>
   )
@@ -205,7 +232,7 @@ function VideoTile({
   progress: MotionValue<number>
   mounted: boolean
 }) {
-  const target = gridTarget(index, VIDEO_COLS, VIDEO_ROWS)
+  const { width, height, centerX, centerY } = tileGeometry(index, VIDEO_COLS, VIDEO_ROWS)
   const tileStart = PHASE3_START + index * VIDEO_STAGGER
   const tileEnd = tileStart + VIDEO_SPAN
 
@@ -216,7 +243,6 @@ function VideoTile({
   const videoRef = useRef<HTMLVideoElement>(null)
   const n = index + 1
   const poster = `${VIDEO_DIR}/${n}_poster.jpg`
-  const { width, height } = tileSize(VIDEO_COLS, VIDEO_ROWS)
 
   useEffect(() => {
     if (!mounted) return
@@ -253,12 +279,12 @@ function VideoTile({
     <motion.div
       className="absolute overflow-hidden pointer-events-none bg-[#16171C]"
       style={{
-        left: `${target.x}%`,
-        top: `${target.y}%`,
+        left: `${centerX}%`,
+        top: `${centerY}%`,
         x: '-50%',
         y: '-50%',
-        width,
-        height,
+        width: `${width}%`,
+        height: `${height}%`,
         scale,
         opacity,
       }}
@@ -332,7 +358,13 @@ function ContentShowcaseReduced() {
               const n = i + 1
               return (
                 <div key={n} className="relative aspect-video overflow-hidden">
-                  <Image src={`${IMAGE_DIR}/${n}.${IMAGE_EXT[n] ?? 'jpeg'}`} alt="" fill sizes="20vw" className="object-cover" />
+                  <Image
+                    src={`${IMAGE_DIR}/${n}.${IMAGE_EXT[n] ?? 'jpeg'}`}
+                    alt=""
+                    fill
+                    sizes="20vw"
+                    className={GRAYSCALE_IMAGE_NUMBERS.has(n) ? 'object-cover grayscale' : 'object-cover'}
+                  />
                 </div>
               )
             })}
@@ -393,28 +425,21 @@ function ContentShowcaseReduced() {
 export default function ContentShowcase() {
   const reduceMotion = !!useHydratedReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
-  const stickyRef = useRef<HTMLDivElement>(null)
-  // Scopes the tube-cursor effect to only this section: on while >=30% of
-  // the PINNED viewport-sized inner box is on screen, off (and fully
-  // disposed, see TubesCursor) otherwise. Deliberately observes the sticky
-  // inner div, not the 750vh outer section — an IntersectionObserver ratio
-  // is intersecting-area / target's-own-area, so for the 750vh outer
-  // section even a full-viewport overlap only ever reaches ~13% (100/750),
-  // never the 30% threshold, so it would never fire.
-  const sectionInView = useInView(stickyRef, { amount: 0.3 })
   const [videosMounted, setVideosMounted] = useState(false)
   const isNarrow = useIsNarrowViewport()
   const imageCols = isNarrow ? 4 : IMAGE_COLS
   const imageRows = isNarrow ? 5 : IMAGE_ROWS
-  const { width: imageTileWidth, height: imageTileHeight } = tileSize(imageCols, imageRows)
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end end'],
   })
 
+  // Mount videos ~30vh before PHASE3_START so they have a head start loading
+  // before they need to animate in (315/630 == old 30vh-before-PHASE3_START
+  // gap, preserved after the text-phase rescale above).
   useMotionValueEvent(scrollYProgress, 'change', v => {
-    if (v > 0.58) setVideosMounted(mounted => mounted || true)
+    if (v > 315 / 630) setVideosMounted(mounted => mounted || true)
   })
 
   // Image grid EXIT — scrolls straight up and off-screen (no fade) once
@@ -430,9 +455,13 @@ export default function ContentShowcase() {
   if (reduceMotion) return <ContentShowcaseReduced />
 
   return (
-    <section ref={sectionRef} className="relative" style={{ height: '750vh' }}>
+    <section ref={sectionRef} className="relative" style={{ height: '630vh' }}>
+      {/* data-nav-hide: Nav watches for this attribute and hides itself
+          (opacity 0) for as long as this pinned section is on screen,
+          restoring once it scrolls past — the fixed header would otherwise
+          sit awkwardly on top of this section's own full-bleed content. */}
       <motion.div
-        ref={stickyRef}
+        data-nav-hide
         className="sticky top-0 h-screen w-full overflow-hidden"
         style={{ backgroundColor: bgColor, perspective: '1000px' }}
       >
@@ -440,15 +469,7 @@ export default function ContentShowcase() {
             scroll straight up off-screen as a single group (no fade). */}
         <motion.div className="absolute inset-0" style={{ y: imageLayerY, transformStyle: 'preserve-3d' }} aria-hidden="true">
           {Array.from({ length: IMAGE_COUNT }, (_, i) => (
-            <ImageTile
-              key={i}
-              index={i}
-              progress={scrollYProgress}
-              cols={imageCols}
-              rows={imageRows}
-              tileWidth={imageTileWidth}
-              tileHeight={imageTileHeight}
-            />
+            <ImageTile key={i} index={i} progress={scrollYProgress} cols={imageCols} rows={imageRows} />
           ))}
         </motion.div>
 
@@ -458,13 +479,6 @@ export default function ContentShowcase() {
             <VideoTile key={i} index={i} progress={scrollYProgress} mounted={videosMounted} />
           ))}
         </div>
-
-        {/* Cursor tube trails — DOM order puts this above the image/video
-            layers but below the text block further down, matching the rest
-            of this component's stacking-by-DOM-order convention. Scoped to
-            this section only via sectionInView; fully torn down when it's
-            not (see TubesCursor's own active-flag effect). */}
-        <TubesCursor active={sectionInView} />
 
         {/* Phase 2 — headline (+ arrow below it) scrolls up through center
             and off the top as one group, sharing the same textY. */}
