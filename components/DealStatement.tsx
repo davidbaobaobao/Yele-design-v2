@@ -1,24 +1,26 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { TextGradient } from '@/components/ui/text-gradient'
 
-const STATEMENT =
-  "Here's the deal: we become your website team. We design it, fill it with content, keep it fast and secure, and market it — month after month, for one flat price. You run your business. We run the website."
-
-// White bg — continues straight from ContentShowcase, which ends on the same
-// #FFFFFF, so the boundary between them reads as one continuous surface.
+// Black bg, seamless from ContentShowcase's own bg which fades to the same
+// #0D0E12 by the time its video phase takes over.
 export default function DealStatement() {
   return (
-    <section className="py-32 px-6" style={{ backgroundColor: '#FFFFFF' }}>
+    <section data-nav-dark className="py-32 px-6" style={{ backgroundColor: '#0D0E12' }}>
       <motion.p
-        className="font-display text-center leading-tight max-w-4xl mx-auto text-[clamp(1.75rem,3vw,3rem)]"
-        style={{ color: '#16161A' }}
+        className="font-display text-left max-w-4xl mx-auto leading-tight text-[clamp(1.75rem,3vw,3rem)]"
+        style={{ color: '#F2F0EB' }}
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
       >
-        {STATEMENT}
+        Here&apos;s the <TextGradient as="span">deal</TextGradient>: we become your website team. We design it, fill
+        it with content, keep it fast and secure, and market it — <TextGradient as="span">month after month</TextGradient>,
+        for one flat price.
+        <br />
+        You run your business. We run the website.
       </motion.p>
     </section>
   )
