@@ -12,7 +12,7 @@ const FALLBACK = [
   { question: 'Can I see examples of websites you\'ve made?', answer: 'Yes — check out the Portfolio section on this page to see real projects.' },
 ]
 
-export default async function FAQ({ noBg }: { noBg?: boolean } = {}) {
+export default async function FAQ({ noBg, dark }: { noBg?: boolean; dark?: boolean } = {}) {
   const { data } = await supabase
     .from('faqs')
     .select('question, answer')
@@ -22,5 +22,5 @@ export default async function FAQ({ noBg }: { noBg?: boolean } = {}) {
 
   const faqs = (data && data.length > 0) ? data : FALLBACK
 
-  return <FAQClient faqs={faqs} noBg={noBg} />
+  return <FAQClient faqs={faqs} noBg={noBg} dark={dark} />
 }
