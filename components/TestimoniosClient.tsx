@@ -10,7 +10,10 @@ export type Testimonial = {
   rating: number
 }
 
-// Ordered to align with FALLBACK entries in Testimonios.tsx
+// Default pool, cycled positionally for anyone not named below — this is
+// what's actually shown when testimonials come from Supabase rather than
+// the FALLBACK array, so their order can't be relied on to line up with a
+// fixed position.
 const AVATAR_POOL = [
   '/media/avatarreview/saraM.jpeg',
   '/media/avatarreview/carlos.jpeg',
@@ -22,6 +25,29 @@ const AVATAR_POOL = [
   '/media/avatarreview/Jorge.jpeg',
   '/media/avatarreview/saraL.jpeg',
 ]
+
+// Eustaquio<->Sara L. and Elaine<->Miguel are swapped from their "correct"
+// avatar on purpose, per request. Matched by NAME (normalized: lowercased,
+// periods stripped) rather than array position — testimonials can come
+// from Supabase in whatever order the table returns them, which won't
+// generally match FALLBACK's order, so a positional swap could silently
+// swap the wrong two people's avatars instead. "sara l" (not just "sara")
+// disambiguates from "Sara M.", the other Sara in the set.
+const NAME_AVATAR_OVERRIDE: Record<string, string> = {
+  eustaquio: '/media/avatarreview/saraL.jpeg',
+  'sara l': '/media/avatarreview/Eustaquio.jpeg',
+  elaine: '/media/avatarreview/miguel.jpeg',
+  miguel: '/media/avatarreview/Elaine.jpeg',
+}
+
+function avatarFor(authorName: string, index: number) {
+  // Strips both periods AND commas — live data has been seen as both
+  // "Sara L." and "Sara, L", and only stripping periods left the comma
+  // form ("sara, l") not matching the "sara l" key at all.
+  const normalized = authorName.toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim()
+  const override = Object.keys(NAME_AVATAR_OVERRIDE).find(key => normalized.startsWith(key))
+  return override ? NAME_AVATAR_OVERRIDE[override] : AVATAR_POOL[index % AVATAR_POOL.length]
+}
 
 const MAX_CHARS = 280
 
@@ -47,9 +73,13 @@ function ReviewCard({
   const bodyText = isLong && !expanded ? item.body.slice(0, MAX_CHARS).trimEnd() + '…' : item.body
 
   return (
+    // filter: grayscale(1) is a single post-processing pass over this
+    // whole card's rendered subtree — it desaturates the avatar photo and
+    // the (otherwise gold, #FBBC05) star icons together in one shot, for a
+    // more realistic, less "AI stock photo" look.
     <div
       className="flex-shrink-0 flex flex-col rounded-2xl"
-      style={{ width: 360, background: '#161616', minHeight: 340, padding: '28px 28px 24px' }}
+      style={{ width: 360, background: '#161616', minHeight: 340, padding: '28px 28px 24px', filter: 'grayscale(1)' }}
     >
       <p style={{ fontFamily: 'var(--font-body), sans-serif', color: '#555', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 18 }}>
         / Review
@@ -181,7 +211,7 @@ export default function TestimoniosClient({
           <ReviewCard
             key={i}
             item={item}
-            avatarSrc={AVATAR_POOL[i % AVATAR_POOL.length]}
+            avatarSrc={avatarFor(item.author_name, i)}
             t={t}
           />
         ))}
