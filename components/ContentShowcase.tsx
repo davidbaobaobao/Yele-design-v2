@@ -4,11 +4,36 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { TextGradient } from '@/components/ui/text-gradient'
 
 // Image numbers (1-indexed, matching the filenames) rendered in black &
 // white instead of color — a deliberate accent among the color tiles.
-const GRAYSCALE_IMAGE_NUMBERS = new Set([4, 12, 14])
+const GRAYSCALE_IMAGE_NUMBERS = new Set([4, 5, 12, 14])
+const PIZZA_DIR = '/media/pizza'
+
+// Small decorative video sitting above the "Want content?" headline — a
+// concrete example of "any content" rather than an abstract claim.
+function PizzaVideo() {
+  const ref = useRef<HTMLVideoElement>(null)
+  useVideoAutoplay(ref)
+  return (
+    <video
+      ref={ref}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      poster={`${PIZZA_DIR}/pizza_poster.jpg`}
+      className="w-28 md:w-36 aspect-video object-cover rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.25)] mb-6"
+      aria-hidden="true"
+    >
+      <source src={`${PIZZA_DIR}/pizza_hq.webm`} type="video/webm" />
+      <source src={`${PIZZA_DIR}/pizza_hq.mp4`} type="video/mp4" />
+    </video>
+  )
+}
 
 // Recreates the described behavior of Skiper UI's skiper32 "3D perspective
 // scroll gallery" (https://skiper-ui.com/v1/skiper32) — a paid Pro component
@@ -370,18 +395,23 @@ function ContentShowcaseReduced() {
             })}
           </motion.div>
 
-          <motion.h2
-            className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
-            style={{ color: '#16161A' }}
+          <motion.div
+            className="flex flex-col items-center"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
           >
-            Want content?
-            <br />
-            We create <TextGradient as="span">any</TextGradient> content you need
-          </motion.h2>
+            <PizzaVideo />
+            <h2
+              className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
+              style={{ color: '#16161A' }}
+            >
+              Want content?
+              <br />
+              We create <TextGradient as="span">any</TextGradient> content you need
+            </h2>
+          </motion.div>
         </div>
       </section>
 
@@ -484,6 +514,7 @@ export default function ContentShowcase() {
             and off the top as one group, sharing the same textY. */}
         <div className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none" aria-hidden="true">
           <motion.div className="flex flex-col items-center" style={{ y: textY }}>
+            <PizzaVideo />
             <h2 className="font-display text-center leading-tight text-[clamp(1.75rem,3.75vw,3.75rem)] max-w-4xl" style={{ color: '#16161A' }}>
               Want content?
               <br />
