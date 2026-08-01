@@ -226,19 +226,30 @@ function WhatWeDoCard({
           ALWAYS partially visible outside the card's own edges (not just on
           hover), intensifying further on hover. Blurred heavily and living
           OUTSIDE the inner div's overflow-hidden clip so it bleeds into the
-          floating margin around the card. Opacity-only transition, cheap. */}
+          floating margin around the card. Slowly drifts (same keyframe as
+          the CTA button's glow, staggered per-card so all four don't move
+          in lockstep) so it reads as a living aurora, not a static bloom;
+          opacity/scale still transition separately on hover. */}
       <div
         aria-hidden="true"
-        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-30' : 'opacity-30 group-hover:opacity-60 transition-opacity duration-500'}`}
-        style={{ background: gradient, willChange: reduceMotion ? undefined : 'opacity' }}
+        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-35' : 'opacity-35 group-hover:opacity-65 transition-[opacity] duration-500 motion-safe:animate-[cta-glow-drift_11s_ease-in-out_infinite]'}`}
+        style={{
+          background: gradient,
+          willChange: reduceMotion ? undefined : 'opacity, transform',
+          animationDelay: reduceMotion ? undefined : `${index * -2.7}s`,
+        }}
       />
 
       {/* Inside: a plain flat dark-grey surface (CARD_BG) — no aurora, no
           interior gradient wash, no video glow. Just the glass border above,
-          the flat surface, and the header/body/video content on top of it. */}
+          the flat surface, and the header/body/video content on top of it.
+          The border itself is wide + low-opacity + backdrop-blurred, so it
+          reads as a genuine frosted-glass frame (the blur only affects the
+          border ring — CARD_BG is fully opaque, so backdrop-filter has
+          nothing translucent to blur over the interior). */}
       <div
         style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)' }}
-        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[6px] border-white/12 ring-1 ring-white/5"
+        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[8px] border-white/8 backdrop-blur-md ring-1 ring-white/5"
       >
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. Padding-top > padding-bottom (both
