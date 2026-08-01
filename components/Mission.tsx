@@ -3,19 +3,23 @@
 import { useRef } from 'react'
 import { useScroll } from 'framer-motion'
 import TextReveal from './TextReveal'
-import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
-const STATEMENT =
-  "Getting a professional website shouldn't mean big bills, long waits or being left on your own. We design, build and run yours for one flat monthly price — live in a week, no upfront cost, cancel anytime. You run your business; we take care of the website."
-const HIGHLIGHT = 'we take care of the website'
+// Three explicit lines, joined with a standalone " \n " token — split(' ')
+// turns that into an isolated "\n" word TextReveal renders as a <br/>, so
+// the scroll reveal sweeps continuously across all three lines in one pass
+// instead of needing three separate reveal instances.
+const STATEMENT_LINES = [
+  'We design, build and run yours for one flat monthly price — live in a week, no upfront cost, cancel anytime.',
+  "Getting a professional website shouldn't mean big bills, long waits or being left on your own.",
+  'You run your business; we take care of the website.',
+]
+const STATEMENT = STATEMENT_LINES.join(' \n ')
 
-// Matches the other sections' own header size/weight/leading (e.g. WhyYele,
-// BeyondWebsite: font-display, no explicit weight utility — the font-display
-// face only ships 700/800/900, so it renders bold by nearest-weight
-// fallback anyway — leading-tight, clamp(1.75rem,2.5vw,2.5rem)). Left-aligned,
-// not centered as a block (no mx-auto) — matches Hero's own left alignment.
-const textClass = 'font-display text-left leading-tight max-w-4xl text-[clamp(1.75rem,2.5vw,2.5rem)]'
+// Matches the other sections' own header size/weight/leading, one step up
+// from the previous clamp (1.75rem,2.5vw,2.5rem). Centered as a block
+// (mx-auto) but the text itself stays left-justified within it.
+const textClass = 'font-display text-left leading-tight max-w-4xl mx-auto text-[clamp(2rem,2.75vw,2.75rem)]'
 // pb-32 matches the standard bottom gap other sections use before handing
 // off to whatever comes next (e.g. BeyondWebsite's py-28, WhyYele's pb-24).
 const sectionClass = 'relative bg-[#0D0E12] min-h-[65vh] flex items-center px-6 pt-10 pb-32'
@@ -44,10 +48,10 @@ export default function Mission() {
         <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
         <div className="w-full">
           <p className={textClass} style={{ color: '#F2F0EB' }}>
-            {STATEMENT.split(HIGHLIGHT).map((chunk, i, arr) => (
+            {STATEMENT_LINES.map((line, i) => (
               <span key={i}>
-                {chunk}
-                {i < arr.length - 1 && <TextGradient as="span">{HIGHLIGHT}</TextGradient>}
+                {line}
+                {i < STATEMENT_LINES.length - 1 && <br />}
               </span>
             ))}
           </p>
@@ -66,7 +70,7 @@ export default function Mission() {
     <section ref={sectionRef} data-nav-dark className={sectionClass}>
       <div className="absolute top-0 inset-x-0 pointer-events-none" style={topBlendStyle} aria-hidden="true" />
       <div className="w-full">
-        <TextReveal highlight={HIGHLIGHT} scrollYProgress={scrollYProgress} className={textClass}>
+        <TextReveal scrollYProgress={scrollYProgress} className={textClass}>
           {STATEMENT}
         </TextReveal>
       </div>

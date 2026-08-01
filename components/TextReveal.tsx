@@ -75,9 +75,15 @@ export default function TextReveal({
 
   return (
     <p className={className}>
-      <span className="sr-only">{children}</span>
+      <span className="sr-only">{children.replace(/\s*\n\s*/g, ' ')}</span>
       <span aria-hidden="true">
         {words.map((w, wi) => {
+          // A standalone "\n" word (from a " \n " join in the source string)
+          // is a line-break marker, not real text — render it as an actual
+          // <br/> instead of an animated word span, so multi-line source
+          // strings still reveal in one continuous sweep across all lines.
+          if (w.word === '\n') return <br key={wi} />
+
           const d = revealIndex - w.idx
           const t = Math.max(0, Math.min(1, d / TIP_WORDS))
           const wordStyle = {
