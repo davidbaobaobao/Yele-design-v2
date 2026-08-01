@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { motion, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
-const PALE_GOLD = '#F0E6C8'
 const CARD_BG = '#0A0A0C'
 const VIDEO_DIR = '/media/wesection'
 
@@ -69,7 +68,6 @@ type CardData = {
   description: string
   capabilities: string[]
   videoBase: string
-  closingLine?: string
   accent: string
 }
 
@@ -111,7 +109,6 @@ const CARDS: CardData[] = [
       "Hosting, security, updates and every change you need. Handled forever — that's the point.",
     capabilities: ['24/7 SUPPORT', 'UPDATES INCLUDED', 'SECURITY', 'ALWAYS IMPROVING'],
     videoBase: 'wevideo4',
-    closingLine: 'BUILT. STAYING.',
     accent: '#5B4B9E', // violet-indigo
   },
 ]
@@ -353,8 +350,8 @@ function WhatWeDoCard({
       )}
 
       <div
-        style={{ backgroundColor: CARD_BG }}
-        className="relative flex flex-col h-full rounded-3xl overflow-hidden border border-white/[0.08]"
+        style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)' }}
+        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[1.5px] border-white/15 ring-1 ring-white/5"
         onMouseMove={reduceMotion ? undefined : parallax.onMouseMove}
         onMouseLeave={reduceMotion ? undefined : parallax.onMouseLeave}
       >
@@ -422,12 +419,6 @@ function WhatWeDoCard({
           <VideoPanel videoRef={videoRef} videoBase={card.videoBase} title={card.title} reduceMotion={reduceMotion} />
         </div>
       </div>
-
-      {card.closingLine && (
-        <p className="absolute bottom-6 right-8 font-mono text-sm md:text-base" style={{ color: PALE_GOLD }}>
-          {card.closingLine}
-        </p>
-      )}
 
       {dim && (
         <motion.div
