@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
@@ -22,7 +21,6 @@ const LINKS = [
 // isn't part of this — it's a light (bg-base) section now.
 export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
   const { t } = useLang()
-  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [overHero, setOverHero] = useState(hasHero)
   // HowWeWork's Mercury background fade isn't uniformly dark — only the
@@ -120,7 +118,6 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
     if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const langHref = pathname === '/' ? '/es' : '/'
   const ctaHref = t('/registro?lang=es', '/registro')
 
   return (
@@ -155,15 +152,14 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              href={langHref}
-              className={`font-body text-xs font-medium px-2.5 py-1 rounded-lg transition-colors focus-visible:outline-none ${
-                showBoneText ? 'text-bone/80 hover:text-bone bg-white/10' : 'text-muted hover:text-ink bg-ink/5'
+            <a
+              href="https://app.yele.design"
+              className={`font-body text-sm transition-colors focus-visible:outline-none ${
+                showBoneText ? 'text-bone/80 hover:text-bone' : 'text-muted hover:text-ink'
               }`}
-              aria-label={pathname === '/' ? 'Versión en español' : 'English version'}
             >
-              {pathname === '/' ? 'ES' : 'EN'}
-            </Link>
+              {t('Iniciar sesión', 'Log in')}
+            </a>
             <CTAButton href={ctaHref} prefetch={false} variant="light" className="text-xs px-5 py-2.5">
               {t('Empezar gratis', 'Start for free')}
             </CTAButton>
@@ -198,9 +194,9 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
               </button>
             ))}
             <div className="flex items-center gap-3 pt-3">
-              <Link href={langHref} className="font-body text-xs text-muted cursor-pointer">
-                {pathname === '/' ? 'ES' : 'EN'}
-              </Link>
+              <a href="https://app.yele.design" className="font-body text-sm text-muted cursor-pointer">
+                {t('Iniciar sesión', 'Log in')}
+              </a>
               <CTAButton
                 href={ctaHref}
                 prefetch={false}
