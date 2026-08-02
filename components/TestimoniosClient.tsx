@@ -186,7 +186,7 @@ export default function TestimoniosClient({
   useEffect(() => () => cancelAnimationFrame(rafId.current), [])
 
   return (
-    <section className="bg-[#0a0a0a] py-20 md:py-28">
+    <section data-nav-dark className="py-20 md:py-28" style={{ backgroundColor: '#0D0E12' }}>
       <div className="max-w-6xl mx-auto px-6 mb-12">
         <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight">
           {t('Lo que dicen nuestros clientes.', 'What our clients say.')}
