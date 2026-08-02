@@ -111,8 +111,16 @@ export default function ContactForm() {
           className="flex flex-col"
         >
           <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight leading-tight mb-8">
-            {t("Hablemos de cómo llevar tu web al ", "Let's talk about how to set up your website to the ")}
-            <TextGradient as="span">{t('siguiente nivel', 'next level')}</TextGradient>.
+            {t('Hablemos', "Let's talk")}
+            <br />
+            {t('de cómo llevar tu web al ', 'about how to set up your website to the ')}
+            {/* whitespace-nowrap keeps the trailing period glued to the
+                gradient span — an inline-block followed by plain text can
+                otherwise wrap independently, orphaning the "." on its own
+                line. */}
+            <span className="whitespace-nowrap">
+              <TextGradient as="span">{t('siguiente nivel', 'next level')}</TextGradient>.
+            </span>
           </h2>
 
           <a
