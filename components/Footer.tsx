@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { ChevronUp } from 'lucide-react'
 import { WebGLShader } from '@/components/ui/web-gl-shader'
 import { useLang } from '@/context/LanguageContext'
+import { scrollToSection } from '@/lib/nav-scroll'
 
 const WORDS = ['Expensive', 'Ugly', 'Slow', 'Complicated', 'Outdated']
 const TYPING_SPEED = 80
@@ -112,7 +113,7 @@ export default function Footer() {
               <div>
                 <p className="font-display font-semibold text-2xl mb-2">Yele</p>
                 <p className="font-body text-white/60 text-sm max-w-xs leading-relaxed">
-                  {t('Diseño web y marketing.', 'Web design and marketing.')}
+                  {t('Agencia de diseño web y marketing por suscripción.', 'Web design and marketing subscription Agency.')}
                 </p>
                 <a
                   href="mailto:info@yele.design"
@@ -130,13 +131,13 @@ export default function Footer() {
                   <div className="flex flex-col gap-2">
                     {[
                       { id: '#trabajos',      es: 'Trabajos',       en: 'Portfolio' },
-                      { id: '#como-funciona', es: 'Cómo funciona',  en: 'How it works' },
+                      { id: '#how-it-works',  es: 'Cómo funciona',  en: 'How it works' },
                       { id: '#precios',       es: 'Precios',        en: 'Pricing' },
                       { id: '#contacto',      es: 'Contacto',       en: 'Contact' },
                     ].map(({ id, es, en }) => (
                       <button
                         key={id}
-                        onClick={() => document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' })}
+                        onClick={() => scrollToSection(id)}
                         className="text-left font-body text-sm text-white/60 hover:text-white transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                       >
                         {t(es, en)}

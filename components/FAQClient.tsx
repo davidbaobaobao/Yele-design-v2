@@ -35,7 +35,7 @@ export default function FAQClient({
     <section
       id="faq"
       data-nav-dark={dark || undefined}
-      className={`py-24 md:py-32 ${dark ? '' : noBg ? '' : 'bg-base'}`}
+      className={`py-24 md:py-32 scroll-mt-24 ${dark ? '' : noBg ? '' : 'bg-base'}`}
       style={dark ? { backgroundColor: '#0D0E12' } : undefined}
     >
       <div className="max-w-3xl mx-auto px-6">

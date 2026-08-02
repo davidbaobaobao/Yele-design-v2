@@ -7,6 +7,7 @@ import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { CTAButton } from '@/components/ui/cta-button'
+import { isNavJumping } from '@/lib/nav-scroll'
 
 const BG_VIDEO_DIR = '/media/pricing'
 
@@ -348,6 +349,7 @@ export default function PreciosIndexSection() {
 
     const observer = new IntersectionObserver(([entry]) => {
       if (window.innerWidth < 768) return
+      if (isNavJumping()) return
       if (entry.isIntersecting && !snapping) {
         snapping = true
         locked = true
@@ -382,7 +384,7 @@ export default function PreciosIndexSection() {
       ref={sectionRef}
       id="precios"
       data-nav-dark
-      className="relative min-h-screen flex items-center overflow-hidden py-24"
+      className="relative min-h-screen flex items-center overflow-hidden py-24 scroll-mt-24"
       style={{ backgroundColor: '#0D0E12' }}
     >
       {/* Background video — kept behind a dark overlay so the cards/text

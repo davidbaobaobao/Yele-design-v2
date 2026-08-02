@@ -53,7 +53,7 @@ export default function Home() {
         <Mission />
         <WhatWeDo />
         <WhyYele />
-        <div id="trabajos" data-nav-dark>
+        <div id="trabajos" data-nav-dark className="scroll-mt-24">
           <Showcase noHeader noBg fullScreen dark />
         </div>
         <HowWeWork />

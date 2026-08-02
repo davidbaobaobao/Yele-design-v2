@@ -456,7 +456,7 @@ export default function HowWeWork() {
   // participate in the nav's dark/fade signaling at all. ----
   if (reduceMotion) {
     return (
-      <section className="bg-white py-28 px-6">
+      <section id="how-it-works" className="bg-white py-28 px-6 scroll-mt-24">
         <div className="max-w-6xl mx-auto" style={{ transform: 'translateY(-40px)' }}>
           <span className="block font-mono text-sm mb-4" style={{ color: LIGHT_SECONDARY }}>
             HOW IT WORKS
@@ -483,7 +483,7 @@ export default function HowWeWork() {
   }
 
   return (
-    <section ref={sectionRef} data-nav-fade className="relative py-28 px-6">
+    <section ref={sectionRef} id="how-it-works" data-nav-fade className="relative py-28 px-6 scroll-mt-24">
       {/* Single full-section background layer behind the content — cheaper
           than animating the section's own background-color directly, and
           keeps the color transform isolated from the content's own layout. */}

@@ -6,9 +6,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { CTAButton } from '@/components/ui/cta-button'
+import { scrollToSection } from '@/lib/nav-scroll'
 
 const LINKS = [
-  { label: 'How it works', href: '#como-funciona' },
+  { label: 'How it works', href: '#how-it-works' },
   { label: 'Work', href: '#trabajos' },
   { label: 'Pricing', href: '#precios' },
   { label: 'FAQ', href: '#faq' },
@@ -114,8 +115,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
 
   const scrollTo = (href: string) => {
     setOpen(false)
-    const el = document.querySelector(href)
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
+    scrollToSection(href)
   }
 
   const ctaHref = t('/registro?lang=es', '/registro')
