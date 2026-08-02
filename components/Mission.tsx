@@ -12,7 +12,6 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 // instead of needing three separate reveal instances.
 const STATEMENT_LINES = [
   'In Yele, we design, build and maintain your website for one monthly subscription price. Live in a week, no upfront cost, cancel anytime.',
-  "Getting a professional website shouldn't mean big bills, long waits or being left on your own.",
   'You run your business; we take care of the website.',
 ]
 const STATEMENT = STATEMENT_LINES.join(' \n ')
