@@ -165,37 +165,7 @@ function VideoPanel({
 // CSS not matching what's actually applied at runtime). An inline style is
 // computed fresh on every render, directly from `index`, with nothing for
 // a build step to get out of sync with.
-// Below this width, the progressive 74/78/82/86vw tiered widths (a
-// deliberate desktop effect — see the comment above this function's own
-// call sites) just read as "too narrow"; mobile gets a single near-full
-// width with small even side margins instead. 768 matches Tailwind's own
-// default `md:` breakpoint, so this branches at exactly the same point the
-// desktop-only classes elsewhere in this file (md:grid-cols-12 etc.) do.
-const MOBILE_BREAKPOINT = 768
-const MOBILE_SIDE_MARGIN_PX = 32 // 2rem total (1rem/16px each side)
-
 function cardWidthStyle(index: number, viewportWidthPx?: number): React.CSSProperties {
-  if (viewportWidthPx != null && viewportWidthPx < MOBILE_BREAKPOINT) {
-    // Computed as an exact px value once the real viewport width is known
-    // — NOT vw. Some Android Chrome builds include the vertical scrollbar
-    // in `vw`'s own definition, so a vw-based width (as the desktop
-    // formula below uses) can end up a few pixels wider than the actual
-    // visible viewport, pushing the card past the right edge and causing
-    // horizontal overflow/scroll. A plain px width computed from
-    // `window.innerWidth` (which already excludes the scrollbar) has no
-    // such ambiguity. maxWidth is a %-based calc (relative to this card's
-    // own 100%-wide containing block, which the browser also already
-    // excludes the scrollbar from) purely as a belt-and-braces cap for the
-    // one SSR/pre-hydration frame before viewportWidthPx resolves.
-    return {
-      width: `${viewportWidthPx - MOBILE_SIDE_MARGIN_PX}px`,
-      maxWidth: `calc(100% - ${MOBILE_SIDE_MARGIN_PX}px)`,
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      boxSizing: 'border-box',
-    }
-  }
-
   const pct = (74 + index * 4) / 100
   return {
     width: viewportWidthPx != null ? `${Math.min(Math.round(viewportWidthPx * pct), 1500)}px` : `${pct * 100}vw`,
