@@ -12,11 +12,12 @@ import { TextGradient } from '@/components/ui/text-gradient'
 const GRAYSCALE_IMAGE_NUMBERS = new Set([4, 5, 12, 14])
 const PIZZA_DIR = '/media/pizza'
 
-// Large decorative video floating BEHIND the "Want content?" headline (a
-// concrete example of "any content" rather than an abstract claim) — sized
-// to fill most of its relative wrapper, absolutely centered, with no card
-// frame: no border/radius/shadow, just a radial mask so its own rectangular
-// edges dissolve into the white section background instead of reading as a
+// Large decorative video sitting ABOVE the "Want content?" headline (a
+// concrete example of "any content" rather than an abstract claim) — a
+// normal-flow block (not absolutely overlapping the text), with a clear
+// margin-bottom gap before the heading below it. No card frame: no
+// border/radius/shadow, just a radial mask so its own rectangular edges
+// dissolve into the white section background instead of reading as a
 // floating tile. -webkit-mask-image is required for Safari; mask-image
 // alone is unsupported there as of this writing.
 function PizzaVideo() {
@@ -31,7 +32,7 @@ function PizzaVideo() {
       playsInline
       preload="auto"
       poster={`${PIZZA_DIR}/pizza_poster.jpg`}
-      className="absolute inset-0 m-auto w-[85vw] max-w-3xl aspect-video object-cover pointer-events-none"
+      className="w-full max-w-2xl aspect-video object-cover pointer-events-none mb-10 md:mb-14"
       style={{
         WebkitMaskImage: 'radial-gradient(ellipse 55% 55% at 50% 50%, black 30%, transparent 78%)',
         maskImage: 'radial-gradient(ellipse 55% 55% at 50% 50%, black 30%, transparent 78%)',
@@ -405,7 +406,7 @@ function ContentShowcaseReduced() {
           </motion.div>
 
           <motion.div
-            className="relative flex flex-col items-center py-16"
+            className="flex flex-col items-center py-16"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.4 }}
@@ -413,7 +414,7 @@ function ContentShowcaseReduced() {
           >
             <PizzaVideo />
             <h2
-              className="relative z-10 font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
+              className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
               style={{ color: '#16161A' }}
             >
               Want content?
@@ -519,19 +520,13 @@ export default function ContentShowcase() {
           ))}
         </div>
 
-        {/* Phase 2 — headline (+ arrow below it) scrolls up through center
-            and off the top as one group, sharing the same textY. The pizza
-            video is a sibling (not a child) of the text's own motion.div —
-            it needs the full viewport-sized outer box to center a big video
-            against, not the text block's own compact flex height — but
-            shares the same textY so it scrolls with the headline as one
-            unit. */}
+        {/* Phase 2 — video, headline, and arrow scroll up through center and
+            off the top together as one stacked column, sharing the same
+            textY. */}
         <div className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none" aria-hidden="true">
-          <motion.div className="absolute inset-0" style={{ y: textY }}>
+          <motion.div className="flex flex-col items-center" style={{ y: textY }}>
             <PizzaVideo />
-          </motion.div>
-          <motion.div className="relative flex flex-col items-center" style={{ y: textY }}>
-            <h2 className="relative z-10 font-display text-center leading-tight text-[clamp(1.75rem,3.75vw,3.75rem)] max-w-4xl" style={{ color: '#16161A' }}>
+            <h2 className="font-display text-center leading-tight text-[clamp(1.75rem,3.75vw,3.75rem)] max-w-4xl" style={{ color: '#16161A' }}>
               Want content?
               <br />
               We create <TextGradient as="span">any</TextGradient> content you need
