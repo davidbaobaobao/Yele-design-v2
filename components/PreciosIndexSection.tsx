@@ -186,7 +186,7 @@ function FeatureTooltip({ text, dark }: { text: string; dark: boolean }) {
   }, [open])
 
   return (
-    <span ref={wrapRef} className="relative inline-flex flex-shrink-0">
+    <span ref={wrapRef} className="relative inline-flex flex-shrink-0 align-middle">
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
@@ -278,7 +278,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
         <span className={`we-pill-orange font-body font-semibold text-white rounded-full inline-flex items-center whitespace-nowrap self-start ${
           plan.highlighted ? 'text-sm px-4 py-1.5' : 'text-xs px-3 py-1'
         }`}>
-          {t('Primer mes gratis', '1st month free')}
+          {t('Primer mes gratis', 'First month free')}
         </span>
       </div>
 
@@ -290,9 +290,21 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
               {!isHeader && (
                 <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />
               )}
-              <span className={`font-body text-sm inline-flex items-center gap-1.5 ${plan.highlighted ? 'text-white/80' : 'text-ink'} ${isHeader ? 'font-bold' : ''}`}>
+              {/* Plain inline flow (not inline-flex) — the tooltip icon needs
+                  to sit as part of the TEXT's own line-wrapping, right after
+                  the last word, not as a flex sibling: a flex row vertically
+                  centers the icon against the text's WHOLE block height,
+                  which for a 2-line feature (e.g. "Periodic redesign of
+                  website elements") puts it centered between the two lines
+                  instead of inline after the final word. */}
+              <span className={`font-body text-sm ${plan.highlighted ? 'text-white/80' : 'text-ink'} ${isHeader ? 'font-bold' : ''}`}>
                 {feat.text}
-                {feat.tooltip && <FeatureTooltip text={feat.tooltip} dark={plan.highlighted} />}
+                {feat.tooltip && (
+                  <>
+                    {' '}
+                    <FeatureTooltip text={feat.tooltip} dark={plan.highlighted} />
+                  </>
+                )}
               </span>
             </li>
           )
