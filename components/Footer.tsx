@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { ChevronUp } from 'lucide-react'
 import { WebGLShader } from '@/components/ui/web-gl-shader'
-import { InfiniteGrid } from '@/components/ui/the-infinite-grid'
 import { useLang } from '@/context/LanguageContext'
 
 const WORDS = ['Expensive', 'Ugly', 'Slow', 'Complicated', 'Outdated']
@@ -66,12 +65,10 @@ export default function Footer() {
   const { displayText, cursorVisible } = useTypewriter(WORDS)
 
   return (
-    <footer className="relative bg-black text-white overflow-hidden">
-      {/* Gradient connecting ContactForm (#16161A) to black footer */}
-      <div className="absolute top-0 left-0 right-0 h-[60px] bg-gradient-to-b from-ink to-transparent z-20 pointer-events-none" />
-
-      {/* WebGL background layers */}
-      <InfiniteGrid />
+    <footer className="relative text-white overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
+      {/* Light-beams shader only — the grid layer that used to sit behind
+          it is gone; ContactForm right above is the same #0D0E12, so no
+          connecting gradient is needed at the seam anymore either. */}
       <WebGLShader />
 
       {/* Content */}
