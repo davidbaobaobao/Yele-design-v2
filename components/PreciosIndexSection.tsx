@@ -311,28 +311,16 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
         })}
       </ul>
 
-      {plan.highlighted ? (
-        <CTAButton href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)} variant="light" className="w-full">
-          {t('Empezar gratis', 'Try for free')}
-        </CTAButton>
-      ) : (
-        <motion.a
-          href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)}
-          className="relative overflow-hidden block text-center font-body font-medium text-sm py-3.5 rounded-xl cursor-pointer text-white bg-ink"
-          whileHover="hover"
-          whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}
-          initial="rest"
-        >
-          <motion.span
-            className="absolute inset-0 bg-black"
-            variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-            transition={{ duration: 0.3, ease: 'easeOut' } as Transition}
-            style={{ originX: 0 }}
-            aria-hidden="true"
-          />
-          <span className="relative z-10">{t('Empezar gratis', 'Try for free')}</span>
-        </motion.a>
-      )}
+      {/* All three plans share the same glowing CTA pill now — "light"
+          (bone) on Pro's dark card, "dark" (near-black) on Starter/
+          Frontier's light bg-base cards, for contrast either way. */}
+      <CTAButton
+        href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)}
+        variant={plan.highlighted ? 'light' : 'dark'}
+        className="w-full"
+      >
+        {t('Empezar gratis', 'Try for free')}
+      </CTAButton>
     </motion.div>
   )
 }
