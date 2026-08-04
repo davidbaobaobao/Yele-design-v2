@@ -35,6 +35,11 @@ const config: Config = {
         bone: "#F2F0EB",
         hairline: "rgba(0,0,0,0.08)",
         hairlineDark: "rgba(255,255,255,0.12)",
+        // Flat brand pink — same hex already used site-wide for the pink accent
+        // (CTA glow, focus rings). The survey is the first place it's a
+        // full-bleed background, so it gets a named token (bg-survey-bg /
+        // --survey-bg via the addVariablesForColors plugin below).
+        "survey-bg": "#D46FC8",
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],

@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { colorLabels, goalLabel, styleLabels } from '@/app/survey/_lib/data'
+import {
+  colorLabels,
+  functionalityLabels,
+  goalLabel,
+  planLabel,
+  styleLabels,
+  updateOftenLabels,
+} from '@/app/survey/_lib/data'
 
 const RECIPIENTS = [
   process.env.STUDIO_EMAIL ?? 'info@yele.design',
@@ -17,7 +24,32 @@ const RECIPIENTS = [
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { id, name, company, email, phone, goal, styles, colors, business, sells, currentStep, completed } = body
+    const {
+      id,
+      name,
+      company,
+      email,
+      phone,
+      planInterest,
+      goal,
+      styles,
+      colors,
+      business,
+      sells,
+      links,
+      noWebPresence,
+      services,
+      servicesFromLinks,
+      address,
+      hours,
+      updateOften,
+      functionality,
+      logoUrl,
+      photoUrls,
+      needsBranding,
+      currentStep,
+      completed,
+    } = body
 
     if (!id) {
       return NextResponse.json({ error: 'Missing session id' }, { status: 400 })
@@ -47,11 +79,23 @@ export async function POST(request: Request) {
       company: company || null,
       email: email || null,
       phone: phone || null,
+      plan_interest: planInterest || null,
       goal: goal || null,
       styles: styles ?? [],
       colors: colors ?? [],
       business: business || null,
       sells: sells || null,
+      links: links ?? {},
+      no_web_presence: noWebPresence ?? false,
+      services: services ?? [],
+      services_from_links: servicesFromLinks ?? false,
+      address: address ?? {},
+      hours: hours ?? {},
+      update_often: updateOften ?? [],
+      functionality: functionality ?? [],
+      logo_url: logoUrl || null,
+      photo_urls: photoUrls ?? [],
+      needs_branding: needsBranding ?? false,
       current_step: currentStep ?? 1,
     }
     if (isCompleting) payload.completed = true
@@ -72,7 +116,29 @@ export async function POST(request: Request) {
           to: RECIPIENTS,
           replyTo: email || undefined,
           subject: `New survey completed — ${name || company || 'anonymous lead'}`,
-          html: buildCompletionEmail({ name, company, email, phone, goal, styles, colors, business, sells }),
+          html: buildCompletionEmail({
+            name,
+            company,
+            email,
+            phone,
+            planInterest,
+            goal,
+            styles,
+            colors,
+            business,
+            sells,
+            links,
+            noWebPresence,
+            services,
+            servicesFromLinks,
+            address,
+            hours,
+            updateOften,
+            functionality,
+            logoUrl,
+            photoUrls,
+            needsBranding,
+          }),
         })
       } else {
         console.log('[survey] RESEND_API_KEY not set — completion email skipped', { id })
@@ -86,17 +152,31 @@ export async function POST(request: Request) {
   }
 }
 
-function buildCompletionEmail(data: {
+interface CompletionEmailData {
   name?: string
   company?: string
   email?: string
   phone?: string
+  planInterest?: string
   goal?: string
   styles?: string[]
   colors?: string[]
   business?: string
   sells?: string
-}): string {
+  links?: Record<string, string>
+  noWebPresence?: boolean
+  services?: { name: string; price: string }[]
+  servicesFromLinks?: boolean
+  address?: { hasPhysical?: boolean; line1?: string; city?: string; state?: string; zip?: string }
+  hours?: { mode?: string; preset?: string }
+  updateOften?: string[]
+  functionality?: string[]
+  logoUrl?: string
+  photoUrls?: string[]
+  needsBranding?: boolean
+}
+
+function buildCompletionEmail(data: CompletionEmailData): string {
   const row = (label: string, value: string | undefined | null) =>
     value
       ? `<tr>
@@ -112,6 +192,35 @@ function buildCompletionEmail(data: {
       <table style="width:100%;border-collapse:collapse;border:1px solid #E8E4DF;">${rows}</table>
     </div>`
       : ''
+
+  const linkRows = data.links
+    ? Object.entries(data.links)
+        .filter(([, v]) => v)
+        .map(([k, v]) => row(k, v))
+        .join('')
+    : ''
+
+  const servicesText = data.services?.length
+    ? data.services
+        .filter((s) => s.name)
+        .map((s) => `${s.name}${s.price ? ` — ${s.price}` : ''}`)
+        .join('<br/>')
+    : ''
+
+  const addr = data.address
+  const addressText = addr?.hasPhysical
+    ? [addr.line1, addr.city, addr.state, addr.zip].filter(Boolean).join(', ')
+    : addr?.hasPhysical === false
+      ? 'Online only / mobile business'
+      : ''
+
+  const hoursText = data.hours?.mode === 'google'
+    ? 'Pulled from Google Business Profile'
+    : data.hours?.mode === 'preset'
+      ? data.hours.preset
+      : data.hours?.mode === 'custom'
+        ? 'Custom (see admin panel)'
+        : ''
 
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
@@ -131,6 +240,7 @@ function buildCompletionEmail(data: {
       'Contact',
       row('Name', data.name) + row('Company', data.company) + row('Email', data.email) + row('Phone', data.phone)
     )}
+    ${section('Plan interest', row('Plan', data.planInterest ? planLabel(data.planInterest) : null))}
     ${section(
       'Design brief',
       row('Goal', data.goal ? goalLabel(data.goal) : null) +
@@ -140,6 +250,29 @@ function buildCompletionEmail(data: {
     ${section(
       'The business',
       row('What they do', data.business) + row('What they sell / edge', data.sells)
+    )}
+    ${section(
+      'Online presence',
+      row('Not online yet', data.noWebPresence ? 'Yes' : null) + linkRows
+    )}
+    ${section(
+      'Services / products',
+      row('Pull from links', data.servicesFromLinks ? 'Yes' : null) + row('Listed', servicesText || null)
+    )}
+    ${section('Location & hours', row('Address', addressText || null) + row('Hours', hoursText || null))}
+    ${section(
+      'Site upkeep',
+      row('Updates often', data.updateOften?.length ? updateOftenLabels(data.updateOften).join(', ') : null)
+    )}
+    ${section(
+      'Functionality wanted',
+      row('Features', data.functionality?.length ? functionalityLabels(data.functionality).join(', ') : null)
+    )}
+    ${section(
+      'Assets',
+      row('Needs branding', data.needsBranding ? 'Yes' : null) +
+        row('Logo', data.logoUrl || null) +
+        row('Photos', data.photoUrls?.length ? `${data.photoUrls.length} uploaded` : null)
     )}
     <div style="text-align:center;margin-top:24px;">
       <a href="https://app.yele.design/admin" style="display:inline-block;background:#16161A;color:#FFFFFF;font-weight:700;font-size:13px;padding:14px 32px;text-decoration:none;letter-spacing:0.04em;border-radius:8px;">
