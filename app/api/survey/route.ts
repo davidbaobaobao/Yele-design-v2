@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import {
   colorLabels,
+  effectLabels,
   functionalityLabels,
   goalLabel,
   planLabel,
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
       goal,
       styles,
       colors,
+      effects,
       business,
       sells,
       links,
@@ -83,6 +85,7 @@ export async function POST(request: Request) {
       goal: goal || null,
       styles: styles ?? [],
       colors: colors ?? [],
+      effects: effects ?? [],
       business: business || null,
       sells: sells || null,
       links: links ?? {},
@@ -125,6 +128,7 @@ export async function POST(request: Request) {
             goal,
             styles,
             colors,
+            effects,
             business,
             sells,
             links,
@@ -161,6 +165,7 @@ interface CompletionEmailData {
   goal?: string
   styles?: string[]
   colors?: string[]
+  effects?: string[]
   business?: string
   sells?: string
   links?: Record<string, string>
@@ -245,7 +250,8 @@ function buildCompletionEmail(data: CompletionEmailData): string {
       'Design brief',
       row('Goal', data.goal ? goalLabel(data.goal) : null) +
         row('Styles', data.styles?.length ? styleLabels(data.styles).join(', ') : null) +
-        row('Colours', data.colors?.length ? colorLabels(data.colors).join(', ') : null)
+        row('Colours', data.colors?.length ? colorLabels(data.colors).join(', ') : null) +
+        row('Site feel', data.effects?.length ? effectLabels(data.effects).join(', ') : null)
     )}
     ${section(
       'The business',

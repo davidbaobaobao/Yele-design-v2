@@ -1,6 +1,15 @@
 export type GoalId = 'statement' | 'sell' | 'both'
 export type StyleId = 'minimalism' | 'swiss' | 'bento' | 'editorial' | 'luxury' | 'dark' | 'neobrutalism' | 'organic'
 export type ColorId = 'mono' | 'earth' | 'cool' | 'vibrant' | 'pastel' | 'moody' | 'green' | 'contrast'
+export type EffectId =
+  | 'flowy'
+  | 'minimal'
+  | 'scroll_animation'
+  | 'realistic'
+  | 'cinematic'
+  | 'minimal3d'
+  | '3dmain'
+  | 'product'
 export type PlanId = 'starter' | 'pro' | 'frontier' | 'not_sure'
 export type UpdateOftenId =
   | 'menu'
@@ -68,6 +77,7 @@ export interface SurveyAnswers {
   goal: GoalId | ''
   styles: StyleId[]
   colors: ColorId[]
+  effects: EffectId[]
   business: string
   sells: string
   links: LinksAnswers
@@ -112,6 +122,7 @@ export const EMPTY_ANSWERS: SurveyAnswers = {
   goal: '',
   styles: [],
   colors: [],
+  effects: [],
   business: '',
   sells: '',
   links: { website: '', googleBusiness: '', instagram: '', facebook: '', yelp: '', other: '' },
@@ -150,9 +161,12 @@ export const PLAN_OPTIONS: { id: PlanId; title: string; price: string; descripti
 ]
 
 // ── Step 4 — goal ────────────────────────────────────────────────────────
-export const GOAL_OPTIONS: { id: GoalId; title: string; description: string }[] = [
-  { id: 'statement', title: 'Make a statement', description: 'Bold, unforgettable, jaw-dropping' },
-  { id: 'sell', title: 'Sell & convert', description: 'Classy, professional, straight to the point' },
+// statement/sell get large image cards (image under public/media/surveymedia/,
+// see GoalImageCard); "both" has no matching photo, so it stays a plain
+// SelectCard — image is undefined there on purpose.
+export const GOAL_OPTIONS: { id: GoalId; title: string; description: string; image?: string }[] = [
+  { id: 'statement', title: 'Make a statement', description: 'Bold, unforgettable, jaw-dropping', image: 'statement' },
+  { id: 'sell', title: 'Sell & convert', description: 'Classy, professional, straight to the point', image: 'sell' },
   { id: 'both', title: 'Both / middle ground', description: 'Beautiful and built to sell' },
 ]
 
@@ -187,15 +201,33 @@ export const STYLE_OPTIONS: { id: StyleId; label: string; fileKey: string; fallb
 // gives poor text-on-background contrast if reused directly as a solid
 // fallback block).
 export const COLOR_OPTIONS: { id: ColorId; label: string; filename: string; swatch: string[]; fallbackBg: string; fallbackText: string }[] = [
-  { id: 'mono', label: 'Monochrome B&W', filename: 'monochrome.png', swatch: ['#111111', '#FFFFFF'], fallbackBg: '#111111', fallbackText: '#FFFFFF' },
-  { id: 'earth', label: 'Warm earth tones', filename: 'warm_earth.png', swatch: ['#8B5E3C', '#C9A66B', '#E4D4B5'], fallbackBg: '#8B5E3C', fallbackText: '#F2E8D8' },
-  { id: 'cool', label: 'Cool blues', filename: 'cool_blues.jpg', swatch: ['#123C69', '#3E7CB1', '#AAD7D9'], fallbackBg: '#123C69', fallbackText: '#AAD7D9' },
-  { id: 'vibrant', label: 'Vibrant & colourful', filename: 'vibrant.jpg', swatch: ['#FF3B3B', '#FFD23B', '#3BB8FF', '#8B3BFF'], fallbackBg: '#3BB8FF', fallbackText: '#16161A' },
-  { id: 'pastel', label: 'Pastel & soft', filename: 'pastel.jpg', swatch: ['#FFD6E8', '#D6E8FF', '#E8FFD6'], fallbackBg: '#FFD6E8', fallbackText: '#16161A' },
-  { id: 'moody', label: 'Dark & moody', filename: 'dark.jpg', swatch: ['#0B0B10', '#2A2A35', '#4A4A5A'], fallbackBg: '#0B0B10', fallbackText: '#FFFFFF' },
-  { id: 'green', label: 'Earthy greens', filename: 'earthy.jpg', swatch: ['#3F4F32', '#6E8259', '#A9B99A'], fallbackBg: '#3F4F32', fallbackText: '#D9E4CE' },
-  { id: 'contrast', label: 'Bold contrast', filename: 'bold.png', swatch: ['#0B0B10', '#FFFFFF', '#FF3B3B'], fallbackBg: '#0B0B10', fallbackText: '#FFFFFF' },
+  { id: 'mono', label: 'Monochrome B&W', filename: 'monochrome.webp', swatch: ['#111111', '#FFFFFF'], fallbackBg: '#111111', fallbackText: '#FFFFFF' },
+  { id: 'earth', label: 'Warm earth tones', filename: 'warm_earth.webp', swatch: ['#8B5E3C', '#C9A66B', '#E4D4B5'], fallbackBg: '#8B5E3C', fallbackText: '#F2E8D8' },
+  { id: 'cool', label: 'Cool blues', filename: 'cool_blues.webp', swatch: ['#123C69', '#3E7CB1', '#AAD7D9'], fallbackBg: '#123C69', fallbackText: '#AAD7D9' },
+  { id: 'vibrant', label: 'Vibrant & colourful', filename: 'vibrant.webp', swatch: ['#FF3B3B', '#FFD23B', '#3BB8FF', '#8B3BFF'], fallbackBg: '#3BB8FF', fallbackText: '#16161A' },
+  { id: 'pastel', label: 'Pastel & soft', filename: 'pastel.webp', swatch: ['#FFD6E8', '#D6E8FF', '#E8FFD6'], fallbackBg: '#FFD6E8', fallbackText: '#16161A' },
+  { id: 'moody', label: 'Dark & moody', filename: 'dark.webp', swatch: ['#0B0B10', '#2A2A35', '#4A4A5A'], fallbackBg: '#0B0B10', fallbackText: '#FFFFFF' },
+  { id: 'green', label: 'Earthy greens', filename: 'earthy.webp', swatch: ['#3F4F32', '#6E8259', '#A9B99A'], fallbackBg: '#3F4F32', fallbackText: '#D9E4CE' },
+  { id: 'contrast', label: 'Bold contrast', filename: 'bold.webp', swatch: ['#0B0B10', '#FFFFFF', '#FF3B3B'], fallbackBg: '#0B0B10', fallbackText: '#FFFFFF' },
 ]
+
+// ── Steps 7 & 8 — site "effect"/feel, two pages of 4 video cards ─────────
+// fileKey is the filename prefix under public/media/surveymedia/ —
+// {fileKey}_hq.mp4 / {fileKey}_hq.webm / {fileKey}_poster.jpg. Fixed order
+// matches the spec exactly: page A = first 4, page B = last 4.
+export const EFFECT_OPTIONS: { id: EffectId; label: string; caption: string; fileKey: string }[] = [
+  { id: 'flowy', label: 'Smooth loading', caption: 'Elements load smoothly as you scroll.', fileKey: 'flowy' },
+  { id: 'minimal', label: 'Minimal & clean', caption: 'Few effects, simple and clean feeling.', fileKey: 'minimal' },
+  { id: 'scroll_animation', label: 'Scroll animation', caption: 'Elements move as you scroll.', fileKey: 'scroll_animation' },
+  { id: 'realistic', label: 'Ultra-realistic background', caption: 'Real, lifelike background video.', fileKey: 'realistic' },
+  { id: 'cinematic', label: 'Cinematic', caption: 'Cinematic, artistic background video.', fileKey: 'cinematic' },
+  { id: 'minimal3d', label: 'Minimal 3D', caption: 'Subtle 3D elements, calm background.', fileKey: 'minimal3d' },
+  { id: '3dmain', label: '3D as main focus', caption: 'Bold 3D elements, cool motion.', fileKey: '3dmain' },
+  { id: 'product', label: 'Product showcase', caption: 'Interactive product showcase on scroll.', fileKey: 'product' },
+]
+
+export const EFFECT_PAGE_1 = EFFECT_OPTIONS.slice(0, 4)
+export const EFFECT_PAGE_2 = EFFECT_OPTIONS.slice(4, 8)
 
 // ── Step 11 — hours presets ──────────────────────────────────────────────
 export const HOURS_PRESETS: { id: HoursPreset; label: string }[] = [
@@ -277,14 +309,14 @@ export function getFeatureBadge(minPlan: PlanId, planInterest: PlanId | ''): str
   return 'Upgrade'
 }
 
-export const TOTAL_STEPS = 14
+export const TOTAL_STEPS = 16
 
 // 1 name/company · 2 contact · 3 plan · 4 goal · 5 style (8, one page) ·
-// 6 colours (8, one page) · 7 business · 8 sells · 9 online links ·
-// 10 services · 11 hours/address · 12 update-often · 13 functionality ·
-// 14 uploads
-export const SPLIT_STEPS = new Set([1, 2, 7, 8, 9, 10, 11, 14])
-export const FULL_STEPS = new Set([3, 4, 5, 6, 12, 13])
+// 6 colours (8, one page) · 7 effects page A (4) · 8 effects page B (4) ·
+// 9 business · 10 sells · 11 online links · 12 services ·
+// 13 hours/address · 14 update-often · 15 functionality · 16 uploads
+export const SPLIT_STEPS = new Set([1, 2, 9, 10, 11, 12, 13, 16])
+export const FULL_STEPS = new Set([3, 4, 5, 6, 7, 8, 14, 15])
 
 export function stepMode(step: number): 'split' | 'full' {
   return SPLIT_STEPS.has(step) ? 'split' : 'full'
@@ -305,6 +337,10 @@ export function styleLabels(ids: string[]): string[] {
 
 export function colorLabels(ids: string[]): string[] {
   return ids.map((id) => COLOR_OPTIONS.find((c) => c.id === id)?.label ?? id)
+}
+
+export function effectLabels(ids: string[]): string[] {
+  return ids.map((id) => EFFECT_OPTIONS.find((e) => e.id === id)?.label ?? id)
 }
 
 export function updateOftenLabels(ids: string[]): string[] {
@@ -355,10 +391,10 @@ export function isUrlLikelyValid(value: string): boolean {
   }
 }
 
-// Everything is optional except these 3 gates. Steps 4-14 (goal, styles,
-// colours, business, sells, links, services, address/hours, update-often,
-// functionality, uploads) are all freely skippable — their defaults are
-// already save-safe empty values.
+// Everything is optional except these 3 gates. Steps 4-16 (goal, styles,
+// colours, effects x2, business, sells, links, services, address/hours,
+// update-often, functionality, uploads) are all freely skippable — their
+// defaults are already save-safe empty values.
 export function isStepValid(step: number, a: SurveyAnswers): boolean {
   switch (step) {
     case 1:

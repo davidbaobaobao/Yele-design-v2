@@ -20,10 +20,12 @@ interface StyleImageCardProps {
   onClick: () => void
 }
 
-// Full-bleed image tile with a bottom label scrim. If every extension 404s
-// (image not uploaded yet), falls back to a flat color block evocative of
-// the style with the label centered — the grid must still work before all
-// 16 images exist.
+// Landscape (16:9) image tile with a bottom label scrim. If every extension
+// 404s (image not uploaded yet), falls back to a flat color block evocative
+// of the style with the label centered — the grid must still work before
+// all 16 images exist. aspect-video (rather than filling its grid cell) so
+// every card keeps a true 16:9 shape regardless of how many rows/columns
+// the grid ends up needing.
 export default function StyleImageCard({ fileKey, round, label, fallbackBg, fallbackText, selected, onClick }: StyleImageCardProps) {
   const [extIndex, setExtIndex] = useState(0)
   const [failed, setFailed] = useState(false)
@@ -34,7 +36,7 @@ export default function StyleImageCard({ fileKey, round, label, fallbackBg, fall
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`group relative h-full w-full overflow-hidden rounded-2xl text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D0E12] ${
+      className={`group relative aspect-video w-full overflow-hidden rounded-2xl text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D0E12] ${
         selected ? 'ring-4 ring-white' : ''
       }`}
     >
