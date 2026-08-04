@@ -5,6 +5,7 @@ import { motion, type Transition } from 'framer-motion'
 import { ClipboardList } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { TextGradient } from '@/components/ui/text-gradient'
+import { CTAButton } from '@/components/ui/cta-button'
 
 // Same number the floating WhatsApp button used before it was retired in
 // favor of the card below.
@@ -137,6 +138,10 @@ export default function ContactForm() {
             <IconCard href={WHATSAPP_URL} icon={<WhatsAppGlyph />} label="WhatsApp" />
             <IconCard href={SURVEY_URL} icon={<ClipboardList size={26} strokeWidth={1.5} aria-hidden="true" />} label="Quiz" />
           </div>
+
+          <CTAButton href="/schedule" variant="light" className="mt-4 self-start">
+            {t('Agendar una llamada', 'Schedule a meeting')}
+          </CTAButton>
         </motion.div>
 
         {/* RIGHT — form */}
