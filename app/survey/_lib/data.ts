@@ -1,5 +1,11 @@
 export type GoalId = 'statement' | 'sell' | 'both'
-export type StyleId = 'minimal' | 'bold' | 'elegant' | 'playful' | 'dark' | 'warm'
+export type StyleId = 'minimalism' | 'swiss' | 'bento' | 'editorial' | 'luxury' | 'dark' | 'neobrutalism' | 'organic'
+export type StyleRound = 1 | 2
+// Stored shape in answers.styles — each style page (5, 6) only ever adds or
+// removes its own round-suffixed key, e.g. "minimalism1" / "minimalism2",
+// so a style picked on both pages is trivially detectable downstream (same
+// StyleId, both suffixes present) without any merge/dedupe logic here.
+export type StyleKey = `${StyleId}${StyleRound}`
 export type ColorId = 'mono' | 'earth' | 'cool' | 'vibrant' | 'pastel' | 'moody' | 'yele'
 export type PlanId = 'starter' | 'pro' | 'frontier' | 'not_sure'
 export type UpdateOftenId =
@@ -66,7 +72,7 @@ export interface SurveyAnswers {
   phone: string
   planInterest: PlanId | ''
   goal: GoalId | ''
-  styles: StyleId[]
+  styles: StyleKey[]
   colors: ColorId[]
   business: string
   sells: string
@@ -156,15 +162,26 @@ export const GOAL_OPTIONS: { id: GoalId; title: string; description: string }[] 
   { id: 'both', title: 'Both / middle ground', description: 'Beautiful and built to sell' },
 ]
 
-// ── Step 5 — style ───────────────────────────────────────────────────────
-export const STYLE_OPTIONS: { id: StyleId; label: string; swatch: string[] }[] = [
-  { id: 'minimal', label: 'Minimal & clean', swatch: ['#FFFFFF', '#E8E6E1', '#16161A'] },
-  { id: 'bold', label: 'Bold & vibrant', swatch: ['#FF3B3B', '#FFD23B', '#3BB8FF'] },
-  { id: 'elegant', label: 'Elegant & luxury', swatch: ['#16161A', '#C9A96A', '#F2F0EB'] },
-  { id: 'playful', label: 'Playful & friendly', swatch: ['#FFD6E8', '#FFEB99', '#B8F2E6'] },
-  { id: 'dark', label: 'Dark & modern', swatch: ['#0B0B10', '#2A2A35', '#D46FC8'] },
-  { id: 'warm', label: 'Warm & organic', swatch: ['#C9A66B', '#8B5E3C', '#E4D4B5'] },
+// ── Steps 5 & 6 — style (two rounds, same 8 styles) ─────────────────────
+// fileKey is the actual filename prefix under public/media/surveystyle/ —
+// it matches `id` for every style except neobrutalism, whose uploaded
+// assets are named "brutalism{round}". fallbackBg/fallbackText are used
+// when an image is genuinely missing (see StyleImageCard) — colors chosen
+// to evoke the style itself so the grid still reads correctly pre-upload.
+export const STYLE_OPTIONS: { id: StyleId; label: string; fileKey: string; fallbackBg: string; fallbackText: string }[] = [
+  { id: 'minimalism', label: 'Minimal & clean', fileKey: 'minimalism', fallbackBg: '#F7F6F3', fallbackText: '#16161A' },
+  { id: 'swiss', label: 'Sleek & structured', fileKey: 'swiss', fallbackBg: '#E7E7E7', fallbackText: '#16161A' },
+  { id: 'bento', label: 'Modern tiles', fileKey: 'bento', fallbackBg: '#D6E0E8', fallbackText: '#16161A' },
+  { id: 'editorial', label: 'Magazine look', fileKey: 'editorial', fallbackBg: '#EDE6D6', fallbackText: '#16161A' },
+  { id: 'luxury', label: 'High-end & elegant', fileKey: 'luxury', fallbackBg: '#1A1A1A', fallbackText: '#C9A96A' },
+  { id: 'dark', label: 'Dark & cinematic', fileKey: 'dark', fallbackBg: '#0B0B10', fallbackText: '#FFFFFF' },
+  { id: 'neobrutalism', label: 'Bold & raw', fileKey: 'brutalism', fallbackBg: '#F5E500', fallbackText: '#16161A' },
+  { id: 'organic', label: 'Warm & handmade', fileKey: 'organic', fallbackBg: '#C9A66B', fallbackText: '#16161A' },
 ]
+
+export function styleKey(id: StyleId, round: StyleRound): StyleKey {
+  return `${id}${round}` as StyleKey
+}
 
 // ── Step 6 — colours ─────────────────────────────────────────────────────
 export const COLOR_OPTIONS: { id: ColorId; label: string; swatch: string[] }[] = [
@@ -257,10 +274,14 @@ export function getFeatureBadge(minPlan: PlanId, planInterest: PlanId | ''): str
   return 'Upgrade'
 }
 
-export const TOTAL_STEPS = 14
+export const TOTAL_STEPS = 15
 
-export const SPLIT_STEPS = new Set([1, 2, 7, 8, 9, 10, 11, 14])
-export const FULL_STEPS = new Set([3, 4, 5, 6, 12, 13])
+// 1 name/company · 2 contact · 3 plan · 4 goal · 5 style (page 1) ·
+// 6 style (page 2) · 7 colours · 8 business · 9 sells · 10 online links ·
+// 11 services · 12 hours/address · 13 update-often · 14 functionality ·
+// 15 uploads
+export const SPLIT_STEPS = new Set([1, 2, 8, 9, 10, 11, 12, 15])
+export const FULL_STEPS = new Set([3, 4, 5, 6, 7, 13, 14])
 
 export function stepMode(step: number): 'split' | 'full' {
   return SPLIT_STEPS.has(step) ? 'split' : 'full'
@@ -275,8 +296,15 @@ export function goalLabel(id: string): string {
   return GOAL_OPTIONS.find((g) => g.id === id)?.title ?? id
 }
 
+// ids are round-suffixed StyleKeys (e.g. "minimalism1") — strip the trailing
+// round digit to look up the label, then note which page it came from.
 export function styleLabels(ids: string[]): string[] {
-  return ids.map((id) => STYLE_OPTIONS.find((s) => s.id === id)?.label ?? id)
+  return ids.map((id) => {
+    const round = id.endsWith('1') ? 1 : id.endsWith('2') ? 2 : null
+    const baseId = round ? id.slice(0, -1) : id
+    const label = STYLE_OPTIONS.find((s) => s.id === baseId)?.label ?? baseId
+    return round ? `${label} (page ${round})` : label
+  })
 }
 
 export function colorLabels(ids: string[]): string[] {
@@ -331,7 +359,7 @@ export function isUrlLikelyValid(value: string): boolean {
   }
 }
 
-// Everything is optional except these 3 gates. Steps 4-14 (goal, styles,
+// Everything is optional except these 3 gates. Steps 4-15 (goal, styles x2,
 // colours, business, sells, links, services, address/hours, update-often,
 // functionality, uploads) are all freely skippable — their defaults are
 // already save-safe empty values.

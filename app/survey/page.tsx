@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Loader2, Plus, Sparkles, X } from 'lucide-react'
 import SelectCard from './_components/SelectCard'
+import StyleImageCard from './_components/StyleImageCard'
 import SplitLayout from './_components/SplitLayout'
 import FullLayout from './_components/FullLayout'
 import ArrowNav from './_components/ArrowNav'
@@ -31,9 +32,10 @@ import {
   needsManualEntry,
   normalizeUrl,
   stepMode,
+  styleKey,
   type ColorId,
   type FunctionalityId,
-  type StyleId,
+  type StyleKey,
   type SurveyAnswers,
 } from './_lib/data'
 
@@ -146,7 +148,7 @@ export default function SurveyPage() {
     setAnswers((prev) => ({ ...prev, links: { ...prev.links, [key]: normalizeUrl(prev.links[key]) } }))
   }, [])
 
-  const toggleStyle = useCallback((id: StyleId) => {
+  const toggleStyle = useCallback((id: StyleKey) => {
     setAnswers((prev) => ({
       ...prev,
       styles: prev.styles.includes(id) ? prev.styles.filter((v) => v !== id) : [...prev.styles, id],
@@ -385,16 +387,50 @@ export default function SurveyPage() {
         )}
 
         {step === 5 && (
-          <FullLayout title="What style do you like?" microcopy="Choose as many as you like.">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {STYLE_OPTIONS.map((s) => (
-                <SelectCard key={s.id} title={s.label} swatch={s.swatch} selected={answers.styles.includes(s.id)} onClick={() => toggleStyle(s.id)} />
-              ))}
+          <FullLayout title="Which designs catch your eye?" microcopy="Pick as many as you like.">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+              {STYLE_OPTIONS.map((s) => {
+                const key = styleKey(s.id, 1)
+                return (
+                  <StyleImageCard
+                    key={key}
+                    fileKey={s.fileKey}
+                    round={1}
+                    label={s.label}
+                    fallbackBg={s.fallbackBg}
+                    fallbackText={s.fallbackText}
+                    selected={answers.styles.includes(key)}
+                    onClick={() => toggleStyle(key)}
+                  />
+                )
+              })}
             </div>
           </FullLayout>
         )}
 
         {step === 6 && (
+          <FullLayout title="And from these?" microcopy="Same styles, different looks — pick what you'd click on.">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+              {STYLE_OPTIONS.map((s) => {
+                const key = styleKey(s.id, 2)
+                return (
+                  <StyleImageCard
+                    key={key}
+                    fileKey={s.fileKey}
+                    round={2}
+                    label={s.label}
+                    fallbackBg={s.fallbackBg}
+                    fallbackText={s.fallbackText}
+                    selected={answers.styles.includes(key)}
+                    onClick={() => toggleStyle(key)}
+                  />
+                )
+              })}
+            </div>
+          </FullLayout>
+        )}
+
+        {step === 7 && (
           <FullLayout title="What colours do you like?" microcopy="Choose as many as you like.">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {COLOR_OPTIONS.map((c) => (
@@ -404,21 +440,21 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 7 && (
+        {step === 8 && (
           <SplitLayout title="What do you do?">
             <FieldLabel>In one line — what does your business do?</FieldLabel>
             <TextInput autoFocus value={answers.business} onChange={(v) => update('business', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. We repair and sell vintage bicycles" />
           </SplitLayout>
         )}
 
-        {step === 8 && (
+        {step === 9 && (
           <SplitLayout title="What you sell / your edge">
             <FieldLabel>What do you sell, and what makes you different?</FieldLabel>
             <TextInput autoFocus value={answers.sells} onChange={(v) => update('sells', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. Custom-built frames, lifetime tune-ups" />
           </SplitLayout>
         )}
 
-        {step === 9 && (
+        {step === 10 && (
           <SplitLayout title="Are you already online somewhere?">
             <p className="mb-5 text-sm text-ink/70">
               Drop your links — we&apos;ll pull your services, photos, reviews and hours so you don&apos;t have to type them.
@@ -456,7 +492,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 10 && (
+        {step === 11 && (
           <SplitLayout title="What should we list on your site?">
             {linksProvided && (
               <button
@@ -475,7 +511,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 11 && (
+        {step === 12 && (
           <SplitLayout title="Where and when can customers find you?">
             {linksProvided && (
               <button
@@ -519,7 +555,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 12 && (
+        {step === 13 && (
           <FullLayout title="What changes regularly in your business?" microcopy="These become sections you can edit yourself — no need to call us.">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {UPDATE_OFTEN_OPTIONS.map((u) => (
@@ -582,7 +618,7 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 13 && (
+        {step === 14 && (
           <FullLayout title="What should your website do?">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {FUNCTIONALITY_OPTIONS.map((f) => (
@@ -598,7 +634,7 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 14 && (
+        {step === 15 && (
           <SplitLayout title="Show us what you've got">
             <p className="mb-5 text-sm text-ink/70">You can always send more later.</p>
             <FieldLabel>Logo</FieldLabel>
