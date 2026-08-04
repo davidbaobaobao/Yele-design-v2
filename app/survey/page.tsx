@@ -305,11 +305,6 @@ export default function SurveyPage() {
           <p className="max-w-md font-body text-base text-ink/80">
             You&apos;ll hear from us within 24 hours with your design plan.
           </p>
-          {answers.planInterest === 'not_sure' && (
-            <p className="max-w-md font-body text-sm text-ink/70">
-              We&apos;ll recommend the right plan based on your answers — no pressure.
-            </p>
-          )}
         </div>
         <Link
           href="/"
@@ -358,12 +353,7 @@ export default function SurveyPage() {
           <SplitLayout title="Who are we designing for?">
             <FieldLabel>Name</FieldLabel>
             <TextInput autoFocus value={answers.name} onChange={(v) => update('name', v)} onKeyDown={handleEnterAdvance} placeholder="Your name" />
-            <div className="my-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-ink/60">
-              <span className="h-px flex-1 bg-ink/15" />
-              or
-              <span className="h-px flex-1 bg-ink/15" />
-            </div>
-            <FieldLabel>Company</FieldLabel>
+            <FieldLabel className="mt-4">Company</FieldLabel>
             <TextInput value={answers.company} onChange={(v) => update('company', v)} onKeyDown={handleEnterAdvance} placeholder="Your business name" />
             <p className="mt-3 text-xs text-ink/60">At least one is required.</p>
           </SplitLayout>
@@ -376,12 +366,7 @@ export default function SurveyPage() {
             {answers.email.trim() !== '' && !isEmailValid(answers.email) && (
               <p className="mt-1.5 text-xs text-ink/70">That email doesn&apos;t look quite right.</p>
             )}
-            <div className="my-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-ink/60">
-              <span className="h-px flex-1 bg-ink/15" />
-              or
-              <span className="h-px flex-1 bg-ink/15" />
-            </div>
-            <FieldLabel>Phone</FieldLabel>
+            <FieldLabel className="mt-4">Phone</FieldLabel>
             <TextInput type="tel" value={answers.phone} onChange={(v) => update('phone', v)} onKeyDown={handleEnterAdvance} placeholder="(555) 555-5555" />
             <p className="mt-3 text-xs text-ink/60">At least one is required.</p>
           </SplitLayout>
@@ -406,23 +391,25 @@ export default function SurveyPage() {
 
         {step === 4 && (
           <FullLayout wide title="What's your website goal?">
-            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2">
-              {GOAL_OPTIONS.slice(0, 2).map((g) =>
-                g.image ? (
-                  <GoalImageCard
-                    key={g.id}
-                    fileKey={g.image}
-                    title={g.title}
-                    description={g.description}
-                    selected={answers.goal === g.id}
-                    onClick={() => update('goal', g.id)}
-                  />
-                ) : (
-                  <SelectCard key={g.id} title={g.title} description={g.description} selected={answers.goal === g.id} onClick={() => update('goal', g.id)} />
-                )
-              )}
+            <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 md:gap-4">
+              <div className="flex flex-col gap-3 sm:h-[36vh] sm:flex-row sm:items-stretch sm:justify-center sm:gap-4">
+                {GOAL_OPTIONS.slice(0, 2).map((g) =>
+                  g.image ? (
+                    <GoalImageCard
+                      key={g.id}
+                      className="sm:h-full sm:w-auto"
+                      fileKey={g.image}
+                      title={g.title}
+                      description={g.description}
+                      selected={answers.goal === g.id}
+                      onClick={() => update('goal', g.id)}
+                    />
+                  ) : (
+                    <SelectCard key={g.id} title={g.title} description={g.description} selected={answers.goal === g.id} onClick={() => update('goal', g.id)} />
+                  )
+                )}
+              </div>
               <SelectCard
-                className="sm:col-span-2"
                 title={GOAL_OPTIONS[2].title}
                 description={GOAL_OPTIONS[2].description}
                 selected={answers.goal === GOAL_OPTIONS[2].id}
@@ -542,10 +529,10 @@ export default function SurveyPage() {
 
         {step === 12 && (
           <SplitLayout title="Are you already online somewhere?" leftImage="page12">
-            <p className="mb-5 text-sm text-ink/70">
+            <p className="mb-3 text-sm text-ink/70">
               Drop your links — we&apos;ll pull your services, photos, reviews and hours so you don&apos;t have to type them.
             </p>
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               {(
                 [
                   ['website', 'Website'],
@@ -555,8 +542,8 @@ export default function SurveyPage() {
                   ['other', 'Other'],
                 ] as const
               ).map(([key, label]) => (
-                <div key={key}>
-                  <FieldLabel>{label}</FieldLabel>
+                <div key={key} className={key === 'other' ? 'sm:col-span-2' : ''}>
+                  <FieldLabel className="!mb-1">{label}</FieldLabel>
                   <TextInput
                     type="url"
                     value={answers.links[key]}
@@ -566,12 +553,12 @@ export default function SurveyPage() {
                     placeholder="yoursite.com"
                   />
                   {answers.links[key].trim() !== '' && !isUrlLikelyValid(answers.links[key]) && (
-                    <p className="mt-1.5 text-xs text-ink/70">That link doesn&apos;t look quite right.</p>
+                    <p className="mt-1 text-xs text-ink/70">That link doesn&apos;t look quite right.</p>
                   )}
                 </div>
               ))}
             </div>
-            <div className="mt-5">
+            <div className="mt-3">
               <Checkbox checked={answers.noWebPresence} onChange={(v) => update('noWebPresence', v)} label="I'm not online yet — this is my first web presence." />
             </div>
           </SplitLayout>

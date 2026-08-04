@@ -170,8 +170,8 @@ export const PLAN_OPTIONS: { id: PlanId; title: string; price: string; descripti
 // see GoalImageCard); "both" has no matching photo, so it stays a plain
 // SelectCard — image is undefined there on purpose.
 export const GOAL_OPTIONS: { id: GoalId; title: string; description: string; image?: string }[] = [
-  { id: 'statement', title: 'Make a statement', description: 'Bold, unforgettable, jaw-dropping', image: 'statement' },
-  { id: 'sell', title: 'Sell & convert', description: 'Classy, professional, straight to the point', image: 'sell' },
+  { id: 'statement', title: 'Artistic', description: 'Make a statement.', image: 'statement' },
+  { id: 'sell', title: 'Classic', description: 'Professional — convert and sell.', image: 'sell' },
   { id: 'both', title: 'Both / middle ground', description: 'Beautiful and built to sell' },
 ]
 

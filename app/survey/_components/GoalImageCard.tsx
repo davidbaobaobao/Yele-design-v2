@@ -52,9 +52,9 @@ export default function GoalImageCard({ fileKey, title, description, selected, o
               else setFailed(true)
             }}
           />
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent px-4 pb-3 pt-14">
-            <div className="font-display text-base font-bold text-white md:text-lg">{title}</div>
-            <div className="mt-0.5 text-xs text-white/80 md:text-sm">{description}</div>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-4 pb-4 pt-20">
+            <div className="font-display text-lg font-extrabold text-white md:text-xl">{title}</div>
+            <div className="mt-1 text-xs text-white/90 md:text-sm">{description}</div>
           </div>
         </>
       )}
