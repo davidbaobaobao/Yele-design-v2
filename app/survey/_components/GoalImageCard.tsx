@@ -16,10 +16,11 @@ interface GoalImageCardProps {
 }
 
 // Same image-tile recipe as ColorImageCard/VideoOptionCard (pink ring+glow
-// selected state), but landscape (aspect-video) rather than grid-cell-
-// filling — step 4 isn't one of the full-height immersive grids, just two
-// cards side by side at FullLayout's normal size, so a fixed 16:9 reads
-// better than stretching to an arbitrary flex height.
+// selected state), but portrait-ish (aspect-[3/4]) rather than landscape —
+// the "statement"/"sell" source photos are tall, and a 16:9 crop was losing
+// most of them. Step 4 isn't one of the full-height immersive grids, just
+// two cards side by side at FullLayout's normal size, so a fixed ratio
+// reads better than stretching to an arbitrary flex height.
 export default function GoalImageCard({ fileKey, title, description, selected, onClick, className = '' }: GoalImageCardProps) {
   const [extIndex, setExtIndex] = useState(0)
   const [failed, setFailed] = useState(false)
@@ -30,7 +31,7 @@ export default function GoalImageCard({ fileKey, title, description, selected, o
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`group relative aspect-video w-full overflow-hidden rounded-2xl text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D0E12] ${
+      className={`group relative aspect-[3/4] w-full overflow-hidden rounded-2xl text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D0E12] ${
         selected ? 'ring-[3px] ring-survey-bg shadow-[0_0_28px_rgba(212,111,200,0.65)]' : ''
       } ${className}`}
     >

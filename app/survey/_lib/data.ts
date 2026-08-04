@@ -1,5 +1,11 @@
 export type GoalId = 'statement' | 'sell' | 'both'
 export type StyleId = 'minimalism' | 'swiss' | 'bento' | 'editorial' | 'luxury' | 'dark' | 'neobrutalism' | 'organic'
+export type StyleRound = 1 | 2
+// Stored shape in answers.styles — each style page (5, 6) only ever adds or
+// removes its own round-suffixed key, e.g. "minimalism1" / "minimalism2",
+// so a style picked on both pages is trivially detectable downstream (same
+// StyleId, both suffixes present) without any merge/dedupe logic here.
+export type StyleKey = `${StyleId}${StyleRound}`
 export type ColorId = 'mono' | 'earth' | 'cool' | 'vibrant' | 'pastel' | 'moody' | 'green' | 'contrast'
 export type EffectId =
   | 'flowy'
@@ -75,7 +81,7 @@ export interface SurveyAnswers {
   phone: string
   planInterest: PlanId | ''
   goal: GoalId | ''
-  styles: StyleId[]
+  styles: StyleKey[]
   colors: ColorId[]
   effects: EffectId[]
   business: string
@@ -170,15 +176,21 @@ export const GOAL_OPTIONS: { id: GoalId; title: string; description: string; ima
   { id: 'both', title: 'Both / middle ground', description: 'Beautiful and built to sell' },
 ]
 
-// ── Step 5 — style, all 8 on one immersive page ───────────────────────────
-// fileKey is the actual filename prefix under public/media/surveystyle/ —
-// it matches `id` for every style except neobrutalism, whose uploaded
-// assets are named "brutalism{n}". Each card always uses its "1" image
-// (the "2" images from the earlier two-page/two-round design are unused
-// now, kept on disk in case they're wanted elsewhere later). fallbackBg/
+// ── Steps 5 & 6 — style, same 8 concepts shown twice ──────────────────────
+// Page A (step 5) shows each style's "1" photo, page B (step 6) shows the
+// SAME 8 styles again with their "2" photo — a second impression rather
+// than 8 new concepts. Selections are stored per-round via styleKey() so a
+// style picked on both pages is a detectable "strong preference" signal
+// downstream. fileKey is the actual filename prefix under
+// public/media/surveystyle/ — it matches `id` for every style except
+// neobrutalism, whose uploaded assets are named "brutalism{n}". fallbackBg/
 // fallbackText are used when an image is genuinely missing (see
 // StyleImageCard) — colors chosen to evoke the style itself so the grid
 // still reads correctly pre-upload.
+export function styleKey(id: StyleId, round: StyleRound): StyleKey {
+  return `${id}${round}`
+}
+
 export const STYLE_OPTIONS: { id: StyleId; label: string; fileKey: string; fallbackBg: string; fallbackText: string }[] = [
   { id: 'minimalism', label: 'Minimal & clean', fileKey: 'minimalism', fallbackBg: '#F7F6F3', fallbackText: '#16161A' },
   { id: 'swiss', label: 'Sleek & structured', fileKey: 'swiss', fallbackBg: '#E7E7E7', fallbackText: '#16161A' },
@@ -190,7 +202,7 @@ export const STYLE_OPTIONS: { id: StyleId; label: string; fileKey: string; fallb
   { id: 'organic', label: 'Warm & handmade', fileKey: 'organic', fallbackBg: '#C9A66B', fallbackText: '#16161A' },
 ]
 
-// ── Step 6 — colours, all 8 on one immersive page (image cards) ──────────
+// ── Step 7 — colours, all 8 on one immersive page (image cards) ──────────
 // filename is the exact uploaded file under public/media/surveycolors/ —
 // these don't follow a `{id}.ext` pattern (uploaded ad hoc), so they're
 // listed explicitly rather than probed at runtime. swatch is used by the
@@ -211,7 +223,7 @@ export const COLOR_OPTIONS: { id: ColorId; label: string; filename: string; swat
   { id: 'contrast', label: 'Bold contrast', filename: 'bold.webp', swatch: ['#0B0B10', '#FFFFFF', '#FF3B3B'], fallbackBg: '#0B0B10', fallbackText: '#FFFFFF' },
 ]
 
-// ── Steps 7 & 8 — site "effect"/feel, two pages of 4 video cards ─────────
+// ── Steps 8 & 9 — site "effect"/feel, two pages of 4 video cards ─────────
 // fileKey is the filename prefix under public/media/surveymedia/ —
 // {fileKey}_hq.mp4 / {fileKey}_hq.webm / {fileKey}_poster.jpg. Fixed order
 // matches the spec exactly: page A = first 4, page B = last 4.
@@ -229,7 +241,7 @@ export const EFFECT_OPTIONS: { id: EffectId; label: string; caption: string; fil
 export const EFFECT_PAGE_1 = EFFECT_OPTIONS.slice(0, 4)
 export const EFFECT_PAGE_2 = EFFECT_OPTIONS.slice(4, 8)
 
-// ── Step 11 — hours presets ──────────────────────────────────────────────
+// ── Step 12 — hours presets ──────────────────────────────────────────────
 export const HOURS_PRESETS: { id: HoursPreset; label: string }[] = [
   { id: 'weekdays', label: 'Mon–Fri 9–5' },
   { id: 'all_week', label: '7 days a week' },
@@ -256,7 +268,7 @@ export const US_STATES: { code: string; name: string }[] = [
   { code: 'WV', name: 'West Virginia' }, { code: 'WI', name: 'Wisconsin' }, { code: 'WY', name: 'Wyoming' },
 ]
 
-// ── Step 12 — what changes often ────────────────────────────────────────
+// ── Step 13 — what changes often ────────────────────────────────────────
 export const UPDATE_OFTEN_OPTIONS: { id: UpdateOftenId; label: string }[] = [
   { id: 'menu', label: 'Menu / price list' },
   { id: 'offers', label: 'Offers & promotions' },
@@ -286,7 +298,7 @@ export function makeCustomUpdateEntry(text: string): string {
   return `${CUSTOM_PREFIX}${text}`
 }
 
-// ── Step 13 — functionality ─────────────────────────────────────────────
+// ── Step 14 — functionality ─────────────────────────────────────────────
 export const FUNCTIONALITY_OPTIONS: { id: FunctionalityId; label: string; minPlan: PlanId }[] = [
   { id: 'contact_form', label: 'Contact form', minPlan: 'starter' },
   { id: 'custom_email', label: 'Custom email (you@yourbusiness.com)', minPlan: 'starter' },
@@ -309,14 +321,15 @@ export function getFeatureBadge(minPlan: PlanId, planInterest: PlanId | ''): str
   return 'Upgrade'
 }
 
-export const TOTAL_STEPS = 16
+export const TOTAL_STEPS = 17
 
-// 1 name/company · 2 contact · 3 plan · 4 goal · 5 style (8, one page) ·
-// 6 colours (8, one page) · 7 effects page A (4) · 8 effects page B (4) ·
-// 9 business · 10 sells · 11 online links · 12 services ·
-// 13 hours/address · 14 update-often · 15 functionality · 16 uploads
-export const SPLIT_STEPS = new Set([1, 2, 9, 10, 11, 12, 13, 16])
-export const FULL_STEPS = new Set([3, 4, 5, 6, 7, 8, 14, 15])
+// 1 name/company · 2 contact · 3 plan · 4 goal · 5 style page A (8) ·
+// 6 style page B (8, same 8, round 2) · 7 colours (8, one page) ·
+// 8 effects page A (4) · 9 effects page B (4) · 10 business · 11 sells ·
+// 12 online links · 13 services · 14 hours/address · 15 update-often ·
+// 16 functionality · 17 uploads
+export const SPLIT_STEPS = new Set([1, 2, 10, 11, 12, 13, 14, 17])
+export const FULL_STEPS = new Set([3, 4, 5, 6, 7, 8, 9, 15, 16])
 
 export function stepMode(step: number): 'split' | 'full' {
   return SPLIT_STEPS.has(step) ? 'split' : 'full'
@@ -331,8 +344,15 @@ export function goalLabel(id: string): string {
   return GOAL_OPTIONS.find((g) => g.id === id)?.title ?? id
 }
 
-export function styleLabels(ids: string[]): string[] {
-  return ids.map((id) => STYLE_OPTIONS.find((s) => s.id === id)?.label ?? id)
+// Keys are round-suffixed (e.g. "minimalism1"), so strip the trailing 1/2
+// before looking up the label and annotate which page it was picked on.
+export function styleLabels(keys: string[]): string[] {
+  return keys.map((key) => {
+    const round = key.slice(-1)
+    const id = key.slice(0, -1)
+    const label = STYLE_OPTIONS.find((s) => s.id === id)?.label ?? id
+    return round === '1' || round === '2' ? `${label} (page ${round})` : label
+  })
 }
 
 export function colorLabels(ids: string[]): string[] {
@@ -391,7 +411,7 @@ export function isUrlLikelyValid(value: string): boolean {
   }
 }
 
-// Everything is optional except these 3 gates. Steps 4-16 (goal, styles,
+// Everything is optional except these 3 gates. Steps 4-17 (goal, styles x2,
 // colours, effects x2, business, sells, links, services, address/hours,
 // update-often, functionality, uploads) are all freely skippable — their
 // defaults are already save-safe empty values.

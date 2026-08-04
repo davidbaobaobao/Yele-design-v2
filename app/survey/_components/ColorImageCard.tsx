@@ -14,14 +14,14 @@ interface ColorImageCardProps {
   onClick: () => void
 }
 
-// Same full-bleed image-tile recipe as StyleImageCard, sized by its parent
-// grid cell (h-full) rather than a fixed viewport height so it slots into
-// the no-scroll 8-card grid. Filenames here are exact uploaded names (not a
-// `{key}.ext` pattern), so no extension probing — just a graceful fallback
-// to a flat color block if the file is ever missing. Selected state is
-// brand-pink border + glow (this survey's original selection language)
-// layered with the same dark wash used elsewhere, per spec — distinct from
-// StyleImageCard's white-ring treatment.
+// Same image-tile recipe as StyleImageCard, including its aspect-video
+// sizing (rather than stretching to the grid cell) so colour cards match
+// the design-style step's large landscape layout exactly. Filenames here
+// are exact uploaded names (not a `{key}.ext` pattern), so no extension
+// probing — just a graceful fallback to a flat color block if the file is
+// ever missing. Selected state is brand-pink border + glow (this survey's
+// original selection language) layered with the same dark wash used
+// elsewhere, per spec — distinct from StyleImageCard's white-ring treatment.
 export default function ColorImageCard({ filename, label, fallbackBg, fallbackText, selected, onClick }: ColorImageCardProps) {
   const [failed, setFailed] = useState(false)
   const src = `${IMAGE_DIR}/${filename}`
@@ -31,7 +31,7 @@ export default function ColorImageCard({ filename, label, fallbackBg, fallbackTe
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`group relative h-full w-full overflow-hidden rounded-2xl text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D0E12] ${
+      className={`group relative aspect-video w-full overflow-hidden rounded-2xl text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D0E12] ${
         selected ? 'ring-[3px] ring-survey-bg shadow-[0_0_28px_rgba(212,111,200,0.65)]' : ''
       }`}
     >

@@ -39,10 +39,12 @@ import {
   needsManualEntry,
   normalizeUrl,
   stepMode,
+  styleKey,
   type ColorId,
   type EffectId,
   type FunctionalityId,
   type StyleId,
+  type StyleRound,
   type SurveyAnswers,
 } from './_lib/data'
 
@@ -155,10 +157,11 @@ export default function SurveyPage() {
     setAnswers((prev) => ({ ...prev, links: { ...prev.links, [key]: normalizeUrl(prev.links[key]) } }))
   }, [])
 
-  const toggleStyle = useCallback((id: StyleId) => {
+  const toggleStyle = useCallback((id: StyleId, round: StyleRound) => {
+    const key = styleKey(id, round)
     setAnswers((prev) => ({
       ...prev,
-      styles: prev.styles.includes(id) ? prev.styles.filter((v) => v !== id) : [...prev.styles, id],
+      styles: prev.styles.includes(key) ? prev.styles.filter((v) => v !== key) : [...prev.styles, key],
     }))
   }, [])
 
@@ -319,10 +322,11 @@ export default function SurveyPage() {
   }
 
   const mode = stepMode(step)
-  // The style/colours 8-card grids and the two 4-card effect-video pages
-  // all need the full step box, top-aligned with a compact header, instead
-  // of FullLayout's centered/capped treatment — see ImmersiveGridLayout.
-  const immersive = step === 5 || step === 6 || step === 7 || step === 8
+  // The style/colours 8-card grids (two style pages + one colours page) and
+  // the two 4-card effect-video pages all need the full step box, top-
+  // aligned with a compact header, instead of FullLayout's centered/capped
+  // treatment — see ImmersiveGridLayout.
+  const immersive = step === 5 || step === 6 || step === 7 || step === 8 || step === 9
 
   return (
     <div
@@ -346,7 +350,7 @@ export default function SurveyPage() {
           mode === 'split'
             ? 'flex w-full flex-1'
             : immersive
-              ? 'mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pb-24 pt-6 md:px-8 md:pb-28 md:pt-8'
+              ? 'mx-auto flex w-full max-w-[1800px] flex-1 flex-col px-3 pb-24 pt-6 md:px-6 md:pb-28 md:pt-8'
               : 'mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-12 md:px-10 md:pb-28 md:pt-16'
         }
       >
@@ -440,8 +444,8 @@ export default function SurveyPage() {
                     label={s.label}
                     fallbackBg={s.fallbackBg}
                     fallbackText={s.fallbackText}
-                    selected={answers.styles.includes(s.id)}
-                    onClick={() => toggleStyle(s.id)}
+                    selected={answers.styles.includes(styleKey(s.id, 1))}
+                    onClick={() => toggleStyle(s.id, 1)}
                   />
                 ))}
               </div>
@@ -450,6 +454,27 @@ export default function SurveyPage() {
         )}
 
         {step === 6 && (
+          <ImmersiveGridLayout title="And these?" microcopy="Pick as many as you like — same styles, a second look.">
+            <div className="flex h-full items-center justify-center">
+              <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-4 md:gap-4">
+                {STYLE_OPTIONS.map((s) => (
+                  <StyleImageCard
+                    key={s.id}
+                    fileKey={s.fileKey}
+                    round={2}
+                    label={s.label}
+                    fallbackBg={s.fallbackBg}
+                    fallbackText={s.fallbackText}
+                    selected={answers.styles.includes(styleKey(s.id, 2))}
+                    onClick={() => toggleStyle(s.id, 2)}
+                  />
+                ))}
+              </div>
+            </div>
+          </ImmersiveGridLayout>
+        )}
+
+        {step === 7 && (
           <ImmersiveGridLayout title="What colours do you like?" microcopy="Choose as many as you like.">
             <div className="grid h-full grid-cols-2 grid-rows-4 gap-2 sm:grid-cols-4 sm:grid-rows-2 md:gap-3">
               {COLOR_OPTIONS.map((c) => (
@@ -467,8 +492,8 @@ export default function SurveyPage() {
           </ImmersiveGridLayout>
         )}
 
-        {step === 7 && (
-          <ImmersiveGridLayout title="What kind of feel do you want?" microcopy="Pick as many as you like.">
+        {step === 8 && (
+          <ImmersiveGridLayout title="What kind of effects do you like?" microcopy="Pick as many as you like.">
             <div className="grid h-full grid-cols-2 grid-rows-2 gap-2 md:gap-3">
               {EFFECT_PAGE_1.map((e) => (
                 <VideoOptionCard
@@ -484,7 +509,7 @@ export default function SurveyPage() {
           </ImmersiveGridLayout>
         )}
 
-        {step === 8 && (
+        {step === 9 && (
           <ImmersiveGridLayout title="And these?" microcopy="Pick as many as you like.">
             <div className="grid h-full grid-cols-2 grid-rows-2 gap-2 md:gap-3">
               {EFFECT_PAGE_2.map((e) => (
@@ -501,21 +526,21 @@ export default function SurveyPage() {
           </ImmersiveGridLayout>
         )}
 
-        {step === 9 && (
+        {step === 10 && (
           <SplitLayout title="What do you do?">
             <FieldLabel>In one line — what does your business do?</FieldLabel>
             <TextInput autoFocus value={answers.business} onChange={(v) => update('business', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. We repair and sell vintage bicycles" />
           </SplitLayout>
         )}
 
-        {step === 10 && (
+        {step === 11 && (
           <SplitLayout title="What you sell / your edge">
             <FieldLabel>What do you sell, and what makes you different?</FieldLabel>
             <TextInput autoFocus value={answers.sells} onChange={(v) => update('sells', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. Custom-built frames, lifetime tune-ups" />
           </SplitLayout>
         )}
 
-        {step === 11 && (
+        {step === 12 && (
           <SplitLayout title="Are you already online somewhere?">
             <p className="mb-5 text-sm text-ink/70">
               Drop your links — we&apos;ll pull your services, photos, reviews and hours so you don&apos;t have to type them.
@@ -553,7 +578,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 12 && (
+        {step === 13 && (
           <SplitLayout title="What should we list on your site?">
             {linksProvided && (
               <button
@@ -572,7 +597,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 13 && (
+        {step === 14 && (
           <SplitLayout title="Where and when can customers find you?">
             {linksProvided && (
               <button
@@ -616,7 +641,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 14 && (
+        {step === 15 && (
           <FullLayout title="What changes regularly in your business?" microcopy="These become sections you can edit yourself — no need to call us.">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {UPDATE_OFTEN_OPTIONS.map((u) => (
@@ -679,7 +704,7 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 15 && (
+        {step === 16 && (
           <FullLayout title="What should your website do?">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {FUNCTIONALITY_OPTIONS.map((f) => (
@@ -695,7 +720,7 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 16 && (
+        {step === 17 && (
           <SplitLayout title="Show us what you've got">
             <p className="mb-5 text-sm text-ink/70">You can always send more later.</p>
             <FieldLabel>Logo</FieldLabel>
