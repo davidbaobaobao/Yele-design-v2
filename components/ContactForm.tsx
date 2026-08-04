@@ -101,7 +101,7 @@ export default function ContactForm() {
         </div>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 md:gap-12">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 md:gap-24">
         {/* LEFT */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -113,7 +113,10 @@ export default function ContactForm() {
           <h2 className="font-display font-semibold text-4xl md:text-5xl text-white tracking-tight leading-tight mb-8">
             {t('Hablemos', "Let's talk")}
             <br />
-            {t('de cómo llevar tu web al ', 'about how to set up your website to the ')}
+            {t('de cómo llevar', 'about how to set up')}
+            <br />
+            {t('tu web al', 'your website to the')}
+            <br />
             {/* whitespace-nowrap keeps the trailing period glued to the
                 gradient span — an inline-block followed by plain text can
                 otherwise wrap independently, orphaning the "." on its own

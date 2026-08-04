@@ -42,7 +42,7 @@ const plans = [
       features: [
         { text: 'Functional website, no page limit' },
         { text: 'Custom domain' },
-        { text: 'Control panel, update your content' },
+        { text: 'Control panel — update your content' },
         { text: 'On-page SEO & indexing' },
         { text: 'Custom email' },
         {
@@ -411,7 +411,11 @@ export default function PreciosIndexSection() {
         <source src={`${BG_VIDEO_DIR}/pricing_hq.webm`} type="video/webm" />
         <source src={`${BG_VIDEO_DIR}/pricing_hq.mp4`} type="video/mp4" />
       </video>
-      <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13, 14, 18, 0.55)' }} aria-hidden="true" />
+      {/* 0.75 scrim — matches the dark-video-section pattern used elsewhere
+          (WhySubs) so this section reads as the same flat #0D0E12 as its
+          neighbors instead of a visibly lighter/different tone from the
+          video showing through more strongly underneath. */}
+      <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13, 14, 18, 0.75)' }} aria-hidden="true" />
       {/* Fades the video's own top edge into solid black so it dissolves
           into the previous (StatsBold, #0D0E12) section instead of starting
           abruptly right at the boundary. */}

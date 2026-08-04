@@ -11,7 +11,8 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 // the scroll reveal sweeps continuously across all three lines in one pass
 // instead of needing three separate reveal instances.
 const STATEMENT_LINES = [
-  'In Yele, we design, build and maintain your website for one monthly subscription price. Live in a week, no upfront cost, cancel anytime.',
+  'In Yele, we design, build and maintain your website for one monthly subscription price.',
+  'Live in a week, no upfront cost, cancel anytime.',
   'You run your business; we take care of the website.',
 ]
 const STATEMENT = STATEMENT_LINES.join(' \n ')

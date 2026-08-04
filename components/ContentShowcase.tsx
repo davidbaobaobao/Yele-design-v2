@@ -419,7 +419,9 @@ function ContentShowcaseReduced() {
             >
               Want content?
               <br />
-              We create <TextGradient as="span">any</TextGradient> content you need
+              We create <TextGradient as="span">any</TextGradient> content
+              <br />
+              you need
             </h2>
           </motion.div>
         </div>
@@ -529,7 +531,9 @@ export default function ContentShowcase() {
             <h2 className="font-display text-center leading-tight text-[clamp(1.75rem,3.75vw,3.75rem)] max-w-4xl" style={{ color: '#16161A' }}>
               Want content?
               <br />
-              We create <TextGradient as="span">any</TextGradient> content you need
+              We create <TextGradient as="span">any</TextGradient> content
+              <br />
+              you need
             </h2>
             <motion.svg
               className="mt-10"

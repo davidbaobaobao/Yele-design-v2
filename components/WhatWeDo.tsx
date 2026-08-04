@@ -102,12 +102,18 @@ const CARDS: CardData[] = [
   },
 ]
 
-// Per-card accent glow, brightest at the top and fading out toward the
-// bottom (was an omnidirectional diagonal blend with the next card's
-// color) — a top-down light source, like the GitHub reference.
+// Per-card accent glow, GitHub-workflow-card style: a tight, intense cone of
+// light beaming down from above the card (narrow ellipse, high opacity, fast
+// falloff) composited over a much wider, soft, low-intensity bloom pooling
+// along the bottom (broad ellipse, low opacity, slow falloff). Two radial
+// layers rather than one linear fade — a linear top-to-bottom blend reads as
+// a uniform wash, not a focused source up top spreading into ambient light
+// below.
 function cardGradient(index: number): string {
   const accent = CARDS[index].accent
-  return `linear-gradient(180deg, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.35)} 55%, transparent 100%)`
+  const topCone = `radial-gradient(ellipse 55% 42% at 50% 0%, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.55)} 30%, transparent 68%)`
+  const bottomDiffuse = `radial-gradient(ellipse 150% 65% at 50% 100%, ${hexToRgba(accent, 0.28)} 0%, transparent 72%)`
+  return `${topCone}, ${bottomDiffuse}`
 }
 
 // Same treatment as every other video section on this site: borderless,
@@ -253,7 +259,7 @@ function WhatWeDoCard({
           blurred backdrop to actually show through. */}
       <div
         style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)' }}
-        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[8px] border-white/10 backdrop-blur-lg bg-clip-padding ring-1 ring-white/5"
+        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[8px] border-white/[0.06] backdrop-blur-xl bg-clip-padding ring-1 ring-white/5"
       >
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. Padding-top > padding-bottom (both

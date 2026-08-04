@@ -68,9 +68,21 @@ export default function Footer() {
   return (
     <footer className="relative text-white overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
       {/* Light-beams shader only — the grid layer that used to sit behind
-          it is gone; ContactForm right above is the same #0D0E12, so no
-          connecting gradient is needed at the seam anymore either. */}
+          it is gone. */}
       <WebGLShader />
+
+      {/* Both this section and ContactForm above share the same flat
+          #0D0E12, but the shader washes the footer's own top edge with
+          light/color, so the seam still reads as a hard cut. This fades a
+          solid #0D0E12 block into transparent over the shader so the
+          transition blends instead — sits above the canvas (DOM order,
+          no shader content behind it in the meantime) but below the
+          z-10 content. */}
+      <div
+        className="absolute inset-x-0 top-0 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, #0D0E12 0%, transparent 100%)', height: '200px' }}
+        aria-hidden="true"
+      />
 
       {/* Content */}
       <div className="relative z-10 pointer-events-none">

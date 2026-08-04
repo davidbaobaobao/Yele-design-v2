@@ -16,7 +16,9 @@ export default function DealStatement() {
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
       >
-        Here&apos;s the <TextGradient as="span">deal</TextGradient>: we become your website team. We design it, fill
+        Here&apos;s the <TextGradient as="span">deal</TextGradient>:
+        <br />
+        we become your website team. We design it, fill
         it with content, keep it fast and secure, and market it — <TextGradient as="span">month after month</TextGradient>,
         for one flat price.
         <br />
