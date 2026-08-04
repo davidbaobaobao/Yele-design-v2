@@ -2,12 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Loader2, Sparkles } from 'lucide-react'
+import { Loader2, Plus, Sparkles, X } from 'lucide-react'
 import SelectCard from './_components/SelectCard'
 import SplitLayout from './_components/SplitLayout'
 import FullLayout from './_components/FullLayout'
 import ArrowNav from './_components/ArrowNav'
-import ProgressBar from './_components/ProgressBar'
 import ServicesRepeater from './_components/ServicesRepeater'
 import HoursPicker from './_components/HoursPicker'
 import UploadZone from './_components/UploadZone'
@@ -22,8 +21,13 @@ import {
   TOTAL_STEPS,
   UPDATE_OFTEN_OPTIONS,
   US_STATES,
+  customUpdateText,
   getFeatureBadge,
+  isCustomUpdateEntry,
+  isEmailValid,
   isStepValid,
+  isUrlLikelyValid,
+  makeCustomUpdateEntry,
   needsManualEntry,
   normalizeUrl,
   stepMode,
@@ -31,7 +35,6 @@ import {
   type FunctionalityId,
   type StyleId,
   type SurveyAnswers,
-  type UpdateOftenId,
 } from './_lib/data'
 
 const SESSION_KEY = 'yele_survey_id'
@@ -56,6 +59,8 @@ export default function SurveyPage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [hydrated, setHydrated] = useState(false)
+  const [showCustomUpdateInput, setShowCustomUpdateInput] = useState(false)
+  const [customUpdateDraft, setCustomUpdateDraft] = useState('')
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
@@ -155,7 +160,7 @@ export default function SurveyPage() {
     }))
   }, [])
 
-  const toggleUpdateOften = useCallback((id: UpdateOftenId) => {
+  const toggleUpdateOften = useCallback((id: string) => {
     setAnswers((prev) => {
       if (id === 'nothing') {
         return { ...prev, updateOften: prev.updateOften.includes('nothing') ? [] : ['nothing'] }
@@ -164,6 +169,19 @@ export default function SurveyPage() {
       const next = withoutExclusive.includes(id) ? withoutExclusive.filter((v) => v !== id) : [...withoutExclusive, id]
       return { ...prev, updateOften: next }
     })
+  }, [])
+
+  const addCustomUpdateEntry = useCallback((text: string) => {
+    const trimmed = text.trim()
+    if (!trimmed) return
+    setAnswers((prev) => ({
+      ...prev,
+      updateOften: [...prev.updateOften.filter((v) => v !== 'nothing'), makeCustomUpdateEntry(trimmed)],
+    }))
+  }, [])
+
+  const removeUpdateOftenEntry = useCallback((value: string) => {
+    setAnswers((prev) => ({ ...prev, updateOften: prev.updateOften.filter((v) => v !== value) }))
   }, [])
 
   const toggleFunctionality = useCallback((id: FunctionalityId) => {
@@ -251,25 +269,25 @@ export default function SurveyPage() {
 
   if (!hydrated) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-survey-bg">
-        <Loader2 className="h-6 w-6 animate-spin text-white" />
+      <div className="fixed inset-0 flex items-center justify-center bg-survey-bg-soft">
+        <Loader2 className="h-6 w-6 animate-spin text-ink" />
       </div>
     )
   }
 
   if (done) {
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-survey-bg px-6 text-center">
+      <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-survey-bg-soft px-6 text-center">
         <div className="flex flex-col items-center gap-4">
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/15">
-            <Sparkles className="h-8 w-8 text-white" strokeWidth={1.5} />
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink/10">
+            <Sparkles className="h-8 w-8 text-ink" strokeWidth={1.5} />
           </span>
           <h1 className="font-display max-w-lg text-3xl font-bold text-ink md:text-4xl">Got it — we&apos;re on it. 🚀</h1>
-          <p className="max-w-md font-body text-base text-white">
+          <p className="max-w-md font-body text-base text-ink/80">
             You&apos;ll hear from us within 24 hours with your design plan.
           </p>
           {answers.planInterest === 'not_sure' && (
-            <p className="max-w-md font-body text-sm text-white/85">
+            <p className="max-w-md font-body text-sm text-ink/70">
               We&apos;ll recommend the right plan based on your answers — no pressure.
             </p>
           )}
@@ -288,19 +306,29 @@ export default function SurveyPage() {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col overflow-y-auto bg-survey-bg"
+      className="fixed inset-0 flex flex-col overflow-y-auto bg-survey-bg-soft"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <ProgressBar step={step} total={TOTAL_STEPS} />
-
-      <main className={`mx-auto flex w-full flex-1 flex-col px-5 pb-28 pt-20 md:px-10 ${mode === 'split' ? 'max-w-5xl justify-center' : 'max-w-6xl justify-center'}`}>
+      {/* SPLIT steps: no wrapper padding/max-width here — SplitLayout itself
+          is the full-bleed two-column grid, so its two panel colors reach
+          all four screen edges. FULL steps have no color-seam concern (the
+          soft pink already covers the whole viewport via the root div
+          above), so this keeps the existing centered/padded content width
+          for readability. */}
+      <main className={mode === 'split' ? 'flex w-full flex-1' : 'mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-12 md:px-10 md:pb-28 md:pt-16'}>
         {step === 1 && (
           <SplitLayout title="Who are we designing for?">
             <FieldLabel>Name</FieldLabel>
             <TextInput autoFocus value={answers.name} onChange={(v) => update('name', v)} onKeyDown={handleEnterAdvance} placeholder="Your name" />
-            <FieldLabel className="mt-5">Company (optional)</FieldLabel>
+            <div className="my-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-ink/60">
+              <span className="h-px flex-1 bg-ink/15" />
+              or
+              <span className="h-px flex-1 bg-ink/15" />
+            </div>
+            <FieldLabel>Company</FieldLabel>
             <TextInput value={answers.company} onChange={(v) => update('company', v)} onKeyDown={handleEnterAdvance} placeholder="Your business name" />
+            <p className="mt-3 text-xs text-ink/60">At least one is required.</p>
           </SplitLayout>
         )}
 
@@ -308,14 +336,17 @@ export default function SurveyPage() {
           <SplitLayout title="How can we reach you?">
             <FieldLabel>Email</FieldLabel>
             <TextInput autoFocus type="email" value={answers.email} onChange={(v) => update('email', v)} onKeyDown={handleEnterAdvance} placeholder="you@email.com" />
-            <div className="my-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-white/70">
-              <span className="h-px flex-1 bg-white/25" />
+            {answers.email.trim() !== '' && !isEmailValid(answers.email) && (
+              <p className="mt-1.5 text-xs text-ink/70">That email doesn&apos;t look quite right.</p>
+            )}
+            <div className="my-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-ink/60">
+              <span className="h-px flex-1 bg-ink/15" />
               or
-              <span className="h-px flex-1 bg-white/25" />
+              <span className="h-px flex-1 bg-ink/15" />
             </div>
             <FieldLabel>Phone</FieldLabel>
             <TextInput type="tel" value={answers.phone} onChange={(v) => update('phone', v)} onKeyDown={handleEnterAdvance} placeholder="(555) 555-5555" />
-            <p className="mt-3 text-xs text-white/70">At least one is required.</p>
+            <p className="mt-3 text-xs text-ink/60">At least one is required.</p>
           </SplitLayout>
         )}
 
@@ -389,7 +420,7 @@ export default function SurveyPage() {
 
         {step === 9 && (
           <SplitLayout title="Are you already online somewhere?">
-            <p className="mb-5 text-sm text-white/80">
+            <p className="mb-5 text-sm text-ink/70">
               Drop your links — we&apos;ll pull your services, photos, reviews and hours so you don&apos;t have to type them.
             </p>
             <div className="flex flex-col gap-3">
@@ -413,6 +444,9 @@ export default function SurveyPage() {
                     onKeyDown={handleEnterAdvance}
                     placeholder="yoursite.com"
                   />
+                  {answers.links[key].trim() !== '' && !isUrlLikelyValid(answers.links[key]) && (
+                    <p className="mt-1.5 text-xs text-ink/70">That link doesn&apos;t look quite right.</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -436,7 +470,7 @@ export default function SurveyPage() {
                 Skip — pull it from my links
               </button>
             )}
-            <p className="mb-4 text-sm text-white/80">Rough is fine — we&apos;ll polish the wording.</p>
+            <p className="mb-4 text-sm text-ink/70">Rough is fine — we&apos;ll polish the wording.</p>
             <ServicesRepeater rows={answers.services} onChange={(rows) => update('services', rows)} />
           </SplitLayout>
         )}
@@ -491,6 +525,59 @@ export default function SurveyPage() {
               {UPDATE_OFTEN_OPTIONS.map((u) => (
                 <SelectCard key={u.id} title={u.label} selected={answers.updateOften.includes(u.id)} onClick={() => toggleUpdateOften(u.id)} />
               ))}
+
+              {answers.updateOften.filter(isCustomUpdateEntry).map((entry) => (
+                <div
+                  key={entry}
+                  className="relative flex flex-col justify-center gap-1 rounded-2xl border-2 border-ink bg-ink py-5 pl-5 pr-9 text-left"
+                >
+                  <span className="font-display text-base font-bold text-white">{customUpdateText(entry)}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeUpdateOftenEntry(entry)}
+                    aria-label="Remove"
+                    className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/15 hover:text-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+
+              {!showCustomUpdateInput ? (
+                <button
+                  type="button"
+                  onClick={() => setShowCustomUpdateInput(true)}
+                  className="flex min-h-[92px] items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink/30 bg-ink/50 px-5 py-5 font-body text-sm font-semibold text-white transition-colors hover:border-ink/50 hover:bg-ink/60"
+                >
+                  <Plus className="h-4 w-4" /> Other — add your own
+                </button>
+              ) : (
+                <div className="col-span-2 flex items-center gap-2 sm:col-span-3">
+                  <TextInput
+                    autoFocus
+                    value={customUpdateDraft}
+                    onChange={setCustomUpdateDraft}
+                    placeholder="e.g. Weekly specials"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        addCustomUpdateEntry(customUpdateDraft)
+                        setCustomUpdateDraft('')
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addCustomUpdateEntry(customUpdateDraft)
+                      setCustomUpdateDraft('')
+                    }}
+                    className="shrink-0 rounded-full bg-ink px-5 py-3.5 font-body text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
             </div>
           </FullLayout>
         )}
@@ -513,7 +600,7 @@ export default function SurveyPage() {
 
         {step === 14 && (
           <SplitLayout title="Show us what you've got">
-            <p className="mb-5 text-sm text-white/80">You can always send more later.</p>
+            <p className="mb-5 text-sm text-ink/70">You can always send more later.</p>
             <FieldLabel>Logo</FieldLabel>
             <div className="mb-2">
               <UploadZone
@@ -560,7 +647,15 @@ export default function SurveyPage() {
         {submitError && <p className="mx-auto mt-4 max-w-md text-center text-sm font-semibold text-ink">{submitError}</p>}
       </main>
 
-      <ArrowNav onBack={goBack} onForward={goForward} backDisabled={step === 1} forwardDisabled={!valid || submitting} submitting={submitting} />
+      <ArrowNav
+        onBack={goBack}
+        onForward={goForward}
+        backDisabled={step === 1}
+        forwardDisabled={!valid || submitting}
+        submitting={submitting}
+        step={step}
+        total={TOTAL_STEPS}
+      />
     </div>
   )
 }

@@ -83,20 +83,20 @@ export default function UploadZone({ sessionId, folder, accept, maxFiles, urls, 
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={disabled || uploading || urls.length >= maxFiles}
-        className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/40 bg-white/10 px-4 py-6 font-body text-sm font-semibold text-white transition-colors duration-200 hover:border-white/80 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-ink/30 bg-ink/50 px-4 py-6 font-body text-sm font-semibold text-white transition-colors duration-200 hover:border-ink/50 hover:bg-ink/60 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageUp className="h-4 w-4" />}
         {uploading ? 'Uploading…' : label}
       </button>
 
-      {error && <p className="text-xs font-semibold text-white">{error}</p>}
+      {error && <p className="text-xs font-semibold text-ink/70">{error}</p>}
 
       {urls.length > 0 && (
         <ul className="flex flex-col gap-1.5">
           {urls.map((url, i) => (
             <li
               key={url}
-              className="flex items-center justify-between gap-2 rounded-lg border border-white/30 bg-white/10 px-3 py-2 text-xs text-white"
+              className="flex items-center justify-between gap-2 rounded-lg border border-ink/20 bg-ink/45 px-3 py-2 text-xs text-white"
             >
               <span className="truncate">{decodeURIComponent(url.split('/').pop() ?? url)}</span>
               <button type="button" onClick={() => removeAt(i)} aria-label="Remove file" className="shrink-0 text-white/70 hover:text-white">

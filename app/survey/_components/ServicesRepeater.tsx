@@ -33,7 +33,7 @@ export default function ServicesRepeater({
             value={row.name}
             onChange={(e) => updateRow(i, { name: e.target.value })}
             placeholder="Service or product name"
-            className="flex-1 rounded-xl border-2 border-white/40 bg-white/10 px-4 py-3 font-body text-sm text-white outline-none transition-colors duration-200 placeholder:text-white/50 focus:border-white"
+            className="flex-1 rounded-xl border-2 border-ink/30 bg-ink/50 px-4 py-3 font-body text-sm text-white outline-none transition-colors duration-200 placeholder:text-white/60 focus:border-ink"
           />
           <input
             value={row.price}
@@ -45,7 +45,7 @@ export default function ServicesRepeater({
             type="button"
             onClick={() => removeRow(i)}
             aria-label="Remove row"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/15 hover:text-white"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink"
           >
             <X className="h-4 w-4" />
           </button>
@@ -55,7 +55,7 @@ export default function ServicesRepeater({
         <button
           type="button"
           onClick={addRow}
-          className="flex items-center gap-2 self-start rounded-full border-2 border-white/40 bg-white/10 px-4 py-2 font-body text-sm font-semibold text-white transition-colors hover:border-white hover:bg-white/15"
+          className="flex items-center gap-2 self-start rounded-full bg-ink px-4 py-2 font-body text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
         >
           <Plus className="h-4 w-4" /> Add {rows.length === 0 ? 'a service' : 'another'}
         </button>

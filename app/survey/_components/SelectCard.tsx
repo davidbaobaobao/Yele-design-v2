@@ -11,9 +11,10 @@ interface SelectCardProps {
   className?: string
 }
 
-// White-on-pink card: unselected cards read as translucent white outlines on
-// the flat pink background; selected flips to a solid dark fill so the
-// (always-white) label stays legible in both states.
+// White-on-pink card: unselected cards read as a translucent dark surface
+// (ink/50 — enough for white text to stay legible against the light
+// survey-bg-soft panel, see Fields.tsx's TextInput comment for the contrast
+// math) on the flat pink background; selected flips to a solid dark fill.
 export default function SelectCard({
   selected,
   onClick,
@@ -32,7 +33,7 @@ export default function SelectCard({
       className={`group relative flex flex-col gap-3 rounded-2xl border-2 py-5 pl-5 pr-9 text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
         selected
           ? 'border-ink bg-ink shadow-[0_8px_28px_rgba(0,0,0,0.35)]'
-          : 'border-white/40 bg-white/10 hover:border-white/80 hover:bg-white/15'
+          : 'border-ink/30 bg-ink/50 hover:border-ink/50 hover:bg-ink/60'
       } ${className}`}
     >
       {swatch && (

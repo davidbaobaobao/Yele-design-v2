@@ -76,7 +76,10 @@ export interface SurveyAnswers {
   servicesFromLinks: boolean
   address: AddressAnswers
   hours: HoursAnswers
-  updateOften: UpdateOftenId[]
+  // Preset UpdateOftenId values, plus free-form "custom:<text>" entries from
+  // the step 12 "Other — add your own" flow — string[] rather than
+  // UpdateOftenId[] so those aren't a type error.
+  updateOften: string[]
   functionality: FunctionalityId[]
   logoUrl: string
   photoUrls: string[]
@@ -214,6 +217,23 @@ export const UPDATE_OFTEN_OPTIONS: { id: UpdateOftenId; label: string }[] = [
   { id: 'nothing', label: 'Nothing — set it and forget it' },
 ]
 
+// Free-form step 12 entries are stored inline in the same jsonb array as
+// "custom:<text>" so no DB migration is needed — these helpers are the only
+// place that prefix is encoded/decoded.
+const CUSTOM_PREFIX = 'custom:'
+
+export function isCustomUpdateEntry(value: string): boolean {
+  return value.startsWith(CUSTOM_PREFIX)
+}
+
+export function customUpdateText(value: string): string {
+  return value.slice(CUSTOM_PREFIX.length)
+}
+
+export function makeCustomUpdateEntry(text: string): string {
+  return `${CUSTOM_PREFIX}${text}`
+}
+
 // ── Step 13 — functionality ─────────────────────────────────────────────
 export const FUNCTIONALITY_OPTIONS: { id: FunctionalityId; label: string; minPlan: PlanId }[] = [
   { id: 'contact_form', label: 'Contact form', minPlan: 'starter' },
@@ -264,7 +284,10 @@ export function colorLabels(ids: string[]): string[] {
 }
 
 export function updateOftenLabels(ids: string[]): string[] {
-  return ids.map((id) => UPDATE_OFTEN_OPTIONS.find((u) => u.id === id)?.label ?? id)
+  return ids.map((id) => {
+    if (isCustomUpdateEntry(id)) return customUpdateText(id)
+    return UPDATE_OFTEN_OPTIONS.find((u) => u.id === id)?.label ?? id
+  })
 }
 
 export function functionalityLabels(ids: string[]): string[] {
@@ -283,42 +306,49 @@ export function hasAnyLink(links: LinksAnswers): boolean {
   return Object.values(links).some((v) => v.trim().length > 0)
 }
 
-// ── Fork logic (step 9 → 10/11) ─────────────────────────────────────────
+// Still used to decide whether steps 10/11 show their "skip, pull from my
+// links" shortcut buttons — a UI convenience, not a validation gate (both
+// steps are fully optional either way).
 export function needsManualEntry(a: SurveyAnswers): boolean {
   return a.noWebPresence || !hasAnyLink(a.links)
 }
 
-function addressFilled(addr: AddressAnswers): boolean {
-  return addr.line1.trim() !== '' && addr.city.trim() !== '' && addr.state.trim() !== '' && addr.zip.trim() !== ''
+export function isEmailValid(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 }
 
-function hoursChosen(hours: HoursAnswers): boolean {
-  if (hours.mode === 'preset') return hours.preset !== ''
-  if (hours.mode === 'custom') return true
-  return false
+// Soft check for the step 9 URL fields' inline hint — deliberately loose
+// (just "looks like a domain"), since these never block navigation.
+export function isUrlLikelyValid(value: string): boolean {
+  const trimmed = value.trim()
+  if (!trimmed) return true
+  const normalized = normalizeUrl(trimmed)
+  try {
+    const { hostname } = new URL(normalized)
+    return hostname.includes('.') && !hostname.endsWith('.')
+  } catch {
+    return false
+  }
 }
 
+// Everything is optional except these 3 gates. Steps 4-14 (goal, styles,
+// colours, business, sells, links, services, address/hours, update-often,
+// functionality, uploads) are all freely skippable — their defaults are
+// already save-safe empty values.
 export function isStepValid(step: number, a: SurveyAnswers): boolean {
   switch (step) {
     case 1:
-      return a.name.trim().length > 0
+      return a.name.trim().length > 0 || a.company.trim().length > 0
     case 2: {
       const hasPhone = a.phone.trim().length > 0
       const emailTrim = a.email.trim()
-      const hasValidEmail = emailTrim.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)
+      const hasValidEmail = emailTrim.length > 0 && isEmailValid(emailTrim)
       const emailEnteredButInvalid = emailTrim.length > 0 && !hasValidEmail
       if (emailEnteredButInvalid && !hasPhone) return false
       return hasValidEmail || hasPhone
     }
     case 3:
       return a.planInterest !== ''
-    case 4:
-      return a.goal !== ''
-    case 10:
-      return !needsManualEntry(a) || a.services.some((s) => s.name.trim().length > 0)
-    case 11:
-      if (!needsManualEntry(a)) return true
-      return hoursChosen(a.hours) && (!a.address.hasPhysical || addressFilled(a.address))
     default:
       return true
   }

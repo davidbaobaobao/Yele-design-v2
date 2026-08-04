@@ -40,6 +40,10 @@ const config: Config = {
         // full-bleed background, so it gets a named token (bg-survey-bg /
         // --survey-bg via the addVariablesForColors plugin below).
         "survey-bg": "#D46FC8",
+        // Same hue as survey-bg, lightness raised (HSL 307°, 54%, 63% ->
+        // 80%) — the question/content panel's tone; the empty image-slot
+        // panel keeps the stronger survey-bg unchanged.
+        "survey-bg-soft": "#E8B0E1",
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],

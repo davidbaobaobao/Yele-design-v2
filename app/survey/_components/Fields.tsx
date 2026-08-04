@@ -1,8 +1,10 @@
 'use client'
 
+// Field labels sit directly on the (light) survey-bg-soft panel, not on a
+// dark card — treated like a mini question-title (ink), not "answer" text.
 export function FieldLabel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <label className={`mb-2 block text-xs font-semibold uppercase tracking-wider text-white/80 ${className}`}>
+    <label className={`mb-2 block text-xs font-semibold uppercase tracking-wider text-ink/70 ${className}`}>
       {children}
     </label>
   )
@@ -19,9 +21,13 @@ interface TextInputProps {
   className?: string
 }
 
-// White text on a translucent white fill — same recipe as the homepage's
-// dark-section inputs (components/ContactForm.tsx's inputClass), just tuned
-// for a flat pink field instead of near-black.
+// White answer text needs a genuinely dark surface to read against —
+// survey-bg-soft is light (raised-lightness pink), so a translucent WHITE
+// fill (the original recipe, tuned for the old strong-pink/gradient bg)
+// reads as white-on-near-white here. ink/50 blended over survey-bg-soft
+// computes to ~5.3:1 contrast for white text on top of it (WCAG AA clears
+// 4.5:1), while still reading as a translucent "glass" surface rather than
+// a flat solid card.
 export function TextInput({ value, onChange, onBlur, placeholder, type = 'text', autoFocus, onKeyDown, className = '' }: TextInputProps) {
   return (
     <input
@@ -32,7 +38,7 @@ export function TextInput({ value, onChange, onBlur, placeholder, type = 'text',
       onKeyDown={onKeyDown}
       placeholder={placeholder}
       autoFocus={autoFocus}
-      className={`w-full rounded-xl border-2 border-white/40 bg-white/10 px-4 py-3.5 font-body text-base text-white outline-none transition-colors duration-200 placeholder:text-white/50 focus:border-white ${className}`}
+      className={`w-full rounded-xl border-2 border-ink/30 bg-ink/50 px-4 py-3.5 font-body text-base text-white outline-none transition-colors duration-200 placeholder:text-white/60 focus:border-ink ${className}`}
     />
   )
 }
@@ -47,11 +53,11 @@ export function Checkbox({
   label: React.ReactNode
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 text-sm text-white">
+    <label className="flex cursor-pointer items-start gap-3 text-sm text-ink/80">
       <span
         onClick={() => onChange(!checked)}
         className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors duration-200 ${
-          checked ? 'border-ink bg-ink' : 'border-white/50 bg-white/10'
+          checked ? 'border-ink bg-ink' : 'border-ink/35 bg-ink/10'
         }`}
       >
         {checked && (
@@ -75,7 +81,7 @@ export function Toggle({
   onChange: (v: boolean) => void
 }) {
   return (
-    <div className="inline-flex rounded-full border-2 border-white/40 bg-white/10 p-1">
+    <div className="inline-flex rounded-full border-2 border-ink/25 bg-ink/40 p-1">
       {options.map((label, i) => {
         const isActive = i === 0 ? value : !value
         return (
@@ -84,7 +90,7 @@ export function Toggle({
             type="button"
             onClick={() => onChange(i === 0)}
             className={`rounded-full px-4 py-2 font-body text-sm font-semibold transition-colors duration-200 ${
-              isActive ? 'bg-ink text-white' : 'text-white/80 hover:text-white'
+              isActive ? 'bg-ink text-white' : 'text-white/85 hover:text-white'
             }`}
           >
             {label}
@@ -110,7 +116,7 @@ export function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-full rounded-xl border-2 border-white/40 bg-white/10 px-4 py-3.5 font-body text-base text-white outline-none transition-colors duration-200 focus:border-white [&>option]:text-ink ${className}`}
+      className={`w-full rounded-xl border-2 border-ink/30 bg-ink/50 px-4 py-3.5 font-body text-base text-white outline-none transition-colors duration-200 focus:border-ink [&>option]:text-ink ${className}`}
     >
       {children}
     </select>
