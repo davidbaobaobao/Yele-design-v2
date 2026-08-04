@@ -2,16 +2,16 @@
 
 import { useState, type ReactNode } from 'react'
 import { motion, type Transition } from 'framer-motion'
-import { ClipboardList } from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { TextGradient } from '@/components/ui/text-gradient'
-import { CTAButton } from '@/components/ui/cta-button'
 
 // Same number the floating WhatsApp button used before it was retired in
 // favor of the card below.
 const WHATSAPP_URL = 'https://wa.me/34655517760'
 const PRIVACY_POLICY_URL = 'https://webgate.digital/wp-content/uploads/2023/10/privacy-policy.pdf'
-const SURVEY_URL = 'https://yele.design/survey'
+const SCHEDULE_URL = '/schedule'
+const SURVEY_URL = '/survey'
 
 type FormState = 'idle' | 'loading' | 'success' | 'error'
 
@@ -136,12 +136,47 @@ export default function ContactForm() {
 
           <div className="flex flex-col sm:flex-row gap-4 mt-auto">
             <IconCard href={WHATSAPP_URL} icon={<WhatsAppGlyph />} label="WhatsApp" />
-            <IconCard href={SURVEY_URL} icon={<ClipboardList size={26} strokeWidth={1.5} aria-hidden="true" />} label="Quiz" />
+            <IconCard href={SCHEDULE_URL} icon={<CalendarDays size={26} strokeWidth={1.5} aria-hidden="true" />} label={t('Agendar llamada', 'Book a call')} />
           </div>
 
-          <CTAButton href="/schedule" variant="light" className="mt-4 self-start">
-            {t('Agendar una llamada', 'Schedule a meeting')}
-          </CTAButton>
+          {/* Distinct from the two outline IconCards above — a wide pink-glow
+              banner (same ambient-light recipe as CTAButton's Glow, scaled
+              to a full-width shape) so the quiz reads as the "if you're not
+              sure, start here" option rather than a third equal-weight card. */}
+          <a
+            href={SURVEY_URL}
+            className="group relative mt-4 flex items-center justify-center gap-3 overflow-hidden rounded-2xl bg-[#F2F0EB] px-6 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_-2px_5px_rgba(0,0,0,0.07)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#F8F7F4] active:translate-y-0 active:scale-[0.99] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D46FC8]"
+          >
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -z-10 rounded-full opacity-100 blur-3xl transition-[filter] duration-300 ease-out group-hover:blur-[48px] motion-safe:animate-[cta-glow-drift_4.5s_ease-in-out_infinite]"
+              style={{
+                top: '-40%',
+                left: '5%',
+                right: '5%',
+                bottom: '-40%',
+                background:
+                  'radial-gradient(60% 70% at 50% 40%, rgba(212,111,200,1) 0%, rgba(212,111,200,0.55) 55%, transparent 78%)',
+              }}
+            />
+            <div className="relative z-10 flex flex-col items-center">
+              <span className="font-display text-lg font-bold text-[#16161A] md:text-xl">
+                {t('Haz el quiz de estilo de 2 minutos', 'Take the 2-minute style quiz')}
+              </span>
+              <span className="mt-1 font-body text-sm text-[#16161A]/60">
+                {t(
+                  'Descubre el estilo de tu web y recibe un plan a medida.',
+                  "Discover your website's look — get a tailored plan."
+                )}
+              </span>
+            </div>
+            <span
+              aria-hidden="true"
+              className="relative z-10 text-xl text-[#16161A] transition-transform group-hover:translate-x-1"
+            >
+              →
+            </span>
+          </a>
         </motion.div>
 
         {/* RIGHT — form */}
