@@ -102,18 +102,17 @@ const CARDS: CardData[] = [
   },
 ]
 
-// Per-card accent glow, GitHub-workflow-card style: a tight, intense cone of
-// light beaming down from above the card (narrow ellipse, high opacity, fast
-// falloff) composited over a much wider, soft, low-intensity bloom pooling
-// along the bottom (broad ellipse, low opacity, slow falloff). Two radial
-// layers rather than one linear fade — a linear top-to-bottom blend reads as
-// a uniform wash, not a focused source up top spreading into ambient light
-// below.
+// Per-card accent glow, GitHub-workflow-card style: TWO focal cones (not one
+// cone + a wide ambient wash) — a tight, intense band at top-center and a
+// second at bottom-center, each brightest at the center of its edge and
+// falling off toward the left/right sides (narrow ellipse, fast horizontal
+// falloff). A linear top-to-bottom blend or an overly wide ellipse both read
+// as a uniform wash instead of two distinct focused sources.
 function cardGradient(index: number): string {
   const accent = CARDS[index].accent
   const topCone = `radial-gradient(ellipse 55% 42% at 50% 0%, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.55)} 30%, transparent 68%)`
-  const bottomDiffuse = `radial-gradient(ellipse 150% 65% at 50% 100%, ${hexToRgba(accent, 0.28)} 0%, transparent 72%)`
-  return `${topCone}, ${bottomDiffuse}`
+  const bottomCone = `radial-gradient(ellipse 55% 42% at 50% 100%, ${hexToRgba(accent, 0.85)} 0%, ${hexToRgba(accent, 0.48)} 30%, transparent 68%)`
+  return `${topCone}, ${bottomCone}`
 }
 
 // Same treatment as every other video section on this site: borderless,
@@ -248,18 +247,21 @@ function WhatWeDoCard({
       {/* Inside: a plain flat dark-grey surface (CARD_BG) — no aurora, no
           interior gradient wash, no video glow. Just the glass border above,
           the flat surface, and the header/body/video content on top of it.
-          The border is wide + low-opacity + backdrop-blurred so the glow
-          above diffuses THROUGH it, like frosted glass — bg-clip-padding is
-          the key fix: the default background-clip (border-box) paints
-          CARD_BG all the way under the border too, which fully hides
-          whatever backdrop-blur reveals there, leaving just a flat
-          off-white line instead of the intended diffused glow. Clipping the
-          background to the padding box keeps CARD_BG solid across the
-          interior while leaving the border ring's own area free for the
-          blurred backdrop to actually show through. */}
+          The border is wide + backdrop-blurred so the glow above diffuses
+          THROUGH it, like frosted glass — bg-clip-padding is the key fix:
+          the default background-clip (border-box) paints CARD_BG all the
+          way under the border too, which fully hides whatever backdrop-blur
+          reveals there, leaving just a flat line instead of the intended
+          diffused glow. Clipping the background to the padding box keeps
+          CARD_BG solid across the interior while leaving the border ring's
+          own area free for the blurred backdrop to actually show through.
+          Bumped noticeably brighter (white/25, up from white/[0.06]) so it
+          reads as a bright frosted-glass rim like GitHub's cards rather than
+          a dark line, plus an inset ring highlight for a catching-the-light
+          edge. */}
       <div
         style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)' }}
-        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[8px] border-white/[0.06] backdrop-blur-xl bg-clip-padding ring-1 ring-white/5"
+        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[10px] border-white/25 backdrop-blur-xl bg-clip-padding ring-1 ring-inset ring-white/10"
       >
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. Padding-top > padding-bottom (both
