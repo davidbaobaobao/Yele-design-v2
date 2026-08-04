@@ -16,8 +16,14 @@ interface ArrowNavProps {
 // Bottom-centered single pill: ← arrow, progress bar, → arrow, one group —
 // same dark surface as the rest of the site's buttons (see
 // components/ui/cta-button.tsx's "dark" variant). Replaces the old separate
-// top-of-screen progress bar entirely.
+// top-of-screen progress bar entirely. On the last step, a "Finish" pill
+// appends to the right — same action as the forward arrow (onForward
+// already resolves to the completion handler once step === total, see
+// page.tsx's goForward), just a more prominent, clearly-labeled submit
+// affordance instead of relying only on the small arrow icon.
 export default function ArrowNav({ onBack, onForward, backDisabled, forwardDisabled, submitting, step, total }: ArrowNavProps) {
+  const isLastStep = step === total
+
   return (
     <div className="fixed bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-4 rounded-full bg-ink px-4 py-2.5 shadow-lg md:bottom-10 md:gap-5 md:px-5">
       <button
@@ -41,6 +47,18 @@ export default function ArrowNav({ onBack, onForward, backDisabled, forwardDisab
       >
         {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <ArrowRight className="h-5 w-5" />}
       </button>
+
+      {isLastStep && (
+        <button
+          type="button"
+          onClick={onForward}
+          disabled={forwardDisabled}
+          className="flex shrink-0 items-center gap-1.5 rounded-full bg-white px-4 py-2 font-body text-sm font-bold text-ink transition-transform duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+        >
+          {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {submitting ? 'Submitting…' : 'Finish'}
+        </button>
+      )}
     </div>
   )
 }

@@ -5,8 +5,11 @@ import Link from 'next/link'
 import { Loader2, Plus, Sparkles, X } from 'lucide-react'
 import SelectCard from './_components/SelectCard'
 import StyleImageCard from './_components/StyleImageCard'
+import ColorImageCard from './_components/ColorImageCard'
 import SplitLayout from './_components/SplitLayout'
 import FullLayout from './_components/FullLayout'
+import ImmersiveGridLayout from './_components/ImmersiveGridLayout'
+import PersistentLeftVideo from './_components/PersistentLeftVideo'
 import ArrowNav from './_components/ArrowNav'
 import ServicesRepeater from './_components/ServicesRepeater'
 import HoursPicker from './_components/HoursPicker'
@@ -18,8 +21,7 @@ import {
   FUNCTIONALITY_OPTIONS,
   GOAL_OPTIONS,
   PLAN_OPTIONS,
-  STYLE_PAGE_1,
-  STYLE_PAGE_2,
+  STYLE_OPTIONS,
   TOTAL_STEPS,
   UPDATE_OFTEN_OPTIONS,
   US_STATES,
@@ -305,6 +307,10 @@ export default function SurveyPage() {
   }
 
   const mode = stepMode(step)
+  // The two 8-card grids (style, colours) need the full step box, top-
+  // aligned with a compact header, instead of FullLayout's centered/capped
+  // treatment — see ImmersiveGridLayout.
+  const immersive = step === 5 || step === 6
 
   return (
     <div
@@ -312,13 +318,26 @@ export default function SurveyPage() {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      {/* Mounted once for the whole survey — see PersistentLeftVideo's own
+          comment for why it can't live inside a per-step component. */}
+      <PersistentLeftVideo visible={step === 1 || step === 2} />
+
       {/* SPLIT steps: no wrapper padding/max-width here — SplitLayout itself
           is the full-bleed two-column grid, so its two panel colors reach
           all four screen edges. FULL steps have no color-seam concern (the
           soft pink already covers the whole viewport via the root div
           above), so this keeps the existing centered/padded content width
-          for readability. */}
-      <main className={mode === 'split' ? 'flex w-full flex-1' : 'mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-12 md:px-10 md:pb-28 md:pt-16'}>
+          for readability — except the two immersive grid steps, which need
+          the full height/width themselves. */}
+      <main
+        className={
+          mode === 'split'
+            ? 'flex w-full flex-1'
+            : immersive
+              ? 'mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pb-24 pt-6 md:px-8 md:pb-28 md:pt-8'
+              : 'mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-12 md:px-10 md:pb-28 md:pt-16'
+        }
+      >
         {step === 1 && (
           <SplitLayout title="Who are we designing for?">
             <FieldLabel>Name</FieldLabel>
@@ -387,9 +406,9 @@ export default function SurveyPage() {
         )}
 
         {step === 5 && (
-          <FullLayout wide title="Which designs catch your eye?" microcopy="Pick as many as you like.">
-            <div className="grid grid-cols-2 gap-3 md:gap-4">
-              {STYLE_PAGE_1.map((s) => (
+          <ImmersiveGridLayout title="Which designs catch your eye?" microcopy="Pick as many as you like.">
+            <div className="grid h-full grid-cols-2 grid-rows-4 gap-2 sm:grid-cols-4 sm:grid-rows-2 md:gap-3">
+              {STYLE_OPTIONS.map((s) => (
                 <StyleImageCard
                   key={s.id}
                   fileKey={s.fileKey}
@@ -402,60 +421,42 @@ export default function SurveyPage() {
                 />
               ))}
             </div>
-          </FullLayout>
+          </ImmersiveGridLayout>
         )}
 
         {step === 6 && (
-          <FullLayout wide title="And these?" microcopy="Pick as many as you like.">
-            <div className="grid grid-cols-2 gap-3 md:gap-4">
-              {STYLE_PAGE_2.map((s) => (
-                <StyleImageCard
-                  key={s.id}
-                  fileKey={s.fileKey}
-                  round={1}
-                  label={s.label}
-                  fallbackBg={s.fallbackBg}
-                  fallbackText={s.fallbackText}
-                  selected={answers.styles.includes(s.id)}
-                  onClick={() => toggleStyle(s.id)}
-                />
-              ))}
-            </div>
-          </FullLayout>
-        )}
-
-        {step === 7 && (
-          <FullLayout wide title="What colours do you like?" microcopy="Choose as many as you like.">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
+          <ImmersiveGridLayout title="What colours do you like?" microcopy="Choose as many as you like.">
+            <div className="grid h-full grid-cols-2 grid-rows-4 gap-2 sm:grid-cols-4 sm:grid-rows-2 md:gap-3">
               {COLOR_OPTIONS.map((c) => (
-                <SelectCard
+                <ColorImageCard
                   key={c.id}
-                  size="large"
-                  title={c.label}
-                  swatch={c.swatch}
+                  filename={c.filename}
+                  label={c.label}
+                  fallbackBg={c.fallbackBg}
+                  fallbackText={c.fallbackText}
                   selected={answers.colors.includes(c.id)}
                   onClick={() => toggleColor(c.id)}
                 />
               ))}
             </div>
-          </FullLayout>
+          </ImmersiveGridLayout>
         )}
 
-        {step === 8 && (
+        {step === 7 && (
           <SplitLayout title="What do you do?">
             <FieldLabel>In one line — what does your business do?</FieldLabel>
             <TextInput autoFocus value={answers.business} onChange={(v) => update('business', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. We repair and sell vintage bicycles" />
           </SplitLayout>
         )}
 
-        {step === 9 && (
+        {step === 8 && (
           <SplitLayout title="What you sell / your edge">
             <FieldLabel>What do you sell, and what makes you different?</FieldLabel>
             <TextInput autoFocus value={answers.sells} onChange={(v) => update('sells', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. Custom-built frames, lifetime tune-ups" />
           </SplitLayout>
         )}
 
-        {step === 10 && (
+        {step === 9 && (
           <SplitLayout title="Are you already online somewhere?">
             <p className="mb-5 text-sm text-ink/70">
               Drop your links — we&apos;ll pull your services, photos, reviews and hours so you don&apos;t have to type them.
@@ -493,7 +494,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 11 && (
+        {step === 10 && (
           <SplitLayout title="What should we list on your site?">
             {linksProvided && (
               <button
@@ -512,7 +513,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 12 && (
+        {step === 11 && (
           <SplitLayout title="Where and when can customers find you?">
             {linksProvided && (
               <button
@@ -556,7 +557,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 13 && (
+        {step === 12 && (
           <FullLayout title="What changes regularly in your business?" microcopy="These become sections you can edit yourself — no need to call us.">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {UPDATE_OFTEN_OPTIONS.map((u) => (
@@ -619,7 +620,7 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 14 && (
+        {step === 13 && (
           <FullLayout title="What should your website do?">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {FUNCTIONALITY_OPTIONS.map((f) => (
@@ -635,7 +636,7 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 15 && (
+        {step === 14 && (
           <SplitLayout title="Show us what you've got">
             <p className="mb-5 text-sm text-ink/70">You can always send more later.</p>
             <FieldLabel>Logo</FieldLabel>
@@ -678,18 +679,8 @@ export default function SurveyPage() {
               )}
               <Checkbox checked={answers.noGoodPhotos} onChange={(v) => update('noGoodPhotos', v)} label="I don't have good photos yet" />
             </div>
-
-            {/* Last question step — a dedicated, clearly-labeled submit
-                action rather than relying only on the small forward arrow. */}
-            <button
-              type="button"
-              onClick={handleComplete}
-              disabled={submitting}
-              className="mt-8 flex items-center justify-center gap-2 self-start rounded-full bg-[#0D0E12] px-9 py-4 font-body text-base font-bold text-white shadow-[0_8px_28px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
-            >
-              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : null}
-              {submitting ? 'Submitting…' : 'Finish'}
-            </button>
+            {/* The submit action itself lives in the bottom bar now (see
+                ArrowNav's Finish button) rather than floating here. */}
           </SplitLayout>
         )}
 

@@ -156,16 +156,15 @@ export const GOAL_OPTIONS: { id: GoalId; title: string; description: string }[] 
   { id: 'both', title: 'Both / middle ground', description: 'Beautiful and built to sell' },
 ]
 
-// ── Steps 5 & 6 — style, split across two pages of 4 (page 1 = first 4,
-// page 2 = last 4 — see STYLE_PAGE_1/STYLE_PAGE_2 below) ─────────────────
+// ── Step 5 — style, all 8 on one immersive page ───────────────────────────
 // fileKey is the actual filename prefix under public/media/surveystyle/ —
 // it matches `id` for every style except neobrutalism, whose uploaded
 // assets are named "brutalism{n}". Each card always uses its "1" image
-// (the "2" images from the old two-round design are unused now, kept on
-// disk in case they're wanted elsewhere later). fallbackBg/fallbackText are
-// used when an image is genuinely missing (see StyleImageCard) — colors
-// chosen to evoke the style itself so the grid still reads correctly
-// pre-upload.
+// (the "2" images from the earlier two-page/two-round design are unused
+// now, kept on disk in case they're wanted elsewhere later). fallbackBg/
+// fallbackText are used when an image is genuinely missing (see
+// StyleImageCard) — colors chosen to evoke the style itself so the grid
+// still reads correctly pre-upload.
 export const STYLE_OPTIONS: { id: StyleId; label: string; fileKey: string; fallbackBg: string; fallbackText: string }[] = [
   { id: 'minimalism', label: 'Minimal & clean', fileKey: 'minimalism', fallbackBg: '#F7F6F3', fallbackText: '#16161A' },
   { id: 'swiss', label: 'Sleek & structured', fileKey: 'swiss', fallbackBg: '#E7E7E7', fallbackText: '#16161A' },
@@ -177,19 +176,25 @@ export const STYLE_OPTIONS: { id: StyleId; label: string; fileKey: string; fallb
   { id: 'organic', label: 'Warm & handmade', fileKey: 'organic', fallbackBg: '#C9A66B', fallbackText: '#16161A' },
 ]
 
-export const STYLE_PAGE_1 = STYLE_OPTIONS.slice(0, 4)
-export const STYLE_PAGE_2 = STYLE_OPTIONS.slice(4, 8)
-
-// ── Step 7 — colours (8, multi-select, one page) ─────────────────────────
-export const COLOR_OPTIONS: { id: ColorId; label: string; swatch: string[] }[] = [
-  { id: 'mono', label: 'Monochrome B&W', swatch: ['#111111', '#FFFFFF'] },
-  { id: 'earth', label: 'Warm earth tones', swatch: ['#8B5E3C', '#C9A66B', '#E4D4B5'] },
-  { id: 'cool', label: 'Cool blues', swatch: ['#123C69', '#3E7CB1', '#AAD7D9'] },
-  { id: 'vibrant', label: 'Vibrant & colourful', swatch: ['#FF3B3B', '#FFD23B', '#3BB8FF', '#8B3BFF'] },
-  { id: 'pastel', label: 'Pastel & soft', swatch: ['#FFD6E8', '#D6E8FF', '#E8FFD6'] },
-  { id: 'moody', label: 'Dark & moody', swatch: ['#0B0B10', '#2A2A35', '#4A4A5A'] },
-  { id: 'green', label: 'Earthy greens', swatch: ['#3F4F32', '#6E8259', '#A9B99A'] },
-  { id: 'contrast', label: 'Bold contrast', swatch: ['#0B0B10', '#FFFFFF', '#FF3B3B'] },
+// ── Step 6 — colours, all 8 on one immersive page (image cards) ──────────
+// filename is the exact uploaded file under public/media/surveycolors/ —
+// these don't follow a `{id}.ext` pattern (uploaded ad hoc), so they're
+// listed explicitly rather than probed at runtime. swatch is used by the
+// completion email / anywhere a plain color chip is still wanted;
+// fallbackBg/fallbackText are a separately-tuned pair for ColorImageCard's
+// missing-image fallback specifically (a couple of the swatch arrays pair
+// two light or two dark tones, which reads fine as a 2-3 stripe swatch but
+// gives poor text-on-background contrast if reused directly as a solid
+// fallback block).
+export const COLOR_OPTIONS: { id: ColorId; label: string; filename: string; swatch: string[]; fallbackBg: string; fallbackText: string }[] = [
+  { id: 'mono', label: 'Monochrome B&W', filename: 'monochrome.png', swatch: ['#111111', '#FFFFFF'], fallbackBg: '#111111', fallbackText: '#FFFFFF' },
+  { id: 'earth', label: 'Warm earth tones', filename: 'warm_earth.png', swatch: ['#8B5E3C', '#C9A66B', '#E4D4B5'], fallbackBg: '#8B5E3C', fallbackText: '#F2E8D8' },
+  { id: 'cool', label: 'Cool blues', filename: 'cool_blues.jpg', swatch: ['#123C69', '#3E7CB1', '#AAD7D9'], fallbackBg: '#123C69', fallbackText: '#AAD7D9' },
+  { id: 'vibrant', label: 'Vibrant & colourful', filename: 'vibrant.jpg', swatch: ['#FF3B3B', '#FFD23B', '#3BB8FF', '#8B3BFF'], fallbackBg: '#3BB8FF', fallbackText: '#16161A' },
+  { id: 'pastel', label: 'Pastel & soft', filename: 'pastel.jpg', swatch: ['#FFD6E8', '#D6E8FF', '#E8FFD6'], fallbackBg: '#FFD6E8', fallbackText: '#16161A' },
+  { id: 'moody', label: 'Dark & moody', filename: 'dark.jpg', swatch: ['#0B0B10', '#2A2A35', '#4A4A5A'], fallbackBg: '#0B0B10', fallbackText: '#FFFFFF' },
+  { id: 'green', label: 'Earthy greens', filename: 'earthy.jpg', swatch: ['#3F4F32', '#6E8259', '#A9B99A'], fallbackBg: '#3F4F32', fallbackText: '#D9E4CE' },
+  { id: 'contrast', label: 'Bold contrast', filename: 'bold.png', swatch: ['#0B0B10', '#FFFFFF', '#FF3B3B'], fallbackBg: '#0B0B10', fallbackText: '#FFFFFF' },
 ]
 
 // ── Step 11 — hours presets ──────────────────────────────────────────────
@@ -272,14 +277,14 @@ export function getFeatureBadge(minPlan: PlanId, planInterest: PlanId | ''): str
   return 'Upgrade'
 }
 
-export const TOTAL_STEPS = 15
+export const TOTAL_STEPS = 14
 
-// 1 name/company · 2 contact · 3 plan · 4 goal · 5 style (page 1) ·
-// 6 style (page 2) · 7 colours · 8 business · 9 sells · 10 online links ·
-// 11 services · 12 hours/address · 13 update-often · 14 functionality ·
-// 15 uploads
-export const SPLIT_STEPS = new Set([1, 2, 8, 9, 10, 11, 12, 15])
-export const FULL_STEPS = new Set([3, 4, 5, 6, 7, 13, 14])
+// 1 name/company · 2 contact · 3 plan · 4 goal · 5 style (8, one page) ·
+// 6 colours (8, one page) · 7 business · 8 sells · 9 online links ·
+// 10 services · 11 hours/address · 12 update-often · 13 functionality ·
+// 14 uploads
+export const SPLIT_STEPS = new Set([1, 2, 7, 8, 9, 10, 11, 14])
+export const FULL_STEPS = new Set([3, 4, 5, 6, 12, 13])
 
 export function stepMode(step: number): 'split' | 'full' {
   return SPLIT_STEPS.has(step) ? 'split' : 'full'
@@ -350,7 +355,7 @@ export function isUrlLikelyValid(value: string): boolean {
   }
 }
 
-// Everything is optional except these 3 gates. Steps 4-15 (goal, styles x2,
+// Everything is optional except these 3 gates. Steps 4-14 (goal, styles,
 // colours, business, sells, links, services, address/hours, update-often,
 // functionality, uploads) are all freely skippable — their defaults are
 // already save-safe empty values.
