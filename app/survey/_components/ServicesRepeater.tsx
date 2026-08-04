@@ -33,13 +33,13 @@ export default function ServicesRepeater({
             value={row.name}
             onChange={(e) => updateRow(i, { name: e.target.value })}
             placeholder="Service or product name"
-            className="flex-1 rounded-xl border-2 border-ink/30 bg-ink/50 px-4 py-3 font-body text-sm text-white outline-none transition-colors duration-200 placeholder:text-white/60 focus:border-ink"
+            className="flex-1 rounded-xl border-2 border-ink/15 bg-white px-4 py-3 font-body text-sm text-ink outline-none transition-all duration-200 placeholder:text-muted focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25"
           />
           <input
             value={row.price}
             onChange={(e) => updateRow(i, { price: e.target.value })}
             placeholder="$50 or from $200/hr"
-            className="w-40 rounded-xl border-2 border-white/40 bg-white/10 px-4 py-3 font-body text-sm text-white outline-none transition-colors duration-200 placeholder:text-white/50 focus:border-white"
+            className="w-40 rounded-xl border-2 border-ink/15 bg-white px-4 py-3 font-body text-sm text-ink outline-none transition-all duration-200 placeholder:text-muted focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25"
           />
           <button
             type="button"

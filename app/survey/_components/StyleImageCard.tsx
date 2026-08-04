@@ -34,13 +34,13 @@ export default function StyleImageCard({ fileKey, round, label, fallbackBg, fall
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`group relative aspect-[3/2] w-full overflow-hidden rounded-2xl text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+      className={`group relative h-[34vh] w-full overflow-hidden rounded-2xl text-left transition-all duration-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D0E12] sm:h-[38vh] md:h-[42vh] ${
         selected ? 'ring-4 ring-white' : ''
       }`}
     >
       {failed ? (
-        <div className="absolute inset-0 flex items-center justify-center px-3" style={{ backgroundColor: fallbackBg }}>
-          <span className="font-display text-center text-base font-bold" style={{ color: fallbackText }}>
+        <div className="absolute inset-0 flex items-center justify-center px-4" style={{ backgroundColor: fallbackBg }}>
+          <span className="font-display text-center text-xl font-bold md:text-2xl" style={{ color: fallbackText }}>
             {label}
           </span>
         </div>
@@ -57,8 +57,8 @@ export default function StyleImageCard({ fileKey, round, label, fallbackBg, fall
               else setFailed(true)
             }}
           />
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent px-3 pb-2.5 pt-8">
-            <span className="font-body text-sm font-semibold text-white">{label}</span>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent px-5 pb-4 pt-16">
+            <span className="font-display text-lg font-bold text-white md:text-xl">{label}</span>
           </div>
         </>
       )}
@@ -66,11 +66,11 @@ export default function StyleImageCard({ fileKey, round, label, fallbackBg, fall
       {selected && <div className="absolute inset-0 bg-ink/30" aria-hidden="true" />}
 
       <span
-        className={`absolute right-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all duration-300 motion-reduce:transition-none ${
+        className={`absolute right-3.5 top-3.5 flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-300 motion-reduce:transition-none ${
           selected ? 'border-white bg-white' : 'border-white/70 bg-black/25 backdrop-blur-sm'
         }`}
       >
-        {selected && <Check className="h-3.5 w-3.5 text-ink" strokeWidth={3} />}
+        {selected && <Check className="h-4 w-4 text-ink" strokeWidth={3} />}
       </span>
     </button>
   )

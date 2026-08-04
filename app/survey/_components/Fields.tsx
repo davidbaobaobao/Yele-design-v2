@@ -21,13 +21,8 @@ interface TextInputProps {
   className?: string
 }
 
-// White answer text needs a genuinely dark surface to read against —
-// survey-bg-soft is light (raised-lightness pink), so a translucent WHITE
-// fill (the original recipe, tuned for the old strong-pink/gradient bg)
-// reads as white-on-near-white here. ink/50 blended over survey-bg-soft
-// computes to ~5.3:1 contrast for white text on top of it (WCAG AA clears
-// 4.5:1), while still reading as a translucent "glass" surface rather than
-// a flat solid card.
+// White card surface, dark ink text, subtle border, pink focus ring — reads
+// as a plain form field regardless of which pink panel it sits on.
 export function TextInput({ value, onChange, onBlur, placeholder, type = 'text', autoFocus, onKeyDown, className = '' }: TextInputProps) {
   return (
     <input
@@ -38,7 +33,7 @@ export function TextInput({ value, onChange, onBlur, placeholder, type = 'text',
       onKeyDown={onKeyDown}
       placeholder={placeholder}
       autoFocus={autoFocus}
-      className={`w-full rounded-xl border-2 border-ink/30 bg-ink/50 px-4 py-3.5 font-body text-base text-white outline-none transition-colors duration-200 placeholder:text-white/60 focus:border-ink ${className}`}
+      className={`w-full rounded-xl border-2 border-ink/15 bg-white px-4 py-3.5 font-body text-base text-ink outline-none transition-all duration-200 placeholder:text-muted focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25 ${className}`}
     />
   )
 }
@@ -116,7 +111,7 @@ export function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-full rounded-xl border-2 border-ink/30 bg-ink/50 px-4 py-3.5 font-body text-base text-white outline-none transition-colors duration-200 focus:border-ink [&>option]:text-ink ${className}`}
+      className={`w-full rounded-xl border-2 border-ink/15 bg-white px-4 py-3.5 font-body text-base text-ink outline-none transition-all duration-200 focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25 ${className}`}
     >
       {children}
     </select>

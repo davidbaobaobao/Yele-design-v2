@@ -19,8 +19,10 @@ export default function HoursPicker({
               key={p.id}
               type="button"
               onClick={() => onChange({ ...hours, mode: 'preset', preset: p.id })}
-              className={`rounded-xl border-2 px-4 py-3 text-left font-body text-sm font-semibold transition-colors duration-200 ${
-                selected ? 'border-ink bg-ink text-white' : 'border-ink/30 bg-ink/50 text-white hover:border-ink/50 hover:bg-ink/60'
+              className={`rounded-xl border-2 px-4 py-3 text-left font-body text-sm font-semibold transition-all duration-200 ${
+                selected
+                  ? 'border-[#0D0E12] bg-[#0D0E12] text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]'
+                  : 'border-ink/12 bg-white text-ink shadow-[0_2px_10px_rgba(0,0,0,0.08)] hover:border-survey-bg/60'
               }`}
             >
               {p.label}
@@ -30,8 +32,10 @@ export default function HoursPicker({
         <button
           type="button"
           onClick={() => onChange({ ...hours, mode: 'custom' })}
-          className={`rounded-xl border-2 px-4 py-3 text-left font-body text-sm font-semibold transition-colors duration-200 ${
-            hours.mode === 'custom' ? 'border-ink bg-ink text-white' : 'border-ink/30 bg-ink/50 text-white hover:border-ink/50 hover:bg-ink/60'
+          className={`rounded-xl border-2 px-4 py-3 text-left font-body text-sm font-semibold transition-all duration-200 ${
+            hours.mode === 'custom'
+              ? 'border-[#0D0E12] bg-[#0D0E12] text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]'
+              : 'border-ink/12 bg-white text-ink shadow-[0_2px_10px_rgba(0,0,0,0.08)] hover:border-survey-bg/60'
           }`}
         >
           Custom hours
@@ -64,7 +68,7 @@ export default function HoursPicker({
                       onChange={(e) =>
                         onChange({ ...hours, custom: { ...hours.custom, [day]: { ...d, open: e.target.value } } })
                       }
-                      className="rounded-lg border border-ink/30 bg-ink/50 px-2 py-1 text-sm text-white outline-none focus:border-ink [color-scheme:dark]"
+                      className="rounded-lg border-2 border-ink/15 bg-white px-2 py-1 text-sm text-ink outline-none focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25"
                     />
                     <span className="text-white/70">–</span>
                     <input
@@ -73,7 +77,7 @@ export default function HoursPicker({
                       onChange={(e) =>
                         onChange({ ...hours, custom: { ...hours.custom, [day]: { ...d, close: e.target.value } } })
                       }
-                      className="rounded-lg border border-ink/30 bg-ink/50 px-2 py-1 text-sm text-white outline-none focus:border-ink [color-scheme:dark]"
+                      className="rounded-lg border-2 border-ink/15 bg-white px-2 py-1 text-sm text-ink outline-none focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25"
                     />
                   </>
                 )}

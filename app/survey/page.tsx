@@ -18,7 +18,8 @@ import {
   FUNCTIONALITY_OPTIONS,
   GOAL_OPTIONS,
   PLAN_OPTIONS,
-  STYLE_OPTIONS,
+  STYLE_PAGE_1,
+  STYLE_PAGE_2,
   TOTAL_STEPS,
   UPDATE_OFTEN_OPTIONS,
   US_STATES,
@@ -32,10 +33,9 @@ import {
   needsManualEntry,
   normalizeUrl,
   stepMode,
-  styleKey,
   type ColorId,
   type FunctionalityId,
-  type StyleKey,
+  type StyleId,
   type SurveyAnswers,
 } from './_lib/data'
 
@@ -148,7 +148,7 @@ export default function SurveyPage() {
     setAnswers((prev) => ({ ...prev, links: { ...prev.links, [key]: normalizeUrl(prev.links[key]) } }))
   }, [])
 
-  const toggleStyle = useCallback((id: StyleKey) => {
+  const toggleStyle = useCallback((id: StyleId) => {
     setAnswers((prev) => ({
       ...prev,
       styles: prev.styles.includes(id) ? prev.styles.filter((v) => v !== id) : [...prev.styles, id],
@@ -387,54 +387,55 @@ export default function SurveyPage() {
         )}
 
         {step === 5 && (
-          <FullLayout title="Which designs catch your eye?" microcopy="Pick as many as you like.">
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-              {STYLE_OPTIONS.map((s) => {
-                const key = styleKey(s.id, 1)
-                return (
-                  <StyleImageCard
-                    key={key}
-                    fileKey={s.fileKey}
-                    round={1}
-                    label={s.label}
-                    fallbackBg={s.fallbackBg}
-                    fallbackText={s.fallbackText}
-                    selected={answers.styles.includes(key)}
-                    onClick={() => toggleStyle(key)}
-                  />
-                )
-              })}
+          <FullLayout wide title="Which designs catch your eye?" microcopy="Pick as many as you like.">
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
+              {STYLE_PAGE_1.map((s) => (
+                <StyleImageCard
+                  key={s.id}
+                  fileKey={s.fileKey}
+                  round={1}
+                  label={s.label}
+                  fallbackBg={s.fallbackBg}
+                  fallbackText={s.fallbackText}
+                  selected={answers.styles.includes(s.id)}
+                  onClick={() => toggleStyle(s.id)}
+                />
+              ))}
             </div>
           </FullLayout>
         )}
 
         {step === 6 && (
-          <FullLayout title="And from these?" microcopy="Same styles, different looks — pick what you'd click on.">
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-              {STYLE_OPTIONS.map((s) => {
-                const key = styleKey(s.id, 2)
-                return (
-                  <StyleImageCard
-                    key={key}
-                    fileKey={s.fileKey}
-                    round={2}
-                    label={s.label}
-                    fallbackBg={s.fallbackBg}
-                    fallbackText={s.fallbackText}
-                    selected={answers.styles.includes(key)}
-                    onClick={() => toggleStyle(key)}
-                  />
-                )
-              })}
+          <FullLayout wide title="And these?" microcopy="Pick as many as you like.">
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
+              {STYLE_PAGE_2.map((s) => (
+                <StyleImageCard
+                  key={s.id}
+                  fileKey={s.fileKey}
+                  round={1}
+                  label={s.label}
+                  fallbackBg={s.fallbackBg}
+                  fallbackText={s.fallbackText}
+                  selected={answers.styles.includes(s.id)}
+                  onClick={() => toggleStyle(s.id)}
+                />
+              ))}
             </div>
           </FullLayout>
         )}
 
         {step === 7 && (
-          <FullLayout title="What colours do you like?" microcopy="Choose as many as you like.">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <FullLayout wide title="What colours do you like?" microcopy="Choose as many as you like.">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
               {COLOR_OPTIONS.map((c) => (
-                <SelectCard key={c.id} title={c.label} swatch={c.swatch} selected={answers.colors.includes(c.id)} onClick={() => toggleColor(c.id)} />
+                <SelectCard
+                  key={c.id}
+                  size="large"
+                  title={c.label}
+                  swatch={c.swatch}
+                  selected={answers.colors.includes(c.id)}
+                  onClick={() => toggleColor(c.id)}
+                />
               ))}
             </div>
           </FullLayout>
@@ -565,7 +566,7 @@ export default function SurveyPage() {
               {answers.updateOften.filter(isCustomUpdateEntry).map((entry) => (
                 <div
                   key={entry}
-                  className="relative flex flex-col justify-center gap-1 rounded-2xl border-2 border-ink bg-ink py-5 pl-5 pr-9 text-left"
+                  className="relative flex flex-col justify-center gap-1 rounded-2xl border-2 border-[#0D0E12] bg-[#0D0E12] py-5 pl-5 pr-9 text-left shadow-[0_8px_28px_rgba(0,0,0,0.35)]"
                 >
                   <span className="font-display text-base font-bold text-white">{customUpdateText(entry)}</span>
                   <button
@@ -583,7 +584,7 @@ export default function SurveyPage() {
                 <button
                   type="button"
                   onClick={() => setShowCustomUpdateInput(true)}
-                  className="flex min-h-[92px] items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink/30 bg-ink/50 px-5 py-5 font-body text-sm font-semibold text-white transition-colors hover:border-ink/50 hover:bg-ink/60"
+                  className="flex min-h-[92px] items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink/25 bg-white px-5 py-5 font-body text-sm font-semibold text-ink shadow-[0_2px_14px_rgba(0,0,0,0.10)] transition-all hover:border-survey-bg/60"
                 >
                   <Plus className="h-4 w-4" /> Other — add your own
                 </button>
@@ -677,6 +678,18 @@ export default function SurveyPage() {
               )}
               <Checkbox checked={answers.noGoodPhotos} onChange={(v) => update('noGoodPhotos', v)} label="I don't have good photos yet" />
             </div>
+
+            {/* Last question step — a dedicated, clearly-labeled submit
+                action rather than relying only on the small forward arrow. */}
+            <button
+              type="button"
+              onClick={handleComplete}
+              disabled={submitting}
+              className="mt-8 flex items-center justify-center gap-2 self-start rounded-full bg-[#0D0E12] px-9 py-4 font-body text-base font-bold text-white shadow-[0_8px_28px_rgba(0,0,0,0.35)] transition-transform duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+            >
+              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : null}
+              {submitting ? 'Submitting…' : 'Finish'}
+            </button>
           </SplitLayout>
         )}
 

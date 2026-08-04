@@ -1,12 +1,6 @@
 export type GoalId = 'statement' | 'sell' | 'both'
 export type StyleId = 'minimalism' | 'swiss' | 'bento' | 'editorial' | 'luxury' | 'dark' | 'neobrutalism' | 'organic'
-export type StyleRound = 1 | 2
-// Stored shape in answers.styles — each style page (5, 6) only ever adds or
-// removes its own round-suffixed key, e.g. "minimalism1" / "minimalism2",
-// so a style picked on both pages is trivially detectable downstream (same
-// StyleId, both suffixes present) without any merge/dedupe logic here.
-export type StyleKey = `${StyleId}${StyleRound}`
-export type ColorId = 'mono' | 'earth' | 'cool' | 'vibrant' | 'pastel' | 'moody' | 'yele'
+export type ColorId = 'mono' | 'earth' | 'cool' | 'vibrant' | 'pastel' | 'moody' | 'green' | 'contrast'
 export type PlanId = 'starter' | 'pro' | 'frontier' | 'not_sure'
 export type UpdateOftenId =
   | 'menu'
@@ -72,7 +66,7 @@ export interface SurveyAnswers {
   phone: string
   planInterest: PlanId | ''
   goal: GoalId | ''
-  styles: StyleKey[]
+  styles: StyleId[]
   colors: ColorId[]
   business: string
   sells: string
@@ -162,12 +156,16 @@ export const GOAL_OPTIONS: { id: GoalId; title: string; description: string }[] 
   { id: 'both', title: 'Both / middle ground', description: 'Beautiful and built to sell' },
 ]
 
-// ── Steps 5 & 6 — style (two rounds, same 8 styles) ─────────────────────
+// ── Steps 5 & 6 — style, split across two pages of 4 (page 1 = first 4,
+// page 2 = last 4 — see STYLE_PAGE_1/STYLE_PAGE_2 below) ─────────────────
 // fileKey is the actual filename prefix under public/media/surveystyle/ —
 // it matches `id` for every style except neobrutalism, whose uploaded
-// assets are named "brutalism{round}". fallbackBg/fallbackText are used
-// when an image is genuinely missing (see StyleImageCard) — colors chosen
-// to evoke the style itself so the grid still reads correctly pre-upload.
+// assets are named "brutalism{n}". Each card always uses its "1" image
+// (the "2" images from the old two-round design are unused now, kept on
+// disk in case they're wanted elsewhere later). fallbackBg/fallbackText are
+// used when an image is genuinely missing (see StyleImageCard) — colors
+// chosen to evoke the style itself so the grid still reads correctly
+// pre-upload.
 export const STYLE_OPTIONS: { id: StyleId; label: string; fileKey: string; fallbackBg: string; fallbackText: string }[] = [
   { id: 'minimalism', label: 'Minimal & clean', fileKey: 'minimalism', fallbackBg: '#F7F6F3', fallbackText: '#16161A' },
   { id: 'swiss', label: 'Sleek & structured', fileKey: 'swiss', fallbackBg: '#E7E7E7', fallbackText: '#16161A' },
@@ -179,11 +177,10 @@ export const STYLE_OPTIONS: { id: StyleId; label: string; fileKey: string; fallb
   { id: 'organic', label: 'Warm & handmade', fileKey: 'organic', fallbackBg: '#C9A66B', fallbackText: '#16161A' },
 ]
 
-export function styleKey(id: StyleId, round: StyleRound): StyleKey {
-  return `${id}${round}` as StyleKey
-}
+export const STYLE_PAGE_1 = STYLE_OPTIONS.slice(0, 4)
+export const STYLE_PAGE_2 = STYLE_OPTIONS.slice(4, 8)
 
-// ── Step 6 — colours ─────────────────────────────────────────────────────
+// ── Step 7 — colours (8, multi-select, one page) ─────────────────────────
 export const COLOR_OPTIONS: { id: ColorId; label: string; swatch: string[] }[] = [
   { id: 'mono', label: 'Monochrome B&W', swatch: ['#111111', '#FFFFFF'] },
   { id: 'earth', label: 'Warm earth tones', swatch: ['#8B5E3C', '#C9A66B', '#E4D4B5'] },
@@ -191,7 +188,8 @@ export const COLOR_OPTIONS: { id: ColorId; label: string; swatch: string[] }[] =
   { id: 'vibrant', label: 'Vibrant & colourful', swatch: ['#FF3B3B', '#FFD23B', '#3BB8FF', '#8B3BFF'] },
   { id: 'pastel', label: 'Pastel & soft', swatch: ['#FFD6E8', '#D6E8FF', '#E8FFD6'] },
   { id: 'moody', label: 'Dark & moody', swatch: ['#0B0B10', '#2A2A35', '#4A4A5A'] },
-  { id: 'yele', label: 'Let Yele decide', swatch: ['#D46FC8', '#7B8CDE'] },
+  { id: 'green', label: 'Earthy greens', swatch: ['#3F4F32', '#6E8259', '#A9B99A'] },
+  { id: 'contrast', label: 'Bold contrast', swatch: ['#0B0B10', '#FFFFFF', '#FF3B3B'] },
 ]
 
 // ── Step 11 — hours presets ──────────────────────────────────────────────
@@ -296,15 +294,8 @@ export function goalLabel(id: string): string {
   return GOAL_OPTIONS.find((g) => g.id === id)?.title ?? id
 }
 
-// ids are round-suffixed StyleKeys (e.g. "minimalism1") — strip the trailing
-// round digit to look up the label, then note which page it came from.
 export function styleLabels(ids: string[]): string[] {
-  return ids.map((id) => {
-    const round = id.endsWith('1') ? 1 : id.endsWith('2') ? 2 : null
-    const baseId = round ? id.slice(0, -1) : id
-    const label = STYLE_OPTIONS.find((s) => s.id === baseId)?.label ?? baseId
-    return round ? `${label} (page ${round})` : label
-  })
+  return ids.map((id) => STYLE_OPTIONS.find((s) => s.id === id)?.label ?? id)
 }
 
 export function colorLabels(ids: string[]): string[] {
