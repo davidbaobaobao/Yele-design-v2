@@ -45,7 +45,6 @@ export interface LinksAnswers {
   googleBusiness: string
   instagram: string
   facebook: string
-  yelp: string
   other: string
 }
 
@@ -131,7 +130,7 @@ export const EMPTY_ANSWERS: SurveyAnswers = {
   effects: [],
   business: '',
   sells: '',
-  links: { website: '', googleBusiness: '', instagram: '', facebook: '', yelp: '', other: '' },
+  links: { website: '', googleBusiness: '', instagram: '', facebook: '', other: '' },
   noWebPresence: false,
   services: [],
   servicesFromLinks: false,

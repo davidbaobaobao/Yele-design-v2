@@ -336,7 +336,7 @@ export default function SurveyPage() {
     >
       {/* Mounted once for the whole survey — see PersistentLeftVideo's own
           comment for why it can't live inside a per-step component. */}
-      <PersistentLeftVideo visible={step === 1 || step === 2} />
+      <PersistentLeftVideo visible={step === 1 || step === 2 || step === 10} />
 
       {/* SPLIT steps: no wrapper padding/max-width here — SplitLayout itself
           is the full-bleed two-column grid, so its two panel colors reach
@@ -534,14 +534,14 @@ export default function SurveyPage() {
         )}
 
         {step === 11 && (
-          <SplitLayout title="What you sell / your edge">
+          <SplitLayout title="What you sell / your edge" leftImage="page11">
             <FieldLabel>What do you sell, and what makes you different?</FieldLabel>
             <TextInput autoFocus value={answers.sells} onChange={(v) => update('sells', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. Custom-built frames, lifetime tune-ups" />
           </SplitLayout>
         )}
 
         {step === 12 && (
-          <SplitLayout title="Are you already online somewhere?">
+          <SplitLayout title="Are you already online somewhere?" leftImage="page12">
             <p className="mb-5 text-sm text-ink/70">
               Drop your links — we&apos;ll pull your services, photos, reviews and hours so you don&apos;t have to type them.
             </p>
@@ -552,7 +552,6 @@ export default function SurveyPage() {
                   ['googleBusiness', 'Google Business Profile'],
                   ['instagram', 'Instagram'],
                   ['facebook', 'Facebook'],
-                  ['yelp', 'Yelp'],
                   ['other', 'Other'],
                 ] as const
               ).map(([key, label]) => (
@@ -579,7 +578,7 @@ export default function SurveyPage() {
         )}
 
         {step === 13 && (
-          <SplitLayout title="What should we list on your site?">
+          <SplitLayout title="What should we list on your site?" leftImage="page13">
             {linksProvided && (
               <button
                 type="button"
@@ -598,7 +597,7 @@ export default function SurveyPage() {
         )}
 
         {step === 14 && (
-          <SplitLayout title="Where and when can customers find you?">
+          <SplitLayout title="Where and when can customers find you?" leftImage="page14">
             {linksProvided && (
               <button
                 type="button"
@@ -721,7 +720,7 @@ export default function SurveyPage() {
         )}
 
         {step === 17 && (
-          <SplitLayout title="Show us what you've got">
+          <SplitLayout title="Show us what you've got" leftImage="page17">
             <p className="mb-5 text-sm text-ink/70">You can always send more later.</p>
             <FieldLabel>Logo</FieldLabel>
             <div className="mb-2">
