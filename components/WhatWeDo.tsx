@@ -102,18 +102,21 @@ const CARDS: CardData[] = [
   },
 ]
 
-// Per-card accent glow, GitHub-workflow-card style: TWO intense focal cones
-// (top-center and bottom-center) plus a much fainter wide wash so the sides
-// are never fully black — but top/bottom stay the dominant, dramatic
-// sources. Layered with the cones FIRST (painted on top) and the faint side
-// wash LAST (behind) since CSS paints earlier background-image layers over
-// later ones.
+// Per-card accent glow, GitHub-workflow-card style: at each of top-center
+// and bottom-center, a small very-bright HOT CORE (tight ellipse, opacity
+// maxed at 1) layered on top of a wider, still-strong CONE underneath it,
+// so there's a hot bright center fading out into a broader bloom — not a
+// single flat cone. A much fainter wide wash sits behind everything so the
+// sides are never fully black. Layered hot-core-first, cone-second, wash-
+// last since CSS paints earlier background-image layers over later ones.
 function cardGradient(index: number): string {
   const accent = CARDS[index].accent
-  const topCone = `radial-gradient(ellipse 60% 45% at 50% 0%, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.6)} 32%, transparent 70%)`
-  const bottomCone = `radial-gradient(ellipse 60% 45% at 50% 100%, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.6)} 32%, transparent 70%)`
+  const topHot = `radial-gradient(ellipse 22% 18% at 50% 0%, ${hexToRgba(accent, 1)} 0%, ${hexToRgba(accent, 0.85)} 40%, transparent 68%)`
+  const topCone = `radial-gradient(ellipse 62% 46% at 50% 0%, ${hexToRgba(accent, 1)} 0%, ${hexToRgba(accent, 0.75)} 35%, transparent 72%)`
+  const bottomHot = `radial-gradient(ellipse 22% 18% at 50% 100%, ${hexToRgba(accent, 1)} 0%, ${hexToRgba(accent, 0.85)} 40%, transparent 68%)`
+  const bottomCone = `radial-gradient(ellipse 62% 46% at 50% 100%, ${hexToRgba(accent, 1)} 0%, ${hexToRgba(accent, 0.75)} 35%, transparent 72%)`
   const sideDiffuse = `radial-gradient(ellipse 140% 100% at 50% 50%, ${hexToRgba(accent, 0.1)} 0%, transparent 65%)`
-  return `${topCone}, ${bottomCone}, ${sideDiffuse}`
+  return `${topHot}, ${topCone}, ${bottomHot}, ${bottomCone}, ${sideDiffuse}`
 }
 
 // Blends `hex` toward white by `tint` (0 = pure hex, 1 = pure white), then
@@ -130,15 +133,16 @@ function mixToRgba(hex: string, alpha: number, tint: number): string {
   return `rgba(${mr}, ${mg}, ${mb}, ${alpha})`
 }
 
-// The card's rim: a 4px gradient (not a flat color) — bright top & bottom,
-// faint at the sides, so it reads as catching light from the glow above
-// rather than a uniform frame. Applied via the padding technique (see
+// The card's rim: a thick gradient (not a flat color) — bright top &
+// bottom, faint at the sides, so it reads as catching light from the glow
+// above rather than a uniform frame. Applied via the padding technique (see
 // borderWrapper below): this string is the wrapper's own background, and
 // its padding is what reveals it as a "border" around the solid inner
-// surface.
+// surface. Bright-stop alpha raised well past half-strength so the rim
+// visibly lights up where the hot glow core sits behind it.
 function borderGradient(index: number): string {
   const accent = CARDS[index].accent
-  const bright = mixToRgba(accent, 0.55, 0.8)
+  const bright = mixToRgba(accent, 0.88, 0.75)
   const dim = 'rgba(255,255,255,0.10)'
   return `linear-gradient(180deg, ${bright} 0%, ${dim} 35%, ${dim} 65%, ${bright} 100%)`
 }
@@ -264,7 +268,7 @@ function WhatWeDoCard({
           not a static bloom; opacity/scale still transition on hover. */}
       <div
         aria-hidden="true"
-        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-45' : 'opacity-45 group-hover:opacity-80 transition-[opacity] duration-500 motion-safe:animate-[cta-glow-drift_5s_ease-in-out_infinite]'}`}
+        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-55' : 'opacity-55 group-hover:opacity-95 transition-[opacity] duration-500 motion-safe:animate-[cta-glow-drift_5s_ease-in-out_infinite]'}`}
         style={{
           background: gradient,
           willChange: reduceMotion ? undefined : 'opacity, transform',
@@ -274,19 +278,20 @@ function WhatWeDoCard({
 
       {/* Gradient-border wrapper: the border is a real gradient (bright top
           & bottom, faint sides — not a flat color that can't vary), built
-          with the padding technique rather than a CSS `border` — p-1 (4px)
-          IS the border thickness, and this div's own `background` is the
-          gradient itself. The solid CARD_BG surface below sits inside that
-          padding, so only a 4px ring of this gradient shows around it. */}
-      <div className="relative h-full rounded-3xl p-1" style={{ background: borderGradient(index) }}>
+          with the padding technique rather than a CSS `border` — p-2 (8px)
+          IS the border thickness (chunky, GitHub-style, up from the earlier
+          4px), and this div's own `background` is the gradient itself. The
+          solid CARD_BG surface below sits inside that padding, so an 8px
+          ring of this gradient shows around it. */}
+      <div className="relative h-full rounded-3xl p-2" style={{ background: borderGradient(index) }}>
         {/* Inside: a plain flat dark-grey surface (CARD_BG) — no aurora, no
             interior gradient wash, no video glow. Just the gradient rim
             above, the flat surface, and the header/body/video content on
             top of it. Inner radius is the outer rounded-3xl (1.5rem) minus
-            the 4px rim so the two stay concentric. */}
+            the 8px rim so the two stay concentric. */}
         <div
           style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15)' }}
-          className="relative flex flex-col h-full rounded-[calc(1.5rem-4px)] overflow-hidden"
+          className="relative flex flex-col h-full rounded-[calc(1.5rem-8px)] overflow-hidden"
         >
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. Padding-top > padding-bottom (both
