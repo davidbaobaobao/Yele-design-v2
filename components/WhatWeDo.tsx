@@ -102,17 +102,45 @@ const CARDS: CardData[] = [
   },
 ]
 
-// Per-card accent glow, GitHub-workflow-card style: TWO focal cones (not one
-// cone + a wide ambient wash) — a tight, intense band at top-center and a
-// second at bottom-center, each brightest at the center of its edge and
-// falling off toward the left/right sides (narrow ellipse, fast horizontal
-// falloff). A linear top-to-bottom blend or an overly wide ellipse both read
-// as a uniform wash instead of two distinct focused sources.
+// Per-card accent glow, GitHub-workflow-card style: TWO intense focal cones
+// (top-center and bottom-center) plus a much fainter wide wash so the sides
+// are never fully black — but top/bottom stay the dominant, dramatic
+// sources. Layered with the cones FIRST (painted on top) and the faint side
+// wash LAST (behind) since CSS paints earlier background-image layers over
+// later ones.
 function cardGradient(index: number): string {
   const accent = CARDS[index].accent
-  const topCone = `radial-gradient(ellipse 55% 42% at 50% 0%, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.55)} 30%, transparent 68%)`
-  const bottomCone = `radial-gradient(ellipse 55% 42% at 50% 100%, ${hexToRgba(accent, 0.85)} 0%, ${hexToRgba(accent, 0.48)} 30%, transparent 68%)`
-  return `${topCone}, ${bottomCone}`
+  const topCone = `radial-gradient(ellipse 60% 45% at 50% 0%, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.6)} 32%, transparent 70%)`
+  const bottomCone = `radial-gradient(ellipse 60% 45% at 50% 100%, ${hexToRgba(accent, 0.95)} 0%, ${hexToRgba(accent, 0.6)} 32%, transparent 70%)`
+  const sideDiffuse = `radial-gradient(ellipse 140% 100% at 50% 50%, ${hexToRgba(accent, 0.1)} 0%, transparent 65%)`
+  return `${topCone}, ${bottomCone}, ${sideDiffuse}`
+}
+
+// Blends `hex` toward white by `tint` (0 = pure hex, 1 = pure white), then
+// applies `alpha` — used to give the gradient-border's bright top/bottom
+// stops a hint of the card's accent color rather than plain white.
+function mixToRgba(hex: string, alpha: number, tint: number): string {
+  const n = parseInt(hex.slice(1), 16)
+  const r = (n >> 16) & 255
+  const g = (n >> 8) & 255
+  const b = n & 255
+  const mr = Math.round(r + (255 - r) * tint)
+  const mg = Math.round(g + (255 - g) * tint)
+  const mb = Math.round(b + (255 - b) * tint)
+  return `rgba(${mr}, ${mg}, ${mb}, ${alpha})`
+}
+
+// The card's rim: a 4px gradient (not a flat color) — bright top & bottom,
+// faint at the sides, so it reads as catching light from the glow above
+// rather than a uniform frame. Applied via the padding technique (see
+// borderWrapper below): this string is the wrapper's own background, and
+// its padding is what reveals it as a "border" around the solid inner
+// surface.
+function borderGradient(index: number): string {
+  const accent = CARDS[index].accent
+  const bright = mixToRgba(accent, 0.55, 0.8)
+  const dim = 'rgba(255,255,255,0.10)'
+  return `linear-gradient(180deg, ${bright} 0%, ${dim} 35%, ${dim} 65%, ${bright} 100%)`
 }
 
 // Same treatment as every other video section on this site: borderless,
@@ -236,7 +264,7 @@ function WhatWeDoCard({
           not a static bloom; opacity/scale still transition on hover. */}
       <div
         aria-hidden="true"
-        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-35' : 'opacity-35 group-hover:opacity-65 transition-[opacity] duration-500 motion-safe:animate-[cta-glow-drift_5s_ease-in-out_infinite]'}`}
+        className={`absolute inset-0 rounded-3xl blur-[40px] pointer-events-none ${reduceMotion ? 'opacity-45' : 'opacity-45 group-hover:opacity-80 transition-[opacity] duration-500 motion-safe:animate-[cta-glow-drift_5s_ease-in-out_infinite]'}`}
         style={{
           background: gradient,
           willChange: reduceMotion ? undefined : 'opacity, transform',
@@ -244,25 +272,22 @@ function WhatWeDoCard({
         }}
       />
 
-      {/* Inside: a plain flat dark-grey surface (CARD_BG) — no aurora, no
-          interior gradient wash, no video glow. Just the glass border above,
-          the flat surface, and the header/body/video content on top of it.
-          The border is wide + backdrop-blurred so the glow above diffuses
-          THROUGH it, like frosted glass — bg-clip-padding is the key fix:
-          the default background-clip (border-box) paints CARD_BG all the
-          way under the border too, which fully hides whatever backdrop-blur
-          reveals there, leaving just a flat line instead of the intended
-          diffused glow. Clipping the background to the padding box keeps
-          CARD_BG solid across the interior while leaving the border ring's
-          own area free for the blurred backdrop to actually show through.
-          Bumped noticeably brighter (white/25, up from white/[0.06]) so it
-          reads as a bright frosted-glass rim like GitHub's cards rather than
-          a dark line, plus an inset ring highlight for a catching-the-light
-          edge. */}
-      <div
-        style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)' }}
-        className="relative flex flex-col h-full rounded-3xl overflow-hidden border-[10px] border-white/25 backdrop-blur-xl bg-clip-padding ring-1 ring-inset ring-white/10"
-      >
+      {/* Gradient-border wrapper: the border is a real gradient (bright top
+          & bottom, faint sides — not a flat color that can't vary), built
+          with the padding technique rather than a CSS `border` — p-1 (4px)
+          IS the border thickness, and this div's own `background` is the
+          gradient itself. The solid CARD_BG surface below sits inside that
+          padding, so only a 4px ring of this gradient shows around it. */}
+      <div className="relative h-full rounded-3xl p-1" style={{ background: borderGradient(index) }}>
+        {/* Inside: a plain flat dark-grey surface (CARD_BG) — no aurora, no
+            interior gradient wash, no video glow. Just the gradient rim
+            above, the flat surface, and the header/body/video content on
+            top of it. Inner radius is the outer rounded-3xl (1.5rem) minus
+            the 4px rim so the two stay concentric. */}
+        <div
+          style={{ backgroundColor: CARD_BG, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.15)' }}
+          className="relative flex flex-col h-full rounded-[calc(1.5rem-4px)] overflow-hidden"
+        >
       {/* Header strip — fixed height, stays visible when the card is
           collapsed under later cards. Padding-top > padding-bottom (both
           inside items-center) so the title's centered position shifts down
@@ -314,6 +339,7 @@ function WhatWeDoCard({
           aria-hidden="true"
         />
       )}
+        </div>
       </div>
     </div>
   )
