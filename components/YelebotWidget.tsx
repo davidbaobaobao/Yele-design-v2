@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
-import { X, ArrowUp } from 'lucide-react'
+import { X, ArrowUp, ChevronDown } from 'lucide-react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const ROBOT_DIR = '/media/robot'
@@ -12,7 +12,9 @@ const ROBOT_DIR = '/media/robot'
 const PILLS: { label: string; value: string }[] = [
   { label: 'How can Yele help me build a website?', value: 'How can Yele help me build a website?' },
   { label: 'How could MY business use this?', value: 'How could MY business use this chat?' },
+  { label: '📅 Book a call tomorrow', value: 'Book a call tomorrow' },
   { label: "What's the weather? ☀️", value: "What's the weather? ☀️" },
+  { label: 'Tell me a joke 😄', value: 'Tell me a joke 😄' },
 ]
 
 // Fires `callback` on a re-randomized delay each time (not a fixed-period
@@ -103,15 +105,13 @@ function RobotLauncher({ open, onClick }: { open: boolean; onClick: () => void }
             properly-sized derivative server-side instead of the browser
             crudely scaling the full 512px source down in CSS — quality={100}
             keeps that resize from adding its own softening on top of the
-            source. Source is a lossless PNG at ~4.9x the displayed width, so
-            this is a clean downscale, never an upscale (the actual cause of
-            the earlier pixelation was a too-small/compressed source, not a
-            missing image-rendering hint). */}
+            source. Source is a lossless-cropped WebP at ~4.9x the displayed
+            width, so this is a clean downscale, never an upscale. */}
         <Image
-          src={`${ROBOT_DIR}/robot.png`}
+          src={`${ROBOT_DIR}/robot2.webp`}
           alt=""
           width={512}
-          height={430}
+          height={466}
           quality={100}
           priority
           sizes="104px"
@@ -119,10 +119,10 @@ function RobotLauncher({ open, onClick }: { open: boolean; onClick: () => void }
           style={{ opacity: showBlinkFrame ? 0 : 1, imageRendering: 'auto' }}
         />
         <Image
-          src={`${ROBOT_DIR}/robot_blink.png`}
+          src={`${ROBOT_DIR}/robot_blink2.webp`}
           alt=""
           width={512}
-          height={431}
+          height={466}
           quality={100}
           sizes="104px"
           onError={() => setBlinkImgFailed(true)}
@@ -130,8 +130,8 @@ function RobotLauncher({ open, onClick }: { open: boolean; onClick: () => void }
           style={{ opacity: showBlinkFrame ? 1 : 0, imageRendering: 'auto' }}
         />
 
-        {/* Eyelid-overlay fallback — only ever visible if robot_blink.png
-            404s, positioned roughly over the robot's eyes for the ~512x430
+        {/* Eyelid-overlay fallback — only ever visible if robot_blink2.webp
+            404s, positioned roughly over the robot's eyes for the ~512x466
             crop. Two dark bars that scaleY 0->1->0 to fake a blink without
             needing a second image. */}
         {blinking && blinkImgFailed && (
@@ -287,13 +287,35 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
   })
   const [input, setInput] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const messageRefs = useRef(new Map<string, HTMLDivElement>())
+  const lastScrolledIdRef = useRef<string | null>(null)
+  const [showMoreBelow, setShowMoreBelow] = useState(false)
   const busy = status === 'submitted' || status === 'streaming'
 
-  useEffect(() => {
+  const updateShowMoreBelow = useCallback(() => {
     const el = scrollRef.current
     if (!el) return
-    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  }, [messages, busy])
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
+    setShowMoreBelow(distanceFromBottom > 32)
+  }, [])
+
+  // Scrolls so a NEW reply's own TOP lands at the top of the viewport —
+  // once, right when it first appears — instead of the old behavior of
+  // re-pinning to el.scrollHeight (the very bottom) on every streamed
+  // token, which left long replies scrolled straight past their own start.
+  // Guarded by lastScrolledIdRef so it fires once per message id, not on
+  // every token while that same message keeps streaming.
+  useEffect(() => {
+    const lastMsg = messages[messages.length - 1]
+    if (lastMsg && lastMsg.role === 'assistant' && lastMsg.id !== lastScrolledIdRef.current) {
+      lastScrolledIdRef.current = lastMsg.id
+      messageRefs.current.get(lastMsg.id)?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    }
+    // Content height still changes on every token — keep the "more below"
+    // fade/chevron in sync without re-triggering the scroll above.
+    const raf = requestAnimationFrame(updateShowMoreBelow)
+    return () => cancelAnimationFrame(raf)
+  }, [messages, busy, updateShowMoreBelow])
 
   const handleSend = useCallback(
     (text: string) => {
@@ -324,39 +346,73 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         </button>
       </header>
 
-      <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
-        {messages.length === 0 && (
-          <>
-            <MessageBubble role="assistant" text="Hi! I'm Yele's AI agent 🤖 — ask me anything:" />
-            <div className="flex flex-col gap-2 pt-1">
-              {PILLS.map((p) => (
-                <button
-                  key={p.value}
-                  type="button"
-                  onClick={() => handleSend(p.value)}
-                  className="rounded-full border border-[#D46FC8]/50 px-4 py-2 text-left font-body text-xs font-medium text-[#F0A6E4] transition-colors hover:bg-[#D46FC8]/10 hover:border-[#D46FC8]"
-                >
-                  {p.label}
-                </button>
-              ))}
+      <div className="relative min-h-0 flex-1">
+        <div ref={scrollRef} onScroll={updateShowMoreBelow} className="h-full space-y-3 overflow-y-auto px-5 py-4">
+          {messages.length === 0 && (
+            <>
+              <MessageBubble role="assistant" text="Hi! I'm Yele's AI agent 🤖 — ask me anything:" />
+              <div className="flex flex-col gap-2 pt-1">
+                {PILLS.map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => handleSend(p.value)}
+                    className="rounded-full border border-[#D46FC8]/50 px-4 py-2 text-left font-body text-xs font-medium text-[#F0A6E4] transition-colors hover:bg-[#D46FC8]/10 hover:border-[#D46FC8]"
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {messages.map((m) => (
+            <div
+              key={m.id}
+              ref={(el) => {
+                if (el) messageRefs.current.set(m.id, el)
+                else messageRefs.current.delete(m.id)
+              }}
+            >
+              <MessageBubble role={m.role} text={partsToText(m.parts)} />
             </div>
+          ))}
+
+          {busy &&
+            (() => {
+              const toolLabel = activeToolLabel(messages)
+              return toolLabel ? <StatusBubble label={toolLabel} /> : status === 'submitted' ? <TypingDots /> : null
+            })()}
+          {status === 'error' && (
+            <MessageBubble
+              role="assistant"
+              text="Something went wrong on my end — try again in a moment, or reach a human at info@yele.design."
+            />
+          )}
+        </div>
+
+        {/* "More below" affordance — a bottom fade so cut-off content reads
+            as continuing rather than ending abruptly, plus a bouncing
+            chevron (click to jump to the latest message). Both hidden once
+            updateShowMoreBelow (scroll position OR content-height changes)
+            reports the user is already at the bottom. */}
+        {showMoreBelow && (
+          <>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-14"
+              style={{ background: 'linear-gradient(to top, #16171C, transparent)' }}
+            />
+            <button
+              type="button"
+              onClick={() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })}
+              aria-label="Scroll to latest message"
+              className="absolute bottom-2 left-1/2 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full text-white/80 shadow-[0_4px_14px_rgba(0,0,0,0.4)] motion-safe:animate-bounce"
+              style={{ backgroundColor: '#2A2A32' }}
+            >
+              <ChevronDown className="h-4 w-4" />
+            </button>
           </>
-        )}
-
-        {messages.map((m) => (
-          <MessageBubble key={m.id} role={m.role} text={partsToText(m.parts)} />
-        ))}
-
-        {busy &&
-          (() => {
-            const toolLabel = activeToolLabel(messages)
-            return toolLabel ? <StatusBubble label={toolLabel} /> : status === 'submitted' ? <TypingDots /> : null
-          })()}
-        {status === 'error' && (
-          <MessageBubble
-            role="assistant"
-            text="Something went wrong on my end — try again in a moment, or reach a human at info@yele.design."
-          />
         )}
       </div>
 

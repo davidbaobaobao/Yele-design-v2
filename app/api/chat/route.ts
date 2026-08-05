@@ -7,7 +7,7 @@ import {
   tool,
   type UIMessage,
 } from 'ai'
-import { google } from '@ai-sdk/google'
+import { groq } from '@ai-sdk/groq'
 import { z } from 'zod'
 import { YELE_SYSTEM_PROMPT } from '@/lib/yeleSystemPrompt'
 import { createBooking, getAvailableSlots } from '@/lib/cal'
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
   // safe to leave in logs — confirms whether the env var reached the
   // running process at all (missing in Vercel/not redeployed after adding
   // it are the usual culprits).
-  console.log('[chat] GOOGLE_GENERATIVE_AI_API_KEY present:', !!process.env.GOOGLE_GENERATIVE_AI_API_KEY)
+  console.log('[chat] GROQ_API_KEY present:', !!process.env.GROQ_API_KEY)
 
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
 
@@ -104,15 +104,7 @@ export async function POST(req: Request) {
     )
   }
 
-  // Gemini's flash models spend a variable, model-controlled chunk of this
-  // same budget on hidden "thinking" tokens before ever emitting visible
-  // text (confirmed live: a plain "what's the weather" burned 149-183
-  // thinking tokens on its own). thinkingConfig.thinkingBudget can't be
-  // disabled for this model (0 → 400 INVALID_ARGUMENT) or reliably capped
-  // small (24 was silently ignored, still used 149) — so these caps are
-  // sized with enough headroom for typical thinking overhead + a real
-  // answer, not just the visible-reply length like the old Groq caps were.
-  const maxTokens = isRelatedTopic(latestUserText) ? 700 : 400
+  const maxTokens = isRelatedTopic(latestUserText) ? 350 : 160
   const fallbackText =
     "Something went wrong on my end — try again in a moment, or reach a human at info@yele.design."
 
@@ -126,7 +118,7 @@ Current datetime: ${new Date().toISOString()} (timezone ${process.env.CAL_TIMEZO
 
   try {
     const result = streamText({
-      model: google('gemini-flash-latest'),
+      model: groq('llama-3.3-70b-versatile'),
       instructions: instructionsWithDatetime,
       messages: await convertToModelMessages(messages),
       temperature: 0.4,
@@ -151,7 +143,13 @@ Current datetime: ${new Date().toISOString()} (timezone ${process.env.CAL_TIMEZO
           inputSchema: z.object({
             startISO: z.string(),
             name: z.string(),
-            email: z.string().email(),
+            // Plain z.string(), not .email() — Groq's tool-schema validator
+            // rejects the regex `pattern` that zod's .email() generates in
+            // the JSON schema output (confirmed live: "is not valid 'regex'"
+            // from Groq's API, even though the same schema worked fine
+            // against Gemini). The email format itself is still enforced
+            // downstream by Cal.com's own booking API.
+            email: z.string().describe('A valid email address'),
             notes: z.string().describe('what the user wants to discuss/learn'),
           }),
           execute: async (a) => createBooking(a),
