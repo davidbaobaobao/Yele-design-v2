@@ -168,8 +168,15 @@ Current datetime: ${new Date().toISOString()} (timezone ${process.env.CAL_TIMEZO
     return result.toUIMessageStreamResponse({
       onError: (error) => {
         console.error('[chat] stream error', error)
+        const message = error instanceof Error ? error.message : String(error)
+        // Groq's on-demand tier has a hard daily token cap — this fires as a
+        // normal streaming error (not a network/regional block), and without
+        // this check it was indistinguishable from a real bug behind the
+        // generic fallbackText below.
+        if (/rate limit/i.test(message)) {
+          return "We've hit our daily chat limit for now — try again in a bit, or book a call at yele.design/schedule / email info@yele.design."
+        }
         if (process.env.NODE_ENV !== 'production') {
-          const message = error instanceof Error ? error.message : String(error)
           return `[dev only] ${message}`
         }
         return fallbackText

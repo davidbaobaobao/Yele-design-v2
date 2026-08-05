@@ -7,15 +7,17 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 // Same one-shot ~500ms flip mechanic as HowWeWork (see that file's own
 // comment for the full rationale): loads LIGHT (white bg, ink text) and
-// flips to DARK once this section's own paragraph crosses the top of the
-// viewport, reversible on scroll up. Reports through the shared
-// 'nav:fademode' event so the nav's text color tracks whichever fading
-// section is currently on screen.
+// flips to DARK once this section's own paragraph reaches roughly this far
+// down the viewport (not once it reaches the very top — that fired the flip
+// too late, right as the section was already leaving). Reversible on scroll
+// up. Reports through the shared 'nav:fademode' event so the nav's text
+// color tracks whichever fading section is currently on screen.
 const DARK_BG = '#0D0E12'
 const LIGHT_BG = '#FFFFFF'
 const DARK_TEXT = '#FFFFFF'
 const LIGHT_TEXT = '#16161A'
 const FLIP_TRANSITION: Transition = { duration: 0.5, ease: 'easeInOut' }
+const TRIGGER_VIEWPORT_FRACTION = 0.7
 
 export default function DealStatement() {
   const reduceMotion = !!useHydratedReducedMotion()
@@ -49,7 +51,11 @@ export default function DealStatement() {
   const { scrollY } = useScroll()
   useMotionValueEvent(scrollY, 'change', v => {
     if (reduceMotion) return
-    const past = v >= textPageTopRef.current
+    // Fires as soon as the paragraph's top has scrolled up to ~70% down the
+    // viewport (i.e. while it's still mostly below the fold, right as it
+    // enters view) rather than waiting for its top to reach the very top of
+    // the viewport.
+    const past = v >= textPageTopRef.current - window.innerHeight * TRIGGER_VIEWPORT_FRACTION
     setPastThreshold(prev => (prev === past ? prev : past))
   })
 

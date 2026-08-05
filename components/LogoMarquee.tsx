@@ -6,10 +6,6 @@ const LOGO_DIR = '/media/logosmarquee'
 const LOGO_COUNT = 10
 const LOGOS = Array.from({ length: LOGO_COUNT }, (_, i) => i + 1)
 
-// Fades the strip's own left/right edges to transparent instead of hard-
-// cutting logos mid-shape as they scroll past the section boundary.
-const EDGE_FADE_MASK = 'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)'
-
 // Plain <img>, not next/image — these are SVGs, and Next's image optimizer
 // refuses to serve SVGs at all unless dangerouslyAllowSVG is set globally
 // (a security tradeoff not worth making for one decorative marquee). The
@@ -46,7 +42,7 @@ export default function LogoMarquee() {
     <section
       data-nav-dark
       className="logo-marquee-wrap relative overflow-hidden py-12"
-      style={{ backgroundColor: '#0D0E12', WebkitMaskImage: EDGE_FADE_MASK, maskImage: EDGE_FADE_MASK }}
+      style={{ backgroundColor: '#0D0E12' }}
     >
       {/* Two identical copies back-to-back so translateX(-50%) — one full
           copy's width — loops seamlessly with no visible seam or jump. */}
