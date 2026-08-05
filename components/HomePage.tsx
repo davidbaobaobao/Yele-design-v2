@@ -5,6 +5,7 @@ import Hero from '@/components/Hero'
 // just not imported/rendered. Re-add this import when it's wanted again.
 // import Mission from '@/components/Mission'
 import { EnLangProvider } from '@/components/LangProvider'
+import { DealFadeProvider } from '@/components/DealFadeContext'
 
 // Below-fold sections — code-split into separate chunks to reduce initial JS
 const LogoMarquee          = dynamic(() => import('@/components/LogoMarquee'))
@@ -46,8 +47,10 @@ export default function HomePage() {
           <Showcase noHeader noBg fullScreen dark />
         </div>
         <HowWeWork />
-        <BeyondWebsite />
-        <DealStatement />
+        <DealFadeProvider>
+          <BeyondWebsite />
+          <DealStatement />
+        </DealFadeProvider>
         <StatsBold />
         <PreciosIndexSection />
         <ContentShowcase />

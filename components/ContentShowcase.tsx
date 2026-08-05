@@ -66,14 +66,6 @@ const IMAGE_EXT: Record<number, string> = {
   15: 'jpeg', 16: 'jpg', 17: 'jpeg', 18: 'jpeg', 19: 'jpeg', 20: 'jpeg',
 }
 
-function linearMap(inMin: number, inMax: number, outMin: number, outMax: number) {
-  return (v: number) => {
-    if (v <= inMin) return outMin
-    if (v >= inMax) return outMax
-    return outMin + ((outMax - outMin) * (v - inMin)) / (inMax - inMin)
-  }
-}
-
 function easeOutCubic(t: number) {
   const k = Math.max(0, Math.min(1, t))
   return 1 - Math.pow(1 - k, 3)
@@ -107,21 +99,35 @@ function tileGeometry(index: number, cols: number, rows: number) {
   }
 }
 
-// ---- Reveal timing, all expressed as fractions of EACH wrapper's OWN
-// local scroll progress (0-1) — not the old design's shared 630vh timeline.
-// REVEAL_END spans nearly the WHOLE wrapper range (not a short early burst)
-// so the first tile (tileStart=0) starts moving on the very first pixel of
-// scroll and the rest cascade in continuously as you keep scrolling, with
-// the last tile settling a little before the wrapper releases — no idle
-// dead zone before it starts and no early-burst-then-long-static-hold
-// after. Same constants drive both the image and video grids so the two
-// reveals feel identical.
-const REVEAL_END = 1
-const START_Y = 100 // tiles start just below the viewport, in tileGeometry's 0-100 scale
+// ---- Pyramid-staggered reveal. Instead of every tile starting fully
+// hidden and snapping into place during a short early burst, each column
+// (image grid) / row (video grid) starts at its OWN partial-reveal
+// baseline — the center column / top row already mostly resolved — so
+// something is on screen the instant the section is entered. As the user
+// keeps scrolling, every tile's `t` (0 = still at its starting offset, 1 =
+// settled in its final grid slot) rises from that baseline to 1, so the
+// whole grid resolves smoothly and continuously over the section's (long)
+// pinned scroll range instead of jumping in on one fast flick.
+const START_Y = 100 // image grid: tiles start below the viewport, tileGeometry's 0-100 scale
+const START_X = -30 // video grid: tiles start left of their slot, same 0-100 scale
 const START_SCALE = 0.94
-const COL_STAGGER = 0.035
-const ROW_STAGGER = 0.02
-const TILE_SPAN = 0.6
+
+// Column pyramid for the image grid — center column already 80% resolved
+// at entry, tapering linearly to 20% at the outermost columns. Derived from
+// distance-to-center (not a fixed lookup table) so the narrow 4-col mobile
+// layout gets the same shape as the 5-col desktop one.
+function columnInitialReveal(col: number, cols: number) {
+  const centerCol = (cols - 1) / 2
+  const maxDist = centerCol
+  if (maxDist === 0) return 0.8
+  const dist = Math.abs(col - centerCol)
+  return 0.8 - 0.6 * (dist / maxDist)
+}
+
+// Row stagger for the video grid, given explicitly (VIDEO_ROWS is fixed at
+// 4, so no need to generalize): top row nearly resolved at entry, each row
+// below it progressively further from its final position.
+const ROW_INITIAL_REVEAL = [0.8, 0.5, 0.2, 0.1]
 
 // Below this width, the desktop 5x4 grid produces awkward cells — swap to
 // a 4x5 layout instead (clean factor pair of 20, taller/narrower cells
@@ -140,25 +146,30 @@ function useIsNarrowViewport() {
   return isNarrow
 }
 
-// Shared rise-from-below-into-grid-slot transform, used by both image and
-// video tiles so the two reveals move identically. `progress` is the
-// wrapper's own local 0-1 scroll fraction (not a global timeline).
-function useTileReveal(progress: MotionValue<number>, index: number, cols: number, rows: number) {
+// Image grid: vertical rise, staggered by COLUMN.
+function useVerticalTileReveal(progress: MotionValue<number>, index: number, cols: number, rows: number) {
   const { width, height, centerX, centerY } = tileGeometry(index, cols, rows)
   const col = index % cols
-  const row = Math.floor(index / cols)
-  const tileStart = col * COL_STAGGER + row * ROW_STAGGER
-  const tileEnd = tileStart + TILE_SPAN
+  const base = columnInitialReveal(col, cols)
 
-  const t = useTransform(progress, v => {
-    const local = linearMap(0, REVEAL_END, 0, 1)(v)
-    return easeOutCubic(linearMap(tileStart, tileEnd, 0, 1)(local))
-  })
-
+  const t = useTransform(progress, v => base + (1 - base) * easeOutCubic(v))
   const top = useTransform(t, tv => `${START_Y + (centerY - START_Y) * tv}%`)
   const scale = useTransform(t, tv => START_SCALE + (1 - START_SCALE) * tv)
 
-  return { width, height, centerX, top, scale, opacity: t }
+  return { width, height, left: centerX, top, scale, opacity: t }
+}
+
+// Video grid: horizontal slide (left -> right), staggered by ROW.
+function useHorizontalTileReveal(progress: MotionValue<number>, index: number, cols: number, rows: number) {
+  const { width, height, centerX, centerY } = tileGeometry(index, cols, rows)
+  const row = Math.floor(index / cols)
+  const base = ROW_INITIAL_REVEAL[row] ?? 0.5
+
+  const t = useTransform(progress, v => base + (1 - base) * easeOutCubic(v))
+  const left = useTransform(t, tv => `${START_X + (centerX - START_X) * tv}%`)
+  const scale = useTransform(t, tv => START_SCALE + (1 - START_SCALE) * tv)
+
+  return { width, height, top: centerY, left, scale, opacity: t }
 }
 
 function ImageTile({
@@ -172,7 +183,7 @@ function ImageTile({
   cols: number
   rows: number
 }) {
-  const { width, height, centerX, top, scale, opacity } = useTileReveal(progress, index, cols, rows)
+  const { width, height, left, top, scale, opacity } = useVerticalTileReveal(progress, index, cols, rows)
   const n = index + 1
   const ext = IMAGE_EXT[n] ?? 'jpeg'
   const grayscale = GRAYSCALE_IMAGE_NUMBERS.has(n)
@@ -181,7 +192,7 @@ function ImageTile({
     <motion.div
       className="absolute overflow-hidden pointer-events-none"
       style={{
-        left: `${centerX}%`,
+        left: `${left}%`,
         top,
         width: `${width}%`,
         height: `${height}%`,
@@ -211,7 +222,7 @@ function VideoTile({
   progress: MotionValue<number>
   mounted: boolean
 }) {
-  const { width, height, centerX, top, scale, opacity } = useTileReveal(progress, index, VIDEO_COLS, VIDEO_ROWS)
+  const { width, height, top, left, scale, opacity } = useHorizontalTileReveal(progress, index, VIDEO_COLS, VIDEO_ROWS)
   const videoRef = useRef<HTMLVideoElement>(null)
   const n = index + 1
   const poster = `${VIDEO_DIR}/${n}_poster.jpg`
@@ -251,8 +262,8 @@ function VideoTile({
     <motion.div
       className="absolute overflow-hidden pointer-events-none bg-[#16171C]"
       style={{
-        left: `${centerX}%`,
-        top,
+        left,
+        top: `${top}%`,
         x: '-50%',
         y: '-50%',
         width: `${width}%`,
@@ -315,12 +326,14 @@ function WantContentHeadline() {
   )
 }
 
-// One tall (~190vh) wrapper + sticky inner + its OWN useScroll progress —
+// One tall (~320vh) wrapper + sticky inner + its OWN useScroll progress —
 // the shared shape behind both PinnedImageGrid and PinnedVideoGrid below.
-// Sticky naturally releases once the wrapper's remaining height runs out,
-// which is the "exit" — no custom exit transform needed, unlike the old
-// single-630vh design which had to scroll the image layer off-screen by
-// hand to make room for what came next.
+// Long enough that the pyramid reveal takes several controlled scrolls to
+// resolve rather than being jumpable in one fast flick. Sticky naturally
+// releases once the wrapper's remaining height runs out, which is the
+// "exit" — no custom exit transform needed, unlike the old single-630vh
+// design which had to scroll the image layer off-screen by hand to make
+// room for what came next.
 function PinnedReveal({
   count,
   renderTile,
@@ -332,7 +345,7 @@ function PinnedReveal({
   const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ['start start', 'end end'] })
 
   return (
-    <section ref={wrapperRef} className="relative" style={{ height: '190vh' }}>
+    <section ref={wrapperRef} className="relative" style={{ height: '320vh' }}>
       {/* data-nav-hide: Nav watches for this attribute and hides itself
           (opacity 0) for as long as a pinned section is on screen,
           restoring once it scrolls past — the fixed header would otherwise

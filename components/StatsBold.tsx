@@ -16,7 +16,7 @@ import { TextGradient } from '@/components/ui/text-gradient'
 const ACCENT_GRADIENT_CSS = 'linear-gradient(135deg, #D46FC8 0%, #5B4B9E 50%, #7B8CDE 100%)'
 const BOLDSTATS_DIR = '/media/boldstats'
 
-const bigNumberClass = 'block font-display text-[clamp(2.5rem,5vw,4.5rem)] leading-none'
+const bigNumberClass = 'block font-display text-[clamp(2.5rem,5vw,4.5rem)] leading-none text-bone'
 const labelClass = 'block font-mono text-xs md:text-sm uppercase tracking-wide mt-3'
 
 // True only for devices that can actually hover with a precise pointer —

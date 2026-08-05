@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, useMotionValueEvent, useScroll, type Transition } from 'framer-motion'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useDealFade } from '@/components/DealFadeContext'
 
 // Same one-shot ~500ms flip mechanic as HowWeWork (see that file's own
 // comment for the full rationale): loads LIGHT (white bg, ink text) and
@@ -23,7 +24,7 @@ export default function DealStatement() {
   const reduceMotion = !!useHydratedReducedMotion()
   const textRef = useRef<HTMLParagraphElement>(null)
   const textPageTopRef = useRef(0)
-  const [pastThreshold, setPastThreshold] = useState(false)
+  const { pastThreshold, setPastThreshold } = useDealFade()
 
   // Anchored on the paragraph itself (its first line is "Here's the
   // deal:") — re-measured on resize/load/body mutation since content above
