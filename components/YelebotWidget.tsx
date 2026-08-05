@@ -9,9 +9,26 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 
 const ROBOT_DIR = '/media/robot'
 
-const PILLS: { label: string; value: string }[] = [
+// The pricing section's real id is #precios (Spanish, matches the rest of
+// this codebase's in-page anchors) — not the literal "pricing"/"contact"
+// naming a spec might assume. Verified against PreciosIndexSection.tsx and
+// ContactForm.tsx before wiring these.
+const PRICING_SECTION_ID = 'precios'
+const CONTACT_SECTION_ID = 'contacto'
+
+function scrollPageToId(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+type Pill = { label: string; value: string; scrollToId?: string }
+
+const PILLS: Pill[] = [
   { label: 'How can Yele help me build a website?', value: 'How can Yele help me build a website?' },
-  { label: 'How could MY business use this?', value: 'How could MY business use this chat?' },
+  { label: 'How much does it cost? 💰', value: 'How much does it cost?', scrollToId: PRICING_SECTION_ID },
+  {
+    label: 'How could MY business use this?',
+    value: 'How could an AI chat assistant like this one help MY business?',
+  },
   { label: '📅 Book a call tomorrow', value: 'Book a call tomorrow' },
   { label: "What's the weather? ☀️", value: "What's the weather? ☀️" },
   { label: 'Tell me a joke 😄', value: 'Tell me a joke 😄' },
@@ -56,7 +73,11 @@ function RobotLauncher({ open, onClick }: { open: boolean; onClick: () => void }
   const reduceMotion = !!useHydratedReducedMotion()
   const [blinking, setBlinking] = useState(false)
   const [blinkImgFailed, setBlinkImgFailed] = useState(false)
-  const [showTryMe, setShowTryMe] = useState(false)
+  // Starts true (visible immediately on load) instead of waiting for the
+  // first interval tick — the effect below handles its initial fade-out;
+  // useRandomInterval below picks up the recurring show/hide cycle after
+  // that, same as before.
+  const [showTryMe, setShowTryMe] = useState(true)
 
   const triggerBlink = useCallback(() => {
     setBlinking(true)
@@ -64,6 +85,13 @@ function RobotLauncher({ open, onClick }: { open: boolean; onClick: () => void }
   }, [])
 
   useRandomInterval(triggerBlink, 4000, 6000, !reduceMotion)
+
+  useEffect(() => {
+    if (open) return
+    const timer = setTimeout(() => setShowTryMe(false), 2500)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const triggerTryMe = useCallback(() => {
     if (open) return
@@ -270,14 +298,25 @@ function StatusBubble({ label }: { label: string }) {
   )
 }
 
+const QUICK_ACTION_CLASS =
+  'rounded-full border border-white/15 px-3 py-1.5 font-body text-xs font-medium text-white/70 transition-colors hover:border-[#D46FC8]/60 hover:text-white'
+
+// Genuine navigation (leaves the page) — only "Start for free" uses this now.
 function QuickLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <a
-      href={href}
-      className="rounded-full border border-white/15 px-3 py-1.5 font-body text-xs font-medium text-white/70 transition-colors hover:border-[#D46FC8]/60 hover:text-white"
-    >
+    <a href={href} className={QUICK_ACTION_CLASS}>
       {children}
     </a>
+  )
+}
+
+// Same look as QuickLink but an in-page action (send a chat message and/or
+// scroll the page) instead of navigating away.
+function QuickAction({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  return (
+    <button type="button" onClick={onClick} className={QUICK_ACTION_CLASS}>
+      {children}
+    </button>
   )
 }
 
@@ -287,7 +326,6 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
   })
   const [input, setInput] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
-  const messageRefs = useRef(new Map<string, HTMLDivElement>())
   const lastScrolledIdRef = useRef<string | null>(null)
   const [showMoreBelow, setShowMoreBelow] = useState(false)
   const busy = status === 'submitted' || status === 'streaming'
@@ -299,17 +337,17 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
     setShowMoreBelow(distanceFromBottom > 32)
   }, [])
 
-  // Scrolls so a NEW reply's own TOP lands at the top of the viewport —
-  // once, right when it first appears — instead of the old behavior of
-  // re-pinning to el.scrollHeight (the very bottom) on every streamed
-  // token, which left long replies scrolled straight past their own start.
-  // Guarded by lastScrolledIdRef so it fires once per message id, not on
-  // every token while that same message keeps streaming.
+  // Nudges the list down by ~10 lines (not all the way to the bottom, and
+  // not aligned to any particular element) once per new assistant reply —
+  // guarded by lastScrolledIdRef so it fires once per message id, not on
+  // every streamed token. Long replies rely on the "more below" fade +
+  // chevron (below) rather than auto-scrolling to their end.
   useEffect(() => {
     const lastMsg = messages[messages.length - 1]
     if (lastMsg && lastMsg.role === 'assistant' && lastMsg.id !== lastScrolledIdRef.current) {
       lastScrolledIdRef.current = lastMsg.id
-      messageRefs.current.get(lastMsg.id)?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+      const TEN_LINES_PX = 240
+      scrollRef.current?.scrollBy({ top: TEN_LINES_PX, behavior: 'smooth' })
     }
     // Content height still changes on every token — keep the "more below"
     // fade/chevron in sync without re-triggering the scroll above.
@@ -356,7 +394,14 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
                   <button
                     key={p.value}
                     type="button"
-                    onClick={() => handleSend(p.value)}
+                    onClick={() => {
+                      // The scroll targets the page itself (document), not
+                      // scrollRef's internal chat list — the panel is a
+                      // fixed overlay, so the underlying page scrolls behind
+                      // it while the chat stays open exactly as it is.
+                      if (p.scrollToId) scrollPageToId(p.scrollToId)
+                      handleSend(p.value)
+                    }}
                     className="rounded-full border border-[#D46FC8]/50 px-4 py-2 text-left font-body text-xs font-medium text-[#F0A6E4] transition-colors hover:bg-[#D46FC8]/10 hover:border-[#D46FC8]"
                   >
                     {p.label}
@@ -367,15 +412,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           )}
 
           {messages.map((m) => (
-            <div
-              key={m.id}
-              ref={(el) => {
-                if (el) messageRefs.current.set(m.id, el)
-                else messageRefs.current.delete(m.id)
-              }}
-            >
-              <MessageBubble role={m.role} text={partsToText(m.parts)} />
-            </div>
+            <MessageBubble key={m.id} role={m.role} text={partsToText(m.parts)} />
           ))}
 
           {busy &&
@@ -416,8 +453,10 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
-      <div className="flex shrink-0 gap-2 border-t border-white/8 px-5 pt-3">
-        <QuickLink href="/schedule">Book a call</QuickLink>
+      <div className="flex flex-wrap shrink-0 gap-2 border-t border-white/8 px-5 pt-3">
+        <QuickAction onClick={() => handleSend('Book a call tomorrow')}>Book a call</QuickAction>
+        <QuickAction onClick={() => scrollPageToId(PRICING_SECTION_ID)}>Pricing</QuickAction>
+        <QuickAction onClick={() => scrollPageToId(CONTACT_SECTION_ID)}>Contact us</QuickAction>
         <QuickLink href="/registro">Start for free</QuickLink>
       </div>
 
