@@ -149,3 +149,34 @@ html.sand-helix-page body {
   .wwd-strip-vars { --wwd-strip-h: 92px; }
 }
 
+/* Yelebot launcher — permanent float (translateY + a slight rotate wobble
+   so it reads as alive, not just bobbing on a rail) and the "try me" label's
+   fade in/hold/fade out. Both respect prefers-reduced-motion via the
+   .motion-safe: variants applied where these classes are used. */
+@keyframes yelebot-float {
+  0%   { transform: translateY(0)     rotate(0deg); }
+  50%  { transform: translateY(-10px) rotate(1.5deg); }
+  100% { transform: translateY(0)     rotate(0deg); }
+}
+.yelebot-float {
+  animation: yelebot-float 3.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes yelebot-tryme {
+  0%, 100% { opacity: 0; transform: translateY(4px) scale(0.96); }
+  15%, 80% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+.yelebot-tryme {
+  animation: yelebot-tryme 2.5s ease-in-out;
+}
+
+@keyframes yelebot-blink {
+  0%, 100% { transform: scaleY(0); }
+  50%      { transform: scaleY(1); }
+}
+.yelebot-blink-lid {
+  animation: yelebot-blink 150ms ease-in-out;
+  transform-origin: center;
+}
+
