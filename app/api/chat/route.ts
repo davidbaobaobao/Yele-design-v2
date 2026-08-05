@@ -71,6 +71,12 @@ function cannedResponse(text: string): Response {
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json()
 
+  // Deliberately just the boolean, never the key value itself, so this is
+  // safe to leave in logs — confirms whether the env var reached the
+  // running process at all (missing in Vercel/not redeployed after adding
+  // it are the usual culprits).
+  console.log('[chat] GROQ_API_KEY present:', !!process.env.GROQ_API_KEY)
+
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
 
   if (isRateLimited(ip)) {
@@ -92,7 +98,9 @@ export async function POST(req: Request) {
     )
   }
 
-  const maxTokens = isRelatedTopic(latestUserText) ? 512 : 160
+  const maxTokens = isRelatedTopic(latestUserText) ? 350 : 160
+  const fallbackText =
+    "Something went wrong on my end — try again in a moment, or reach a human at info@yele.design."
 
   try {
     const result = streamText({
@@ -102,11 +110,30 @@ export async function POST(req: Request) {
       temperature: 0.4,
       maxOutputTokens: maxTokens,
     })
-    return result.toUIMessageStreamResponse()
+    // Errors from the provider (bad/missing API key, invalid model id, rate
+    // limits, ...) surface DURING stream consumption, not when streamText()
+    // or toUIMessageStreamResponse() are first called — a try/catch around
+    // just those two calls never sees them, which is why earlier logging
+    // here was silent. onError is the actual hook the SDK provides for this
+    // case: it always fires (fires here even without a client ever reading
+    // the stream), logs the real error server-side, and its return value
+    // becomes the errorText the client receives instead of the SDK's
+    // generic "An error occurred."
+    return result.toUIMessageStreamResponse({
+      onError: (error) => {
+        console.error('[chat] stream error', error)
+        if (process.env.NODE_ENV !== 'production') {
+          const message = error instanceof Error ? error.message : String(error)
+          return `[dev only] ${message}`
+        }
+        return fallbackText
+      },
+    })
   } catch (err) {
+    // Still kept for genuinely synchronous failures (e.g. req.json() shape
+    // issues before this point) — see the comment above for why this alone
+    // doesn't cover provider/streaming errors.
     console.error('[chat] error', err)
-    return cannedResponse(
-      "Something went wrong on my end — try again in a moment, or reach a human at info@yele.design."
-    )
+    return cannedResponse(fallbackText)
   }
 }

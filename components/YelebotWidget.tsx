@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import Image from 'next/image'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { X, ArrowUp } from 'lucide-react'
@@ -68,7 +69,7 @@ function RobotLauncher({ open, onClick }: { open: boolean; onClick: () => void }
     setTimeout(() => setShowTryMe(false), 2500)
   }, [open])
 
-  useRandomInterval(triggerTryMe, 9000, 9000, !reduceMotion && !open)
+  useRandomInterval(triggerTryMe, 4000, 5000, !reduceMotion && !open)
 
   const showBlinkFrame = blinking && !blinkImgFailed
 
@@ -98,28 +99,39 @@ function RobotLauncher({ open, onClick }: { open: boolean; onClick: () => void }
         className={`relative block ${reduceMotion ? '' : 'yelebot-float'}`}
         style={{ width: 104 }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element -- fixed known filenames, simple swap */}
-        <img
-          src={`${ROBOT_DIR}/robot.webp`}
+        {/* next/image (not a raw <img>) so Next resizes/re-encodes a
+            properly-sized derivative server-side instead of the browser
+            crudely scaling the full 512px source down in CSS — quality={100}
+            keeps that resize from adding its own softening on top of the
+            source. Source is a lossless PNG at ~4.9x the displayed width, so
+            this is a clean downscale, never an upscale (the actual cause of
+            the earlier pixelation was a too-small/compressed source, not a
+            missing image-rendering hint). */}
+        <Image
+          src={`${ROBOT_DIR}/robot.png`}
           alt=""
-          width={340}
-          height={284}
+          width={512}
+          height={430}
+          quality={100}
+          priority
+          sizes="104px"
           className="w-full h-auto drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]"
-          style={{ opacity: showBlinkFrame ? 0 : 1 }}
+          style={{ opacity: showBlinkFrame ? 0 : 1, imageRendering: 'auto' }}
         />
-        {/* eslint-disable-next-line @next/next/no-img-element -- fixed known filenames, simple swap */}
-        <img
-          src={`${ROBOT_DIR}/robot_blink.webp`}
+        <Image
+          src={`${ROBOT_DIR}/robot_blink.png`}
           alt=""
-          width={340}
-          height={284}
+          width={512}
+          height={431}
+          quality={100}
+          sizes="104px"
           onError={() => setBlinkImgFailed(true)}
           className="absolute inset-0 w-full h-auto drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]"
-          style={{ opacity: showBlinkFrame ? 1 : 0 }}
+          style={{ opacity: showBlinkFrame ? 1 : 0, imageRendering: 'auto' }}
         />
 
-        {/* Eyelid-overlay fallback — only ever visible if robot_blink.webp
-            404s, positioned roughly over the robot's eyes for the ~340x284
+        {/* Eyelid-overlay fallback — only ever visible if robot_blink.png
+            404s, positioned roughly over the robot's eyes for the ~512x430
             crop. Two dark bars that scaleY 0->1->0 to fake a blink without
             needing a second image. */}
         {blinking && blinkImgFailed && (
@@ -139,19 +151,73 @@ function RobotLauncher({ open, onClick }: { open: boolean; onClick: () => void }
   )
 }
 
+// Bold-only inline markdown — the system prompt only ever asks the model
+// for **bold** and short bullet lists, so a couple of regexes cover it
+// without pulling in a full remark/rehype pipeline for a chat bubble.
+function renderInlineBold(text: string, keyPrefix: string): ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith('**') && part.endsWith('**') ? (
+      <strong key={`${keyPrefix}-${i}`} className="font-semibold text-white">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      <span key={`${keyPrefix}-${i}`}>{part}</span>
+    )
+  )
+}
+
+// Splits assistant replies into paragraphs and "- "/"* " bullet groups so
+// short lists render as an actual <ul> instead of a wall of dashes.
+function MarkdownLite({ text }: { text: string }) {
+  const lines = text.split('\n')
+  const blocks: ReactNode[] = []
+  let bullets: string[] = []
+
+  const flushBullets = () => {
+    if (bullets.length === 0) return
+    blocks.push(
+      <ul key={`ul-${blocks.length}`} className="my-1 list-disc space-y-1 pl-4">
+        {bullets.map((item, i) => (
+          <li key={i}>{renderInlineBold(item, `b${blocks.length}-${i}`)}</li>
+        ))}
+      </ul>
+    )
+    bullets = []
+  }
+
+  lines.forEach((line, i) => {
+    const bulletMatch = line.match(/^\s*[-*]\s+(.*)/)
+    if (bulletMatch) {
+      bullets.push(bulletMatch[1])
+      return
+    }
+    flushBullets()
+    if (line.trim() !== '') {
+      blocks.push(
+        <p key={`p-${i}`} className="my-0">
+          {renderInlineBold(line, `p${i}`)}
+        </p>
+      )
+    }
+  })
+  flushBullets()
+
+  return <div className="space-y-1.5">{blocks}</div>
+}
+
 function MessageBubble({ role, text }: { role: string; text: string }) {
   const isUser = role === 'user'
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className="max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 font-body text-sm leading-relaxed"
+        className={`max-w-[92%] rounded-2xl px-4 py-2.5 font-body text-sm leading-relaxed ${isUser ? 'whitespace-pre-wrap' : ''}`}
         style={
           isUser
             ? { backgroundColor: '#D46FC8', color: '#16161A' }
             : { backgroundColor: '#232329', color: 'rgba(255,255,255,0.92)' }
         }
       >
-        {text}
+        {isUser ? text : <MarkdownLite text={text} />}
       </div>
     </div>
   )
@@ -210,7 +276,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-[70] flex h-[75vh] w-full flex-col overflow-hidden rounded-t-3xl shadow-[0_-8px_40px_rgba(0,0,0,0.5)] sm:inset-x-auto sm:bottom-28 sm:right-6 sm:h-[560px] sm:w-[380px] sm:rounded-3xl sm:shadow-[0_0_60px_rgba(212,111,200,0.25),0_8px_40px_rgba(0,0,0,0.5)]"
+      className="fixed inset-x-0 bottom-0 z-[70] flex h-[75vh] w-full flex-col overflow-hidden rounded-t-3xl shadow-[0_-8px_40px_rgba(0,0,0,0.5)] sm:inset-x-auto sm:bottom-28 sm:right-6 sm:h-[560px] sm:w-[430px] sm:rounded-3xl sm:shadow-[0_0_60px_rgba(212,111,200,0.25),0_8px_40px_rgba(0,0,0,0.5)]"
       style={{ backgroundColor: '#16171C' }}
       role="dialog"
       aria-label="Chat with Yelebot"
