@@ -36,7 +36,7 @@ const CARDS: CardData[] = [
   },
   {
     title: 'Live in days',
-    description: 'Your site ready in a week, not months. Updates in hours.',
+    description: 'Your site ready in a week, not months. Updated in seconds.',
     videoBase: 'whyyele2',
   },
   {

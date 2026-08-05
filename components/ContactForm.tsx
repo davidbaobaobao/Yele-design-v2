@@ -145,7 +145,7 @@ export default function ContactForm() {
               sure, start here" option rather than a third equal-weight card. */}
           <a
             href={SURVEY_URL}
-            className="group relative mt-4 flex items-center justify-center gap-3 overflow-hidden rounded-2xl bg-[#F2F0EB] px-6 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_-2px_5px_rgba(0,0,0,0.07)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#F8F7F4] active:translate-y-0 active:scale-[0.99] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D46FC8]"
+            className="group relative mt-4 flex items-center justify-center gap-3 overflow-hidden rounded-2xl bg-[#D46FC8] px-6 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-2px_5px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-[#DE85D2] active:translate-y-0 active:scale-[0.99] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             <span
               aria-hidden="true"
@@ -160,10 +160,10 @@ export default function ContactForm() {
               }}
             />
             <div className="relative z-10 flex flex-col items-center">
-              <span className="font-display text-lg font-bold text-[#16161A] md:text-xl">
+              <span className="font-display text-lg font-bold text-white md:text-xl">
                 {t('Haz el quiz de estilo de 2 minutos', 'Take the 2-minute style quiz')}
               </span>
-              <span className="mt-1 font-body text-sm text-[#16161A]/60">
+              <span className="mt-1 font-body text-sm text-white/70">
                 {t(
                   'Descubre el estilo de tu web y recibe un plan a medida.',
                   "Discover your website's look — get a tailored plan."
@@ -172,7 +172,7 @@ export default function ContactForm() {
             </div>
             <span
               aria-hidden="true"
-              className="relative z-10 text-xl text-[#16161A] transition-transform group-hover:translate-x-1"
+              className="relative z-10 text-xl text-white transition-transform group-hover:translate-x-1"
             >
               →
             </span>

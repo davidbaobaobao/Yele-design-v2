@@ -74,6 +74,7 @@ const plans = [
           tooltip: 'Hasta 1 vídeo + 20 imágenes al mes, bajo demanda.',
         },
         { text: 'SEO avanzado' },
+        { text: 'Chatbot IA inteligente' },
       ] as Feature[],
     },
     en: {
@@ -93,6 +94,7 @@ const plans = [
           tooltip: 'Up to 1 video + 20 images per month, on demand.',
         },
         { text: 'Advanced SEO optimization' },
+        { text: 'AI Intelligent Chatbot' },
       ] as Feature[],
     },
   },

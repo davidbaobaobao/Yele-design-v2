@@ -44,14 +44,25 @@ export default function LogoMarquee() {
       className="logo-marquee-wrap relative overflow-hidden py-12"
       style={{ backgroundColor: '#0D0E12' }}
     >
-      {/* Two identical copies back-to-back so translateX(-50%) — one full
-          copy's width — loops seamlessly with no visible seam or jump. */}
-      <div className="logo-marquee-track flex items-center gap-16" style={{ width: 'max-content' }}>
+      {/* Two identical copies back-to-back so translateX(-50%) — exactly
+          half the track's total width — loops seamlessly. Each rep carries
+          its OWN trailing spacer (an empty flex child, gapped the same
+          gap-16 as every logo-to-logo space) instead of a separate gap on
+          the outer track: with an even number of logos, a gap directly
+          between the two reps only accounts for HALF a gap-width once the
+          track is split down the middle for the -50% jump, leaving a small
+          leftover offset that reads as a visible stutter/blank flash right
+          at the loop point — most noticeable on narrow (mobile) viewports.
+          Folding the connecting gap into each rep's own trailing spacer
+          makes both halves of the track exactly equal, so -50% always lands
+          precisely on the seam with nothing left over. */}
+      <div className="logo-marquee-track flex items-center" style={{ width: 'max-content' }}>
         {[0, 1].map(rep => (
           <div key={rep} className="flex shrink-0 items-center gap-16" aria-hidden={rep === 1}>
             {LOGOS.map(n => (
               <LogoImg key={n} n={n} />
             ))}
+            <div aria-hidden="true" />
           </div>
         ))}
       </div>

@@ -105,16 +105,13 @@ html.sand-helix-page body {
 
 /* Logo marquee — same translateX(0 -> -50%) loop as the hero's own marquee
    track, just slower (a scrolling logo strip reads better unhurried than a
-   big attention-grabbing text banner does). Pausable on hover; the
-   reduced-motion component variant swaps to a static wrapped row instead of
-   toggling this off, since duplicated tiles would otherwise just sit there
-   doubled with no motion to justify it. */
+   big attention-grabbing text banner does). Never pauses (including on
+   hover) — the reduced-motion component variant swaps to a static wrapped
+   row instead of toggling this off, since duplicated tiles would otherwise
+   just sit there doubled with no motion to justify it. */
 .logo-marquee-track {
   animation: marqueeLeft 35s linear infinite;
   will-change: transform;
-}
-.logo-marquee-wrap:hover .logo-marquee-track {
-  animation-play-state: paused;
 }
 
 @keyframes sparkleMain {
