@@ -85,6 +85,14 @@ export const metadata: Metadata = {
     canonical: 'https://yele.design',
   },
 
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/favicon.ico',
+  },
+
 }
 
 const schemaOrg = {

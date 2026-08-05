@@ -129,13 +129,9 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
         } ${navHidden ? 'opacity-0 pointer-events-none transition-opacity duration-300' : 'opacity-100 transition-opacity duration-300'}`}
       >
         <nav className="relative flex items-center justify-between h-20 px-6 md:px-10">
-          <Link
-            href="/"
-            className={`font-display font-bold text-lg lowercase tracking-tight transition-colors focus-visible:outline-none ${
-              showBoneText ? 'text-bone' : 'text-ink'
-            }`}
-          >
-            yele
+          <Link href="/" className="flex items-center focus-visible:outline-none" aria-label="yele">
+            {/* eslint-disable-next-line @next/next/no-img-element -- SVG, Next's image optimizer refuses to serve those */}
+            <img src="/media/logomedia/mainlogo.svg" alt="yele" className="h-9 w-auto" />
           </Link>
 
           <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
