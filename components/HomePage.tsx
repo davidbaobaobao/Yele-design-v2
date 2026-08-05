@@ -49,6 +49,10 @@ export default function HomePage() {
         <StatsBold />
         <PreciosIndexSection />
         <ContentShowcase />
+        {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
+            room between the animation section's video grid and the We-
+            section's stacked cards, not a color transition. */}
+        <div style={{ backgroundColor: '#0D0E12' }} className="h-20 md:h-32" aria-hidden="true" />
         <WhatWeDo />
         <WhySubs />
         <TablaComparativa />

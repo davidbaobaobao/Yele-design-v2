@@ -6,15 +6,31 @@ import {
   useInView,
   useMotionTemplate,
   useMotionValue,
+  useMotionValueEvent,
+  useScroll,
   useSpring,
   animate,
+  type Transition,
 } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { TextGradient } from '@/components/ui/text-gradient'
 
+// Same one-shot ~500ms flip mechanic as HowWeWork (see that file's own
+// comment for the full rationale), reversed: HowWeWork starts dark and
+// flips to light; this starts LIGHT (bg white, ink text) and flips to DARK
+// once its own header crosses the top of the viewport. Both report through
+// the same 'nav:fademode' event so the nav's text color tracks whichever
+// of the two is currently on screen.
+const DARK_BG = '#0D0E12'
+const LIGHT_BG = '#FFFFFF'
 const BONE = '#F2F0EB'
+const INK = '#16161A'
 const MUTED = '#8A8A92'
+const MUTED_LIGHT = 'rgba(22, 22, 26, 0.6)'
+const DARK_HAIRLINE = 'rgba(255, 255, 255, 0.12)'
+const LIGHT_HAIRLINE = 'rgba(0, 0, 0, 0.1)'
+const FLIP_TRANSITION: Transition = { duration: 0.5, ease: 'easeInOut' }
 const ACCENT_GRADIENT_CSS = 'linear-gradient(135deg, #D46FC8 0%, #5B4B9E 50%, #7B8CDE 100%)'
 const BOLDSTATS_DIR = '/media/boldstats'
 
@@ -176,47 +192,114 @@ function GradientPanel({ disabled }: { disabled: boolean }) {
   )
 }
 
-const SMALL_STATS: Array<{ label: string; node: (reduceMotion: boolean) => React.ReactNode }> = [
-  {
-    label: 'FLAT MONTHLY PRICE',
-    node: () => (
-      <span className="inline-flex items-baseline justify-center gap-2">
-        <span className="font-mono text-sm md:text-base uppercase" style={{ color: MUTED }}>
-          from
+function buildSmallStats(primaryColor: string, secondaryColor: string) {
+  return [
+    {
+      label: 'FLAT MONTHLY PRICE',
+      node: () => (
+        <span className="inline-flex items-baseline justify-center gap-2">
+          <span className="font-mono text-sm md:text-base uppercase" style={{ color: secondaryColor }}>
+            from
+          </span>
+          <CountUpNumber prefix="$" target={99} className={bigNumberClass} style={{ color: primaryColor }} />
         </span>
-        <CountUpNumber prefix="$" target={99} className={bigNumberClass} style={{ color: BONE }} />
-      </span>
-    ),
-  },
-  {
-    label: 'MONITORING & SUPPORT',
-    node: () => <CountUpNumber target={24} suffix="/7" className={bigNumberClass} style={{ color: BONE }} />,
-  },
-  {
-    label: 'UPDATES & CHANGES INCLUDED',
-    node: reduceMotion => (
-      <motion.span
-        className={bigNumberClass}
-        style={{ color: BONE }}
-        animate={reduceMotion ? undefined : { opacity: [1, 0.55, 1] }}
-        transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        &#8734;
-      </motion.span>
-    ),
-  },
-]
+      ),
+    },
+    {
+      label: 'MONITORING & SUPPORT',
+      node: () => (
+        <CountUpNumber target={24} suffix="/7" className={bigNumberClass} style={{ color: primaryColor }} />
+      ),
+    },
+    {
+      label: 'UPDATES & CHANGES INCLUDED',
+      node: (reduceMotion: boolean) => (
+        <motion.span
+          className={bigNumberClass}
+          animate={reduceMotion ? { color: primaryColor } : { opacity: [1, 0.55, 1], color: primaryColor }}
+          transition={
+            reduceMotion
+              ? FLIP_TRANSITION
+              : { opacity: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }, color: FLIP_TRANSITION }
+          }
+        >
+          &#8734;
+        </motion.span>
+      ),
+    },
+  ]
+}
 
 export default function StatsBold() {
   const reduceMotion = !!useHydratedReducedMotion()
   const finePointer = useFinePointer()
   const panelDisabled = reduceMotion || !finePointer
 
+  const topRowRef = useRef<HTMLDivElement>(null)
+  const topRowPageTopRef = useRef(0)
+  // Starts light (pastThreshold=false) for everyone — reduced-motion users
+  // just never flip past that, see the effect below.
+  const [pastThreshold, setPastThreshold] = useState(false)
+
+  // Same measurement approach as HowWeWork: anchored on this section's own
+  // "header" (the featured stat row), re-measured on resize/load/body
+  // mutation since content above this section can still be reflowing the
+  // page after mount.
+  useEffect(() => {
+    if (reduceMotion) return
+    const measure = () => {
+      const el = topRowRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      topRowPageTopRef.current = rect.top + window.scrollY
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    window.addEventListener('load', measure)
+    const ro = new ResizeObserver(measure)
+    ro.observe(document.body)
+    return () => {
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('load', measure)
+      ro.disconnect()
+    }
+  }, [reduceMotion])
+
+  const { scrollY } = useScroll()
+  useMotionValueEvent(scrollY, 'change', v => {
+    if (reduceMotion) return
+    const past = v >= topRowPageTopRef.current
+    setPastThreshold(prev => (prev === past ? prev : past))
+  })
+
+  // Reversed from HowWeWork: light (white/ink) BEFORE the threshold, dark
+  // (black/bone) after.
+  const bgColor = pastThreshold ? DARK_BG : LIGHT_BG
+  const primaryColor = pastThreshold ? BONE : INK
+  const secondaryColor = pastThreshold ? MUTED : MUTED_LIGHT
+  const hairlineColor = pastThreshold ? DARK_HAIRLINE : LIGHT_HAIRLINE
+  const smallStats = buildSmallStats(primaryColor, secondaryColor)
+
+  useEffect(() => {
+    if (reduceMotion) return
+    window.dispatchEvent(new CustomEvent('nav:fademode', { detail: { dark: pastThreshold } }))
+  }, [pastThreshold, reduceMotion])
+
   return (
-    <section data-nav-dark className="relative py-28 px-6" style={{ backgroundColor: '#0D0E12' }}>
+    <section className="relative py-28 px-6">
+      {/* Single full-section background layer behind the content — same
+          approach as HowWeWork, keeps the color transform isolated from the
+          content's own layout. */}
+      <motion.div
+        className="absolute inset-0 -z-10"
+        animate={{ backgroundColor: bgColor }}
+        transition={FLIP_TRANSITION}
+        aria-hidden="true"
+      />
       <div className="max-w-6xl mx-auto">
         {/* Top row — featured stat + interactive gradient panel */}
         <motion.div
+          ref={topRowRef}
           className="flex flex-col md:flex-row md:items-center gap-10 md:gap-12"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -227,15 +310,19 @@ export default function StatsBold() {
             <TextGradient as="span" className="font-display text-[clamp(3rem,7vw,7rem)] leading-none">
               <CountUpNumber target={7} suffix=" days" />
             </TextGradient>
-            <p className="font-body mt-4 max-w-md" style={{ color: MUTED }}>
+            <motion.p
+              className="font-body mt-4 max-w-md"
+              animate={{ color: secondaryColor }}
+              transition={FLIP_TRANSITION}
+            >
               From first brief to a live website — in a single week, not months.
-            </p>
+            </motion.p>
           </div>
 
           <GradientPanel disabled={panelDisabled} />
         </motion.div>
 
-        <div className="border-t mt-16 pt-16" style={{ borderColor: 'rgba(255, 255, 255, 0.12)' }}>
+        <motion.div className="border-t mt-16 pt-16" animate={{ borderColor: hairlineColor }} transition={FLIP_TRANSITION}>
           {/* Bottom row — 3 smaller stats */}
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8 text-center"
@@ -244,16 +331,20 @@ export default function StatsBold() {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
           >
-            {SMALL_STATS.map(stat => (
+            {smallStats.map(stat => (
               <div key={stat.label}>
                 {stat.node(reduceMotion)}
-                <span className={labelClass} style={{ color: MUTED }}>
+                <motion.span
+                  className={labelClass}
+                  animate={{ color: secondaryColor }}
+                  transition={FLIP_TRANSITION}
+                >
                   {stat.label}
-                </span>
+                </motion.span>
               </div>
             ))}
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

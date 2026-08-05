@@ -395,7 +395,7 @@ export default function HowWeWork() {
   // forward.
   useEffect(() => {
     if (reduceMotion) return
-    window.dispatchEvent(new CustomEvent('howwework:navmode', { detail: { dark: !pastThreshold } }))
+    window.dispatchEvent(new CustomEvent('nav:fademode', { detail: { dark: !pastThreshold } }))
   }, [pastThreshold, reduceMotion])
 
   // One shared IntersectionObserver drives play/pause for all four videos —

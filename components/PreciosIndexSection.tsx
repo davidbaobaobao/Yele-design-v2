@@ -5,11 +5,8 @@ import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, typ
 import { Check } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
-import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { CTAButton } from '@/components/ui/cta-button'
 import { isNavJumping } from '@/lib/nav-scroll'
-
-const BG_VIDEO_DIR = '/media/pricing'
 
 type Feature = { text: string; tooltip?: string }
 
@@ -329,12 +326,6 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
 export default function PreciosIndexSection() {
   const { t } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  // Lower threshold: this video fills the whole (min-h-screen, often
-  // taller-than-viewport on mobile with 3 stacked cards) section, so it can
-  // never reach the default 0.5 intersection ratio — see the hook's own
-  // comment for why.
-  useVideoAutoplay(videoRef, 0.15)
 
   useEffect(() => {
     const el = sectionRef.current
@@ -387,44 +378,6 @@ export default function PreciosIndexSection() {
       className="relative min-h-screen flex items-center overflow-hidden py-24 scroll-mt-24"
       style={{ backgroundColor: '#0D0E12' }}
     >
-      {/* Background video — kept behind a dark overlay so the cards/text
-          (rendered above at z-10) stay fully readable. `autoPlay` is set as
-          a literal attribute (not just via useVideoAutoplay's JS .play()
-          call) since some browsers apply looser autoplay heuristics to
-          video elements that have the attribute at parse time. The previous
-          opacity-40 video under a 0.72-opaque scrim compounded down to
-          about 11% effective visibility — technically playing (verified via
-          currentTime advancing) but indistinguishable from a static/paused
-          frame, which read as "not playing" — rebalanced so it's clearly
-          visible in motion while cards/text stay just as readable. */}
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster={`${BG_VIDEO_DIR}/pricing_poster.jpg`}
-        className="absolute inset-0 w-full h-full object-cover opacity-70"
-        aria-hidden="true"
-      >
-        <source src={`${BG_VIDEO_DIR}/pricing_hq.webm`} type="video/webm" />
-        <source src={`${BG_VIDEO_DIR}/pricing_hq.mp4`} type="video/mp4" />
-      </video>
-      {/* 0.75 scrim — matches the dark-video-section pattern used elsewhere
-          (WhySubs) so this section reads as the same flat #0D0E12 as its
-          neighbors instead of a visibly lighter/different tone from the
-          video showing through more strongly underneath. */}
-      <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13, 14, 18, 0.75)' }} aria-hidden="true" />
-      {/* Fades the video's own top edge into solid black so it dissolves
-          into the previous (StatsBold, #0D0E12) section instead of starting
-          abruptly right at the boundary. */}
-      <div
-        className="absolute inset-x-0 top-0 h-[200px] pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, #0D0E12 0%, transparent 100%)' }}
-        aria-hidden="true"
-      />
-
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
