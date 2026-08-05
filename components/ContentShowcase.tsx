@@ -109,13 +109,14 @@ function tileGeometry(index: number, cols: number, rows: number) {
 
 // ---- Reveal timing, all expressed as fractions of EACH wrapper's OWN
 // local scroll progress (0-1) — not the old design's shared 630vh timeline.
-// REVEAL_END is the "short early portion" the spec calls for: the whole
-// stagger sweep finishes by 35% of the way through the tall wrapper's
-// scroll range, so it reads as a quick snap-into-place while the rest of
-// the wrapper's height just holds the finished grid, pinned, until it
-// naturally releases into the next section. Same constants drive both the
-// image and video grids so the two reveals feel identical.
-const REVEAL_END = 0.35
+// REVEAL_END spans nearly the WHOLE wrapper range (not a short early burst)
+// so the first tile (tileStart=0) starts moving on the very first pixel of
+// scroll and the rest cascade in continuously as you keep scrolling, with
+// the last tile settling a little before the wrapper releases — no idle
+// dead zone before it starts and no early-burst-then-long-static-hold
+// after. Same constants drive both the image and video grids so the two
+// reveals feel identical.
+const REVEAL_END = 1
 const START_Y = 100 // tiles start just below the viewport, in tileGeometry's 0-100 scale
 const START_SCALE = 0.94
 const COL_STAGGER = 0.035
@@ -283,11 +284,12 @@ function VideoTile({
 
 // Text bridge between the two pinned grids — plain scroll flow (not
 // pinned), same simple whileInView treatment used by the reduced-motion
-// fallback. Sits on the same black as both grids so there's no seam on
-// either side of it.
+// fallback. Deliberately white/ink against the black grids on either side
+// for a strong contrast beat (black -> white text moment -> black), not a
+// seamless transition.
 function WantContentHeadline() {
   return (
-    <section className="relative py-24 px-6" style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative py-24 px-6" style={{ backgroundColor: '#FFFFFF' }}>
       <div className="max-w-6xl mx-auto flex flex-col items-center">
         <motion.div
           className="flex flex-col items-center"
@@ -299,7 +301,7 @@ function WantContentHeadline() {
           <PizzaVideo />
           <h2
             className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
-            style={{ color: '#F2F0EB' }}
+            style={{ color: '#16161A' }}
           >
             Want content?
             <br />
@@ -425,7 +427,7 @@ function ContentShowcaseReduced() {
     <>
       <section className="relative py-24 px-6" style={{ backgroundColor: SECTION_BG }}>
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-4 md:grid-cols-5 gap-1 mb-24">
+          <div className="grid grid-cols-4 md:grid-cols-5 gap-1">
             {Array.from({ length: IMAGE_COUNT }, (_, i) => {
               const n = i + 1
               return (
@@ -441,20 +443,22 @@ function ContentShowcaseReduced() {
               )
             })}
           </div>
+        </div>
+      </section>
 
-          <div className="flex flex-col items-center py-16">
-            <PizzaVideo />
-            <h2
-              className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
-              style={{ color: '#F2F0EB' }}
-            >
-              Want content?
-              <br />
-              We create <TextGradient as="span">any</TextGradient> content
-              <br />
-              you need
-            </h2>
-          </div>
+      <section className="relative py-24 px-6" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="max-w-6xl mx-auto flex flex-col items-center">
+          <PizzaVideo />
+          <h2
+            className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
+            style={{ color: '#16161A' }}
+          >
+            Want content?
+            <br />
+            We create <TextGradient as="span">any</TextGradient> content
+            <br />
+            you need
+          </h2>
         </div>
       </section>
 

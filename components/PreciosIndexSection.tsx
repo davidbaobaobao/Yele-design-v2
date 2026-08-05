@@ -378,6 +378,20 @@ export default function PreciosIndexSection() {
       className="relative min-h-screen flex items-center overflow-hidden py-24 scroll-mt-24"
       style={{ backgroundColor: '#0D0E12' }}
     >
+      {/* Soft pink ambient light behind the 3 cards — three blurred radial
+          blooms roughly under each card's horizontal position, low opacity
+          so it reads as illumination on the black bg rather than a shape. */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        aria-hidden="true"
+        style={{
+          background:
+            'radial-gradient(ellipse 480px 420px at 15% 58%, rgba(212,111,200,0.24), transparent 70%), ' +
+            'radial-gradient(ellipse 560px 480px at 50% 55%, rgba(212,111,200,0.3), transparent 70%), ' +
+            'radial-gradient(ellipse 480px 420px at 85% 58%, rgba(212,111,200,0.24), transparent 70%)',
+          filter: 'blur(70px)',
+        }}
+      />
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
