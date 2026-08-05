@@ -239,6 +239,37 @@ function TypingDots() {
   )
 }
 
+// Tool-call parts come through as { type: "tool-<name>", state } on the
+// LAST assistant message while a tool is mid-flight (state
+// "input-streaming"/"input-available") — once it resolves, state flips to
+// "output-available"/"output-error" and the model's own follow-up text
+// narrates the result, so this only needs to cover the "still running" gap.
+function activeToolLabel(messages: { role: string; parts: { type: string; state?: string }[] }[]): string | null {
+  const last = messages[messages.length - 1]
+  if (!last || last.role !== 'assistant') return null
+  for (const part of last.parts) {
+    if (!part.type.startsWith('tool-')) continue
+    if (part.state === 'input-streaming' || part.state === 'input-available') {
+      const name = part.type.slice('tool-'.length)
+      if (name === 'checkAvailability') return 'Checking availability…'
+      if (name === 'bookCall') return 'Booking…'
+      return 'Working on it…'
+    }
+  }
+  return null
+}
+
+function StatusBubble({ label }: { label: string }) {
+  return (
+    <div className="flex justify-start">
+      <div className="flex items-center gap-2 rounded-2xl px-4 py-2.5" style={{ backgroundColor: '#232329' }}>
+        <span className="h-1.5 w-1.5 rounded-full bg-[#D46FC8] motion-safe:animate-pulse" />
+        <span className="font-body text-xs text-white/70">{label}</span>
+      </div>
+    </div>
+  )
+}
+
 function QuickLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <a
@@ -316,7 +347,11 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           <MessageBubble key={m.id} role={m.role} text={partsToText(m.parts)} />
         ))}
 
-        {status === 'submitted' && <TypingDots />}
+        {busy &&
+          (() => {
+            const toolLabel = activeToolLabel(messages)
+            return toolLabel ? <StatusBubble label={toolLabel} /> : status === 'submitted' ? <TypingDots /> : null
+          })()}
         {status === 'error' && (
           <MessageBubble
             role="assistant"

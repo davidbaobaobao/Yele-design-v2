@@ -2,11 +2,15 @@ import {
   convertToModelMessages,
   createUIMessageStream,
   createUIMessageStreamResponse,
+  stepCountIs,
   streamText,
+  tool,
   type UIMessage,
 } from 'ai'
 import { groq } from '@ai-sdk/groq'
+import { z } from 'zod'
 import { YELE_SYSTEM_PROMPT } from '@/lib/yeleSystemPrompt'
+import { createBooking, getAvailableSlots } from '@/lib/cal'
 
 export const maxDuration = 30
 
@@ -38,6 +42,8 @@ const RELATED_KEYWORDS = [
   'book', 'quiz', 'hosting', 'email', 'branding', 'marketing', 'subscription',
   'site', 'app', 'chatbot', 'chat', 'automation', 'booking', 'payment', 'logo',
   'template', 'agency', 'freelanc', 'client', 'google', 'convert', 'lead',
+  'schedule', 'appointment', 'call', 'meeting', 'availability', 'slot',
+  'tomorrow', 'today',
 ]
 
 function isRelatedTopic(text: string): boolean {
@@ -102,13 +108,47 @@ export async function POST(req: Request) {
   const fallbackText =
     "Something went wrong on my end — try again in a moment, or reach a human at info@yele.design."
 
+  // The model only knows "now" from what we tell it — without this, relative
+  // dates ("tomorrow", "Friday afternoon") have no anchor. CAL_TIMEZONE
+  // (America/Los_Angeles) is the timezone every booking-related instruction
+  // in the system prompt already assumes.
+  const instructionsWithDatetime = `${YELE_SYSTEM_PROMPT}
+
+Current datetime: ${new Date().toISOString()} (timezone ${process.env.CAL_TIMEZONE || 'America/Los_Angeles'}). Interpret relative dates/times (tomorrow, Friday 3pm) in ${process.env.CAL_TIMEZONE || 'America/Los_Angeles'}.`
+
   try {
     const result = streamText({
       model: groq('llama-3.3-70b-versatile'),
-      instructions: YELE_SYSTEM_PROMPT,
+      instructions: instructionsWithDatetime,
       messages: await convertToModelMessages(messages),
       temperature: 0.4,
       maxOutputTokens: maxTokens,
+      stopWhen: stepCountIs(5),
+      tools: {
+        checkAvailability: tool({
+          description:
+            'Check available 30-min call slots for a given date. Use when the user wants to book/schedule a call.',
+          inputSchema: z.object({
+            dateISO: z
+              .string()
+              .describe(
+                'The date to check, ISO (interpret relative dates using the current datetime provided in the system prompt, in America/Los_Angeles)'
+              ),
+          }),
+          execute: async ({ dateISO }) => getAvailableSlots({ dateISO }),
+        }),
+        bookCall: tool({
+          description:
+            'Book the 30-min call. Only call AFTER the user confirmed an exact available time AND you have their name, email, and what they want to discuss.',
+          inputSchema: z.object({
+            startISO: z.string(),
+            name: z.string(),
+            email: z.string().email(),
+            notes: z.string().describe('what the user wants to discuss/learn'),
+          }),
+          execute: async (a) => createBooking(a),
+        }),
+      },
     })
     // Errors from the provider (bad/missing API key, invalid model id, rate
     // limits, ...) surface DURING stream consumption, not when streamText()
