@@ -2,18 +2,21 @@ import { type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode } 
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
-// Shared "Start for free" pill: soft light/dark surface, subtle inner shadow
-// for a 3D pill feel, and an irregular blurred pink glow bloom sitting behind
-// it (offset/asymmetric rather than a perfectly centered halo, so it reads
+// Shared "Start for free" pill: soft surface, subtle inner shadow for a 3D
+// pill feel, and an irregular blurred pink glow bloom sitting behind it
+// (offset/asymmetric rather than a perfectly centered halo, so it reads
 // like ambient light rather than a UI ring). `variant` picks the surface —
 // "light" (bone) reads best on dark sections, "dark" (near-black) on light
-// sections, same as the rest of the site's own light/dark pairing. The
-// surface itself never takes on any pink tint, even on hover — only the
-// glow behind it does; hover just lifts the surface's own lightness a touch.
+// sections, same as the rest of the site's own light/dark pairing; "pink"
+// (brand #D46FC8) is the primary nav/hero CTA treatment — unlike light/dark,
+// its surface IS the brand pink, with the same glow still bleeding out
+// behind it as ambient light. hover just lifts the surface's own lightness
+// a touch on every variant.
 const VARIANT_CLASS = {
   light:
     'bg-[#F2F0EB] hover:bg-[#F8F7F4] text-[#16161A] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_-2px_5px_rgba(0,0,0,0.07)]',
   dark: 'bg-[#1A1A1F] hover:bg-[#26262C] text-[#F2F0EB] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-2px_5px_rgba(0,0,0,0.35)]',
+  pink: 'bg-[#D46FC8] hover:bg-[#DE85D2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-2px_5px_rgba(0,0,0,0.15)]',
 } as const
 
 type Variant = keyof typeof VARIANT_CLASS

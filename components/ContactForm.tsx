@@ -94,7 +94,7 @@ export default function ContactForm() {
   const inputClass = 'w-full bg-white/[0.06] border border-hairlineDark rounded-xl px-4 py-3.5 font-body text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors'
 
   return (
-    <section id="contacto" className="relative overflow-hidden py-24 md:py-32" style={{ backgroundColor: '#0D0E12' }}>
+    <section id="contacto" className="relative overflow-hidden py-24 md:py-32 scroll-mt-24" style={{ backgroundColor: '#0D0E12' }}>
       <div className="overflow-hidden py-6 md:py-8 border-y border-white/10 mb-20 md:mb-28">
         <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
           <MarqueeRun />

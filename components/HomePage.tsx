@@ -1,7 +1,9 @@
 import dynamic from 'next/dynamic'
 import Nav from '@/components/Nav'
 import Hero from '@/components/Hero'
-import Mission from '@/components/Mission'
+// Mission is disabled for now (see below) — component kept in the codebase,
+// just not imported/rendered. Re-add this import when it's wanted again.
+// import Mission from '@/components/Mission'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold sections — code-split into separate chunks to reduce initial JS
@@ -34,24 +36,26 @@ export default function HomePage() {
         <div id="dark-zone">
           <Hero />
         </div>
-        <Mission />
-        <WhatWeDo />
+        {/* Mission disabled for now — component kept in the codebase, just
+            not rendered. Re-enable by uncommenting when it's wanted again. */}
+        {/* <Mission /> */}
         <WhyYele />
         <div id="trabajos" data-nav-dark className="scroll-mt-24">
           <Showcase noHeader noBg fullScreen dark />
         </div>
         <HowWeWork />
         <BeyondWebsite />
-        <ContentShowcase />
         <DealStatement />
         <StatsBold />
         <PreciosIndexSection />
+        <ContentShowcase />
+        <WhatWeDo />
         <WhySubs />
-        <VideoSnapController />
-        <Testimonios noBg />
         <TablaComparativa />
+        <Testimonios noBg />
         <ContactForm />
         <FAQ dark />
+        <VideoSnapController />
       </main>
       <Footer />
     </EnLangProvider>

@@ -152,15 +152,16 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <a
-              href="https://app.yele.design"
-              className={`font-body text-sm transition-colors focus-visible:outline-none ${
+            <button
+              type="button"
+              onClick={() => scrollTo('#contacto')}
+              className={`font-body text-sm transition-colors cursor-pointer focus-visible:outline-none ${
                 showBoneText ? 'text-bone/80 hover:text-bone' : 'text-muted hover:text-ink'
               }`}
             >
-              {t('Iniciar sesión', 'Log in')}
-            </a>
-            <CTAButton href={ctaHref} prefetch={false} variant="light" className="text-xs px-5 py-2.5">
+              {t('Contáctanos', 'Contact us')}
+            </button>
+            <CTAButton href={ctaHref} prefetch={false} variant="pink" className="text-xs px-5 py-2.5">
               {t('Empezar gratis', 'Start for free')}
             </CTAButton>
           </div>
@@ -194,14 +195,18 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
               </button>
             ))}
             <div className="flex items-center gap-3 pt-3">
-              <a href="https://app.yele.design" className="font-body text-sm text-muted cursor-pointer">
-                {t('Iniciar sesión', 'Log in')}
-              </a>
+              <button
+                type="button"
+                onClick={() => scrollTo('#contacto')}
+                className="font-body text-sm text-muted cursor-pointer"
+              >
+                {t('Contáctanos', 'Contact us')}
+              </button>
               <CTAButton
                 href={ctaHref}
                 prefetch={false}
                 onClick={() => setOpen(false)}
-                variant="dark"
+                variant="pink"
                 className="flex-1 text-xs px-4 py-2.5"
               >
                 {t('Empezar gratis', 'Start for free')}
