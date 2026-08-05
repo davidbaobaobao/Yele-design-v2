@@ -7,7 +7,7 @@ import {
   tool,
   type UIMessage,
 } from 'ai'
-import { groq } from '@ai-sdk/groq'
+import { google } from '@ai-sdk/google'
 import { z } from 'zod'
 import { YELE_SYSTEM_PROMPT } from '@/lib/yeleSystemPrompt'
 import { createBooking, getAvailableSlots } from '@/lib/cal'
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
   // safe to leave in logs — confirms whether the env var reached the
   // running process at all (missing in Vercel/not redeployed after adding
   // it are the usual culprits).
-  console.log('[chat] GROQ_API_KEY present:', !!process.env.GROQ_API_KEY)
+  console.log('[chat] GOOGLE_GENERATIVE_AI_API_KEY present:', !!process.env.GOOGLE_GENERATIVE_AI_API_KEY)
 
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
 
@@ -104,7 +104,15 @@ export async function POST(req: Request) {
     )
   }
 
-  const maxTokens = isRelatedTopic(latestUserText) ? 350 : 160
+  // Gemini's flash models spend a variable, model-controlled chunk of this
+  // same budget on hidden "thinking" tokens before ever emitting visible
+  // text (confirmed live: a plain "what's the weather" burned 149-183
+  // thinking tokens on its own). thinkingConfig.thinkingBudget can't be
+  // disabled for this model (0 → 400 INVALID_ARGUMENT) or reliably capped
+  // small (24 was silently ignored, still used 149) — so these caps are
+  // sized with enough headroom for typical thinking overhead + a real
+  // answer, not just the visible-reply length like the old Groq caps were.
+  const maxTokens = isRelatedTopic(latestUserText) ? 700 : 400
   const fallbackText =
     "Something went wrong on my end — try again in a moment, or reach a human at info@yele.design."
 
@@ -118,7 +126,7 @@ Current datetime: ${new Date().toISOString()} (timezone ${process.env.CAL_TIMEZO
 
   try {
     const result = streamText({
-      model: groq('llama-3.3-70b-versatile'),
+      model: google('gemini-flash-latest'),
       instructions: instructionsWithDatetime,
       messages: await convertToModelMessages(messages),
       temperature: 0.4,
@@ -171,9 +179,22 @@ Current datetime: ${new Date().toISOString()} (timezone ${process.env.CAL_TIMEZO
     })
   } catch (err) {
     // Still kept for genuinely synchronous failures (e.g. req.json() shape
-    // issues before this point) — see the comment above for why this alone
-    // doesn't cover provider/streaming errors.
+    // issues, or something throwing while building the streamText call
+    // itself before any network request happens) — see the comment above
+    // for why this alone doesn't cover provider/streaming errors.
+    //
+    // Deliberately worded DIFFERENTLY from the onError path's text: these
+    // two catch different failure classes (this one fires before Groq is
+    // ever contacted; onError fires after, e.g. bad key/network/rate
+    // limit), and they'd otherwise be indistinguishable from the chat UI
+    // alone. If this exact wording ever shows up, it's a real code bug in
+    // this route, not a provider/network issue — check the "[chat] error"
+    // log line right above for the real error.
     console.error('[chat] error', err)
-    return cannedResponse(fallbackText)
+    const message = err instanceof Error ? err.message : String(err)
+    const devDetail = process.env.NODE_ENV !== 'production' ? ` [dev only] ${message}` : ''
+    return cannedResponse(
+      `Yelebot hit an internal error before it could even reach the model — this is a bug, not a network hiccup. Please let David know.${devDetail}`
+    )
   }
 }

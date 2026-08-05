@@ -9,6 +9,7 @@
     "lint": "node node_modules/next/dist/bin/next lint"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.34",
     "@ai-sdk/groq": "^4.0.22",
     "@ai-sdk/react": "^4.0.55",
     "@calcom/embed-react": "^1.5.3",
