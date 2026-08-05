@@ -7,6 +7,7 @@ import Hero from '@/components/Hero'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold sections — code-split into separate chunks to reduce initial JS
+const LogoMarquee          = dynamic(() => import('@/components/LogoMarquee'))
 const WhatWeDo             = dynamic(() => import('@/components/WhatWeDo'))
 const WhyYele              = dynamic(() => import('@/components/WhyYele'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
@@ -39,6 +40,7 @@ export default function HomePage() {
         {/* Mission disabled for now — component kept in the codebase, just
             not rendered. Re-enable by uncommenting when it's wanted again. */}
         {/* <Mission /> */}
+        <LogoMarquee />
         <WhyYele />
         <div id="trabajos" data-nav-dark className="scroll-mt-24">
           <Showcase noHeader noBg fullScreen dark />
