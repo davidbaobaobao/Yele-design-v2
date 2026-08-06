@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
-import { Check } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
@@ -117,6 +117,19 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Scroll-down indicator — bottom-center, independent of the
+          left-aligned text block above it. Scrolls exactly one viewport
+          height (this section is h-screen) so it lands right at the top of
+          whatever follows, without needing to know that section's id. */}
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/70 hover:text-white transition-colors cursor-pointer focus-visible:outline-none motion-safe:animate-[heroScrollBounce_1.5s_ease-in-out_infinite]"
+        aria-label="Scroll to next section"
+      >
+        <ChevronDown size={28} aria-hidden="true" />
+      </button>
     </section>
   )
 }

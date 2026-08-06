@@ -93,6 +93,15 @@ html.sand-helix-page body {
   justify-content: center;
 }
 
+/* Hero bottom-center scroll-down indicator — a much softer nudge than
+   spinY above (no flip, just a gentle downward bob). Referenced via
+   Tailwind's arbitrary animate-[heroScrollBounce_...] + motion-safe: in
+   Hero.tsx. */
+@keyframes heroScrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
+}
+
 /* ── Hero Bento keyframes (moved from inline <style> for static CSS delivery) ── */
 @keyframes marqueeLeft {
   0%   { transform: translateX(0); }
@@ -100,6 +109,15 @@ html.sand-helix-page body {
 }
 .hero-marquee-track {
   animation: marqueeLeft 18s linear infinite;
+  will-change: transform;
+}
+
+/* Same loop as hero-marquee-track, ~22% slower (18s -> 22s) — used by the
+   "Want content?" marquee in ContentShowcase.tsx, kept as its own class so
+   it doesn't also slow down ContactForm's "CONTACT US *" run, which shares
+   hero-marquee-track. */
+.want-content-marquee-track {
+  animation: marqueeLeft 22s linear infinite;
   will-change: transform;
 }
 

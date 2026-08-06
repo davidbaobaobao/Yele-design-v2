@@ -78,7 +78,7 @@ export default function DealStatement() {
           Here&apos;s the <TextGradient as="span">deal</TextGradient>:
           <br />
           we become your website team. We design it, fill
-          it with content, keep it fast and secure, and market it — <TextGradient as="span">month after month</TextGradient>,
+          it with content, keep it fast and secure — <TextGradient as="span">month after month</TextGradient>,
           for one flat price.
           <br />
           You run your business. We run the website.
@@ -107,7 +107,7 @@ export default function DealStatement() {
         Here&apos;s the <TextGradient as="span">deal</TextGradient>:
         <br />
         we become your website team. We design it, fill
-        it with content, keep it fast and secure, and market it — <TextGradient as="span">month after month</TextGradient>,
+        it with content, keep it fast and secure — <TextGradient as="span">month after month</TextGradient>,
         for one flat price.
         <br />
         You run your business. We run the website.

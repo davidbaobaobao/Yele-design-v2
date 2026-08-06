@@ -325,13 +325,13 @@ function WantContentRun({ reduceMotion }: { reduceMotion: boolean }) {
     <div className="flex items-center shrink-0">
       {Array.from({ length: 4 }, (_, i) => (
         <div key={i} className="flex items-center shrink-0">
-          <span className="font-display font-bold whitespace-nowrap text-[clamp(1.75rem,4.5vw,3.5rem)]" style={{ color: '#16161A' }}>
+          <span className="font-display font-bold whitespace-nowrap text-[clamp(1.75rem,4.5vw,3.5rem)]" style={{ color: '#F2F0EB' }}>
             Want content?
           </span>
           <span className="font-display font-bold mx-6 md:mx-10 text-[clamp(1.75rem,4.5vw,3.5rem)]">
             <PinkPulse reduceMotion={reduceMotion}>*</PinkPulse>
           </span>
-          <span className="font-display font-bold whitespace-nowrap text-[clamp(1.75rem,4.5vw,3.5rem)]" style={{ color: '#16161A' }}>
+          <span className="font-display font-bold whitespace-nowrap text-[clamp(1.75rem,4.5vw,3.5rem)]" style={{ color: '#F2F0EB' }}>
             We create <PinkPulse reduceMotion={reduceMotion}>any</PinkPulse> content
           </span>
           <span className="font-display font-bold mx-6 md:mx-10 text-[clamp(1.75rem,4.5vw,3.5rem)]">
@@ -343,15 +343,15 @@ function WantContentRun({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
-// Text bridge between the two pinned grids — plain scroll flow (not
-// pinned). White bg / ink text against the black grids on either side for a
-// strong contrast beat (black -> white text moment -> black), not a
-// seamless transition — same as when this held a static headline.
+// Sits after the video grid now (moved from between the two grids) — same
+// #0D0E12 as every other dark section, so it flows straight off the video
+// grid instead of reading as its own light beat. want-content-marquee-track
+// is the same marqueeLeft loop as hero-marquee-track, just ~22% slower.
 function WantContentMarquee() {
   const reduceMotion = !!useHydratedReducedMotion()
   return (
-    <section className="relative overflow-hidden py-16 md:py-20" style={{ backgroundColor: '#FFFFFF' }}>
-      <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
+    <section className="relative overflow-hidden py-16 md:py-20" style={{ backgroundColor: SECTION_BG }}>
+      <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
         <WantContentRun reduceMotion={reduceMotion} />
         <WantContentRun reduceMotion={reduceMotion} />
       </div>
@@ -505,22 +505,6 @@ function ContentShowcaseReduced() {
         </div>
       </section>
 
-      {/* Static (no scrolling) stand-in for the marquee above — same
-          wrapped-row treatment LogoMarquee uses for reduced motion. */}
-      <section className="relative py-16 px-6" style={{ backgroundColor: '#FFFFFF' }}>
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#16161A' }}>
-            Want content?
-          </span>
-          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#D46FC8' }}>
-            *
-          </span>
-          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#16161A' }}>
-            We create <span style={{ color: '#D46FC8' }}>any</span> content
-          </span>
-        </div>
-      </section>
-
       <section className="relative py-24 px-6" style={{ backgroundColor: SECTION_BG }}>
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-1">
@@ -548,6 +532,23 @@ function ContentShowcaseReduced() {
           </div>
         </div>
       </section>
+
+      {/* Static (no scrolling) stand-in for the marquee above — same
+          wrapped-row treatment LogoMarquee uses for reduced motion. Sits
+          after the video grid now, matching the animated version. */}
+      <section className="relative py-16 px-6" style={{ backgroundColor: SECTION_BG }}>
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#F2F0EB' }}>
+            Want content?
+          </span>
+          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#D46FC8' }}>
+            *
+          </span>
+          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#F2F0EB' }}>
+            We create <span style={{ color: '#D46FC8' }}>any</span> content
+          </span>
+        </div>
+      </section>
     </>
   )
 }
@@ -559,8 +560,8 @@ export default function ContentShowcase() {
   return (
     <>
       <PinnedImageGrid />
-      <WantContentMarquee />
       <PinnedVideoGrid />
+      <WantContentMarquee />
     </>
   )
 }
