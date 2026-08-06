@@ -106,7 +106,14 @@ export default function WhySubs() {
     const play = () => {
       video.muted = true
       if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) video.load()
-      video.play().catch(() => {})
+      video.play().catch(() => {
+        setTimeout(() => {
+          if (video.paused || video.ended) {
+            video.muted = true
+            video.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, video.currentSrc))
+          }
+        }, 300)
+      })
     }
 
     const observer = new IntersectionObserver(

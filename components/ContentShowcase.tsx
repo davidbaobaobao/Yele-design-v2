@@ -241,7 +241,17 @@ function VideoTile({
       if (!v.paused && !v.ended) return
       v.muted = true
       if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
-      v.play().catch(() => {})
+      // preload="none" means nothing is buffered until this fires, so iOS is
+      // more likely to reject the first attempt — retry once the load has
+      // had a moment to start, same as every other video on the site.
+      v.play().catch(() => {
+        setTimeout(() => {
+          if (v.paused || v.ended) {
+            v.muted = true
+            v.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, v.currentSrc))
+          }
+        }, 300)
+      })
     }
 
     const observer = new IntersectionObserver(
@@ -275,6 +285,7 @@ function VideoTile({
       {mounted ? (
         <video
           ref={videoRef}
+          autoPlay
           muted
           loop
           playsInline
@@ -413,13 +424,21 @@ function ContentShowcaseReduced() {
     videos.forEach(v => {
       v.setAttribute('muted', '')
       v.setAttribute('playsinline', '')
+      v.setAttribute('webkit-playsinline', '')
       v.muted = true
     })
 
     const play = (v: HTMLVideoElement) => {
       if (!v.paused && !v.ended) return
       v.muted = true
-      v.play().catch(() => {})
+      v.play().catch(() => {
+        setTimeout(() => {
+          if (v.paused || v.ended) {
+            v.muted = true
+            v.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, v.currentSrc))
+          }
+        }, 300)
+      })
     }
 
     const observer = new IntersectionObserver(

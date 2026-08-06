@@ -84,7 +84,7 @@ function StepCard3D({ step, i, off, t }: {
     if (isActive) {
       v.currentTime = 0
       if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
-      v.play().catch(() => setTimeout(() => v?.paused && v.play().catch(() => {}), 300))
+      v.play().catch(() => setTimeout(() => v?.paused && v.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, v.currentSrc)), 300))
     } else {
       v.pause()
     }
@@ -205,7 +205,18 @@ function MobileStepCard({ step, index, t }: {
     video.muted = true
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) { video.muted = true; video.currentTime = 0; video.play().catch(() => {}) }
+        if (entry.isIntersecting) {
+          video.muted = true
+          video.currentTime = 0
+          video.play().catch(() => {
+            setTimeout(() => {
+              if (video.paused) {
+                video.muted = true
+                video.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, video.currentSrc))
+              }
+            }, 300)
+          })
+        }
         else video.pause()
       },
       { threshold: 0.4 }

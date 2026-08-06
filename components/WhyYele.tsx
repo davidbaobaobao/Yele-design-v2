@@ -82,7 +82,7 @@ export default function WhyYele() {
         setTimeout(() => {
           if (v.paused || v.ended) {
             v.muted = true
-            v.play().catch(() => {})
+            v.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, v.currentSrc))
           }
         }, 300)
       })
