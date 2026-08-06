@@ -18,17 +18,21 @@ export default function LegalNotice() {
           <h1 className="font-display font-semibold text-4xl text-ink tracking-tight mb-3">
             Legal Notice
           </h1>
-          <p className="font-body text-muted text-sm mb-12">Last updated: July 2026</p>
+          <p className="font-body text-muted text-sm mb-12">Last updated: August 2026</p>
 
           <div className="font-body text-ink space-y-8 leading-relaxed">
+            <p className="text-muted">
+              Yele is a website design studio based in Spain, serving clients worldwide — including throughout the United States. This Legal Notice explains who operates this website and the terms under which you use it.
+            </p>
+
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">1. Site Owner Details</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">1. Site Owner</h2>
               <p className="text-muted">
-                In compliance with Law 34/2002, of 11 July, on Information Society Services and Electronic Commerce (LSSICE), the identifying details of the owner of this website are provided below:
+                In compliance with Spanish Law 34/2002 on Information Society Services and Electronic Commerce (LSSICE), the details of the site owner are:
               </p>
               <ul className="mt-4 space-y-2 text-muted">
-                <li><span className="text-ink font-medium">Name:</span> Yele</li>
-                <li><span className="text-ink font-medium">Activity:</span> Subscription-based website design and development</li>
+                <li><span className="text-ink font-medium">Name:</span> Yele Design</li>
+                <li><span className="text-ink font-medium">Activity:</span> Subscription-based website design, development and maintenance</li>
                 <li><span className="text-ink font-medium">Contact email:</span>{' '}
                   <a href="mailto:info@yele.design" className="text-[#0066CC] hover:underline">
                     info@yele.design
@@ -45,21 +49,21 @@ export default function LegalNotice() {
             <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">2. Purpose and Terms of Use</h2>
               <p className="text-muted">
-                This legal notice governs access to and use of the website yele.design. Accessing the site implies full acceptance of this notice. Yele reserves the right to modify it at any time, effective upon publication on the website.
+                This Legal Notice governs access to and use of yele.design. By accessing the site, you accept this notice in full. Yele may update it at any time, with changes effective upon publication.
               </p>
             </section>
 
             <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">3. Intellectual and Industrial Property</h2>
               <p className="text-muted">
-                All content on this website — including text, images, graphics, logos, icons, videos and source code — is the property of Yele or its licensors and is protected under Spanish and international intellectual and industrial property law. Its reproduction, distribution, public communication or transformation without the written authorization of the owner is expressly prohibited.
+                All content on this website — text, images, graphics, logos, icons, videos and source code — belongs to Yele or its licensors and is protected under Spanish, U.S. and international intellectual property law. You may not reproduce, distribute, publicly communicate or modify it without Yele&rsquo;s written permission.
               </p>
             </section>
 
             <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">4. Limitation of Liability</h2>
               <p className="text-muted">
-                Yele does not guarantee uninterrupted availability of the site or the absence of errors in its content. Yele is not liable for damages arising from service interruptions, computer viruses or unauthorized access beyond its control.
+                Yele does not guarantee that the site will be available without interruption or free of errors. To the fullest extent permitted by law, Yele is not liable for damages arising from service interruptions, viruses or unauthorized access beyond its reasonable control.
               </p>
             </section>
 
@@ -68,15 +72,15 @@ export default function LegalNotice() {
               <p className="text-muted">
                 The processing of personal data is governed by our{' '}
                 <a href="/privacy-policy" className="text-[#0066CC] hover:underline">Privacy Policy</a>.
-                The use of cookies is governed by our{' '}
+                The use of cookies and tracking technologies is described in our{' '}
                 <a href="/cookie-policy" className="text-[#0066CC] hover:underline">Cookie Policy</a>.
               </p>
             </section>
 
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">6. Governing Law and Jurisdiction</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">6. Governing Law</h2>
               <p className="text-muted">
-                This legal notice is governed by Spanish law. For any dispute relating to access to or use of the site, the parties submit to the competent courts in accordance with applicable law, without prejudice to consumer protection regulations.
+                This Legal Notice is governed by Spanish law. Any dispute relating to the website will be subject to the competent courts, without prejudice to any mandatory consumer-protection rights available to you under the laws of your place of residence.
               </p>
             </section>
           </div>
