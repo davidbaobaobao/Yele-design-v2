@@ -11,6 +11,7 @@ import { DealFadeProvider } from '@/components/DealFadeContext'
 const LogoMarquee          = dynamic(() => import('@/components/LogoMarquee'))
 const WhatWeDo             = dynamic(() => import('@/components/WhatWeDo'))
 const WhyYele              = dynamic(() => import('@/components/WhyYele'))
+const AgencyIntro          = dynamic(() => import('@/components/AgencyIntro'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
 const ContentShowcase      = dynamic(() => import('@/components/ContentShowcase'))
@@ -43,6 +44,7 @@ export default function HomePage() {
         {/* <Mission /> */}
         <LogoMarquee />
         <WhyYele />
+        <AgencyIntro />
         <div id="trabajos" data-nav-dark className="scroll-mt-24">
           <Showcase noHeader noBg fullScreen dark />
         </div>

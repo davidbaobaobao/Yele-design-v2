@@ -110,7 +110,7 @@ function DesktopGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; 
   const x  = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t))
   const x2 = useTransform([scrollYProgress, travelMV], ([p, t]: number[]) => -(p * t) - t * 0.08)
 
-  const gradFrom = dark ? 'from-[#0A0A0A]' : noBg ? 'from-white' : 'from-base'
+  const gradFrom = dark ? 'from-[#0D0E12]' : noBg ? 'from-white' : 'from-base'
 
   return (
     <div ref={wrapperRef} style={{ height: wrapperH }}>
@@ -269,13 +269,13 @@ export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen, d
     </Link>
   )
 
-  const gradFrom = dark ? 'from-[#0A0A0A]' : noBg ? 'from-white' : 'from-base'
+  const gradFrom = dark ? 'from-[#0D0E12]' : noBg ? 'from-white' : 'from-base'
 
   return (
     <section
       ref={sectionRef}
       id={noHeader ? undefined : 'trabajos'}
-      className={dark ? 'bg-[#0A0A0A]' : noBg ? '' : 'bg-white'}
+      className={dark ? 'bg-[#0D0E12]' : noBg ? '' : 'bg-white'}
     >
       {/* Desktop */}
       <div className={`hidden md:block ${noHeader ? (fullScreen ? '' : 'py-10') : 'py-32'}`}>
