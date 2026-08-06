@@ -4,45 +4,24 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
-import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
-import { TextGradient } from '@/components/ui/text-gradient'
 
 // Image numbers (1-indexed, matching the filenames) rendered in black &
 // white instead of color — a deliberate accent among the color tiles.
 const GRAYSCALE_IMAGE_NUMBERS = new Set([4, 5, 12, 14])
-const PIZZA_DIR = '/media/pizza'
 const SECTION_BG = '#0D0E12'
 
-// Large decorative video sitting ABOVE the "Want content?" headline (a
-// concrete example of "any content" rather than an abstract claim) — a
-// normal-flow block (not absolutely overlapping the text), with a clear
-// margin-bottom gap before the heading below it. No card frame: no
-// border/radius/shadow, just a radial mask so its own rectangular edges
-// dissolve into the section background instead of reading as a floating
-// tile. -webkit-mask-image is required for Safari; mask-image alone is
-// unsupported there as of this writing.
-function PizzaVideo() {
-  const ref = useRef<HTMLVideoElement>(null)
-  useVideoAutoplay(ref)
+// Flat brand pink (not TextGradient) with the same soft opacity pulse used
+// elsewhere on the site (StatsBold's "∞", AgencyIntro's "From $99/mo.") —
+// shared by the "*" separators and "any" in the marquee below.
+function PinkPulse({ children, reduceMotion }: { children: React.ReactNode; reduceMotion: boolean }) {
   return (
-    <video
-      ref={ref}
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="auto"
-      poster={`${PIZZA_DIR}/pizza_poster.jpg`}
-      className="w-full max-w-2xl aspect-video object-cover pointer-events-none mb-10 md:mb-14"
-      style={{
-        WebkitMaskImage: 'radial-gradient(ellipse 55% 55% at 50% 50%, black 30%, transparent 78%)',
-        maskImage: 'radial-gradient(ellipse 55% 55% at 50% 50%, black 30%, transparent 78%)',
-      }}
-      aria-hidden="true"
+    <motion.span
+      style={{ color: '#D46FC8' }}
+      animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}
+      transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
     >
-      <source src={`${PIZZA_DIR}/pizza_hq.webm`} type="video/webm" />
-      <source src={`${PIZZA_DIR}/pizza_hq.mp4`} type="video/mp4" />
-    </video>
+      {children}
+    </motion.span>
   )
 }
 
@@ -304,66 +283,77 @@ function VideoTile({
   )
 }
 
-// Big centered overlay text sitting IN FRONT of a tile grid — always fully
-// opaque itself (readability must never depend on scroll position). Behind
-// it, a separate white wash layer starts fully opaque (section reads as a
-// solid white field) and fades to ~0.475 as the SAME progress that reveals
-// the tiles advances, so the moving tiles gradually show through without
-// ever fully exposing them (keeps the big word legible against whatever
-// color a given tile happens to be). The white text-shadow is the "soft
-// glow" fallback for the moments a light-colored tile sits directly behind
-// the ink text once the wash has faded.
+// Big centered overlay text sitting IN FRONT of a tile grid, on a fully
+// transparent background — the grid must stay completely visible behind it,
+// no wash/mask of any kind. Bold white for contrast against whatever tile
+// color happens to be behind it at a given moment, with a subtle dark
+// text-shadow as a legibility fallback for the moments a light-colored tile
+// lands directly underneath. Opacity eases only slightly (1 -> 0.85) as the
+// same progress that reveals the tiles advances, tying the text to the
+// reveal without ever meaningfully fading it.
 function GridOverlay({ progress, small, big }: { progress: MotionValue<number>; small: string; big: string }) {
-  const washOpacity = useTransform(progress, v => 1 - easeOutCubic(v) * 0.525)
+  const textOpacity = useTransform(progress, v => 1 - easeOutCubic(v) * 0.15)
   return (
-    <div className="absolute inset-0 z-20 pointer-events-none" aria-hidden="true">
-      <motion.div className="absolute inset-0 bg-white" style={{ opacity: washOpacity }} />
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-        <span
-          className="font-display font-black uppercase tracking-tight text-[#16161A] text-[clamp(1.1rem,3.5vw,2rem)] leading-none mb-1 md:mb-2"
-          style={{ textShadow: '0 2px 24px rgba(255,255,255,0.9)' }}
-        >
-          {small}
-        </span>
-        <span
-          className="font-display font-black uppercase tracking-tighter text-[#16161A] text-[clamp(4rem,16vw,14rem)] leading-[0.85]"
-          style={{ textShadow: '0 4px 40px rgba(255,255,255,0.9)' }}
-        >
-          {big}
-        </span>
-      </div>
+    <motion.div
+      className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pointer-events-none"
+      style={{ opacity: textOpacity }}
+      aria-hidden="true"
+    >
+      <span
+        className="font-display font-black uppercase tracking-tight text-white text-[clamp(1.1rem,3.5vw,2rem)] leading-none mb-1 md:mb-2"
+        style={{ textShadow: '0 2px 20px rgba(0,0,0,0.45)' }}
+      >
+        {small}
+      </span>
+      <span
+        className="font-display font-black uppercase tracking-tighter text-white text-[clamp(4rem,16vw,14rem)] leading-[0.85]"
+        style={{ textShadow: '0 4px 32px rgba(0,0,0,0.45)' }}
+      >
+        {big}
+      </span>
+    </motion.div>
+  )
+}
+
+// One repeating "Want content? * We create any content *" block — rendered
+// twice back-to-back inside a track that animates translateX(0 -> -50%),
+// the same seamless-loop marquee trick as ContactForm's "CONTACT US *" run
+// and LogoMarquee (hero-marquee-track / marqueeLeft in globals.css). Never
+// pauses on hover.
+function WantContentRun({ reduceMotion }: { reduceMotion: boolean }) {
+  return (
+    <div className="flex items-center shrink-0">
+      {Array.from({ length: 4 }, (_, i) => (
+        <div key={i} className="flex items-center shrink-0">
+          <span className="font-display font-bold whitespace-nowrap text-[clamp(1.75rem,4.5vw,3.5rem)]" style={{ color: '#16161A' }}>
+            Want content?
+          </span>
+          <span className="font-display font-bold mx-6 md:mx-10 text-[clamp(1.75rem,4.5vw,3.5rem)]">
+            <PinkPulse reduceMotion={reduceMotion}>*</PinkPulse>
+          </span>
+          <span className="font-display font-bold whitespace-nowrap text-[clamp(1.75rem,4.5vw,3.5rem)]" style={{ color: '#16161A' }}>
+            We create <PinkPulse reduceMotion={reduceMotion}>any</PinkPulse> content
+          </span>
+          <span className="font-display font-bold mx-6 md:mx-10 text-[clamp(1.75rem,4.5vw,3.5rem)]">
+            <PinkPulse reduceMotion={reduceMotion}>*</PinkPulse>
+          </span>
+        </div>
+      ))}
     </div>
   )
 }
 
 // Text bridge between the two pinned grids — plain scroll flow (not
-// pinned), same simple whileInView treatment used by the reduced-motion
-// fallback. Deliberately white/ink against the black grids on either side
-// for a strong contrast beat (black -> white text moment -> black), not a
-// seamless transition.
-function WantContentHeadline() {
+// pinned). White bg / ink text against the black grids on either side for a
+// strong contrast beat (black -> white text moment -> black), not a
+// seamless transition — same as when this held a static headline.
+function WantContentMarquee() {
+  const reduceMotion = !!useHydratedReducedMotion()
   return (
-    <section className="relative py-24 px-6" style={{ backgroundColor: '#FFFFFF' }}>
-      <div className="max-w-6xl mx-auto flex flex-col items-center">
-        <motion.div
-          className="flex flex-col items-center"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-        >
-          <PizzaVideo />
-          <h2
-            className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
-            style={{ color: '#16161A' }}
-          >
-            Want content?
-            <br />
-            We create <TextGradient as="span">any</TextGradient> content
-            <br />
-            you need
-          </h2>
-        </motion.div>
+    <section className="relative overflow-hidden py-16 md:py-20" style={{ backgroundColor: '#FFFFFF' }}>
+      <div className="hero-marquee-track flex items-center" style={{ width: 'max-content' }}>
+        <WantContentRun reduceMotion={reduceMotion} />
+        <WantContentRun reduceMotion={reduceMotion} />
       </div>
     </section>
   )
@@ -515,19 +505,19 @@ function ContentShowcaseReduced() {
         </div>
       </section>
 
-      <section className="relative py-24 px-6" style={{ backgroundColor: '#FFFFFF' }}>
-        <div className="max-w-6xl mx-auto flex flex-col items-center">
-          <PizzaVideo />
-          <h2
-            className="font-display text-center leading-tight text-[clamp(1.75rem,3.5vw,3.5rem)]"
-            style={{ color: '#16161A' }}
-          >
+      {/* Static (no scrolling) stand-in for the marquee above — same
+          wrapped-row treatment LogoMarquee uses for reduced motion. */}
+      <section className="relative py-16 px-6" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#16161A' }}>
             Want content?
-            <br />
-            We create <TextGradient as="span">any</TextGradient> content
-            <br />
-            you need
-          </h2>
+          </span>
+          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#D46FC8' }}>
+            *
+          </span>
+          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#16161A' }}>
+            We create <span style={{ color: '#D46FC8' }}>any</span> content
+          </span>
         </div>
       </section>
 
@@ -569,7 +559,7 @@ export default function ContentShowcase() {
   return (
     <>
       <PinnedImageGrid />
-      <WantContentHeadline />
+      <WantContentMarquee />
       <PinnedVideoGrid />
     </>
   )

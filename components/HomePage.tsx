@@ -55,8 +55,8 @@ export default function HomePage() {
           <DealStatement />
           <StatsBold />
         </DealFadeProvider>
-        <WebsiteWordsVideo />
         <PreciosIndexSection />
+        <WebsiteWordsVideo />
         <ContentShowcase />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
             room between the animation section's video grid and the We-
