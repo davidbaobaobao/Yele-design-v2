@@ -304,6 +304,38 @@ function VideoTile({
   )
 }
 
+// Big centered overlay text sitting IN FRONT of a tile grid — always fully
+// opaque itself (readability must never depend on scroll position). Behind
+// it, a separate white wash layer starts fully opaque (section reads as a
+// solid white field) and fades to ~0.475 as the SAME progress that reveals
+// the tiles advances, so the moving tiles gradually show through without
+// ever fully exposing them (keeps the big word legible against whatever
+// color a given tile happens to be). The white text-shadow is the "soft
+// glow" fallback for the moments a light-colored tile sits directly behind
+// the ink text once the wash has faded.
+function GridOverlay({ progress, small, big }: { progress: MotionValue<number>; small: string; big: string }) {
+  const washOpacity = useTransform(progress, v => 1 - easeOutCubic(v) * 0.525)
+  return (
+    <div className="absolute inset-0 z-20 pointer-events-none" aria-hidden="true">
+      <motion.div className="absolute inset-0 bg-white" style={{ opacity: washOpacity }} />
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        <span
+          className="font-display font-black uppercase tracking-tight text-[#16161A] text-[clamp(1.1rem,3.5vw,2rem)] leading-none mb-1 md:mb-2"
+          style={{ textShadow: '0 2px 24px rgba(255,255,255,0.9)' }}
+        >
+          {small}
+        </span>
+        <span
+          className="font-display font-black uppercase tracking-tighter text-[#16161A] text-[clamp(4rem,16vw,14rem)] leading-[0.85]"
+          style={{ textShadow: '0 4px 40px rgba(255,255,255,0.9)' }}
+        >
+          {big}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 // Text bridge between the two pinned grids — plain scroll flow (not
 // pinned), same simple whileInView treatment used by the reduced-motion
 // fallback. Deliberately white/ink against the black grids on either side
@@ -348,9 +380,11 @@ function WantContentHeadline() {
 function PinnedReveal({
   count,
   renderTile,
+  overlay,
 }: {
   count: number
   renderTile: (index: number, progress: MotionValue<number>) => React.ReactNode
+  overlay?: (progress: MotionValue<number>) => React.ReactNode
 }) {
   const wrapperRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ['start start', 'end end'] })
@@ -365,6 +399,7 @@ function PinnedReveal({
         <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d' }} aria-hidden="true">
           {Array.from({ length: count }, (_, i) => renderTile(i, scrollYProgress))}
         </div>
+        {overlay?.(scrollYProgress)}
       </div>
     </section>
   )
@@ -378,6 +413,7 @@ function PinnedImageGrid() {
     <PinnedReveal
       count={IMAGE_COUNT}
       renderTile={(i, progress) => <ImageTile key={i} index={i} progress={progress} cols={cols} rows={rows} />}
+      overlay={progress => <GridOverlay progress={progress} small="WE CREATE" big="IMAGES" />}
     />
   )
 }
@@ -407,6 +443,7 @@ function PinnedVideoGrid() {
       <PinnedReveal
         count={VIDEO_COUNT}
         renderTile={(i, progress) => <VideoTile key={i} index={i} progress={progress} mounted={mounted} />}
+        overlay={progress => <GridOverlay progress={progress} small="AND" big="VIDEOS" />}
       />
     </div>
   )
