@@ -93,6 +93,16 @@ html.sand-helix-page body {
   justify-content: center;
 }
 
+/* Hero scroll-cue arrow — a much softer nudge than spinY above (no flip,
+   just a gentle downward bob) since this one sits quietly under the trust
+   pills rather than trying to grab attention. Referenced via Tailwind's
+   arbitrary animate-[heroScrollBounce_...] + motion-safe: in Hero.tsx, same
+   pattern as the glow drift below. */
+@keyframes heroScrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
+}
+
 /* ── Hero Bento keyframes (moved from inline <style> for static CSS delivery) ── */
 @keyframes marqueeLeft {
   0%   { transform: translateX(0); }

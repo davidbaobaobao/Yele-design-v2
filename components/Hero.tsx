@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Check } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { TextGradient } from '@/components/ui/text-gradient'
@@ -140,10 +140,9 @@ export default function Hero() {
 
       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
         <div className="max-w-2xl mx-auto flex flex-col items-center">
-          {/* Clamp lowered further (5.25rem -> 3.75rem max, min/preferred
-              scaled the same ~0.71 ratio) so "Delivering websites that" fits
-              on a single line at this width instead of wrapping to a 3rd
-              line — the animated word stays the 2nd line. */}
+          {/* Exactly 2 lines: "Delivering websites" / "that [word]" — the
+              second span is nowrap so "that" and the animated word can never
+              split across a wrap even at the longest word ("Stand out"). */}
           <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(1.6rem, 3.75vw, 3.75rem)', color: WHITE }}>
             {/* Real, static text for SEO/a11y — the animated span below is
                 purely decorative and hidden from assistive tech so its
@@ -152,9 +151,11 @@ export default function Hero() {
               Delivering websites that last, stand out, perform, convert, endure, and grow.
             </span>
             <span aria-hidden="true">
-              Delivering websites that
+              Delivering websites
               <br />
-              <TypewriterWord reduceMotion={reduceMotion} />
+              <span className="whitespace-nowrap">
+                that <TypewriterWord reduceMotion={reduceMotion} />
+              </span>
             </span>
           </h1>
 
@@ -165,7 +166,7 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-            <CTAButton href="/registro" variant="pink">
+            <CTAButton href="/registro" variant="white">
               Start for free
             </CTAButton>
             <a
@@ -195,6 +196,20 @@ export default function Hero() {
               </span>
             ))}
           </div>
+
+          {/* Scroll cue — sits well clear of the pills above (mt-10) so it
+              reads as a separate "keep going" hint, not part of the trust
+              row itself. Scrolls exactly one viewport height (this section
+              is h-screen) so it lands right at the top of whatever follows,
+              without needing to know that section's id. */}
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+            className="mt-10 text-white/70 hover:text-white transition-colors cursor-pointer focus-visible:outline-none motion-safe:animate-[heroScrollBounce_1.5s_ease-in-out_infinite]"
+            aria-label="Scroll to next section"
+          >
+            <ChevronDown size={28} aria-hidden="true" />
+          </button>
         </div>
       </div>
     </section>
