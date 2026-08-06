@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Check } from 'lucide-react'
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
-import { TextGradient } from '@/components/ui/text-gradient'
+import { TypewriterWord } from '@/components/ui/typewriter-word'
 import { CTAButton } from '@/components/ui/cta-button'
 
 const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
@@ -14,12 +14,6 @@ const POSTER = `${VIDEO_DIR}/hero_new_poster.jpg`
 const WHITE = '#F2F0EB'
 
 const WORDS = ['Last', 'Stand out', 'Perform', 'Convert', 'Endure', 'Grow']
-const TYPE_MS = 70
-const ERASE_MS = 40
-const HOLD_MS = 1500
-// Reserves stable width for the longest word so the layout never jumps as
-// shorter/longer words type in and erase.
-const LONGEST_CH = Math.max(...WORDS.map(w => w.length))
 
 // ffmpeg -i hero_new.mp4 -c:v libx264 -profile:v high -crf 24 -preset slow
 //   -pix_fmt yuv420p -movflags +faststart -an out.mp4  (+ webm sibling —
@@ -30,68 +24,6 @@ function Sources() {
       <source src={`${VIDEO_DIR}/hero_new_hq.webm`} type="video/webm" />
       <source src={`${VIDEO_DIR}/hero_new_hq.mp4`} type="video/mp4" />
     </>
-  )
-}
-
-// Types the current word in char-by-char, holds, erases char-by-char, then
-// advances to the next word (wrapping around) — a small state machine driven
-// by chained setTimeouts rather than a single interval, since type/hold/erase
-// each run at a different pace.
-function TypewriterWord({ reduceMotion }: { reduceMotion: boolean }) {
-  const [index, setIndex] = useState(0)
-  const [text, setText] = useState('')
-  const [phase, setPhase] = useState<'typing' | 'erasing'>('typing')
-
-  // useHydratedReducedMotion() starts false and only resolves to its real
-  // value after mount (hydration-safe), so a useState initializer keyed on
-  // reduceMotion would freeze on the wrong (pre-hydration) value forever —
-  // this runs again once reduceMotion actually flips to true.
-  useEffect(() => {
-    if (reduceMotion) setText(WORDS[0])
-  }, [reduceMotion])
-
-  useEffect(() => {
-    if (reduceMotion) return
-    const word = WORDS[index]
-    let timer: number
-
-    if (phase === 'typing') {
-      if (text.length < word.length) {
-        timer = window.setTimeout(() => setText(word.slice(0, text.length + 1)), TYPE_MS)
-      } else {
-        timer = window.setTimeout(() => setPhase('erasing'), HOLD_MS)
-      }
-    } else {
-      if (text.length > 0) {
-        timer = window.setTimeout(() => setText(word.slice(0, text.length - 1)), ERASE_MS)
-      } else {
-        setIndex(i => (i + 1) % WORDS.length)
-        setPhase('typing')
-      }
-    }
-
-    return () => window.clearTimeout(timer)
-  }, [text, phase, index, reduceMotion])
-
-  // text is only ever '' at the two moments a soft fade should happen: the
-  // very first mount (before typing starts) and the brief gap between one
-  // word finishing its erase and the next word's first character — so
-  // driving opacity off text.length directly (with a CSS transition) gets
-  // the fade-out/fade-in for free with no extra state or timers.
-  return (
-    <span
-      className="inline-block"
-      style={{ minWidth: `${LONGEST_CH}ch`, opacity: text.length === 0 ? 0 : 1, transition: 'opacity 300ms ease' }}
-    >
-      <TextGradient as="span">{text}</TextGradient>
-      {!reduceMotion && (
-        <span
-          aria-hidden="true"
-          className="inline-block ml-1 animate-pulse align-middle"
-          style={{ width: '3px', height: '0.85em', backgroundColor: WHITE }}
-        />
-      )}
-    </span>
   )
 }
 
@@ -142,7 +74,7 @@ export default function Hero() {
             <span aria-hidden="true">
               Delivering websites that
               <br />
-              <TypewriterWord reduceMotion={reduceMotion} />
+              <TypewriterWord words={WORDS} reduceMotion={reduceMotion} />
             </span>
           </h1>
 

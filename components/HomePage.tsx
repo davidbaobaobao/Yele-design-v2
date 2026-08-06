@@ -19,6 +19,7 @@ const DealStatement        = dynamic(() => import('@/components/DealStatement'))
 const StatsBold            = dynamic(() => import('@/components/StatsBold'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
 const Showcase             = dynamic(() => import('@/components/Showcase'))
+const WebsiteWordsVideo    = dynamic(() => import('@/components/WebsiteWordsVideo'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
 const WhySubs              = dynamic(() => import('@/components/WhySubs'))
 const Testimonios          = dynamic(() => import('@/components/Testimonios'))
@@ -54,6 +55,7 @@ export default function HomePage() {
           <DealStatement />
           <StatsBold />
         </DealFadeProvider>
+        <WebsiteWordsVideo />
         <PreciosIndexSection />
         <ContentShowcase />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
