@@ -104,7 +104,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 className={`font-body text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none px-2.5 py-1 rounded-lg ${
                   isDark ? 'text-white/60 hover:text-white bg-white/10' : 'text-muted hover:text-ink bg-[#F2F2F5]'
                 }`}
-                aria-label={`Cambiar a ${lang === 'es' ? 'inglés' : 'español'}`}
+                aria-label={t(`Cambiar a ${lang === 'es' ? 'inglés' : 'español'}`, `Switch to ${lang === 'es' ? 'English' : 'Spanish'}`)}
               >
                 {lang === 'es' ? 'EN' : 'ES'}
               </button>
@@ -136,7 +136,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
           <button
             className={`md:hidden p-1 cursor-pointer ${isDark ? 'text-white' : 'text-ink'}`}
             onClick={() => setOpen(!open)}
-            aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+            aria-label={t(open ? 'Cerrar menú' : 'Abrir menú', open ? 'Close menu' : 'Open menu')}
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>

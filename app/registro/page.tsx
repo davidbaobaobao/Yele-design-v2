@@ -198,11 +198,11 @@ export default function RegistroPage() {
           transition={{ duration: 0.5, delay: 0.15 } as Transition}
         >
           By continuing you agree to our{' '}
-          <Link href="/aviso-legal" className="underline hover:text-ink transition-colors">
+          <Link href="/terms" className="underline hover:text-ink transition-colors">
             Terms of service
           </Link>{' '}
           and{' '}
-          <Link href="/politica-privacidad" className="underline hover:text-ink transition-colors">
+          <Link href="/privacy-policy" className="underline hover:text-ink transition-colors">
             Privacy policy
           </Link>.
         </motion.p>

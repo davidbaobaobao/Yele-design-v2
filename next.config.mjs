@@ -19,6 +19,10 @@ const nextConfig = {
       { source: '/diseno-web-electricistas', destination: '/web-design-electricians', permanent: true },
       { source: '/diseno-web-reformas',      destination: '/web-design-contractors',  permanent: true },
       { source: '/diseno-web-mudanzas',      destination: '/web-design-movers',       permanent: true },
+      // Phase 7 — legal pages translated to English, Spanish slugs retired
+      { source: '/aviso-legal',         destination: '/legal-notice',   permanent: true },
+      { source: '/politica-privacidad', destination: '/privacy-policy', permanent: true },
+      { source: '/condiciones-uso',     destination: '/terms',          permanent: true },
     ]
   },
   images: {

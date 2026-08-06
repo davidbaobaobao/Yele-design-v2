@@ -9,7 +9,7 @@ import { TextGradient } from '@/components/ui/text-gradient'
 // Same number the floating WhatsApp button used before it was retired in
 // favor of the card below.
 const WHATSAPP_URL = 'https://wa.me/34655517760'
-const PRIVACY_POLICY_URL = 'https://webgate.digital/wp-content/uploads/2023/10/privacy-policy.pdf'
+const PRIVACY_POLICY_URL = '/privacy-policy'
 const SCHEDULE_URL = '/schedule'
 const SURVEY_URL = '/survey'
 
@@ -298,7 +298,11 @@ export default function ContactForm() {
                   rel="noopener noreferrer"
                   className="underline hover:text-white/60 transition-colors"
                 >
-                  {t('Política de Privacidad', 'Privacy Policy')}
+                  {/* Always English — the Privacy Policy page itself is
+                      English-only now, so a Spanish label here (even when
+                      the site chrome is in Spanish) would point to a page
+                      that doesn't match it. */}
+                  Privacy Policy
                 </a>
                 .
               </p>

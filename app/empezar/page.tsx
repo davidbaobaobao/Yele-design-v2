@@ -459,7 +459,7 @@ export default function EmpezarPage() {
               />
               <span className="font-body text-sm text-ink">
                 I have read and accept the{' '}
-                <Link href="/politica-privacidad" target="_blank" className="underline hover:text-muted transition-colors">
+                <Link href="/privacy-policy" target="_blank" className="underline hover:text-muted transition-colors">
                   privacy policy
                 </Link>
                 <span className="text-red-500 ml-0.5">*</span>

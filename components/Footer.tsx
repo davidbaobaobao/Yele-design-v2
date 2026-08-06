@@ -164,22 +164,22 @@ export default function Footer() {
                   </p>
                   <div className="flex flex-col gap-2">
                     <a
-                      href="/aviso-legal"
+                      href="/legal-notice"
                       className="font-body text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
                       Legal Notice
                     </a>
                     <a
-                      href="/politica-privacidad"
+                      href="/privacy-policy"
                       className="font-body text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
                       Privacy Policy
                     </a>
                     <a
-                      href="/condiciones-uso"
+                      href="/terms"
                       className="font-body text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
-                      Terms of Use
+                      Terms and Conditions
                     </a>
                   </div>
                 </nav>
