@@ -9,8 +9,8 @@ import { CTAButton } from '@/components/ui/cta-button'
 
 const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
 
-const VIDEO_DIR = '/media/hero_new'
-const POSTER = `${VIDEO_DIR}/hero_new_poster.jpg`
+const VIDEO_DIR = '/media/hero6'
+const POSTER = `${VIDEO_DIR}/hero6_poster.jpg`
 const WHITE = '#F2F0EB'
 
 const WORDS = ['Last', 'Stand out', 'Perform', 'Convert', 'Endure', 'Grow']
@@ -21,14 +21,16 @@ const HOLD_MS = 1500
 // shorter/longer words type in and erase.
 const LONGEST_CH = Math.max(...WORDS.map(w => w.length))
 
-// ffmpeg -i hero_new.mp4 -c:v libx264 -profile:v high -crf 24 -preset slow
-//   -pix_fmt yuv420p -movflags +faststart -an out.mp4  (+ webm sibling —
-//   came out much smaller here, 711KB vs 2.65MB, so webm-first)
+// ffmpeg -i hero6.mp4 -vf "scale=1920:-2" -c:v libx264 -profile:v main -crf 24
+//   -preset slow -pix_fmt yuv420p -movflags +faststart -an hero6_hq.mp4
+// (+ webm sibling via libvpx-vp9 -crf 35 -b:v 0 — source was a 26MB/20.7Mbps
+// 2560x1440 export with an unused audio track; this brings it down to a few
+// MB without looking soft.)
 function Sources() {
   return (
     <>
-      <source src={`${VIDEO_DIR}/hero_new_hq.webm`} type="video/webm" />
-      <source src={`${VIDEO_DIR}/hero_new_hq.mp4`} type="video/mp4" />
+      <source src={`${VIDEO_DIR}/hero6_hq.webm`} type="video/webm" />
+      <source src={`${VIDEO_DIR}/hero6_hq.mp4`} type="video/mp4" />
     </>
   )
 }
@@ -101,6 +103,18 @@ export default function Hero() {
 
   useVideoAlwaysAutoplay(videoRef)
 
+  // Belt-and-suspenders on top of useVideoAlwaysAutoplay (which already sets
+  // muted imperatively + retries play()) — React can drop the `muted` prop
+  // on mount in some cases, and iOS Safari specifically requires muted to be
+  // set as a DOM property (not just the attribute) before play() succeeds.
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    v.muted = true
+    const p = v.play()
+    if (p) p.catch(() => {})
+  }, [])
+
   return (
     <section id="hero" className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
       <video
@@ -110,7 +124,7 @@ export default function Hero() {
         loop
         playsInline
         disablePictureInPicture
-        preload="auto"
+        preload="metadata"
         poster={POSTER}
         className="absolute inset-0 w-full h-full object-cover"
         aria-hidden="true"
@@ -118,20 +132,18 @@ export default function Hero() {
         <Sources />
       </video>
 
-      {/* Subtle left-side gradient, only behind the text — not a full-screen
-          scrim — for legibility over whatever's playing behind it. */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.4) 0%, transparent 55%)' }}
-        aria-hidden="true"
-      />
+      {/* Dark scrim over the whole frame (not just behind the text) — the
+          centered layout now sits over the video's busy middle area on any
+          viewport width, so the legibility wash needs to cover everything,
+          not just a left-side gradient like the old left-aligned layout. */}
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" aria-hidden="true" />
 
-      <div className="relative z-10 h-full flex items-center justify-start pl-8 md:pl-16">
-        <div className="max-w-[60%]">
+      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
+        <div className="max-w-2xl mx-auto flex flex-col items-center">
           {/* Clamp lowered further (5.25rem -> 3.75rem max, min/preferred
               scaled the same ~0.71 ratio) so "Delivering websites that" fits
-              on a single line at the current max-w-[60%] width instead of
-              wrapping to a 3rd line — the animated word stays the 2nd line. */}
+              on a single line at this width instead of wrapping to a 3rd
+              line — the animated word stays the 2nd line. */}
           <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(1.6rem, 3.75vw, 3.75rem)', color: WHITE }}>
             {/* Real, static text for SEO/a11y — the animated span below is
                 purely decorative and hidden from assistive tech so its
@@ -152,7 +164,7 @@ export default function Hero() {
             One subscription. From $99/mo.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 mt-8">
+          <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
             <CTAButton href="/registro" variant="pink">
               Start for free
             </CTAButton>
@@ -170,7 +182,7 @@ export default function Hero() {
               text-base/md:text-lg) — still reads as a real trust signal,
               just not competing with the subtitle for attention. */}
           <div
-            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body text-base md:text-lg"
+            className="flex flex-col sm:flex-row sm:items-center justify-center gap-2 sm:gap-4 mt-10 font-body text-base md:text-lg"
             style={{ color: 'rgba(242, 240, 235, 0.55)' }}
           >
             {REASSURANCES.map((phrase, i) => (

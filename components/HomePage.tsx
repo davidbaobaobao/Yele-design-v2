@@ -50,8 +50,8 @@ export default function HomePage() {
         <DealFadeProvider>
           <BeyondWebsite />
           <DealStatement />
+          <StatsBold />
         </DealFadeProvider>
-        <StatsBold />
         <PreciosIndexSection />
         <ContentShowcase />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
