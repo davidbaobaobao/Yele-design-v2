@@ -66,7 +66,9 @@ export default function Hero() {
               Delivering websites that last, stand out, perform, convert, endure, and grow.
             </span>
             <span aria-hidden="true">
-              Delivering Websites
+              Delivering
+              <br />
+              Websites
               <br />
               {/* whitespace-nowrap so "that" and the word can't wrap apart;
                   expandRight on TypewriterWord so the word isn't given a

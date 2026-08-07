@@ -31,6 +31,11 @@ export default function CubesScene() {
       renderer.setSize(getW(), getH());
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.28;
+      // <canvas> is inline by default, which reserves baseline/descender
+      // space around it inside a block container — a stray sliver at the
+      // container's edge that isn't part of the rendered scene. block
+      // removes that reserved space entirely.
+      renderer.domElement.style.display = "block";
       app.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
@@ -180,7 +185,13 @@ export default function CubesScene() {
     };
   }, []);
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="relative w-full h-full overflow-hidden isolate">
+      {/* isolate: without its own stacking context, the vignette/grain's
+          mix-blend-mode below blends against whatever the browser has
+          painted further back — the hero poster, even the fixed nav —
+          which is where a stray seam right at the hero's top edge (a
+          compositing-layer boundary) was coming from. Isolating confines
+          the blend to just this wrapper's own contents. */}
       <div ref={mountRef} className="w-full h-full" />
       {/* Vignette — scoped to this container only, darkens the cluster's
           edges toward black without touching the rest of the hero. */}
