@@ -112,6 +112,10 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
     return () => io.disconnect()
   }, [])
 
+  // Also doubles as the nav's dark/light "theme" switch (logo + CTA color
+  // below) — it's already exactly "is the nav currently over a dark-bg
+  // section," including the fade sections' own live state, so there's no
+  // need for a second, separately-tracked theme signal.
   const showBoneText = fadeIntersecting ? fadeDark : overHero
 
   const scrollTo = (href: string) => {
@@ -129,9 +133,28 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
         } ${navHidden ? 'opacity-0 pointer-events-none transition-opacity duration-300' : 'opacity-100 transition-opacity duration-300'}`}
       >
         <nav className="relative flex items-center justify-between h-20 px-6 md:px-10">
-          <Link href="/" className="flex items-center focus-visible:outline-none" aria-label="yele">
+          {/* Both logos are stacked in the same grid cell (grid-area 1/1) and
+              crossfaded via opacity — swapping `src` on one <img> can't
+              animate, so the light/dark variants are two always-mounted
+              images instead. aria-label on the Link is the accessible name;
+              alt="" on both avoids it being announced twice. */}
+          <Link href="/" className="relative grid focus-visible:outline-none" aria-label="yele">
             {/* eslint-disable-next-line @next/next/no-img-element -- SVG, Next's image optimizer refuses to serve those */}
-            <img src="/media/logomedia/mainlogo.svg" alt="yele" className="h-9 w-auto" />
+            <img
+              src="/media/logomedia/mainlogo.svg"
+              alt=""
+              className={`col-start-1 row-start-1 h-9 w-auto transition-opacity duration-300 ${
+                showBoneText ? 'opacity-0' : 'opacity-100'
+              }`}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element -- raster logo, not an optimizer candidate */}
+            <img
+              src="/media/logomedia/logodark.png"
+              alt=""
+              className={`col-start-1 row-start-1 h-9 w-auto transition-opacity duration-300 ${
+                showBoneText ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
@@ -158,7 +181,12 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
             >
               {t('Contáctanos', 'Contact us')}
             </button>
-            <CTAButton href={ctaHref} prefetch={false} variant="pink" className="text-xs px-5 py-2.5">
+            <CTAButton
+              href={ctaHref}
+              prefetch={false}
+              variant={showBoneText ? 'white' : 'pink'}
+              className="text-xs px-5 py-2.5"
+            >
               {t('Empezar gratis', 'Start for free')}
             </CTAButton>
           </div>

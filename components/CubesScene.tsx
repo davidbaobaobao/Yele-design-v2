@@ -4,6 +4,13 @@
    typed loosely on purpose so this stays a 1:1 port, not a rewrite. */
 import { useEffect, useRef } from "react";
 
+// Cinematic film-grain texture — fractalNoise SVG filter, data-URI'd so it
+// needs no separate asset request. Painted via the grain overlay below,
+// jittered by the `grain` steps() keyframe (app/globals.css).
+const GRAIN_BG = `url("data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>"
+)}")`;
+
 export default function CubesScene() {
   const mountRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -23,7 +30,7 @@ export default function CubesScene() {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(getW(), getH());
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.5;
+      renderer.toneMappingExposure = 1.28;
       app.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
@@ -160,5 +167,27 @@ export default function CubesScene() {
         renderer.dispose?.(); renderer.domElement?.remove?.(); }
     };
   }, []);
-  return <div ref={mountRef} className="w-full h-full" />;
+  return (
+    <div className="relative w-full h-full">
+      <div ref={mountRef} className="w-full h-full" />
+      {/* Vignette — scoped to this container only, darkens the cluster's
+          edges toward black without touching the rest of the hero. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 60% at 50% 46%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 82%, rgba(0,0,0,0.9) 100%)',
+          mixBlendMode: 'multiply',
+        }}
+      />
+      {/* Film grain — oversized (-50% inset) so the steps() jitter never
+          exposes a hard edge at the container bounds. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-[-50%] pointer-events-none motion-safe:animate-[grain_0.6s_steps(3)_infinite]"
+        style={{ opacity: 0.06, mixBlendMode: 'overlay', backgroundImage: GRAIN_BG }}
+      />
+    </div>
+  );
 }

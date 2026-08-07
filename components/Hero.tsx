@@ -48,9 +48,9 @@ export default function Hero() {
           added later. Right half collapses on mobile — left just goes full
           width there. */}
       <div className="relative z-10 h-full flex">
-        <div className="w-full md:w-1/2 h-full flex items-center pl-8 sm:pl-12 md:pl-16 lg:pl-24 pr-6 md:pr-8">
-          <div className="max-w-xl">
-            <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(1.6rem, 3.75vw, 3.75rem)', color: WHITE }}>
+        <div className="w-full md:w-1/2 h-full flex items-center pl-8 sm:pl-16 md:pl-28 lg:pl-40 xl:pl-48 pr-6 md:pr-8">
+          <div className="max-w-xl -translate-y-4 md:-translate-y-8">
+            <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(1.7rem, 4vw, 4.1rem)', color: WHITE }}>
               {/* Real, static text for SEO/a11y — the animated span below is
                   purely decorative and hidden from assistive tech so its
                   rapidly-changing partial-word states are never announced. */}
