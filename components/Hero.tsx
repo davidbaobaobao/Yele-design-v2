@@ -36,94 +36,91 @@ export default function Hero() {
         aria-hidden="true"
       />
 
-      {/* Subtle left-side gradient, only behind the text — not a full-screen
-          scrim — for legibility over the background. */}
+      {/* Cubes — full-width/height background layer spanning the entire
+          hero, so there's no seam between a "text half" and a "cubes
+          half". The cluster stays visually right-of-center via its own
+          aspect-aware offset (CubesScene.tsx) — the same on-screen
+          position it held back when it lived in a right-half box. Hidden
+          on mobile: WebGL cost isn't worth it at that size, and the text
+          needs the full width there anyway. */}
+      <div className="hidden md:block absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+        <CubesScene />
+      </div>
+
+      {/* Single feathered left→right gradient behind the text only, full
+          width so there's no hard edge/seam — replaces the old boxed
+          left-half scrim. */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.4) 0%, transparent 55%)' }}
+        style={{ background: 'linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 60%)' }}
         aria-hidden="true"
       />
 
-      {/* Two halves: text in the left, right reserved empty for 3D elements
-          added later. Right half collapses on mobile — left just goes full
-          width there. */}
-      <div className="relative z-10 h-full flex">
-        <div className="w-full md:w-1/2 h-full flex items-center pl-8 sm:pl-16 md:pl-28 lg:pl-40 xl:pl-48 pr-6 md:pr-8">
-          <div className="max-w-xl -translate-y-4 md:-translate-y-8">
-            <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(1.7rem, 4vw, 4.1rem)', color: WHITE }}>
-              {/* Real, static text for SEO/a11y — the animated span below is
-                  purely decorative and hidden from assistive tech so its
-                  rapidly-changing partial-word states are never announced. */}
-              <span className="sr-only">
-                Delivering websites that last, stand out, perform, convert, endure, and grow.
-              </span>
-              <span aria-hidden="true">
-                Delivering Websites
-                <br />
-                {/* whitespace-nowrap so "that" and the word can't wrap apart;
-                    expandRight on TypewriterWord so the word isn't given a
-                    fixed reserved width — "that " stays put and the word
-                    grows to the right as shorter/longer words cycle through,
-                    instead of the whole line staying a fixed centered width. */}
-                <span className="whitespace-nowrap">
-                  that <TypewriterWord words={WORDS} reduceMotion={reduceMotion} expandRight />
-                </span>
-              </span>
-            </h1>
-
-            <p className="font-body mt-6 text-lg md:text-xl leading-snug" style={{ color: 'rgba(242, 240, 235, 0.7)' }}>
-              Website design, maintenance &amp; content creation
+      <div className="relative z-10 h-full flex items-center pl-8 sm:pl-16 md:pl-28 lg:pl-40 xl:pl-48 pr-6 md:pr-8">
+        <div className="max-w-xl -translate-y-4 md:-translate-y-8">
+          <h1 className="font-display leading-tight" style={{ fontSize: 'clamp(1.8rem, 4.3vw, 4.4rem)', color: WHITE }}>
+            {/* Real, static text for SEO/a11y — the animated span below is
+                purely decorative and hidden from assistive tech so its
+                rapidly-changing partial-word states are never announced. */}
+            <span className="sr-only">
+              Delivering websites that last, stand out, perform, convert, endure, and grow.
+            </span>
+            <span aria-hidden="true">
+              Delivering Websites
               <br />
-              One subscription. From $99/mo.
-            </p>
+              {/* whitespace-nowrap so "that" and the word can't wrap apart;
+                  expandRight on TypewriterWord so the word isn't given a
+                  fixed reserved width — "that " stays put and the word
+                  grows to the right as shorter/longer words cycle through,
+                  instead of the whole line staying a fixed centered width. */}
+              <span className="whitespace-nowrap">
+                that <TypewriterWord words={WORDS} reduceMotion={reduceMotion} expandRight />
+              </span>
+            </span>
+          </h1>
 
-            <div className="flex flex-wrap items-center gap-4 mt-8">
-              <CTAButton href="/registro" variant="white">
-                Start for free
-              </CTAButton>
-              <a
-                href="#contacto"
-                className="inline-block font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
-              >
-                Contact us
-              </a>
-            </div>
+          <p className="font-body mt-6 text-lg md:text-xl leading-snug" style={{ color: 'rgba(242, 240, 235, 0.7)' }}>
+            Website design, maintenance &amp; content creation
+            <br />
+            One subscription. From $99/mo.
+          </p>
 
-            {/* Reassurance row — kept well clear of the buttons above (mt-10)
-                so it doesn't read as part of the same cluster. One step down
-                from the hero subtitle's own size (text-lg/md:text-xl ->
-                text-base/md:text-lg) — still reads as a real trust signal,
-                just not competing with the subtitle for attention. */}
-            <div
-              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body text-base md:text-lg"
-              style={{ color: 'rgba(242, 240, 235, 0.55)' }}
+          <div className="flex flex-wrap items-center gap-4 mt-8">
+            <CTAButton href="/registro" variant="white">
+              Start for free
+            </CTAButton>
+            <a
+              href="#contacto"
+              className="inline-block font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
             >
-              {REASSURANCES.map((phrase, i) => (
-                <span key={phrase} className="inline-flex items-center gap-4">
-                  {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-50">·</span>}
-                  <span className="inline-flex items-center gap-2">
-                    <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
-                    {phrase}
-                  </span>
-                </span>
-              ))}
-            </div>
+              Contact us
+            </a>
           </div>
-        </div>
 
-        {/* Right half — the 8-cubes Three.js scene, transparent so the hero
-            background shows through around it. pointer-events-none: the
-            scene reacts to pointer position globally (its own window
-            pointermove listener), it doesn't need to capture clicks itself,
-            and this keeps it from ever intercepting clicks meant for
-            anything else in this half. */}
-        <div className="hidden md:block md:w-1/2 h-full relative pointer-events-none" aria-hidden="true">
-          <CubesScene />
+          {/* Reassurance row — kept well clear of the buttons above (mt-10)
+              so it doesn't read as part of the same cluster. One step down
+              from the hero subtitle's own size (text-lg/md:text-xl ->
+              text-base/md:text-lg) — still reads as a real trust signal,
+              just not competing with the subtitle for attention. */}
+          <div
+            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body text-base md:text-lg"
+            style={{ color: 'rgba(242, 240, 235, 0.55)' }}
+          >
+            {REASSURANCES.map((phrase, i) => (
+              <span key={phrase} className="inline-flex items-center gap-4">
+                {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-50">·</span>}
+                <span className="inline-flex items-center gap-2">
+                  <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+                  {phrase}
+                </span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Scroll-down indicator — centered on the FULL viewport width (not
-          the left half), independent of the two-column split above it. */}
+      {/* Scroll-down indicator — centered on the full viewport width,
+          independent of the text column above it. */}
       <button
         type="button"
         onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}

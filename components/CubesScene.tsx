@@ -124,6 +124,18 @@ export default function CubesScene() {
         cluster.add(cube); cubes.push(cube);
       });
 
+      // Canvas now spans the full hero (not just a right-half box), so
+      // without this the cluster would re-center to the middle of the
+      // frame. Shifts it back to the on-screen position it always had —
+      // its old right-half container's own center sat at 75% across the
+      // full page — recomputed on resize since the frustum width at the
+      // cluster's depth scales with aspect.
+      const keepClusterRight=()=>{
+        const halfW=camera.position.z*Math.tan((camera.fov*Math.PI/180)/2)*camera.aspect;
+        cluster.position.x=halfW*0.5; // (0.75-0.5)*2
+      };
+      keepClusterRight();
+
       const pointer={x:0,y:0,tx:0,ty:0};
       onPointer=(e:PointerEvent)=>{
         pointer.tx=(e.clientX/window.innerWidth)*2-1;
@@ -152,7 +164,7 @@ export default function CubesScene() {
       animate();
 
       onResize=()=>{camera.aspect=getW()/getH();camera.updateProjectionMatrix();
-        renderer.setSize(getW(),getH());};
+        renderer.setSize(getW(),getH());keepClusterRight();};
       window.addEventListener("resize",onResize);
       const ro=new ResizeObserver(onResize); ro.observe(app);
       (renderer as any).__ro=ro;

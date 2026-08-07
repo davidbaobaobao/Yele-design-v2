@@ -47,7 +47,11 @@ const PILL_CLASS =
 // be the HOVER state (it read as the right size); hover now grows past
 // that rather than past the old, larger default. pointer-events-none so it
 // never intercepts the click itself.
-function Glow() {
+function Glow({ variant }: { variant: Variant }) {
+  // The "white" pill (hero + nav CTA on dark sections) reads as a clean
+  // white button — no pink bloom behind it. Its own VARIANT_CLASS shadow
+  // is the only depth cue it gets.
+  if (variant === 'white') return null
   return (
     <span
       aria-hidden="true"
@@ -92,7 +96,7 @@ export function CTAButton({ variant = 'light', className, children, ...rest }: C
     const { href, prefetch, ...anchorRest } = rest as LinkCTAProps
     return (
       <Link href={href} prefetch={prefetch} className={pillClass} {...anchorRest}>
-        <Glow />
+        <Glow variant={variant} />
         <span className="relative z-10 inline-flex items-center gap-1.5">{children}</span>
       </Link>
     )
@@ -102,7 +106,7 @@ export function CTAButton({ variant = 'light', className, children, ...rest }: C
   const { href, ...buttonRest } = rest as ButtonCTAProps
   return (
     <button type="button" className={pillClass} {...buttonRest}>
-      <Glow />
+      <Glow variant={variant} />
       <span className="relative z-10 inline-flex items-center gap-1.5">{children}</span>
     </button>
   )
