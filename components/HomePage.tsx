@@ -57,10 +57,10 @@ export default function HomePage() {
           <DealStatement />
           <StatsBold />
         </DealFadeProvider>
-        <TryForFreeSection />
         <PreciosIndexSection />
-        <WebsiteWordsVideo />
+        <TryForFreeSection />
         <ContentShowcase />
+        <WebsiteWordsVideo />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
             room between the animation section's video grid and the We-
             section's stacked cards, not a color transition. */}

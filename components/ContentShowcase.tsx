@@ -87,17 +87,14 @@ function tileGeometry(index: number, cols: number, rows: number) {
 // settled in its final grid slot) rises from that baseline to 1, so the
 // whole grid resolves smoothly and continuously over the section's (long)
 // pinned scroll range instead of jumping in on one fast flick.
-const START_Y = 100 // image grid: tiles start below the viewport, tileGeometry's 0-100 scale
-const START_Y_INVERTED = -20 // video grid: tiles start above the viewport, same 0-100 scale
+const START_Y = 100 // both grids: tiles start below the viewport, tileGeometry's 0-100 scale
 const START_SCALE = 0.94
 
 // Column pyramid — center column already 80% resolved at entry, tapering
 // linearly to 20% at the outermost columns. Derived from distance-to-center
 // (not a fixed lookup table) so the narrow 4-col mobile image layout gets
-// the same shape as the 5-col desktop one. Shared by both grids: the image
-// grid rises from below using this baseline as-is, the video grid mirrors
-// it — same baseline per column, but tiles descend from above instead of
-// rising from below (see useInvertedVerticalTileReveal).
+// the same shape as the 5-col desktop one. Shared by both grids — both rise
+// from below using this baseline as-is.
 function columnInitialReveal(col: number, cols: number) {
   const centerCol = (cols - 1) / 2
   const maxDist = centerCol
@@ -131,24 +128,6 @@ function useVerticalTileReveal(progress: MotionValue<number>, index: number, col
 
   const t = useTransform(progress, v => base + (1 - base) * easeOutCubic(v))
   const top = useTransform(t, tv => `${START_Y + (centerY - START_Y) * tv}%`)
-  const scale = useTransform(t, tv => START_SCALE + (1 - START_SCALE) * tv)
-
-  return { width, height, left: centerX, top, scale, opacity: t }
-}
-
-// Video grid: vertical descent, staggered by COLUMN — the mirror of the
-// image grid's rise. Same columnInitialReveal baseline per column (center
-// column already 80% resolved at entry, tapering to 20% at the edges), but
-// tiles start ABOVE their slot and settle DOWNWARD into it instead of
-// starting below and rising, so the whole grid reads as an inverted
-// pyramid fitting in from the top down.
-function useInvertedVerticalTileReveal(progress: MotionValue<number>, index: number, cols: number, rows: number) {
-  const { width, height, centerX, centerY } = tileGeometry(index, cols, rows)
-  const col = index % cols
-  const base = columnInitialReveal(col, cols)
-
-  const t = useTransform(progress, v => base + (1 - base) * easeOutCubic(v))
-  const top = useTransform(t, tv => `${START_Y_INVERTED + (centerY - START_Y_INVERTED) * tv}%`)
   const scale = useTransform(t, tv => START_SCALE + (1 - START_SCALE) * tv)
 
   return { width, height, left: centerX, top, scale, opacity: t }
@@ -204,7 +183,7 @@ function VideoTile({
   progress: MotionValue<number>
   mounted: boolean
 }) {
-  const { width, height, left, top, scale, opacity } = useInvertedVerticalTileReveal(progress, index, VIDEO_COLS, VIDEO_ROWS)
+  const { width, height, left, top, scale, opacity } = useVerticalTileReveal(progress, index, VIDEO_COLS, VIDEO_ROWS)
   const videoRef = useRef<HTMLVideoElement>(null)
   const n = index + 1
   const poster = `${VIDEO_DIR}/${n}_poster.jpg`
@@ -288,12 +267,12 @@ function VideoTile({
 
 // Big centered overlay text sitting IN FRONT of a tile grid, on a fully
 // transparent background — no wash/mask of any kind, so the grid stays
-// visible through the letters at all times. Permanently semi-transparent
-// black (not scroll-tied, not white) — the low, fixed alpha IS the effect,
-// not an animation. Sized to dominate the screen (the big word alone runs
-// up to 22rem/22vw).
+// visible through the letters at all times. Bold, strong white at a high
+// fixed alpha (not scroll-tied) — solid enough to dominate, with just a
+// little of the media showing through. Sized to dominate the screen (the
+// big word alone runs up to 22rem/22vw).
 function GridOverlay({ small, big }: { small: string; big: string }) {
-  const textColor = 'rgba(0, 0, 0, 0.55)'
+  const textColor = 'rgba(255, 255, 255, 0.85)'
   return (
     <div
       className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pointer-events-none"
