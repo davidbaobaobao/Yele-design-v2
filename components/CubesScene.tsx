@@ -168,7 +168,7 @@ export default function CubesScene() {
     };
   }, []);
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full overflow-hidden">
       <div ref={mountRef} className="w-full h-full" />
       {/* Vignette — scoped to this container only, darkens the cluster's
           edges toward black without touching the rest of the hero. */}
