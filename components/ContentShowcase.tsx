@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { TextGradient } from '@/components/ui/text-gradient'
 
 // Image numbers (1-indexed, matching the filenames) rendered in black &
 // white instead of color — a deliberate accent among the color tiles.
@@ -267,29 +268,30 @@ function VideoTile({
 
 // Big centered overlay text sitting IN FRONT of a tile grid, on a fully
 // transparent background — no wash/mask of any kind, so the grid stays
-// visible through the letters at all times. Bold, strong white at a high
-// fixed alpha (not scroll-tied) — solid enough to dominate, with just a
-// little of the media showing through. Sized to dominate the screen (the
-// big word alone runs up to 22rem/22vw).
+// visible through the letters at all times. Uses the site's own pink-shine
+// TextGradient (#D46FC8 -> #E08AD0 -> #F3D0EA -> #E08AD0 -> #D46FC8, same
+// treatment as "Not anymore." in WhyYele etc.) — every stop is a fully
+// opaque hex color, so the letters themselves are never see-through, only
+// the background behind the whole overlay div is transparent. Sized to
+// dominate the screen (the big word alone runs up to 22rem/22vw).
 function GridOverlay({ small, big }: { small: string; big: string }) {
-  const textColor = 'rgba(255, 255, 255, 0.85)'
   return (
     <div
       className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pointer-events-none"
       aria-hidden="true"
     >
-      <span
+      <TextGradient
+        as="span"
         className="font-display font-black uppercase tracking-tight text-[clamp(1.5rem,5vw,3rem)] leading-none mb-1 md:mb-2"
-        style={{ color: textColor }}
       >
         {small}
-      </span>
-      <span
+      </TextGradient>
+      <TextGradient
+        as="span"
         className="font-display font-black uppercase tracking-tighter text-[clamp(6rem,22vw,22rem)] leading-[0.82]"
-        style={{ color: textColor }}
       >
         {big}
-      </span>
+      </TextGradient>
     </div>
   )
 }

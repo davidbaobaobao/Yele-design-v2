@@ -4,17 +4,17 @@ import { useRef } from 'react'
 import { useVideoAlwaysAutoplay } from '@/hooks/useVideoAlwaysAutoplay'
 
 const VIDEO_DIR = '/media/tryforfree'
-const POSTER = `${VIDEO_DIR}/tryforfree_poster.jpg`
+const POSTER = `${VIDEO_DIR}/tryforfree2_poster.jpg`
 
-// ffmpeg -i tryforfree.mp4 -vf "scale=1920:-2" -c:v libx264 -profile:v high
-//   -crf 24 -preset slow -pix_fmt yuv420p -movflags +faststart -an
-//   tryforfree_hq.mp4 (+ webm sibling via libvpx-vp9) — source was an
-//   8.2MB/14.3Mbps 1926x1440 export with an unused audio track.
+// ffmpeg -i tryforfree2.mp4 -vf "scale=1920:-2" -c:v libx264 -profile:v main
+//   -crf 23 -preset slow -pix_fmt yuv420p -movflags +faststart -an
+//   tryforfree2_hq.mp4 (+ webm sibling via libvpx-vp9) — source was a
+//   14.9MB/19.4Mbps 1920x1440 export with an unused audio track.
 function Sources() {
   return (
     <>
-      <source src={`${VIDEO_DIR}/tryforfree_hq.webm`} type="video/webm" />
-      <source src={`${VIDEO_DIR}/tryforfree_hq.mp4`} type="video/mp4" />
+      <source src={`${VIDEO_DIR}/tryforfree2_hq.webm`} type="video/webm" />
+      <source src={`${VIDEO_DIR}/tryforfree2_hq.mp4`} type="video/mp4" />
     </>
   )
 }
@@ -37,7 +37,7 @@ export default function TryForFreeSection() {
         loop
         playsInline
         disablePictureInPicture
-        preload="auto"
+        preload="metadata"
         poster={POSTER}
         className="absolute inset-0 w-full h-full object-cover"
         aria-hidden="true"

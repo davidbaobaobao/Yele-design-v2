@@ -17,6 +17,12 @@ const VARIANT_CLASS = {
     'bg-[#F2F0EB] hover:bg-[#F8F7F4] text-[#16161A] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_-2px_5px_rgba(0,0,0,0.07)]',
   dark: 'bg-[#1A1A1F] hover:bg-[#26262C] text-[#F2F0EB] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-2px_5px_rgba(0,0,0,0.35)]',
   pink: 'bg-[#D46FC8] hover:bg-[#DE85D2] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-2px_5px_rgba(0,0,0,0.15)]',
+  // Pure white surface (not "light"'s warm bone tone) + a subtle grey hover —
+  // used by the hero's primary CTA specifically, kept separate from "light"
+  // so that variant's existing bone styling elsewhere on the site is
+  // untouched.
+  white:
+    'bg-white hover:bg-[#F0F0F0] text-[#16161A] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_-2px_5px_rgba(0,0,0,0.07)]',
 } as const
 
 type Variant = keyof typeof VARIANT_CLASS
