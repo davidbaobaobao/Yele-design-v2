@@ -21,6 +21,7 @@ const VideoSnapController  = dynamic(() => import('@/components/VideoSnapControl
 const Showcase             = dynamic(() => import('@/components/Showcase'))
 const WebsiteWordsVideo    = dynamic(() => import('@/components/WebsiteWordsVideo'))
 const TryForFreeSection    = dynamic(() => import('@/components/TryForFreeSection'))
+const HowYeleMakesSection  = dynamic(() => import('@/components/HowYeleMakesSection'))
 const FloatingStartFreeCTA = dynamic(() => import('@/components/FloatingStartFreeCTA'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
 const WhySubs              = dynamic(() => import('@/components/WhySubs'))
@@ -59,6 +60,7 @@ export default function HomePage() {
         </DealFadeProvider>
         <PreciosIndexSection />
         <TryForFreeSection />
+        <HowYeleMakesSection />
         <ContentShowcase />
         <WebsiteWordsVideo />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
