@@ -267,12 +267,12 @@ function VideoTile({
 
 // Big centered overlay text sitting IN FRONT of a tile grid, on a fully
 // transparent background — no wash/mask of any kind, so the grid stays
-// visible through the letters at all times. Flat pink at 50% opacity, no
-// shine/gradient — the alpha itself is what lets the grid show through the
-// letters. Sized to dominate the screen (the big word alone runs up to
-// 22rem/22vw).
+// visible through the letters at all times. Flat pink at 25% opacity (75%
+// transparent), no shine/gradient — the alpha itself is what lets the grid
+// show through the letters. Sized to dominate the screen (the big word
+// alone runs up to 22rem/22vw).
 function GridOverlay({ small, big }: { small: string; big: string }) {
-  const textColor = 'rgba(212, 111, 200, 0.5)'
+  const textColor = 'rgba(212, 111, 200, 0.25)'
   return (
     <div
       className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pointer-events-none"
