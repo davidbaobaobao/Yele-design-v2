@@ -277,7 +277,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             gtag('config', 'G-970LSR5GJ4');
           `}
         </Script>
-        {/* Microsoft Clarity */}
+        {/* Microsoft Clarity — the consentv2 call right after the bootstrap
+            IIFE is safe even though the real clarity.js hasn't loaded yet:
+            c[a] is already the queue-stub function at this point (assigned
+            synchronously above), so the call just queues until the real
+            script processes it. Without this, Clarity runs cookieless (no
+            _clck/_clsk) and treats every pageview as a new session — this
+            site's cookie banner already treats consent as granted on
+            continued use ("by continuing you agree..."), so this mirrors
+            that same implied-consent model. CookieBanner.tsx re-fires this
+            with the user's actual analytics/marketing choice once they
+            interact with the banner. */}
         <Script id="ms-clarity" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){
@@ -285,6 +295,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
               y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
             })(window,document,"clarity","script","xhor841289");
+            window.clarity("consentv2", {
+              ad_Storage: "granted",
+              analytics_Storage: "granted"
+            });
           `}
         </Script>
       </body>

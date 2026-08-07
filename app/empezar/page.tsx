@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import ClarityScript from '@/components/ClarityScript'
 
 const inputClass = 'w-full bg-white border border-hairline rounded-xl px-4 py-3 font-body text-sm text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors'
 const labelClass = 'font-body text-xs text-muted mb-1.5 block'
@@ -265,7 +264,6 @@ export default function EmpezarPage() {
   if (step === 'pricing') {
     return (
       <div className="min-h-screen bg-base px-6 py-12">
-        <ClarityScript />
         <div className="max-w-3xl mx-auto">
           <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
             <span className="w-2 h-2 rounded-full bg-[#34C759]" aria-hidden="true" />
@@ -353,7 +351,6 @@ export default function EmpezarPage() {
 
   return (
     <div className="min-h-screen bg-base px-6 py-12">
-      <ClarityScript />
       <div className="max-w-md mx-auto">
 
         <h1 className="sr-only">Tell us about your business</h1>

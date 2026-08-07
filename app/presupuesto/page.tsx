@@ -17,7 +17,6 @@ import PreciosIndexSection from '@/components/PreciosIndexSection'
 import Showcase from '@/components/Showcase'
 import FinaleSection from './_components/FinaleSection'
 import Footer from '@/components/Footer'
-import ClarityScript from '@/components/ClarityScript'
 import { EsLangProvider } from '@/components/LangProvider'
 
 const Testimonios      = dynamic(() => import('@/components/Testimonios'))
@@ -36,7 +35,6 @@ export const metadata: Metadata = {
 export default function PresupuestoPage() {
   return (
     <EsLangProvider>
-      <ClarityScript />
       <Navigation heroIsDark />
       <main id="main-content">
         <HeroBento />

@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
+declare global {
+  interface Window { clarity?: (...args: unknown[]) => void }
+}
+
 type Prefs = { analytics: boolean; marketing: boolean }
 
 export default function CookieBanner() {
@@ -16,6 +20,15 @@ export default function CookieBanner() {
 
   const save = (p: Prefs) => {
     localStorage.setItem('cookie-consent', JSON.stringify({ essential: true, ...p }))
+    // Re-affirms consent with the user's actual choice — layout.tsx already
+    // granted implied consent on load, this updates it once they've made an
+    // explicit selection (matters most for EU visitors, where Clarity
+    // enforces this signal; analytics_Storage=denied correctly keeps
+    // Clarity cookieless for anyone who picks "Essential only").
+    window.clarity?.('consentv2', {
+      ad_Storage: p.marketing ? 'granted' : 'denied',
+      analytics_Storage: p.analytics ? 'granted' : 'denied',
+    })
     setVisible(false)
   }
 

@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import ClarityScript from '@/components/ClarityScript'
 
 export default function GraciasClient({
   conversionValue,
@@ -39,7 +38,6 @@ export default function GraciasClient({
 
   return (
     <div className="min-h-screen bg-base flex items-center justify-center px-6">
-      <ClarityScript />
       <div className="max-w-md w-full text-center">
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">

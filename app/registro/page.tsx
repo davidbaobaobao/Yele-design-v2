@@ -7,7 +7,6 @@ import { useSearchParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { motion, type Transition } from 'framer-motion'
 import Link from 'next/link'
-import ClarityScript from '@/components/ClarityScript'
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -101,7 +100,6 @@ export default function RegistroPage() {
   return (
     <div className="min-h-screen bg-base flex items-center justify-center px-6">
       <Suspense fallback={null}><PlanSaver /></Suspense>
-      <ClarityScript />
       <h1 className="sr-only">Create your account</h1>
       <div className="max-w-md w-full">
         {/* Logo */}
