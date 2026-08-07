@@ -17,7 +17,21 @@ const CURSOR_COLOR = '#F2F0EB'
 // (module-level) `words` array, not an inline literal, since it's
 // intentionally not in the effects' dependency arrays (same as when it was
 // a hardcoded constant).
-export function TypewriterWord({ words, reduceMotion }: { words: string[]; reduceMotion: boolean }) {
+//
+// `expandRight`: by default the word reserves the longest word's width
+// (minWidth) so a centered heading above/around it doesn't jump around as
+// shorter/longer words cycle through. Pass true to skip that reservation —
+// for a left-anchored heading where the word should grow to the right
+// instead (nothing else shifts, so there's nothing to stabilize).
+export function TypewriterWord({
+  words,
+  reduceMotion,
+  expandRight = false,
+}: {
+  words: string[]
+  reduceMotion: boolean
+  expandRight?: boolean
+}) {
   const longestCh = Math.max(...words.map(w => w.length))
   const [index, setIndex] = useState(0)
   const [text, setText] = useState('')
@@ -64,7 +78,11 @@ export function TypewriterWord({ words, reduceMotion }: { words: string[]; reduc
   return (
     <span
       className="inline-block"
-      style={{ minWidth: `${longestCh}ch`, opacity: text.length === 0 ? 0 : 1, transition: 'opacity 300ms ease' }}
+      style={{
+        minWidth: expandRight ? undefined : `${longestCh}ch`,
+        opacity: text.length === 0 ? 0 : 1,
+        transition: 'opacity 300ms ease',
+      }}
     >
       <TextGradient as="span">{text}</TextGradient>
       {!reduceMotion && (
