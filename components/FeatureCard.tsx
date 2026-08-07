@@ -32,7 +32,7 @@ export default function FeatureCard({
 }) {
   const inner = (
     <div>
-      <div className={`relative aspect-[4/3] md:aspect-[3/4] rounded-2xl overflow-hidden ${panelBg}`}>
+      <div className={`relative aspect-square rounded-2xl overflow-hidden ${panelBg}`}>
         {reduceMotion ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={card.poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
