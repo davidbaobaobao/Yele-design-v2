@@ -1,16 +1,20 @@
 'use client'
 
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { Check, ChevronDown } from 'lucide-react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
 import { CTAButton } from '@/components/ui/cta-button'
 
+// WebGL, canvas-drawn textures — client/browser only, no useful SSR output.
+const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false })
+
 const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
 
-// ffmpeg -i hero_poster.jpeg -vf "scale=1920:-2" -q:v 7 hero_poster.jpg —
-// source was a 1.3MB 2752x1536 export; a blurred/low-detail background
-// compresses to ~17KB at this quality with no visible difference.
+// ffmpeg -i hero_poster.jpeg -vf "scale=2560:-2,gblur=sigma=1.5" -q:v 3 hero_poster.jpg —
+// source was a 1.3MB 2752x1536 export; higher res + a light blur pass (masks
+// JPEG blocking on this low-detail gradient background) compresses to ~32KB.
 const POSTER = '/media/hero_new2/hero_poster.jpg'
 const WHITE = '#F2F0EB'
 
@@ -26,6 +30,7 @@ export default function Hero() {
         alt=""
         fill
         priority
+        quality={85}
         sizes="100vw"
         className="object-cover"
         aria-hidden="true"
@@ -106,8 +111,15 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right half — intentionally empty, reserved for 3D elements. */}
-        <div className="hidden md:block md:w-1/2 h-full" aria-hidden="true" />
+        {/* Right half — the 8-cubes Three.js scene, transparent so the hero
+            background shows through around it. pointer-events-none: the
+            scene reacts to pointer position globally (its own window
+            pointermove listener), it doesn't need to capture clicks itself,
+            and this keeps it from ever intercepting clicks meant for
+            anything else in this half. */}
+        <div className="hidden md:block md:w-1/2 h-full relative pointer-events-none" aria-hidden="true">
+          <CubesScene />
+        </div>
       </div>
 
       {/* Scroll-down indicator — centered on the FULL viewport width (not
