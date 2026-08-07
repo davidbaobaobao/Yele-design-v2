@@ -88,13 +88,16 @@ function tileGeometry(index: number, cols: number, rows: number) {
 // whole grid resolves smoothly and continuously over the section's (long)
 // pinned scroll range instead of jumping in on one fast flick.
 const START_Y = 100 // image grid: tiles start below the viewport, tileGeometry's 0-100 scale
-const START_X = -30 // video grid: tiles start left of their slot, same 0-100 scale
+const START_Y_INVERTED = -20 // video grid: tiles start above the viewport, same 0-100 scale
 const START_SCALE = 0.94
 
-// Column pyramid for the image grid — center column already 80% resolved
-// at entry, tapering linearly to 20% at the outermost columns. Derived from
-// distance-to-center (not a fixed lookup table) so the narrow 4-col mobile
-// layout gets the same shape as the 5-col desktop one.
+// Column pyramid — center column already 80% resolved at entry, tapering
+// linearly to 20% at the outermost columns. Derived from distance-to-center
+// (not a fixed lookup table) so the narrow 4-col mobile image layout gets
+// the same shape as the 5-col desktop one. Shared by both grids: the image
+// grid rises from below using this baseline as-is, the video grid mirrors
+// it — same baseline per column, but tiles descend from above instead of
+// rising from below (see useInvertedVerticalTileReveal).
 function columnInitialReveal(col: number, cols: number) {
   const centerCol = (cols - 1) / 2
   const maxDist = centerCol
@@ -102,11 +105,6 @@ function columnInitialReveal(col: number, cols: number) {
   const dist = Math.abs(col - centerCol)
   return 0.8 - 0.6 * (dist / maxDist)
 }
-
-// Row stagger for the video grid, given explicitly (VIDEO_ROWS is fixed at
-// 4, so no need to generalize): top row nearly resolved at entry, each row
-// below it progressively further from its final position.
-const ROW_INITIAL_REVEAL = [0.8, 0.5, 0.2, 0.1]
 
 // Below this width, the desktop 5x4 grid produces awkward cells — swap to
 // a 4x5 layout instead (clean factor pair of 20, taller/narrower cells
@@ -138,17 +136,22 @@ function useVerticalTileReveal(progress: MotionValue<number>, index: number, col
   return { width, height, left: centerX, top, scale, opacity: t }
 }
 
-// Video grid: horizontal slide (left -> right), staggered by ROW.
-function useHorizontalTileReveal(progress: MotionValue<number>, index: number, cols: number, rows: number) {
+// Video grid: vertical descent, staggered by COLUMN — the mirror of the
+// image grid's rise. Same columnInitialReveal baseline per column (center
+// column already 80% resolved at entry, tapering to 20% at the edges), but
+// tiles start ABOVE their slot and settle DOWNWARD into it instead of
+// starting below and rising, so the whole grid reads as an inverted
+// pyramid fitting in from the top down.
+function useInvertedVerticalTileReveal(progress: MotionValue<number>, index: number, cols: number, rows: number) {
   const { width, height, centerX, centerY } = tileGeometry(index, cols, rows)
-  const row = Math.floor(index / cols)
-  const base = ROW_INITIAL_REVEAL[row] ?? 0.5
+  const col = index % cols
+  const base = columnInitialReveal(col, cols)
 
   const t = useTransform(progress, v => base + (1 - base) * easeOutCubic(v))
-  const left = useTransform(t, tv => `${START_X + (centerX - START_X) * tv}%`)
+  const top = useTransform(t, tv => `${START_Y_INVERTED + (centerY - START_Y_INVERTED) * tv}%`)
   const scale = useTransform(t, tv => START_SCALE + (1 - START_SCALE) * tv)
 
-  return { width, height, top: centerY, left, scale, opacity: t }
+  return { width, height, left: centerX, top, scale, opacity: t }
 }
 
 function ImageTile({
@@ -201,7 +204,7 @@ function VideoTile({
   progress: MotionValue<number>
   mounted: boolean
 }) {
-  const { width, height, top, left, scale, opacity } = useHorizontalTileReveal(progress, index, VIDEO_COLS, VIDEO_ROWS)
+  const { width, height, left, top, scale, opacity } = useInvertedVerticalTileReveal(progress, index, VIDEO_COLS, VIDEO_ROWS)
   const videoRef = useRef<HTMLVideoElement>(null)
   const n = index + 1
   const poster = `${VIDEO_DIR}/${n}_poster.jpg`
@@ -251,8 +254,8 @@ function VideoTile({
     <motion.div
       className="absolute overflow-hidden pointer-events-none bg-[#16171C]"
       style={{
-        left,
-        top: `${top}%`,
+        left: `${left}%`,
+        top,
         x: '-50%',
         y: '-50%',
         width: `${width}%`,
@@ -284,34 +287,31 @@ function VideoTile({
 }
 
 // Big centered overlay text sitting IN FRONT of a tile grid, on a fully
-// transparent background — the grid must stay completely visible behind it,
-// no wash/mask of any kind. Bold white for contrast against whatever tile
-// color happens to be behind it at a given moment, with a subtle dark
-// text-shadow as a legibility fallback for the moments a light-colored tile
-// lands directly underneath. Opacity eases only slightly (1 -> 0.85) as the
-// same progress that reveals the tiles advances, tying the text to the
-// reveal without ever meaningfully fading it.
-function GridOverlay({ progress, small, big }: { progress: MotionValue<number>; small: string; big: string }) {
-  const textOpacity = useTransform(progress, v => 1 - easeOutCubic(v) * 0.15)
+// transparent background — no wash/mask of any kind, so the grid stays
+// visible through the letters at all times. Permanently semi-transparent
+// black (not scroll-tied, not white) — the low, fixed alpha IS the effect,
+// not an animation. Sized to dominate the screen (the big word alone runs
+// up to 22rem/22vw).
+function GridOverlay({ small, big }: { small: string; big: string }) {
+  const textColor = 'rgba(0, 0, 0, 0.55)'
   return (
-    <motion.div
+    <div
       className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pointer-events-none"
-      style={{ opacity: textOpacity }}
       aria-hidden="true"
     >
       <span
-        className="font-display font-black uppercase tracking-tight text-white text-[clamp(1.1rem,3.5vw,2rem)] leading-none mb-1 md:mb-2"
-        style={{ textShadow: '0 2px 20px rgba(0,0,0,0.45)' }}
+        className="font-display font-black uppercase tracking-tight text-[clamp(1.5rem,5vw,3rem)] leading-none mb-1 md:mb-2"
+        style={{ color: textColor }}
       >
         {small}
       </span>
       <span
-        className="font-display font-black uppercase tracking-tighter text-white text-[clamp(4rem,16vw,14rem)] leading-[0.85]"
-        style={{ textShadow: '0 4px 32px rgba(0,0,0,0.45)' }}
+        className="font-display font-black uppercase tracking-tighter text-[clamp(6rem,22vw,22rem)] leading-[0.82]"
+        style={{ color: textColor }}
       >
         {big}
       </span>
-    </motion.div>
+    </div>
   )
 }
 
@@ -403,7 +403,7 @@ function PinnedImageGrid() {
     <PinnedReveal
       count={IMAGE_COUNT}
       renderTile={(i, progress) => <ImageTile key={i} index={i} progress={progress} cols={cols} rows={rows} />}
-      overlay={progress => <GridOverlay progress={progress} small="WE CREATE" big="IMAGES" />}
+      overlay={() => <GridOverlay small="WE CREATE" big="IMAGES" />}
     />
   )
 }
@@ -433,7 +433,7 @@ function PinnedVideoGrid() {
       <PinnedReveal
         count={VIDEO_COUNT}
         renderTile={(i, progress) => <VideoTile key={i} index={i} progress={progress} mounted={mounted} />}
-        overlay={progress => <GridOverlay progress={progress} small="AND" big="VIDEOS" />}
+        overlay={() => <GridOverlay small="AND" big="VIDEOS" />}
       />
     </div>
   )

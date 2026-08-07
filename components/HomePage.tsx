@@ -20,6 +20,8 @@ const StatsBold            = dynamic(() => import('@/components/StatsBold'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
 const Showcase             = dynamic(() => import('@/components/Showcase'))
 const WebsiteWordsVideo    = dynamic(() => import('@/components/WebsiteWordsVideo'))
+const TryForFreeSection    = dynamic(() => import('@/components/TryForFreeSection'))
+const FloatingStartFreeCTA = dynamic(() => import('@/components/FloatingStartFreeCTA'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
 const WhySubs              = dynamic(() => import('@/components/WhySubs'))
 const Testimonios          = dynamic(() => import('@/components/Testimonios'))
@@ -55,6 +57,7 @@ export default function HomePage() {
           <DealStatement />
           <StatsBold />
         </DealFadeProvider>
+        <TryForFreeSection />
         <PreciosIndexSection />
         <WebsiteWordsVideo />
         <ContentShowcase />
@@ -71,6 +74,7 @@ export default function HomePage() {
         <VideoSnapController />
       </main>
       <Footer />
+      <FloatingStartFreeCTA />
     </EnLangProvider>
   )
 }
