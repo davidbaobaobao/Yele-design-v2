@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
@@ -12,25 +12,20 @@ const WORDS = ['Professional?', 'Unforgettable?', 'Intuitive?', 'Standout?', 'Cr
 const SRC_A = '/how-yele-animations/subsection1.html' // "Glass Grid Hover"
 const SRC_B = '/how-yele-animations/subsection2.html' // "Glass Grid Eject"
 
-// Both scenes draw their sphere at the cursor and share bg #0D0E12, so a
-// same-origin crossfade between them reads as one continuous sphere while
-// the panels switch from hover-reveal to eject/coin-morph underneath it.
-// Threshold-based (not scroll-scrubbed) — a hard scroll-progress cutoff
-// with a CSS opacity transition either side, matching "over ~500ms".
-const CROSSFADE_AT = 0.5
-// Mount band around the threshold: B mounts a little before the crossfade
-// so it has a frame or two rendered before it needs to be visible; A stays
-// mounted a little after so the fade-out isn't cut short. Outside this
-// band only one of the two ever has a live WebGL context.
-const MOUNT_B_FROM = 0.42
-const MOUNT_A_UNTIL = 0.58
-
-// Same-origin only — reaches into the iframe's own contentWindow to
-// forward wheel events to the parent, so the pinned section scrolls
-// normally instead of trapping the scroll wheel inside the iframe.
-function forwardWheel(iframe: HTMLIFrameElement) {
+// Same-origin only — reaches into the iframe's own contentWindow/
+// contentDocument. Forwards wheel so the page scrolls over the iframe
+// instead of trapping it (each artifact's own body is overflow:hidden),
+// and hides the artifact's built-in "MOVE YOUR CURSOR" hint (#hint),
+// which otherwise overlaps our headline overlay. Polled rather than a
+// single check at load: the bundler wrapper both artifacts use finishes
+// unpacking asynchronously AFTER the iframe's own load event fires (it
+// swaps in the real document from a template on DOMContentLoaded), so
+// #hint doesn't exist in the DOM yet at the instant onLoad runs.
+function tuneSubsection(iframe: HTMLIFrameElement) {
   const w = iframe.contentWindow
-  if (!w) return
+  const d = iframe.contentDocument
+  if (!w || !d) return
+
   w.addEventListener(
     'wheel',
     (e: WheelEvent) => {
@@ -38,6 +33,18 @@ function forwardWheel(iframe: HTMLIFrameElement) {
     },
     { passive: true }
   )
+
+  let tries = 0
+  const iv = setInterval(() => {
+    tries++
+    const hint = d.getElementById('hint')
+    if (hint) {
+      hint.style.setProperty('display', 'none')
+      clearInterval(iv)
+    } else if (tries > 40) {
+      clearInterval(iv) // stop ~10s
+    }
+  }, 250)
 }
 
 const HEADLINE_STYLE: React.CSSProperties = {
@@ -49,7 +56,7 @@ const HEADLINE_LINE1_STYLE: React.CSSProperties = {
 }
 
 // Sub 1 — reuses the exact headline/word-rotation this beat already used
-// as HowYeleMakesSection (now replaced by this pinned section).
+// as HowYeleMakesSection (replaced by this section).
 function HeadlineA({ reduceMotion }: { reduceMotion: boolean }) {
   return (
     <h2 className="font-display leading-tight text-center" style={HEADLINE_STYLE}>
@@ -126,26 +133,31 @@ function PosterB() {
   )
 }
 
-const FADE_TRANSITION = 'opacity 500ms ease'
-
-export default function HowYeleAnimations() {
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const reduceMotion = !!useHydratedReducedMotion()
+// One normal-flow, full-height block: lazy-loads its iframe on approach,
+// unloads it once well out of view (or the tab is hidden), and never runs
+// WebGL on mobile at all (poster instead). No pinning/sticky — this
+// scrolls up like any other section and brings the next one in behind it.
+function AnimationSubsection({
+  src,
+  title,
+  headline,
+  poster,
+  loadMargin = '300px 0px',
+}: {
+  src: string
+  title: string
+  headline: React.ReactNode
+  poster: React.ReactNode
+  loadMargin?: string
+}) {
+  const ref = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
-
-  // Lazy-load gate: don't set either iframe src until the section is
-  // within ~300px of the viewport. Separate, wider-margin gate for
-  // unloading BOTH once the section is genuinely far away (asymmetric
-  // hysteresis, same reasoning as ConveyorCards — mounts early, only
-  // unmounts once well past the edge, so it doesn't thrash on small
-  // scrolls). This is now the 3rd/4th WebGL scene on the page, so both
-  // ends of this are strict.
   const [near, setNear] = useState(false)
   const [farAway, setFarAway] = useState(true)
   const [tabHidden, setTabHidden] = useState(false)
 
   useEffect(() => {
-    const el = wrapperRef.current
+    const el = ref.current
     if (!el || !('IntersectionObserver' in window)) {
       setNear(true)
       setFarAway(false)
@@ -155,8 +167,12 @@ export default function HowYeleAnimations() {
       entries => {
         if (entries[0]?.isIntersecting) setNear(true)
       },
-      { rootMargin: '300px 0px' }
+      { rootMargin: loadMargin }
     )
+    // Wider, fixed margin for unloading regardless of the (possibly
+    // larger) load margin above — asymmetric hysteresis so it doesn't
+    // thrash on small scrolls: mounts early, only unmounts once
+    // genuinely well past the edge.
     const unloadIO = new IntersectionObserver(
       entries => setFarAway(!entries[0]?.isIntersecting),
       { rootMargin: '100% 0px' }
@@ -167,7 +183,7 @@ export default function HowYeleAnimations() {
       loadIO.disconnect()
       unloadIO.disconnect()
     }
-  }, [])
+  }, [loadMargin])
 
   useEffect(() => {
     const onVisibility = () => setTabHidden(document.hidden)
@@ -176,84 +192,54 @@ export default function HowYeleAnimations() {
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [])
 
-  const active = near && !farAway && !tabHidden
-
-  // Scroll progress through the pinned wrapper drives the crossfade. Only
-  // three boolean thresholds actually matter for rendering, so this
-  // re-renders on threshold crossings, not on every scroll pixel — the
-  // whole point of this section is being strict about cost, and a naive
-  // setState-per-tick would fight that.
-  const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ['start start', 'end end'] })
-  const [crossed, setCrossed] = useState(false)
-  const [pastMountA, setPastMountA] = useState(false)
-  const [pastMountB, setPastMountB] = useState(false)
-  useMotionValueEvent(scrollYProgress, 'change', v => {
-    const nowCrossed = v >= CROSSFADE_AT
-    setCrossed(prev => (prev === nowCrossed ? prev : nowCrossed))
-    const nowPastMountA = v >= MOUNT_A_UNTIL
-    setPastMountA(prev => (prev === nowPastMountA ? prev : nowPastMountA))
-    const nowPastMountB = v > MOUNT_B_FROM
-    setPastMountB(prev => (prev === nowPastMountB ? prev : nowPastMountB))
-  })
-
-  const mountA = active && !isMobile && !pastMountA
-  const mountB = active && !isMobile && pastMountB
+  const showScene = !isMobile && near && !farAway && !tabHidden
 
   return (
-    <section ref={wrapperRef} data-nav-dark className="relative" style={{ height: '200vh' }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
-        {isMobile ? (
-          <>
-            <div className="absolute inset-0" style={{ opacity: crossed ? 0 : 1, transition: FADE_TRANSITION }}>
-              <PosterA />
-            </div>
-            <div className="absolute inset-0" style={{ opacity: crossed ? 1 : 0, transition: FADE_TRANSITION }}>
-              <PosterB />
-            </div>
-          </>
-        ) : (
-          <>
-            {mountA && (
-              <iframe
-                src={SRC_A}
-                title="How Yele works — hover reveal"
-                scrolling="no"
-                loading="lazy"
-                onLoad={e => forwardWheel(e.currentTarget)}
-                className="absolute inset-0 h-full w-full"
-                style={{ border: 0, opacity: crossed ? 0 : 1, transition: FADE_TRANSITION }}
-              />
-            )}
-            {mountB && (
-              <iframe
-                src={SRC_B}
-                title="How Yele works — eject and connect"
-                scrolling="no"
-                loading="lazy"
-                onLoad={e => forwardWheel(e.currentTarget)}
-                className="absolute inset-0 h-full w-full"
-                style={{ border: 0, opacity: crossed ? 1 : 0, transition: FADE_TRANSITION }}
-              />
-            )}
-          </>
-        )}
-
-        {/* Headline overlays — not part of either artifact, so they live
-            here, fading on the same threshold. pointer-events-none so
-            they never sit in front of the iframes' own hover/click. */}
-        <div
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6"
-          style={{ opacity: crossed ? 0 : 1, transition: FADE_TRANSITION }}
-        >
-          <HeadlineA reduceMotion={reduceMotion} />
-        </div>
-        <div
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6"
-          style={{ opacity: crossed ? 1 : 0, transition: FADE_TRANSITION }}
-        >
-          <HeadlineB reduceMotion={reduceMotion} />
-        </div>
+    <div ref={ref} className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
+      {isMobile ? (
+        poster
+      ) : (
+        showScene && (
+          <iframe
+            src={src}
+            title={title}
+            scrolling="no"
+            loading="lazy"
+            onLoad={e => tuneSubsection(e.currentTarget)}
+            className="absolute inset-0 h-full w-full"
+            style={{ border: 0 }}
+          />
+        )
+      )}
+      <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6">
+        {headline}
       </div>
+    </div>
+  )
+}
+
+export default function HowYeleAnimations() {
+  const reduceMotion = !!useHydratedReducedMotion()
+
+  return (
+    <section id="how-yele-animations" data-nav-dark>
+      <AnimationSubsection
+        src={SRC_A}
+        title="How Yele works — hover reveal"
+        headline={<HeadlineA reduceMotion={reduceMotion} />}
+        poster={<PosterA />}
+        // Warms up well before it's on screen (vs. the usual 300px) so the
+        // scene has already booted and settled — panels + sphere at rest —
+        // by the time the user actually scrolls in, instead of visibly
+        // activating right as it arrives.
+        loadMargin="800px 0px"
+      />
+      <AnimationSubsection
+        src={SRC_B}
+        title="How Yele works — eject and connect"
+        headline={<HeadlineB reduceMotion={reduceMotion} />}
+        poster={<PosterB />}
+      />
     </section>
   )
 }
