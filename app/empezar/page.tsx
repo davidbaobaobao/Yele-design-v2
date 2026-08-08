@@ -2,7 +2,8 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
@@ -25,6 +26,49 @@ function trackOnboardingFormSubmit(email: string) {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
   window.gtag('set', 'user_data', { email })
   window.gtag('event', 'conversion', { send_to: ONBOARDING_CONVERSION_SEND_TO })
+}
+
+// SECONDARY conversion — a genuinely new account being created (as opposed
+// to onboarding_form_submit above, which tracks the intake form). email is
+// optional here since it's best-effort for Enhanced Conversions matching,
+// not required to fire the conversion itself.
+const SIGNUP_CONVERSION_SEND_TO = 'AW-18281072925/oHpWCKb3od4cEJ2SjI1E'
+
+function trackSignUp(email?: string) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
+  if (email) window.gtag('set', 'user_data', { email })
+  window.gtag('event', 'conversion', { send_to: SIGNUP_CONVERSION_SEND_TO })
+}
+
+// app/auth/callback/route.ts is the one place both the Google OAuth and
+// email-magic-link flows land after a real Supabase account check, and
+// appends ?new_signup=1 only when it just determined the account is
+// genuinely new (never for a returning login) — see that file for why the
+// detection has to happen there rather than in /registro. This component
+// fires the conversion for that signal exactly once, then strips the
+// param via router.replace so a refresh of /empezar can't re-fire it.
+// useSearchParams() requires its own Suspense boundary, same pattern as
+// PlanSaver in app/registro/page.tsx.
+function SignupConversionTracker() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const supabase = createClientComponentClient()
+  const firedRef = useRef(false)
+
+  useEffect(() => {
+    if (firedRef.current) return
+    if (searchParams.get('new_signup') !== '1') return
+    firedRef.current = true
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      trackSignUp(session?.user?.email ?? undefined)
+    })
+
+    router.replace('/empezar')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
+
+  return null
 }
 
 const inputClass = 'w-full bg-white border border-hairline rounded-xl px-4 py-3 font-body text-sm text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors'
@@ -384,6 +428,7 @@ export default function EmpezarPage() {
 
   return (
     <div className="min-h-screen bg-base px-6 py-12">
+      <Suspense fallback={null}><SignupConversionTracker /></Suspense>
       <div className="max-w-md mx-auto">
 
         <h1 className="sr-only">Tell us about your business</h1>

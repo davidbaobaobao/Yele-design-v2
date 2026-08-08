@@ -7,6 +7,7 @@ import type { NextRequest } from 'next/server'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  let newSignup = false
 
   if (code) {
     const cookieStore = cookies()
@@ -40,9 +41,27 @@ export async function GET(request: NextRequest) {
           })
           return redirectResponse
         }
+
+        // Google Ads sign_up conversion (fired client-side on /empezar, see
+        // that page) must count only a genuinely new account, never a
+        // returning login. Both the Google OAuth and email-magic-link
+        // flows land here with a fresh session either way, so this is the
+        // one place that can tell them apart for both — Supabase sets
+        // created_at and last_sign_in_at within the same instant only on
+        // an account's very first sign-in. A signal from /registro alone
+        // can't do this reliably: signInWithOtp() only *sends* the email
+        // link there, the account itself isn't resolved until the user
+        // clicks it and lands here.
+        const createdAt = new Date(session.user.created_at).getTime()
+        const lastSignInAt = session.user.last_sign_in_at
+          ? new Date(session.user.last_sign_in_at).getTime()
+          : createdAt
+        newSignup = Math.abs(lastSignInAt - createdAt) < 10_000
       }
     }
   }
 
-  return NextResponse.redirect(new URL('/empezar', requestUrl.origin))
+  const empezarUrl = new URL('/empezar', requestUrl.origin)
+  if (newSignup) empezarUrl.searchParams.set('new_signup', '1')
+  return NextResponse.redirect(empezarUrl)
 }
