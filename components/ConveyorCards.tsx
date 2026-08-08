@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useIsMobile } from '@/hooks/useIsMobile'
+import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
+import { useWebglSlot } from '@/hooks/useWebglSlot'
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- reaching into the
    iframe's own <three-d-stage> custom element internals (stage._controls
@@ -175,43 +176,8 @@ function ConveyorPoster() {
 // tuning and unloading it happens from here, not by editing that file.
 export default function ConveyorCards() {
   const sectionRef = useRef<HTMLElement>(null)
-  const [inViewport, setInViewport] = useState(false)
   const [tabHidden, setTabHidden] = useState(false)
-  const isMobile = useIsMobile()
-
-  // A running render loop + full WebGL context off-screen is what was
-  // lagging the whole page — not just deferring the FIRST load (previous
-  // behavior), but fully unmounting whenever it's not actually visible,
-  // freeing the GPU context each time. Two observers rather than one give
-  // it asymmetric hysteresis: mounts early (300px approach) but only
-  // unmounts once genuinely far away (a full viewport-height past the
-  // edge) — a single symmetric margin would remount/unmount repeatedly on
-  // small scrolls right at one boundary.
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el || !('IntersectionObserver' in window)) {
-      setInViewport(true)
-      return
-    }
-    const loadIO = new IntersectionObserver(
-      entries => {
-        if (entries[0]?.isIntersecting) setInViewport(true)
-      },
-      { rootMargin: '300px 0px' }
-    )
-    const unloadIO = new IntersectionObserver(
-      entries => {
-        if (!entries[0]?.isIntersecting) setInViewport(false)
-      },
-      { rootMargin: '100% 0px' }
-    )
-    loadIO.observe(el)
-    unloadIO.observe(el)
-    return () => {
-      loadIO.disconnect()
-      unloadIO.disconnect()
-    }
-  }, [])
+  const isLowPower = useIsLowPowerDevice()
 
   // No reason to render a hidden tab either.
   useEffect(() => {
@@ -221,11 +187,20 @@ export default function ConveyorCards() {
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [])
 
-  const showScene = !isMobile && inViewport && !tabHidden
+  // Only mounts while this section is the PRIMARY thing on screen (>=50%
+  // visible) AND nothing else currently holds the shared one-live-scene
+  // slot (lib/webglLock.ts) — this used to run its own independent lazy-
+  // load/unload IntersectionObservers, but with the hero cubes and now
+  // two more WebGL-hosting sections on the page, each with its own
+  // hysteresis margins, those windows could legitimately overlap and put
+  // two heavy contexts (this one has post-processing + transmission-style
+  // materials) live at once, which is what was freezing the tab.
+  const isHolder = useWebglSlot('conveyor', sectionRef, !isLowPower && !tabHidden)
+  const showScene = isHolder && !isLowPower && !tabHidden
 
   return (
     <section ref={sectionRef} className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
-      {isMobile ? (
+      {isLowPower ? (
         <ConveyorPoster />
       ) : (
         showScene && (

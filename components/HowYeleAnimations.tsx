@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
-import { useIsMobile } from '@/hooks/useIsMobile'
+import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
+import { useWebglSlot } from '@/hooks/useWebglSlot'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
 import { TextGradient } from '@/components/ui/text-gradient'
 
@@ -95,10 +96,12 @@ function HeadlineB({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
-// Mobile posters — reuse each artifact's own lightweight loading-thumbnail
-// SVG (from its #__bundler_thumbnail fallback) rather than a live WebGL
-// scene. Two transmission-glass scenes would be too heavy for a phone
-// alongside the hero cubes + conveyor cards.
+// Posters — reuse each artifact's own lightweight loading-thumbnail SVG
+// (from its #__bundler_thumbnail fallback) as a stand-in for a real "at
+// rest" screenshot. Rendered as a permanent backdrop for every viewer
+// (see AnimationSubsection below), not just mobile: it's what makes the
+// section look already-lit the moment it scrolls into view, before the
+// live scene (desktop/fine-pointer only) has booted and crossfaded in.
 function PosterA() {
   return (
     <svg viewBox="0 0 1200 800" className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -133,57 +136,35 @@ function PosterB() {
   )
 }
 
-// One normal-flow, full-height block: lazy-loads its iframe on approach,
-// unloads it once well out of view (or the tab is hidden), and never runs
-// WebGL on mobile at all (poster instead). No pinning/sticky — this
-// scrolls up like any other section and brings the next one in behind it.
+// One normal-flow, full-height block. The poster is a permanent backdrop —
+// always rendered, from the very first paint — so the section already
+// looks "lit" (panels + sphere at rest) before it's ever scrolled to; the
+// live iframe only mounts on top of it once this section is the PRIMARY
+// thing on screen AND holds the shared one-live-scene slot (lib/
+// webglLock.ts, via useWebglSlot). It boots hidden (opacity 0) and
+// crossfades in ~500ms after load — neither artifact exposes a real
+// "first frame rendered" signal reachable from the parent (unlike
+// conveyor's <three-d-stage>), so this is an approximated settle delay,
+// not a true readiness poll. Because the poster matches the resting
+// frame, the swap reads as invisible. Never boots the live scene at all
+// on mobile/coarse-pointer — poster only there.
 function AnimationSubsection({
+  id,
   src,
   title,
   headline,
   poster,
-  loadMargin = '300px 0px',
 }: {
+  id: string
   src: string
   title: string
   headline: React.ReactNode
   poster: React.ReactNode
-  loadMargin?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const isMobile = useIsMobile()
-  const [near, setNear] = useState(false)
-  const [farAway, setFarAway] = useState(true)
+  const isLowPower = useIsLowPowerDevice()
   const [tabHidden, setTabHidden] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el || !('IntersectionObserver' in window)) {
-      setNear(true)
-      setFarAway(false)
-      return
-    }
-    const loadIO = new IntersectionObserver(
-      entries => {
-        if (entries[0]?.isIntersecting) setNear(true)
-      },
-      { rootMargin: loadMargin }
-    )
-    // Wider, fixed margin for unloading regardless of the (possibly
-    // larger) load margin above — asymmetric hysteresis so it doesn't
-    // thrash on small scrolls: mounts early, only unmounts once
-    // genuinely well past the edge.
-    const unloadIO = new IntersectionObserver(
-      entries => setFarAway(!entries[0]?.isIntersecting),
-      { rootMargin: '100% 0px' }
-    )
-    loadIO.observe(el)
-    unloadIO.observe(el)
-    return () => {
-      loadIO.disconnect()
-      unloadIO.disconnect()
-    }
-  }, [loadMargin])
+  const [live, setLive] = useState(false)
 
   useEffect(() => {
     const onVisibility = () => setTabHidden(document.hidden)
@@ -192,25 +173,35 @@ function AnimationSubsection({
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [])
 
-  const showScene = !isMobile && near && !farAway && !tabHidden
+  const isHolder = useWebglSlot(id, ref, !isLowPower && !tabHidden)
+  const showScene = isHolder && !isLowPower && !tabHidden
+
+  // Resets the crossfade-in whenever the scene is torn down, so re-
+  // entering later starts hidden again rather than flashing the previous
+  // frame at full opacity before the new load finishes.
+  useEffect(() => {
+    if (!showScene) setLive(false)
+  }, [showScene])
 
   return (
     <div ref={ref} className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
-      {isMobile ? (
-        poster
-      ) : (
-        showScene && (
-          <iframe
-            src={src}
-            title={title}
-            scrolling="no"
-            loading="lazy"
-            onLoad={e => tuneSubsection(e.currentTarget)}
-            className="absolute inset-0 h-full w-full"
-            style={{ border: 0 }}
-          />
-        )
+      <div className="absolute inset-0">{poster}</div>
+
+      {showScene && (
+        <iframe
+          src={src}
+          title={title}
+          scrolling="no"
+          loading="lazy"
+          onLoad={e => {
+            tuneSubsection(e.currentTarget)
+            window.setTimeout(() => setLive(true), 500)
+          }}
+          className="absolute inset-0 h-full w-full transition-opacity duration-300"
+          style={{ border: 0, opacity: live ? 1 : 0 }}
+        />
       )}
+
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6">
         {headline}
       </div>
@@ -224,17 +215,14 @@ export default function HowYeleAnimations() {
   return (
     <section id="how-yele-animations" data-nav-dark>
       <AnimationSubsection
+        id="how-yele-sub1"
         src={SRC_A}
         title="How Yele works — hover reveal"
         headline={<HeadlineA reduceMotion={reduceMotion} />}
         poster={<PosterA />}
-        // Warms up well before it's on screen (vs. the usual 300px) so the
-        // scene has already booted and settled — panels + sphere at rest —
-        // by the time the user actually scrolls in, instead of visibly
-        // activating right as it arrives.
-        loadMargin="800px 0px"
       />
       <AnimationSubsection
+        id="how-yele-sub2"
         src={SRC_B}
         title="How Yele works — eject and connect"
         headline={<HeadlineB reduceMotion={reduceMotion} />}

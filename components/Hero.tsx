@@ -5,6 +5,8 @@ import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { Check, ChevronDown } from 'lucide-react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
+import { useWebglSlot } from '@/hooks/useWebglSlot'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
 import { CTAButton } from '@/components/ui/cta-button'
 
@@ -12,14 +14,27 @@ import { CTAButton } from '@/components/ui/cta-button'
 const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false })
 
 // Cubes are the single biggest contributor to TBT (a WebGL init + a
-// constant rAF loop on every page load). Deferring the mount until the
-// browser is idle AND the hero is actually on screen keeps that cost off
-// the critical path entirely — the poster/gradient/text paint immediately,
-// the cubes fill in a moment later once there's idle time to spend on
-// them. Its own canvas fades in on top of that (see CubesScene.tsx) so the
-// delayed mount doesn't read as a pop-in.
+// constant rAF loop on every page load). Deferring the FIRST mount until
+// the browser is idle AND the hero is actually on screen keeps that cost
+// off the critical path entirely — the poster/gradient/text paint
+// immediately, the cubes fill in a moment later once there's idle time to
+// spend on them. Its own canvas fades in on top of that (see
+// CubesScene.tsx) so the delayed mount doesn't read as a pop-in.
+//
+// This used to be "mount once, never unmount" — CubesScene's own internal
+// IntersectionObserver paused its render LOOP off-screen, but the WebGL
+// CONTEXT itself (GPU memory/resources) stayed allocated for the rest of
+// the page's life once mounted. With three more WebGL-hosting sections
+// added since (conveyor, two how-yele-animations subsections), that's a
+// real contributor to running out of GPU resources and freezing the tab —
+// so past the initial bootstrap gate, ongoing mount/unmount is handed to
+// the shared one-live-scene-at-a-time lock (lib/webglLock.ts): the cubes
+// only actually render while the hero is the PRIMARY thing on screen
+// (>=50% visible) AND nothing else currently holds the slot, and they
+// fully unmount (freeing the context) the moment either stops being true.
 function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
-  const [shouldMount, setShouldMount] = useState(false)
+  const [bootstrapped, setBootstrapped] = useState(false)
+  const isLowPower = useIsLowPowerDevice()
 
   useEffect(() => {
     let idleFired = false
@@ -27,7 +42,7 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
     let cancelled = false
 
     const tryMount = () => {
-      if (!cancelled && idleFired && inView) setShouldMount(true)
+      if (!cancelled && idleFired && inView) setBootstrapped(true)
     }
 
     const io =
@@ -71,7 +86,9 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
     }
   }, [sectionRef])
 
-  return shouldMount
+  const isHolder = useWebglSlot('hero-cubes', sectionRef, bootstrapped && !isLowPower)
+
+  return bootstrapped && !isLowPower && isHolder
 }
 
 const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
@@ -106,12 +123,17 @@ export default function Hero() {
           hero, so there's no seam between a "text half" and a "cubes
           half". The cluster stays visually right-of-center via its own
           aspect-aware offset (CubesScene.tsx) — the same on-screen
-          position it held back when it lived in a right-half box. Hidden
-          on mobile: WebGL cost isn't worth it at that size, and the text
-          needs the full width there anyway. Mounted lazily (useDeferredCubes
-          above) — the poster/gradient/text behind it is a perfectly fine
-          placeholder in the meantime, and the canvas fades itself in once
-          ready (CubesScene.tsx) so there's no pop when it finally mounts. */}
+          position it held back when it lived in a right-half box. Never
+          mounted at all on mobile/coarse-pointer (useDeferredCubes) —
+          WebGL cost isn't worth it there, and the text needs the full
+          width anyway; the `hidden md:block` below is just a belt-and-
+          suspenders CSS backstop, not the actual gate. Mounted lazily and
+          fully unmounted again once the hero isn't the primary thing on
+          screen or another section claims the shared one-scene-at-a-time
+          slot (see useDeferredCubes above) — the poster/gradient/text
+          behind it is a perfectly fine placeholder either way, and the
+          canvas fades itself in once ready (CubesScene.tsx) so mounting
+          never reads as a pop. */}
       {showCubes && (
         <div className="hidden md:block absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
           <CubesScene />
