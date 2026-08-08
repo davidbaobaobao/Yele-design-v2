@@ -15,6 +15,7 @@ const AgencyIntro          = dynamic(() => import('@/components/AgencyIntro'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
 const ContentShowcase      = dynamic(() => import('@/components/ContentShowcase'))
+const ConveyorCards        = dynamic(() => import('@/components/ConveyorCards'))
 const DealStatement        = dynamic(() => import('@/components/DealStatement'))
 const StatsBold            = dynamic(() => import('@/components/StatsBold'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
@@ -62,6 +63,7 @@ export default function HomePage() {
         <TryForFreeSection />
         <HowYeleMakesSection />
         <ContentShowcase />
+        <ConveyorCards />
         <WebsiteWordsVideo />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
             room between the animation section's video grid and the We-
