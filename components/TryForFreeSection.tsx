@@ -14,6 +14,13 @@ const POSTER = `${VIDEO_DIR}/tryforfree2_poster.jpg`
 //   one the browser didn't need on top of deferring the load in the first
 //   place.
 const SRC = `${VIDEO_DIR}/tryforfree2_hq.mp4`
+// ffmpeg -i tryforfree2_hq.mp4 -vf "scale=640:-2" -c:v libx264 -profile:v
+//   main -crf 30 -preset slow -pix_fmt yuv420p -movflags +faststart -an
+//   tryforfree2_mobile.mp4 — 2.6MB -> 192KB. Picked via a media-query
+//   <source> (native, correct from first paint) rather than a JS-computed
+//   `src` — same reasoning as the nearView gating below: mobile shouldn't
+//   pay for the desktop file even once it does start loading.
+const MOBILE_SRC = `${VIDEO_DIR}/tryforfree2_mobile.mp4`
 
 // Full-screen, video-only — no text/CTA of its own. id="tryforfree" is the
 // top anchor FloatingStartFreeCTA measures to decide when to show the fixed
@@ -55,7 +62,6 @@ export default function TryForFreeSection() {
     <section id="tryforfree" ref={sectionRef} data-nav-dark className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
       <video
         ref={videoRef}
-        src={nearView ? SRC : undefined}
         autoPlay
         muted
         loop
@@ -65,7 +71,14 @@ export default function TryForFreeSection() {
         poster={POSTER}
         className="absolute inset-0 w-full h-full object-cover"
         aria-hidden="true"
-      />
+      >
+        {nearView && (
+          <>
+            <source media="(max-width: 767px)" src={MOBILE_SRC} type="video/mp4" />
+            <source src={SRC} type="video/mp4" />
+          </>
+        )}
+      </video>
     </section>
   )
 }

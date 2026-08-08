@@ -11,6 +11,7 @@ import {
   type Transition,
 } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useDealFade } from '@/components/DealFadeContext'
@@ -158,6 +159,7 @@ function usePanelTilt(disabled: boolean) {
 function GradientPanel({ disabled }: { disabled: boolean }) {
   const { rx, ry, onMouseMove, onMouseLeave } = usePanelTilt(disabled)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const isMobile = useIsMobile()
   useVideoAutoplay(videoRef)
 
   const transform = useMotionTemplate`perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`
@@ -174,11 +176,19 @@ function GradientPanel({ disabled }: { disabled: boolean }) {
         muted
         loop
         playsInline
-        preload="auto"
+        preload={isMobile ? 'none' : 'auto'}
         poster={`${BOLDSTATS_DIR}/boldstats_poster.jpg`}
         className="absolute inset-0 w-full h-full object-cover"
         aria-hidden="true"
       >
+        {/* ffmpeg -i boldstats_hq.mp4 -vf "scale=640:-2" -c:v libx264
+            -profile:v main -crf 30 -preset slow -pix_fmt yuv420p
+            -movflags +faststart -an boldstats_mobile.mp4 — 400KB -> 92KB.
+            media-query <source>: mobile (iOS included — no webm support
+            there) never considers the webm/desktop-mp4 pair below;
+            desktop's own files/order are untouched since the query never
+            matches there. */}
+        <source media="(max-width: 767px)" src={`${BOLDSTATS_DIR}/boldstats_mobile.mp4`} type="video/mp4" />
         <source src={`${BOLDSTATS_DIR}/boldstats_hq.webm`} type="video/webm" />
         <source src={`${BOLDSTATS_DIR}/boldstats_hq.mp4`} type="video/mp4" />
       </video>

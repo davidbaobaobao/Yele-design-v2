@@ -8,6 +8,7 @@ export type FeatureCardMedia = {
   poster: string
   webmSrc: string
   mp4Src: string
+  mobileSrc: string
 }
 
 // Shared by BeyondWebsite and WhyYele — same panel aspect ratio, rounded
@@ -47,6 +48,11 @@ export default function FeatureCard({
             className="absolute inset-0 w-full h-full object-cover"
             aria-hidden="true"
           >
+            {/* media-query <source>: mobile (iOS included — no webm
+                support there) never considers the webm/desktop-mp4 pair
+                below; desktop is untouched since the query never matches
+                there. */}
+            <source media="(max-width: 767px)" src={card.mobileSrc} type="video/mp4" />
             <source src={card.webmSrc} type="video/webm" />
             <source src={card.mp4Src} type="video/mp4" />
           </video>

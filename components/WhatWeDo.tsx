@@ -183,6 +183,13 @@ function VideoPanel({
           className="absolute inset-0 w-full h-full object-cover"
           aria-hidden="true"
         >
+          {/* ffmpeg -i {videoBase}_hq.mp4 -vf "scale=480:-2" -c:v libx264
+              -profile:v main -crf 30 -preset slow -pix_fmt yuv420p
+              -movflags +faststart -an {videoBase}_mobile.mp4 — media-query
+              <source>, so mobile (iOS included — no webm support there)
+              never considers the webm/desktop-mp4 pair below; desktop is
+              untouched since the query never matches there. */}
+          <source media="(max-width: 767px)" src={`${VIDEO_DIR}/${videoBase}_mobile.mp4`} type="video/mp4" />
           <source src={`${VIDEO_DIR}/${videoBase}_hq.webm`} type="video/webm" />
           <source src={`${VIDEO_DIR}/${videoBase}_hq.mp4`} type="video/mp4" />
         </video>

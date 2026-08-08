@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { TextGradient } from '@/components/ui/text-gradient'
 
 const VIDEO_DIR = '/media/whysubs'
@@ -25,9 +26,18 @@ const REASONS = [
 // ffmpeg -i in.mp4 -vf "scale=1920:-2" -c:v libx264 -profile:v high -crf 24
 //   -preset slow -pix_fmt yuv420p -movflags +faststart -an whysubs.mp4
 // (+ webm sibling — came out smaller here, 252KB vs 868KB, so webm-first)
+//
+// ffmpeg -i whysubs.mp4 -vf "scale=640:-2" -c:v libx264 -profile:v main
+//   -crf 30 -preset slow -pix_fmt yuv420p -movflags +faststart -an
+//   whysubs_mobile.mp4 — 848KB desktop mp4 -> 60KB. iOS (Safari AND
+//   Chrome-iOS, both WebKit) doesn't support webm at all; a media-query
+//   <source> means mobile never even considers the webm/desktop-mp4
+//   pair below — desktop's own source order/files are untouched since
+//   the query never matches there.
 function BgSources() {
   return (
     <>
+      <source media="(max-width: 767px)" src={`${VIDEO_DIR}/whysubs_mobile.mp4`} type="video/mp4" />
       <source src={`${VIDEO_DIR}/whysubs.webm`} type="video/webm" />
       <source src={`${VIDEO_DIR}/whysubs.mp4`} type="video/mp4" />
     </>
@@ -62,6 +72,7 @@ function ReasonItem({ index, title, continuousIndex }: { index: number; title: s
 
 export default function WhySubs() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const isMobile = useIsMobile()
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -191,7 +202,7 @@ export default function WhySubs() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload={isMobile ? 'none' : 'auto'}
           poster={POSTER}
           className="absolute inset-0 w-full h-full object-cover"
           aria-hidden="true"

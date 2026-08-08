@@ -149,6 +149,7 @@ export default function BeyondWebsite() {
                   poster: `${MEDIA_DIR}/${card.videoBase}_poster.jpg`,
                   webmSrc: `${MEDIA_DIR}/${card.videoBase}_hq.webm`,
                   mp4Src: `${MEDIA_DIR}/${card.videoBase}_hq.mp4`,
+                  mobileSrc: `${MEDIA_DIR}/${card.videoBase}_mobile.mp4`,
                 }}
                 index={i}
                 videoRef={videoRefs[i]}
@@ -202,6 +203,7 @@ export default function BeyondWebsite() {
                 poster: `${MEDIA_DIR}/${card.videoBase}_poster.jpg`,
                 webmSrc: `${MEDIA_DIR}/${card.videoBase}_hq.webm`,
                 mp4Src: `${MEDIA_DIR}/${card.videoBase}_hq.mp4`,
+                mobileSrc: `${MEDIA_DIR}/${card.videoBase}_mobile.mp4`,
               }}
               index={i}
               videoRef={videoRefs[i]}

@@ -151,6 +151,10 @@ function Media({
       style={scaleStyle}
       aria-hidden="true"
     >
+      {/* media-query <source>: mobile (iOS included — no webm support
+          there) never considers the webm/desktop-mp4 pair below; desktop
+          is untouched since the query never matches there. */}
+      <source media="(max-width: 767px)" src={`${MEDIA_DIR}/${videoBase}_mobile.mp4`} type="video/mp4" />
       <source src={`${MEDIA_DIR}/${videoBase}_hq.webm`} type="video/webm" />
       <source src={`${MEDIA_DIR}/${videoBase}_hq.mp4`} type="video/mp4" />
     </video>

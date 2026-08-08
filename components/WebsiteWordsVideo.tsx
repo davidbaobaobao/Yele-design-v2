@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
 
 const VIDEO_DIR = '/media/hero6'
@@ -27,6 +28,12 @@ const WORDS = [
 //   browser doesn't need too, for no benefit on modern browsers that all
 //   support H.264.
 const SRC = `${VIDEO_DIR}/hero6_lite.mp4`
+// ffmpeg -i hero6_lite.mp4 -vf "scale=640:-2" -c:v libx264 -profile:v main
+//   -crf 30 -preset slow -pix_fmt yuv420p -movflags +faststart -an
+//   hero6_mobile.mp4 — 1.1MB -> 328KB, picked via a media-query <source>
+//   (evaluated natively by the browser, not JS, so it's correct from first
+//   paint) rather than swapping the flat `src` above.
+const MOBILE_SRC = `${VIDEO_DIR}/hero6_mobile.mp4`
 
 // Short video-background beat right before Pricing — same hero6 footage as
 // the (since-reverted) hero redesign, same TypewriterWord component the
@@ -38,6 +45,7 @@ const SRC = `${VIDEO_DIR}/hero6_lite.mp4`
 export default function WebsiteWordsVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const reduceMotion = !!useHydratedReducedMotion()
+  const isMobile = useIsMobile()
 
   useVideoAutoplay(videoRef)
 
@@ -45,17 +53,19 @@ export default function WebsiteWordsVideo() {
     <section data-nav-dark className="relative h-[80vh] w-full overflow-hidden">
       <video
         ref={videoRef}
-        src={SRC}
         autoPlay
         muted
         loop
         playsInline
         disablePictureInPicture
-        preload="metadata"
+        preload={isMobile ? 'none' : 'metadata'}
         poster={POSTER}
         className="absolute inset-0 w-full h-full object-cover"
         aria-hidden="true"
-      />
+      >
+        <source media="(max-width: 767px)" src={MOBILE_SRC} type="video/mp4" />
+        <source src={SRC} type="video/mp4" />
+      </video>
 
       {/* Dark scrim over the whole frame so centered white/pink text stays
           readable regardless of what's playing behind it at any given

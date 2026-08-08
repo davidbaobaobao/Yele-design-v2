@@ -135,6 +135,7 @@ export default function WhyYele() {
                 poster: `${VIDEO_DIR}/${card.videoBase}_poster.jpg`,
                 webmSrc: `${VIDEO_DIR}/${card.videoBase}.webm`,
                 mp4Src: `${VIDEO_DIR}/${card.videoBase}.mp4`,
+                mobileSrc: `${VIDEO_DIR}/${card.videoBase}_mobile.mp4`,
               }}
               index={i}
               videoRef={videoRefs[i]}
