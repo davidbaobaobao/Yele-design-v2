@@ -20,9 +20,8 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 //       poll window closes).
 //   (c) forwards wheel events to the parent so the section scrolls like
 //       any other rather than trapping the scroll wheel.
-//   (d) best-effort pixelRatio cap — see the comment at that line for why
-//       this alone isn't the real fill-rate win (the CSS downscale on the
-//       iframe itself, below, is).
+//   (d) raises pixelRatio + maxes texture anisotropy once visible — see
+//       the comments at those lines for what this can and can't reach.
 //   (e) brightens the "We make your website / Fast. / Secure." headline —
 //       the dark vignette sits right over its corner, so it needs a
 //       slightly stronger glow to still read clearly.
@@ -52,6 +51,11 @@ function tuneConveyor(iframe: HTMLIFrameElement) {
     }
   }
 
+  // Desktop cap — mobile never reaches this at all (poster only, see
+  // ConveyorCards below), so there's no separate mobile branch to handle
+  // here.
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.75)
+  let anisotropyApplied = false
   let tries = 0
   const iv = setInterval(() => {
     tries++
@@ -63,18 +67,52 @@ function tuneConveyor(iframe: HTMLIFrameElement) {
       stage._controls.enableRotate = false
       // enabled stays true — its own fixed-target update loop still runs
     }
-    // Cheap best-effort: this composer's post-processing passes (bokeh,
-    // film-look shader, output) are fixed-resolution render targets sized
-    // by the artifact's own closure-scoped composer.setSize() call, which
-    // isn't reachable from outside its module scope — a bare
-    // setPixelRatio() can't force them to reallocate. The real fill-rate
-    // win is the iframe's own CSS size below, which the artifact's
-    // existing ResizeObserver->sizeComposer() chain already picks up
-    // correctly on its own, no extra triggering needed.
-    if (stage && stage._renderer && stage._renderer.getPixelRatio() !== 1) {
-      stage._renderer.setPixelRatio(1)
+    if (stage && stage._renderer) {
+      if (stage._renderer.getPixelRatio() !== dpr) {
+        stage._renderer.setPixelRatio(dpr)
+        // Real effect here is genuinely uncertain: this composer's
+        // post-processing passes (bokeh, film-look shader, output) are
+        // fixed-resolution render targets whose OWN pixelRatio is cached
+        // once at construction by EffectComposer itself and only
+        // re-read via composer.setPixelRatio() — a method on the
+        // closure-scoped `composer` instance, not reachable from outside
+        // the artifact's module scope. Dispatching resize is cheap and
+        // harmless (in case the stage runtime's own internal resize
+        // handling re-reads pixelRatio on a real resize), so it's kept
+        // as a best-effort nudge — but the change verified to actually
+        // raise visible resolution is the iframe's own CSS size below,
+        // since the artifact's ResizeObserver->sizeComposer()->
+        // composer.setSize() chain runs on THAT unconditionally.
+        d.defaultView?.dispatchEvent(new Event('resize'))
+      }
+      // Texture anisotropy is a live GPU sampler setting, independent of
+      // the composer's cached pixelRatio above — this reliably sharpens
+      // grazing-angle sampling (the belt tiles, mainly) regardless of
+      // that uncertainty. Runs once — the scene's textures are all
+      // created during initial boot, never replaced afterward.
+      if (!anisotropyApplied && stage._scene && stage._renderer.capabilities) {
+        const maxAniso = stage._renderer.capabilities.getMaxAnisotropy()
+        const mapKeys = [
+          'map', 'roughnessMap', 'normalMap', 'bumpMap', 'emissiveMap',
+          'metalnessMap', 'aoMap', 'alphaMap', 'clearcoatMap', 'clearcoatRoughnessMap',
+        ]
+        stage._scene.traverse((obj: any) => {
+          if (!obj.isMesh || !obj.material) return
+          const mats = Array.isArray(obj.material) ? obj.material : [obj.material]
+          mats.forEach((mat: any) => {
+            mapKeys.forEach(key => {
+              const tex = mat[key]
+              if (tex && tex.isTexture) {
+                tex.anisotropy = maxAniso
+                tex.needsUpdate = true
+              }
+            })
+          })
+        })
+        anisotropyApplied = true
+      }
     }
-    if ((stage && stage._controls) || tries > 40) clearInterval(iv) // stop ~10s
+    if ((stage && stage._controls && anisotropyApplied) || tries > 40) clearInterval(iv) // stop ~10s
   }, 250)
 
   w.addEventListener(
@@ -202,16 +240,21 @@ export default function ConveyorCards() {
               position: 'absolute',
               top: 0,
               left: 0,
-              // Rendered at 70% of its real box, then scaled back up to
+              // Rendered at 85% of its real box, then scaled back up to
               // fill it — the artifact's own ResizeObserver->composer
               // chain picks up the smaller CSS size on its own (this is
               // an actual smaller viewport, not a paint-time transform),
               // so every pass genuinely does less work, not just the
-              // final blit. The heavy DoF blur + our vignette mask the
-              // softness from the compensating upscale.
-              width: '70%',
-              height: '70%',
-              transform: 'scale(1.42857)',
+              // final blit. This is also the one lever verified to
+              // actually reach the composer's render targets (unlike the
+              // pixelRatio call above), so it's the real "sharpen" knob —
+              // eased up from 70% now that off-screen unloading covers
+              // most of the perf win, per the same tradeoff this task's
+              // own pixelRatio increase makes. The heavy DoF blur + our
+              // vignette mask the softness from the compensating upscale.
+              width: '85%',
+              height: '85%',
+              transform: 'scale(1.17647)',
               transformOrigin: 'top left',
             }}
           />
