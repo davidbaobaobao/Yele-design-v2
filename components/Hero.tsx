@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { Check, ChevronDown } from 'lucide-react'
@@ -9,6 +10,69 @@ import { CTAButton } from '@/components/ui/cta-button'
 
 // WebGL, canvas-drawn textures — client/browser only, no useful SSR output.
 const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false })
+
+// Cubes are the single biggest contributor to TBT (a WebGL init + a
+// constant rAF loop on every page load). Deferring the mount until the
+// browser is idle AND the hero is actually on screen keeps that cost off
+// the critical path entirely — the poster/gradient/text paint immediately,
+// the cubes fill in a moment later once there's idle time to spend on
+// them. Its own canvas fades in on top of that (see CubesScene.tsx) so the
+// delayed mount doesn't read as a pop-in.
+function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
+  const [shouldMount, setShouldMount] = useState(false)
+
+  useEffect(() => {
+    let idleFired = false
+    let inView = true
+    let cancelled = false
+
+    const tryMount = () => {
+      if (!cancelled && idleFired && inView) setShouldMount(true)
+    }
+
+    const io =
+      'IntersectionObserver' in window && sectionRef.current
+        ? new IntersectionObserver(
+            entries => {
+              inView = entries[0]?.isIntersecting ?? true
+              tryMount()
+            },
+            { threshold: 0 }
+          )
+        : null
+    if (io && sectionRef.current) io.observe(sectionRef.current)
+
+    // Safari has no requestIdleCallback — the `in` check above (on `window`
+    // itself) confused TS's narrowing into typing the else branch's
+    // `window` as `never`, so it's feature-detected on a locally-typed
+    // handle instead.
+    const w = window as Window & {
+      requestIdleCallback?: typeof requestIdleCallback
+      cancelIdleCallback?: typeof cancelIdleCallback
+    }
+    let idleId: number
+    if (w.requestIdleCallback) {
+      idleId = w.requestIdleCallback(() => {
+        idleFired = true
+        tryMount()
+      }, { timeout: 1500 })
+    } else {
+      idleId = window.setTimeout(() => {
+        idleFired = true
+        tryMount()
+      }, 1000)
+    }
+
+    return () => {
+      cancelled = true
+      io?.disconnect()
+      if (w.cancelIdleCallback) w.cancelIdleCallback(idleId)
+      else window.clearTimeout(idleId)
+    }
+  }, [sectionRef])
+
+  return shouldMount
+}
 
 const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
 
@@ -22,9 +86,11 @@ const WORDS = ['Last', 'Stand out', 'Perform', 'Convert', 'Endure', 'Grow']
 
 export default function Hero() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const sectionRef = useRef<HTMLElement>(null)
+  const showCubes = useDeferredCubes(sectionRef)
 
   return (
-    <section id="hero" className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
+    <section ref={sectionRef} id="hero" className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
       <Image
         src={POSTER}
         alt=""
@@ -42,10 +108,15 @@ export default function Hero() {
           aspect-aware offset (CubesScene.tsx) — the same on-screen
           position it held back when it lived in a right-half box. Hidden
           on mobile: WebGL cost isn't worth it at that size, and the text
-          needs the full width there anyway. */}
-      <div className="hidden md:block absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
-        <CubesScene />
-      </div>
+          needs the full width there anyway. Mounted lazily (useDeferredCubes
+          above) — the poster/gradient/text behind it is a perfectly fine
+          placeholder in the meantime, and the canvas fades itself in once
+          ready (CubesScene.tsx) so there's no pop when it finally mounts. */}
+      {showCubes && (
+        <div className="hidden md:block absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+          <CubesScene />
+        </div>
+      )}
 
       {/* Single feathered left→right gradient behind the text only, full
           width so there's no hard edge/seam — replaces the old boxed

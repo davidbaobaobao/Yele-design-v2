@@ -102,23 +102,6 @@ html.sand-helix-page body {
   50%      { transform: translateY(6px); }
 }
 
-/* Hero cubes — cinematic film-grain overlay. Jittery, stepped (not eased)
-   translate so it reads as grain flicker rather than a smooth drift.
-   Referenced via Tailwind's arbitrary animate-[grain_0.6s_steps(3)_infinite]
-   in CubesScene.tsx. */
-@keyframes grain {
-  0%, 100% { transform: translate(0, 0); }
-  10%      { transform: translate(-5%, -10%); }
-  20%      { transform: translate(-15%, 5%); }
-  30%      { transform: translate(7%, -25%); }
-  40%      { transform: translate(-5%, 25%); }
-  50%      { transform: translate(-15%, 10%); }
-  60%      { transform: translate(15%, 0%); }
-  70%      { transform: translate(0%, 15%); }
-  80%      { transform: translate(3%, 35%); }
-  90%      { transform: translate(-10%, 10%); }
-}
-
 /* ── Hero Bento keyframes (moved from inline <style> for static CSS delivery) ── */
 @keyframes marqueeLeft {
   0%   { transform: translateX(0); }

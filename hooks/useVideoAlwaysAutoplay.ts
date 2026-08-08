@@ -6,8 +6,15 @@ import { useEffect, type RefObject } from 'react'
 // IntersectionObserver-driven pause-when-offscreen behavior — for hero
 // video that must keep looping regardless of scroll position rather than
 // pausing itself the moment its own visible area drops below 50%.
-export function useVideoAlwaysAutoplay(ref: RefObject<HTMLVideoElement | null>) {
+//
+// `enabled` (default true): for a video that shouldn't even start loading
+// until its caller says so (e.g. TryForFreeSection deferring its own
+// below-the-fold video until scrolled near) — pass false and this is a
+// no-op until it flips true, at which point the effect re-runs and does
+// its normal setup.
+export function useVideoAlwaysAutoplay(ref: RefObject<HTMLVideoElement | null>, enabled = true) {
   useEffect(() => {
+    if (!enabled) return
     const v = ref.current
     if (!v) return
 
@@ -60,5 +67,5 @@ export function useVideoAlwaysAutoplay(ref: RefObject<HTMLVideoElement | null>) 
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pageshow', onPageShow as EventListener)
     }
-  }, [ref])
+  }, [ref, enabled])
 }

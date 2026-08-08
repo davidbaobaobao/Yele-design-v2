@@ -4,18 +4,17 @@
    typed loosely on purpose so this stays a 1:1 port, not a rewrite. */
 import { useEffect, useRef } from "react";
 
-// Cinematic film-grain texture — fractalNoise SVG filter, data-URI'd so it
-// needs no separate asset request. Painted via the grain overlay below,
-// jittered by the `grain` steps() keyframe (app/globals.css).
-const GRAIN_BG = `url("data:image/svg+xml,${encodeURIComponent(
-  "<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>"
-)}")`;
-
-export default function CubesScene() {
+export default function CubesScene({ onReady }: { onReady?: () => void }) {
   const mountRef = useRef<HTMLDivElement>(null);
+  // Ref, not a dependency — Hero passes an inline callback, and this whole
+  // effect (WebGL init, listeners) must only ever run once per mount, not
+  // re-run every time that callback's identity changes.
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
   useEffect(() => {
     let raf = 0, renderer: any, onResize: any, onPointer: any;
     let disposed = false;
+    let paused = false; // tab hidden or scrolled out of view — rAF is cancelled either way
     (async () => {
       const THREE = await import("three");
       const { RoundedBoxGeometry } = await import(
@@ -25,9 +24,13 @@ export default function CubesScene() {
       if (!app || disposed) return;
       const getW = () => app.clientWidth || 1;
       const getH = () => app.clientHeight || 1;
+      const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      // 1.5 rather than the usual 2 — this canvas now covers the full hero
+      // (not a half-width box), so full DPR at that size is a meaningfully
+      // heavier per-frame cost for a visually marginal sharpness gain.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setSize(getW(), getH());
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.28;
@@ -36,6 +39,8 @@ export default function CubesScene() {
       // container's edge that isn't part of the rendered scene. block
       // removes that reserved space entirely.
       renderer.domElement.style.display = "block";
+      renderer.domElement.style.opacity = "0";
+      renderer.domElement.style.transition = "opacity 400ms ease";
       app.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
@@ -142,14 +147,16 @@ export default function CubesScene() {
       keepClusterRight();
 
       const pointer={x:0,y:0,tx:0,ty:0};
-      onPointer=(e:PointerEvent)=>{
-        pointer.tx=(e.clientX/window.innerWidth)*2-1;
-        pointer.ty=(e.clientY/window.innerHeight)*2-1;
-      };
-      window.addEventListener("pointermove",onPointer);
+      if (!reduceMotion) {
+        onPointer=(e:PointerEvent)=>{
+          pointer.tx=(e.clientX/window.innerWidth)*2-1;
+          pointer.ty=(e.clientY/window.innerHeight)*2-1;
+        };
+        window.addEventListener("pointermove",onPointer);
+      }
 
       const clock=new THREE.Clock();
-      function animate(){
+      function frame(){
         const t=clock.getElapsedTime();
         pointer.x+=(pointer.tx-pointer.x)*0.06;
         pointer.y+=(pointer.ty-pointer.y)*0.06;
@@ -164,15 +171,51 @@ export default function CubesScene() {
           c.quaternion.setFromAxisAngle((c.userData as any).axis,pp*(Math.PI/2));
         }
         renderer.render(scene,camera);
+      }
+      function animate(){
+        frame();
         raf=requestAnimationFrame(animate);
       }
-      animate();
+
+      // First frame — reveal the canvas and tell the caller (Hero fades
+      // its wrapper in from here) — then either start the loop or, on
+      // reduced motion, stop at this single static frame.
+      frame();
+      renderer.domElement.style.opacity = "1";
+      onReadyRef.current?.();
+      if (!reduceMotion) animate();
 
       onResize=()=>{camera.aspect=getW()/getH();camera.updateProjectionMatrix();
-        renderer.setSize(getW(),getH());keepClusterRight();};
+        renderer.setSize(getW(),getH());keepClusterRight();
+        if (!paused && !raf && !reduceMotion) animate();};
       window.addEventListener("resize",onResize);
       const ro=new ResizeObserver(onResize); ro.observe(app);
       (renderer as any).__ro=ro;
+
+      // Cancel the rAF loop (not just skip rendering) whenever the tab is
+      // hidden or the hero scrolls out of view — a constant rAF loop is
+      // real main-thread cost even when nothing visible changes. Both
+      // conditions are tracked separately and re-combined fresh on every
+      // check (not accumulated) so either one clearing resumes the loop.
+      let io: IntersectionObserver | undefined;
+      if (!reduceMotion) {
+        let tabHidden = document.hidden;
+        let offscreen = false;
+        const evaluate=()=>{
+          paused = tabHidden || offscreen;
+          if (paused) { if(raf){cancelAnimationFrame(raf); raf=0;} }
+          else if (!disposed && !raf) animate();
+        };
+        const onVisibility=()=>{ tabHidden = document.hidden; evaluate(); };
+        document.addEventListener("visibilitychange", onVisibility);
+        io = new IntersectionObserver(
+          entries => { offscreen = !(entries[0]?.isIntersecting ?? true); evaluate(); },
+          { threshold: 0 }
+        );
+        io.observe(app);
+        (renderer as any).__io = io;
+        (renderer as any).__onVisibility = onVisibility;
+      }
     })();
 
     return ()=>{
@@ -180,13 +223,19 @@ export default function CubesScene() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize",onResize);
       window.removeEventListener("pointermove",onPointer);
-      if(renderer){ (renderer as any).__ro?.disconnect?.();
-        renderer.dispose?.(); renderer.domElement?.remove?.(); }
+      if(renderer){
+        (renderer as any).__ro?.disconnect?.();
+        (renderer as any).__io?.disconnect?.();
+        if ((renderer as any).__onVisibility) {
+          document.removeEventListener("visibilitychange", (renderer as any).__onVisibility);
+        }
+        renderer.dispose?.(); renderer.domElement?.remove?.();
+      }
     };
   }, []);
   return (
     <div className="relative w-full h-full overflow-hidden isolate">
-      {/* isolate: without its own stacking context, the vignette/grain's
+      {/* isolate: without its own stacking context, the vignette's
           mix-blend-mode below blends against whatever the browser has
           painted further back — the hero poster, even the fixed nav —
           which is where a stray seam right at the hero's top edge (a
@@ -194,7 +243,9 @@ export default function CubesScene() {
           the blend to just this wrapper's own contents. */}
       <div ref={mountRef} className="w-full h-full" />
       {/* Vignette — scoped to this container only, darkens the cluster's
-          edges toward black without touching the rest of the hero. */}
+          edges toward black without touching the rest of the hero. Static
+          (no grain/animation layered on top of it — that was the source
+          of a repaint glitch at the hero's top edge every 0.6s). */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
@@ -203,13 +254,6 @@ export default function CubesScene() {
             'radial-gradient(ellipse 70% 60% at 50% 46%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 82%, rgba(0,0,0,0.9) 100%)',
           mixBlendMode: 'multiply',
         }}
-      />
-      {/* Film grain — oversized (-50% inset) so the steps() jitter never
-          exposes a hard edge at the container bounds. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-[-50%] pointer-events-none motion-safe:animate-[grain_0.6s_steps(3)_infinite]"
-        style={{ opacity: 0.06, mixBlendMode: 'overlay', backgroundImage: GRAIN_BG }}
       />
     </div>
   );

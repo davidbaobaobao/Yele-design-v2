@@ -3,6 +3,25 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
   },
+  async headers() {
+    return [
+      // Static video/image/font assets served straight from /public (not
+      // through the /_next/image optimizer, which already has its own
+      // 1-year minimumCacheTTL below) had no explicit cache policy, so
+      // browsers were re-validating them on every visit. Not `immutable` —
+      // this project's own workflow re-exports some assets in place under
+      // the same filename (e.g. hero_poster.jpg), so a byte-for-byte-never-
+      // changes policy would risk serving stale content after that; a week
+      // fresh + up to 30 days stale-while-revalidate is a real win without
+      // that risk.
+      {
+        source: '/media/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=2592000' },
+        ],
+      },
+    ]
+  },
   async redirects() {
     return [
       // Legacy Spanish short-links

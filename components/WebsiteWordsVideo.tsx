@@ -20,14 +20,13 @@ const WORDS = [
   'balanced',
 ]
 
-function Sources() {
-  return (
-    <>
-      <source src={`${VIDEO_DIR}/hero6_hq.webm`} type="video/webm" />
-      <source src={`${VIDEO_DIR}/hero6_hq.mp4`} type="video/mp4" />
-    </>
-  )
-}
+// ffmpeg -i hero6.mp4 -vf "scale=1280:-2" -c:v libx264 -profile:v main
+//   -crf 28 -preset slow -pix_fmt yuv420p -movflags +faststart -an
+//   hero6_lite.mp4 — source was a 24MB/20.7Mbps 2560x1440 export. mp4-only
+//   (no webm sibling): shipping both formats downloads whichever the
+//   browser doesn't need too, for no benefit on modern browsers that all
+//   support H.264.
+const SRC = `${VIDEO_DIR}/hero6_lite.mp4`
 
 // Short video-background beat right before Pricing — same hero6 footage as
 // the (since-reverted) hero redesign, same TypewriterWord component the
@@ -46,6 +45,7 @@ export default function WebsiteWordsVideo() {
     <section data-nav-dark className="relative h-[80vh] w-full overflow-hidden">
       <video
         ref={videoRef}
+        src={SRC}
         autoPlay
         muted
         loop
@@ -55,9 +55,7 @@ export default function WebsiteWordsVideo() {
         poster={POSTER}
         className="absolute inset-0 w-full h-full object-cover"
         aria-hidden="true"
-      >
-        <Sources />
-      </video>
+      />
 
       {/* Dark scrim over the whole frame so centered white/pink text stays
           readable regardless of what's playing behind it at any given
