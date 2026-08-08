@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { motion, type Transition } from 'framer-motion'
 import { CalendarDays } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { TextGradient } from '@/components/ui/text-gradient'
+import { trackContactFormSubmit } from '@/lib/gtag'
 
 // Same number the floating WhatsApp button used before it was retired in
 // favor of the card below.
@@ -69,6 +70,11 @@ export default function ContactForm() {
   const { t } = useLang()
   const [formState, setFormState] = useState<FormState>('idle')
   const [form, setForm] = useState({ nombre: '', email: '', mensaje: '' })
+  // Guards the Ads conversion against firing twice — the form is replaced
+  // by the success message once formState is 'success' (no way to
+  // resubmit without a reload), but this makes "exactly once" true
+  // regardless of how handleSubmit is re-entered.
+  const conversionFiredRef = useRef(false)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -85,6 +91,12 @@ export default function ContactForm() {
       })
       if (!res.ok) throw new Error()
       setFormState('success')
+      // Confirmed by the API, not the click or the form's own validation —
+      // fire before the reset below clears the entered email.
+      if (!conversionFiredRef.current) {
+        conversionFiredRef.current = true
+        trackContactFormSubmit(form.email)
+      }
       setForm({ nombre: '', email: '', mensaje: '' })
     } catch {
       setFormState('error')
