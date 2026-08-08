@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
-import { useWebglSlot } from '@/hooks/useWebglSlot'
+
+const CONVEYOR_SRC = '/conveyor/index.html'
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- reaching into the
    iframe's own <three-d-stage> custom element internals (stage._controls
@@ -176,7 +177,10 @@ function ConveyorPoster() {
 // tuning and unloading it happens from here, not by editing that file.
 export default function ConveyorCards() {
   const sectionRef = useRef<HTMLElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
   const [tabHidden, setTabHidden] = useState(false)
+  const [near, setNear] = useState(false)
+  const [far, setFar] = useState(true)
   const isLowPower = useIsLowPowerDevice()
 
   // No reason to render a hidden tab either.
@@ -187,53 +191,89 @@ export default function ConveyorCards() {
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [])
 
-  // Only mounts while this section is the PRIMARY thing on screen (>=50%
-  // visible) AND nothing else currently holds the shared one-live-scene
-  // slot (lib/webglLock.ts) — this used to run its own independent lazy-
-  // load/unload IntersectionObservers, but with the hero cubes and now
-  // two more WebGL-hosting sections on the page, each with its own
-  // hysteresis margins, those windows could legitimately overlap and put
-  // two heavy contexts (this one has post-processing + transmission-style
-  // materials) live at once, which is what was freezing the tab.
-  const isHolder = useWebglSlot('conveyor', sectionRef, !isLowPower && !tabHidden)
-  const showScene = isHolder && !isLowPower && !tabHidden
+  // Own independent visibility tracking, not a shared cross-component
+  // lock — the hero cubes and the two how-yele-animations subsections
+  // each track their own section the same way (see Hero.tsx). Because all
+  // these sections are full-height and spread out down the page, at most
+  // one of them is ever "near" the viewport at a time, which alone keeps
+  // at most one WebGL context live. Asymmetric margins so a small scroll
+  // right at one boundary doesn't thrash: approaches (mounts) within
+  // ~300px, only backs off (unmounts) once genuinely more than a viewport
+  // away.
+  useEffect(() => {
+    const el = sectionRef.current
+    if (isLowPower || !el || !('IntersectionObserver' in window)) return
+    const loadIO = new IntersectionObserver(
+      entries => {
+        if (entries[0]?.isIntersecting) setNear(true)
+      },
+      { rootMargin: '300px 0px' }
+    )
+    const unloadIO = new IntersectionObserver(
+      entries => setFar(!entries[0]?.isIntersecting),
+      { rootMargin: '100% 0px' }
+    )
+    loadIO.observe(el)
+    unloadIO.observe(el)
+    return () => {
+      loadIO.disconnect()
+      unloadIO.disconnect()
+    }
+  }, [isLowPower])
+
+  const showScene = near && !far && !tabHidden && !isLowPower
+
+  // Iframe stays mounted permanently; its `src` is toggled imperatively
+  // instead of conditionally rendering the element. Setting src="" is
+  // what actually releases the WebGL context (a real navigation away from
+  // the artifact's document), and re-setting it re-triggers onLoad for
+  // tuneConveyor same as a fresh mount would.
+  useEffect(() => {
+    const iframe = iframeRef.current
+    if (!iframe) return
+    if (showScene) {
+      if (iframe.getAttribute('src') !== CONVEYOR_SRC) iframe.src = CONVEYOR_SRC
+    } else if (iframe.getAttribute('src')) {
+      iframe.src = ''
+    }
+  }, [showScene])
 
   return (
     <section ref={sectionRef} className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
       {isLowPower ? (
         <ConveyorPoster />
       ) : (
-        showScene && (
-          <iframe
-            src="/conveyor/index.html"
-            title="Conveyor"
-            scrolling="no"
-            loading="lazy"
-            onLoad={e => tuneConveyor(e.currentTarget)}
-            style={{
-              border: 0,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              // Rendered at 85% of its real box, then scaled back up to
-              // fill it — the artifact's own ResizeObserver->composer
-              // chain picks up the smaller CSS size on its own (this is
-              // an actual smaller viewport, not a paint-time transform),
-              // so every pass genuinely does less work, not just the
-              // final blit. This is also the one lever verified to
-              // actually reach the composer's render targets (unlike the
-              // pixelRatio call above), so it's the real "sharpen" knob —
-              // eased up from 70% now that off-screen unloading covers
-              // most of the perf win, per the same tradeoff this task's
-              // own pixelRatio increase makes. The heavy DoF blur + our
-              // vignette mask the softness from the compensating upscale.
-              width: '85%',
-              height: '85%',
-              transform: 'scale(1.17647)',
-              transformOrigin: 'top left',
-            }}
-          />
-        )
+        <iframe
+          ref={iframeRef}
+          title="Conveyor"
+          scrolling="no"
+          loading="lazy"
+          onLoad={e => {
+            if (e.currentTarget.getAttribute('src')) tuneConveyor(e.currentTarget)
+          }}
+          style={{
+            border: 0,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            // Rendered at 85% of its real box, then scaled back up to
+            // fill it — the artifact's own ResizeObserver->composer
+            // chain picks up the smaller CSS size on its own (this is
+            // an actual smaller viewport, not a paint-time transform),
+            // so every pass genuinely does less work, not just the
+            // final blit. This is also the one lever verified to
+            // actually reach the composer's render targets (unlike the
+            // pixelRatio call above), so it's the real "sharpen" knob —
+            // eased up from 70% now that off-screen unloading covers
+            // most of the perf win, per the same tradeoff this task's
+            // own pixelRatio increase makes. The heavy DoF blur + our
+            // vignette mask the softness from the compensating upscale.
+            width: '85%',
+            height: '85%',
+            transform: 'scale(1.17647)',
+            transformOrigin: 'top left',
+          }}
+        />
       )}
 
       {/* Cinematic vignette — strong, moody: corners near-black, only the

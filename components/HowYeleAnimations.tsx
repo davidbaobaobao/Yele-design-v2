@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
-import { useWebglSlot } from '@/hooks/useWebglSlot'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
 import { TextGradient } from '@/components/ui/text-gradient'
 
@@ -138,32 +137,38 @@ function PosterB() {
 
 // One normal-flow, full-height block. The poster is a permanent backdrop —
 // always rendered, from the very first paint — so the section already
-// looks "lit" (panels + sphere at rest) before it's ever scrolled to; the
-// live iframe only mounts on top of it once this section is the PRIMARY
-// thing on screen AND holds the shared one-live-scene slot (lib/
-// webglLock.ts, via useWebglSlot). It boots hidden (opacity 0) and
-// crossfades in ~500ms after load — neither artifact exposes a real
-// "first frame rendered" signal reachable from the parent (unlike
-// conveyor's <three-d-stage>), so this is an approximated settle delay,
-// not a true readiness poll. Because the poster matches the resting
-// frame, the swap reads as invisible. Never boots the live scene at all
-// on mobile/coarse-pointer — poster only there.
+// looks "lit" (panels + sphere at rest) before it's ever scrolled to. The
+// iframe itself stays mounted permanently too; its `src` is toggled
+// imperatively (empty when far, real URL when near) rather than
+// conditionally rendering the element — this is what actually releases
+// the WebGL context, and matches the same pattern as the hero cubes and
+// conveyor (own IntersectionObserver on this section's own ref, no shared
+// cross-component lock — every WebGL-hosting section on this page is
+// full-height and far apart, so at most one is ever "near" at once). It
+// boots hidden (opacity 0) and crossfades in ~500ms after load — neither
+// artifact exposes a real "first frame rendered" signal reachable from
+// the parent (unlike conveyor's <three-d-stage>), so this is an
+// approximated settle delay, not a true readiness poll. Because the
+// poster matches the resting frame, the swap reads as invisible. Never
+// boots the live scene at all on mobile/coarse-pointer — poster only
+// there.
 function AnimationSubsection({
-  id,
   src,
   title,
   headline,
   poster,
 }: {
-  id: string
   src: string
   title: string
   headline: React.ReactNode
   poster: React.ReactNode
 }) {
   const ref = useRef<HTMLDivElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
   const isLowPower = useIsLowPowerDevice()
   const [tabHidden, setTabHidden] = useState(false)
+  const [near, setNear] = useState(false)
+  const [far, setFar] = useState(true)
   const [live, setLive] = useState(false)
 
   useEffect(() => {
@@ -173,27 +178,52 @@ function AnimationSubsection({
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [])
 
-  const isHolder = useWebglSlot(id, ref, !isLowPower && !tabHidden)
-  const showScene = isHolder && !isLowPower && !tabHidden
-
-  // Resets the crossfade-in whenever the scene is torn down, so re-
-  // entering later starts hidden again rather than flashing the previous
-  // frame at full opacity before the new load finishes.
   useEffect(() => {
-    if (!showScene) setLive(false)
-  }, [showScene])
+    const el = ref.current
+    if (isLowPower || !el || !('IntersectionObserver' in window)) return
+    const loadIO = new IntersectionObserver(
+      entries => {
+        if (entries[0]?.isIntersecting) setNear(true)
+      },
+      { rootMargin: '300px 0px' }
+    )
+    const unloadIO = new IntersectionObserver(
+      entries => setFar(!entries[0]?.isIntersecting),
+      { rootMargin: '100% 0px' }
+    )
+    loadIO.observe(el)
+    unloadIO.observe(el)
+    return () => {
+      loadIO.disconnect()
+      unloadIO.disconnect()
+    }
+  }, [isLowPower])
+
+  const showScene = near && !far && !tabHidden && !isLowPower
+
+  useEffect(() => {
+    const iframe = iframeRef.current
+    if (!iframe) return
+    if (showScene) {
+      if (iframe.getAttribute('src') !== src) iframe.src = src
+    } else if (iframe.getAttribute('src')) {
+      iframe.src = ''
+      setLive(false)
+    }
+  }, [showScene, src])
 
   return (
     <div ref={ref} className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
       <div className="absolute inset-0">{poster}</div>
 
-      {showScene && (
+      {!isLowPower && (
         <iframe
-          src={src}
+          ref={iframeRef}
           title={title}
           scrolling="no"
           loading="lazy"
           onLoad={e => {
+            if (!e.currentTarget.getAttribute('src')) return
             tuneSubsection(e.currentTarget)
             window.setTimeout(() => setLive(true), 500)
           }}
@@ -215,14 +245,12 @@ export default function HowYeleAnimations() {
   return (
     <section id="how-yele-animations" data-nav-dark>
       <AnimationSubsection
-        id="how-yele-sub1"
         src={SRC_A}
         title="How Yele works — hover reveal"
         headline={<HeadlineA reduceMotion={reduceMotion} />}
         poster={<PosterA />}
       />
       <AnimationSubsection
-        id="how-yele-sub2"
         src={SRC_B}
         title="How Yele works — eject and connect"
         headline={<HeadlineB reduceMotion={reduceMotion} />}

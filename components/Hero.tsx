@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic'
 import { Check, ChevronDown } from 'lucide-react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
-import { useWebglSlot } from '@/hooks/useWebglSlot'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
 import { CTAButton } from '@/components/ui/cta-button'
 
@@ -24,71 +23,72 @@ const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false
 // This used to be "mount once, never unmount" — CubesScene's own internal
 // IntersectionObserver paused its render LOOP off-screen, but the WebGL
 // CONTEXT itself (GPU memory/resources) stayed allocated for the rest of
-// the page's life once mounted. With three more WebGL-hosting sections
-// added since (conveyor, two how-yele-animations subsections), that's a
-// real contributor to running out of GPU resources and freezing the tab —
-// so past the initial bootstrap gate, ongoing mount/unmount is handed to
-// the shared one-live-scene-at-a-time lock (lib/webglLock.ts): the cubes
-// only actually render while the hero is the PRIMARY thing on screen
-// (>=50% visible) AND nothing else currently holds the slot, and they
-// fully unmount (freeing the context) the moment either stops being true.
+// the page's life once mounted. With three more WebGL-hosting sections on
+// the page (conveyor, two how-yele-animations subsections), that's a real
+// contributor to running out of GPU resources and freezing the tab — so
+// past the initial idle-bootstrap gate, ongoing mount/unmount is driven by
+// the hero's own visibility: cubes fully unmount (React unmount ->
+// CubesScene's own cleanup effect cancels its rAF loop and disposes the
+// renderer, actually freeing the context) once the hero is more than
+// roughly a viewport out of view, and re-init on approach. Sections on
+// this page are all full-height and far apart, so this alone keeps at
+// most one WebGL-hosting section "near" the viewport at any time.
 function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
-  const [bootstrapped, setBootstrapped] = useState(false)
+  const [idleFired, setIdleFired] = useState(false)
+  const [near, setNear] = useState(false)
+  const [far, setFar] = useState(true)
   const isLowPower = useIsLowPowerDevice()
 
   useEffect(() => {
-    let idleFired = false
-    let inView = true
-    let cancelled = false
-
-    const tryMount = () => {
-      if (!cancelled && idleFired && inView) setBootstrapped(true)
+    if (isLowPower || !sectionRef.current || !('IntersectionObserver' in window)) return
+    const el = sectionRef.current
+    // Approaching: mounts once within ~300px of view (or already on
+    // screen, which is the initial-load case). Far: unmounts only once
+    // genuinely more than a viewport away — asymmetric so small scrolls
+    // right at one boundary don't thrash mount/unmount.
+    const loadIO = new IntersectionObserver(
+      entries => {
+        if (entries[0]?.isIntersecting) setNear(true)
+      },
+      { rootMargin: '300px 0px' }
+    )
+    const unloadIO = new IntersectionObserver(
+      entries => setFar(!entries[0]?.isIntersecting),
+      { rootMargin: '100% 0px' }
+    )
+    loadIO.observe(el)
+    unloadIO.observe(el)
+    return () => {
+      loadIO.disconnect()
+      unloadIO.disconnect()
     }
+  }, [sectionRef, isLowPower])
 
-    const io =
-      'IntersectionObserver' in window && sectionRef.current
-        ? new IntersectionObserver(
-            entries => {
-              inView = entries[0]?.isIntersecting ?? true
-              tryMount()
-            },
-            { threshold: 0 }
-          )
-        : null
-    if (io && sectionRef.current) io.observe(sectionRef.current)
-
-    // Safari has no requestIdleCallback — the `in` check above (on `window`
-    // itself) confused TS's narrowing into typing the else branch's
-    // `window` as `never`, so it's feature-detected on a locally-typed
-    // handle instead.
+  // Safari has no requestIdleCallback — the `in` check above (on `window`
+  // itself) confused TS's narrowing into typing the else branch's
+  // `window` as `never`, so it's feature-detected on a locally-typed
+  // handle instead. Only gates the very FIRST mount (keeps the initial
+  // WebGL init off the critical path); subsequent re-mounts on scrolling
+  // back up don't need to wait for idle again.
+  useEffect(() => {
+    if (isLowPower) return
     const w = window as Window & {
       requestIdleCallback?: typeof requestIdleCallback
       cancelIdleCallback?: typeof cancelIdleCallback
     }
     let idleId: number
     if (w.requestIdleCallback) {
-      idleId = w.requestIdleCallback(() => {
-        idleFired = true
-        tryMount()
-      }, { timeout: 1500 })
+      idleId = w.requestIdleCallback(() => setIdleFired(true), { timeout: 1500 })
     } else {
-      idleId = window.setTimeout(() => {
-        idleFired = true
-        tryMount()
-      }, 1000)
+      idleId = window.setTimeout(() => setIdleFired(true), 1000)
     }
-
     return () => {
-      cancelled = true
-      io?.disconnect()
       if (w.cancelIdleCallback) w.cancelIdleCallback(idleId)
       else window.clearTimeout(idleId)
     }
-  }, [sectionRef])
+  }, [isLowPower])
 
-  const isHolder = useWebglSlot('hero-cubes', sectionRef, bootstrapped && !isLowPower)
-
-  return bootstrapped && !isLowPower && isHolder
+  return idleFired && near && !far && !isLowPower
 }
 
 const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
@@ -128,12 +128,11 @@ export default function Hero() {
           WebGL cost isn't worth it there, and the text needs the full
           width anyway; the `hidden md:block` below is just a belt-and-
           suspenders CSS backstop, not the actual gate. Mounted lazily and
-          fully unmounted again once the hero isn't the primary thing on
-          screen or another section claims the shared one-scene-at-a-time
-          slot (see useDeferredCubes above) — the poster/gradient/text
-          behind it is a perfectly fine placeholder either way, and the
-          canvas fades itself in once ready (CubesScene.tsx) so mounting
-          never reads as a pop. */}
+          fully unmounted again once the hero scrolls more than roughly a
+          viewport out of view (see useDeferredCubes above) — the poster/
+          gradient/text behind it is a perfectly fine placeholder either
+          way, and the canvas fades itself in once ready (CubesScene.tsx)
+          so mounting never reads as a pop. */}
       {showCubes && (
         <div className="hidden md:block absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
           <CubesScene />
