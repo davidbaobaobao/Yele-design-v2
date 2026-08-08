@@ -6,6 +6,7 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { X, ArrowUp, ChevronDown } from 'lucide-react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { trackBookCall } from '@/lib/gtag'
 
 const ROBOT_DIR = '/media/robot'
 
@@ -287,6 +288,30 @@ function activeToolLabel(messages: { role: string; parts: { type: string; state?
   return null
 }
 
+// book_call conversion — scans every message (not just the last one) for a
+// bookCall tool part that's actually resolved successfully (state
+// "output-available", output.success true from lib/cal.ts's
+// CreateBookingResult) — never on the user merely asking to book, and
+// never on a failed/declined booking. Returns each one's bookingId (to
+// dedupe against re-renders/repeated tool results) alongside the email the
+// model passed as the tool's input, for Enhanced Conversions.
+function findConfirmedBookings(
+  messages: { role: string; parts: { type: string; state?: string; input?: unknown; output?: unknown }[] }[]
+): { bookingId: number; email?: string }[] {
+  const found: { bookingId: number; email?: string }[] = []
+  for (const m of messages) {
+    if (m.role !== 'assistant') continue
+    for (const part of m.parts) {
+      if (part.type !== 'tool-bookCall' || part.state !== 'output-available') continue
+      const output = part.output as { success?: boolean; bookingId?: number } | undefined
+      if (!output?.success || typeof output.bookingId !== 'number') continue
+      const input = part.input as { email?: string } | undefined
+      found.push({ bookingId: output.bookingId, email: input?.email })
+    }
+  }
+  return found
+}
+
 function StatusBubble({ label }: { label: string }) {
   return (
     <div className="flex justify-start">
@@ -354,6 +379,19 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
     const raf = requestAnimationFrame(updateShowMoreBelow)
     return () => cancelAnimationFrame(raf)
   }, [messages, busy, updateShowMoreBelow])
+
+  // book_call conversion — fires once per distinct confirmed booking
+  // (never on merely asking the bot to book), guarded by bookingId so
+  // re-renders/repeated tool results in the same conversation can't
+  // double-fire it.
+  const trackedBookingIdsRef = useRef<Set<number>>(new Set())
+  useEffect(() => {
+    for (const { bookingId, email } of findConfirmedBookings(messages)) {
+      if (trackedBookingIdsRef.current.has(bookingId)) continue
+      trackedBookingIdsRef.current.add(bookingId)
+      trackBookCall(email)
+    }
+  }, [messages])
 
   const handleSend = useCallback(
     (text: string) => {
