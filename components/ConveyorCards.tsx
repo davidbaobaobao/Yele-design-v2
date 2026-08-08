@@ -23,6 +23,9 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 //   (d) best-effort pixelRatio cap — see the comment at that line for why
 //       this alone isn't the real fill-rate win (the CSS downscale on the
 //       iframe itself, below, is).
+//   (e) brightens the "We make your website / Fast. / Secure." headline —
+//       the dark vignette sits right over its corner, so it needs a
+//       slightly stronger glow to still read clearly.
 function tuneConveyor(iframe: HTMLIFrameElement) {
   const w = iframe.contentWindow as any
   const d = iframe.contentDocument
@@ -40,10 +43,20 @@ function tuneConveyor(iframe: HTMLIFrameElement) {
     return stage
   }
 
+  const boostHeadline = () => {
+    const h = d.querySelector('.headline') as HTMLElement | null
+    if (h) {
+      h.style.opacity = '0.96' // was ~0.82
+      h.style.color = '#e6e8ee' // slightly brighter
+      h.style.textShadow = '0 0 22px rgba(238,240,244,0.75), 0 0 60px rgba(238,240,244,0.4)' // stronger glow
+    }
+  }
+
   let tries = 0
   const iv = setInterval(() => {
     tries++
     const stage = stripDownloadUI()
+    boostHeadline()
     if (stage && stage._controls) {
       stage._controls.enableZoom = false
       stage._controls.enablePan = false
@@ -72,7 +85,10 @@ function tuneConveyor(iframe: HTMLIFrameElement) {
     { passive: true }
   )
 
-  const mo = new MutationObserver(stripDownloadUI)
+  const mo = new MutationObserver(() => {
+    stripDownloadUI()
+    boostHeadline()
+  })
   mo.observe(d.documentElement, { childList: true, subtree: true })
 }
 
