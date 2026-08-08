@@ -3,3 +3,4 @@
 # doesn't currently run Prettier, but this stays as insurance against it
 # (or any other formatter) ever being pointed at /public.
 public/conveyor/index.html
+public/how-yele-animations/*.html
