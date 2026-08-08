@@ -244,6 +244,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${archivo.variable} ${instrumentSans.variable} ${ibmPlexMono.variable}`}>
       <head>
+        {/* Warms the connection before the conveyor-cards section (below
+            the fold) loads its iframe — that artifact pulls three.js from
+            unpkg itself; see components/ConveyorCards.tsx. */}
+        <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
