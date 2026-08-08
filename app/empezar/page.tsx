@@ -12,9 +12,8 @@ declare global {
 
 // Google Ads conversion action for a successful onboarding form submit
 // (distinct from the purchase/welcome conversion fired in
-// app/gracias/GraciasClient.tsx). Create the action in Google Ads first —
-// this label is a placeholder until then.
-const ONBOARDING_CONVERSION_SEND_TO = 'AW-18281072925/PASTE_ONBOARDING_LABEL'
+// app/gracias/GraciasClient.tsx).
+const ONBOARDING_CONVERSION_SEND_TO = 'AW-18281072925/XzilCNn6jt4cEJ2SjI1E'
 
 // Fires once, right after /api/intake confirms the submit succeeded (not
 // on button click, not before validation) — so failed/aborted submits
