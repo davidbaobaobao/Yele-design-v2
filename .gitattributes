@@ -1,0 +1,4 @@
+# Self-contained Three.js artifact embedded verbatim via iframe — its
+# embedded base64/JSON blobs break if git normalizes line endings on
+# checkout/checkin. -text disables that entirely for this file.
+public/conveyor/index.html -text

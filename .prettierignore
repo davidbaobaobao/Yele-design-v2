@@ -1,0 +1,5 @@
+# Self-contained Three.js artifact embedded verbatim via iframe — its
+# embedded base64/JSON blobs break if a single byte changes. This project
+# doesn't currently run Prettier, but this stays as insurance against it
+# (or any other formatter) ever being pointed at /public.
+public/conveyor/index.html

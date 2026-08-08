@@ -30,7 +30,7 @@ const CARDS: CardData[] = [
     videoBase: 'whyyele6',
   },
   {
-    title: 'Cancel whenever you want',
+    title: 'Cancel anytime',
     description: 'No lock-in. You stay because it works.',
     videoBase: 'whyyele4',
   },
