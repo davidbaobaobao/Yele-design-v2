@@ -272,7 +272,7 @@ function VideoTile({
 // show through the letters. Sized to dominate the screen (the big word
 // alone runs up to 22rem/22vw).
 function GridOverlay({ small, big }: { small: string; big: string }) {
-  const textColor = 'rgba(212, 111, 200, 0.25)'
+  const textColor = 'rgba(255, 255, 255, 0.3)'
   return (
     <div
       className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pointer-events-none"

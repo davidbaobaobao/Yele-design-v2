@@ -68,9 +68,9 @@ export default function HomePage() {
             section's stacked cards, not a color transition. */}
         <div style={{ backgroundColor: '#0D0E12' }} className="h-20 md:h-32" aria-hidden="true" />
         <WhatWeDo />
-        <WhySubs />
         <TablaComparativa />
         <Testimonios noBg />
+        <WhySubs />
         <ContactForm />
         <FAQ dark />
         <VideoSnapController />

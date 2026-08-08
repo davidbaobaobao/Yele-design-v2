@@ -25,8 +25,14 @@ export default function HowYeleMakesSection() {
             How Yele can make your website professional, unforgettable, intuitive, standout, credible, welcoming, reliable.
           </span>
           <span aria-hidden="true" style={{ color: '#F2F0EB' }}>
-            How Yele can make your website
-            <br />
+            {/* Own font-size (scales down faster than the h2's own clamp)
+                + nowrap + block so this line never breaks, whatever the
+                viewport width — "How Yele can make your website" is long
+                enough that the h2's base clamp alone would wrap it
+                unpredictably on smaller/medium screens. */}
+            <span className="block whitespace-nowrap" style={{ fontSize: 'clamp(1.75rem, 5.5vw, 3.75rem)' }}>
+              How Yele can make your website
+            </span>
             <TypewriterWord words={WORDS} reduceMotion={reduceMotion} />
           </span>
         </h2>
