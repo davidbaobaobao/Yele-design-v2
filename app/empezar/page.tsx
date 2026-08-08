@@ -2,9 +2,31 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
+declare global {
+  interface Window { gtag?: (...args: unknown[]) => void }
+}
+
+// Google Ads conversion action for a successful onboarding form submit
+// (distinct from the purchase/welcome conversion fired in
+// app/gracias/GraciasClient.tsx). Create the action in Google Ads first —
+// this label is a placeholder until then.
+const ONBOARDING_CONVERSION_SEND_TO = 'AW-18281072925/PASTE_ONBOARDING_LABEL'
+
+// Fires once, right after /api/intake confirms the submit succeeded (not
+// on button click, not before validation) — so failed/aborted submits
+// never count. Enhanced Conversions: the form's own email is passed as
+// user_data first so Google can hash+match it. Not awaited — gtag's own
+// dataLayer push is synchronous, and the caller's redirect/step-change
+// must not wait on it either way.
+function trackOnboardingFormSubmit(email: string) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
+  window.gtag('set', 'user_data', { email })
+  window.gtag('event', 'conversion', { send_to: ONBOARDING_CONVERSION_SEND_TO })
+}
 
 const inputClass = 'w-full bg-white border border-hairline rounded-xl px-4 py-3 font-body text-sm text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors'
 const labelClass = 'font-body text-xs text-muted mb-1.5 block'
@@ -133,6 +155,10 @@ export default function EmpezarPage() {
   const [planLoading, setPlanLoading] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState('')
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
+  // Guards the Ads conversion against firing twice — handleSubmit can't
+  // normally run concurrently (the button disables on `loading`), but this
+  // makes "exactly once" true regardless of how it's re-entered.
+  const conversionFiredRef = useRef(false)
   const [formData, setFormData] = useState<FormData>({
     nombre_negocio: '',
     nombre_contacto: '',
@@ -207,6 +233,14 @@ export default function EmpezarPage() {
       setSubmitError('Something went wrong. Please try again or email us at info@yele.design')
       setLoading(false)
       return
+    }
+
+    // Submission confirmed successful — fire the Ads conversion here, not
+    // on click and not before validation, so failed/aborted submits never
+    // count. Not awaited: doesn't block the checkout/pricing flow below.
+    if (!conversionFiredRef.current) {
+      conversionFiredRef.current = true
+      trackOnboardingFormSubmit(formData.email)
     }
 
     const result = await response.json()
