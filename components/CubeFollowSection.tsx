@@ -66,12 +66,15 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
 // internally (patched in public/media/howwefind/8cubesfollow.html to
 // match CubesScene.tsx's own cap), so there's no extra-resolution cost.
 //
-// Poster-first, no pop: poster.jpeg is an always-mounted base layer (never
-// removed, so there's never a black frame even mid-load), and the iframe
-// fades in on top of it once it's had a moment to actually paint a WebGL
-// frame — same 150ms-after-onLoad approximation as how-yele-animations'
-// glass section (no readiness signal is reachable from the parent for
-// either artifact).
+// Poster-first, no pop: poster.jpeg mounts once the section is `near`
+// (~600px out, never on initial page load — this section is many screens
+// below the fold and its poster is ~1.3MB, not worth competing with the
+// hero's own critical assets) and, once mounted, never unmounts again —
+// so from that point on there's never a black frame even mid-load — and
+// the iframe fades in on top of it once it's had a moment to actually
+// paint a WebGL frame — same 150ms-after-onLoad approximation as
+// how-yele-animations' glass section (no readiness signal is reachable
+// from the parent for either artifact).
 //
 // Lazy-loads ~600px before view, unloads (src="") once well past — same
 // near/far IntersectionObserver pair as how-yele-animations/hero cubes.
@@ -95,9 +98,19 @@ export default function CubeFollowSection() {
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [])
 
+  // Runs on every device, including low-power — this also gates the poster
+  // below (near, not isLowPower, decides when it mounts), so mobile still
+  // needs an accurate "~600px away" signal even though it never loads the
+  // iframe itself.
   useEffect(() => {
     const el = ref.current
-    if (isLowPower || !el || !('IntersectionObserver' in window)) return
+    if (!el) return
+    // No IntersectionObserver support — fall back to just showing the
+    // poster immediately rather than never at all.
+    if (!('IntersectionObserver' in window)) {
+      setNear(true)
+      return
+    }
     const loadIO = new IntersectionObserver(
       entries => {
         if (entries[0]?.isIntersecting) setNear(true)
@@ -114,7 +127,7 @@ export default function CubeFollowSection() {
       loadIO.disconnect()
       unloadIO.disconnect()
     }
-  }, [isLowPower])
+  }, [])
 
   const showScene = near && !far && !tabHidden && !isLowPower
 
@@ -132,23 +145,31 @@ export default function CubeFollowSection() {
   return (
     <section ref={ref} data-nav-dark className="relative w-full min-h-[225vh]" style={{ backgroundColor: '#0D0E12' }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* z-0 + loading="eager" (not the next/image default "lazy") — this
-            sits inside a position:sticky container, and a handful of
-            browsers miscalculate a lazy <img>'s viewport-intersection while
-            it's still in its pre-stuck resting position, so it can fail to
-            ever trigger. Eager-loading it removes that ambiguity entirely;
-            it's mounted well before the section is scrolled into view
-            regardless, so this doesn't cost an above-the-fold LCP slot. */}
-        <Image
-          src={POSTER}
-          alt=""
-          fill
-          loading="eager"
-          quality={85}
-          sizes="100vw"
-          className="z-0 object-cover"
-          aria-hidden="true"
-        />
+        {/* Mounted only once `near` (~600px out) — not on initial page load
+            regardless of scroll position. Was loading="eager" and always
+            mounted, which fetched this ~1.3MB poster immediately on every
+            page load (this section is many screens below the fold),
+            competing with the hero's own critical assets. Gating on `near`
+            (an IntersectionObserver on the SECTION itself, not the image)
+            also sidesteps the actual bug that made loading="eager"
+            necessary before: a lazy <img> sitting inside a position:sticky
+            container can have its own viewport-intersection miscalculated
+            by the browser while still in its pre-stuck resting position,
+            so it can fail to ever trigger. Once mounted it loads eagerly —
+            no further lazy-loading ambiguity once we've already decided
+            it's time. */}
+        {near && (
+          <Image
+            src={POSTER}
+            alt=""
+            fill
+            loading="eager"
+            quality={85}
+            sizes="100vw"
+            className="z-0 object-cover"
+            aria-hidden="true"
+          />
+        )}
 
         {!isLowPower && (
           <iframe
@@ -161,7 +182,7 @@ export default function CubeFollowSection() {
               tuneCubeScene(e.currentTarget)
               window.setTimeout(() => setLive(true), 150)
             }}
-            className="absolute inset-0 z-[1] h-full w-full transition-opacity duration-500"
+            className="absolute inset-0 z-10 h-full w-full transition-opacity duration-500"
             style={{ border: 0, opacity: live ? 1 : 0 }}
           />
         )}
@@ -171,12 +192,12 @@ export default function CubeFollowSection() {
             out smoothly instead of cutting off hard right as the marquee
             begins. Same recipe as ConveyorVideoSection's top fade. */}
         <div
-          className="pointer-events-none absolute inset-0 z-[2]"
+          className="pointer-events-none absolute inset-0 z-[15]"
           style={{ background: 'linear-gradient(to bottom, rgba(13,14,18,0) 80%, #0D0E12 100%)' }}
           aria-hidden="true"
         />
 
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6">
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6">
           <Headline reduceMotion={reduceMotion} />
         </div>
       </div>

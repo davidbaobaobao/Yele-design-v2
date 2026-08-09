@@ -61,11 +61,11 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
 // ConveyorVideoSection ("We make your website fast"). Same lazy-load/
 // unload/poster-fade architecture as CubeFollowSection.tsx: near/far
 // IntersectionObserver pair (600px-out load, unload once well past),
-// tab-hidden pause, poster.jpeg as an always-mounted eager-loaded base
-// layer so there's no black pop, iframe fades in on top once it's had a
-// moment to paint. Mobile/coarse-pointer shows the poster only, no live
-// iframe — the two columns stack (animation top half, text bottom half)
-// instead of sitting side by side.
+// tab-hidden pause, poster.jpeg mounts once `near` (not on initial page
+// load) and then never unmounts, so there's no black pop once it's there;
+// iframe fades in on top once it's had a moment to paint. Mobile/coarse-
+// pointer shows the poster only, no live iframe — the two columns stack
+// (animation top half, text bottom half) instead of sitting side by side.
 export default function KeepImprovingSection() {
   const ref = useRef<HTMLElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -83,9 +83,19 @@ export default function KeepImprovingSection() {
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [])
 
+  // Runs on every device, including low-power — this also gates the poster
+  // below (near, not isLowPower, decides when it mounts), so mobile still
+  // needs an accurate "~600px away" signal even though it never loads the
+  // iframe itself.
   useEffect(() => {
     const el = ref.current
-    if (isLowPower || !el || !('IntersectionObserver' in window)) return
+    if (!el) return
+    // No IntersectionObserver support — fall back to just showing the
+    // poster immediately rather than never at all.
+    if (!('IntersectionObserver' in window)) {
+      setNear(true)
+      return
+    }
     const loadIO = new IntersectionObserver(
       entries => {
         if (entries[0]?.isIntersecting) setNear(true)
@@ -102,7 +112,7 @@ export default function KeepImprovingSection() {
       loadIO.disconnect()
       unloadIO.disconnect()
     }
-  }, [isLowPower])
+  }, [])
 
   const showScene = near && !far && !tabHidden && !isLowPower
 
@@ -122,22 +132,24 @@ export default function KeepImprovingSection() {
       <div className="flex h-full w-full flex-col md:flex-row">
         {/* LEFT half (top half on mobile): the animation */}
         <div className="relative h-1/2 w-full overflow-hidden md:h-full md:w-1/2">
-          {/* z-0 + loading="eager" — same reasoning as CubeFollowSection's
-              poster: an <img> inside this column can sit in unusual
-              layout contexts, so eager-loading removes any ambiguity
-              about whether the browser's own lazy-loading heuristic ever
-              triggers it. It's mounted well before the section scrolls
-              into view regardless. */}
-          <Image
-            src={POSTER}
-            alt=""
-            fill
-            loading="eager"
-            quality={85}
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="z-0 object-cover"
-            aria-hidden="true"
-          />
+          {/* Mounted only once `near` (~600px out) — not on initial page
+              load. This section is several screens below the fold; its
+              ~1.3MB poster loading unconditionally at page load competed
+              with the hero's own critical assets for bandwidth. Once
+              mounted it loads eagerly — no further lazy-loading ambiguity
+              once we've already decided it's time. */}
+          {near && (
+            <Image
+              src={POSTER}
+              alt=""
+              fill
+              loading="eager"
+              quality={85}
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="z-0 object-cover"
+              aria-hidden="true"
+            />
+          )}
 
           {!isLowPower && (
             <iframe
@@ -150,7 +162,7 @@ export default function KeepImprovingSection() {
                 tuneRubikScene(e.currentTarget)
                 window.setTimeout(() => setLive(true), 150)
               }}
-              className="absolute inset-0 z-[1] h-full w-full border-0 transition-opacity duration-500"
+              className="absolute inset-0 z-10 h-full w-full border-0 transition-opacity duration-500"
               style={{ opacity: live ? 1 : 0 }}
             />
           )}
