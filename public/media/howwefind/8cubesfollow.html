@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>8 Cubes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000000; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    #__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }
+    #__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #000000; z-index: 9999; }
+    #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }
+    #__bundler_placeholder { color: #999; font-size: 14px; }
+  </style>
+  <noscript>
+    <style>#__bundler_loading { display: none; }</style>
+    <div style="position:fixed;bottom:12px;left:12px;font:13px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#999;background:rgba(255,255,255,0.9);padding:6px 12px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.08);z-index:10000;">
+      This page requires JavaScript to display.
+    </div>
+  </noscript>
+</head>
+<body>
+  <div id="__bundler_thumbnail">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#000000"></rect>
+    <g transform="translate(600 400)" fill="none" stroke="#c8c8cc" stroke-width="6" stroke-linejoin="round">
+      <rect x="-190" y="-190" width="150" height="150" rx="16"></rect>
+      <rect x="40" y="-190" width="150" height="150" rx="16"></rect>
+      <rect x="-190" y="40" width="150" height="150" rx="16"></rect>
+      <rect x="40" y="40" width="150" height="150" rx="16"></rect>
+      <rect x="-75" y="-305" width="150" height="150" rx="16"></rect>
+      <rect x="-75" y="155" width="150" height="150" rx="16"></rect>
+    </g>
+  </svg>
+</div>
+  <div id="__bundler_loading">Unpacking...</div>
+
+  <script>
+    
+document.addEventListener('DOMContentLoaded', async function() {
+  const loading = document.getElementById('__bundler_loading');
+  function setStatus(msg) { if (loading) loading.textContent = msg; }
+
+  const FONT_MIME = /^(font[/]|application[/](x-)?font-|application[/]vnd\.ms-fontobject)/i;
+  const MIME_TOKEN = /^[\w.+-]+[/][\w.+-]+$/;
+  function toBase64(bytes) {
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(bin);
+  }
+
+  // Error sink persists across replaceWith since it's on window, not the DOM.
+  window.addEventListener('error', function(e) {
+    // Failed resource loads (CSP-blocked links, scripts, images) fire plain
+    // events at the element — warn only; real JS errors carry message/error.
+    if (!e.message && !e.error && e.target && e.target !== window) {
+      console.warn('[bundle] resource failed to load:',
+        e.target.tagName, String(e.target.src || e.target.href || ''));
+      return;
+    }
+    var p = document.body || document.documentElement;
+    var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
+    d.id = '__bundler_err';
+    d.style.cssText = 'position:fixed;bottom:12px;left:12px;right:12px;font:12px/1.4 ui-monospace,monospace;background:#2a1215;color:#ff8a80;padding:10px 14px;border-radius:8px;border:1px solid #5c2b2e;z-index:99999;white-space:pre-wrap;max-height:40vh;overflow:auto';
+    d.textContent = (d.textContent ? d.textContent + String.fromCharCode(10) : '') +
+      '[bundle] ' + (e.message || e.type) +
+      (e.filename ? ' (' + e.filename.slice(0, 60) + ':' + e.lineno + ')' : '');
+  }, true);
+
+  try {
+    const manifestEl = document.querySelector('script[type="__bundler/manifest"]');
+    const templateEl = document.querySelector('script[type="__bundler/template"]');
+    if (!manifestEl || !templateEl) {
+      setStatus('Error: missing bundle data');
+      console.error('[bundler] Missing script tags — manifestEl:', !!manifestEl, 'templateEl:', !!templateEl);
+      return;
+    }
+
+    const manifest = JSON.parse(manifestEl.textContent);
+    let template = JSON.parse(templateEl.textContent);
+
+    // Nested page bundles (iframe targets). Each ships ONCE, in the ROOT
+    // document's manifest; frame srcs carry an about:blank#<uuid> marker
+    // instead of a substitutable uuid. Every document mints the blobs for
+    // its OWN frames — from local text at the root, or text obtained from
+    // its DIRECT parent over the relay protocol below — so each frame
+    // navigation stays same-origin with its initiator and a deduped page
+    // loads at any depth on any host, including a file:// download's
+    // opaque origins (where a blob minted by one document cannot be
+    // navigated to by another).
+    const pageOrderEl = document.querySelector('script[type="__bundler/page_order"]');
+    const pageOrder = pageOrderEl ? JSON.parse(pageOrderEl.textContent) : [];
+    const pageSet = new Set(pageOrder);
+    const pageTexts = {};
+
+    // ── Nested-page text protocol (parent-chain relay) ──
+    // Page bundles ship once, in the ROOT document's manifest. Every
+    // document mints the blobs for its OWN frames, obtaining page text
+    // through a strict parent-chain relay: a document only ever SENDS to
+    // its direct parent (which, for every document the publisher's own
+    // runtime minted, is another publisher document) and only ACCEPTS
+    // text from that direct parent; requests from below are honored only
+    // for the document's own child frames, and the ROOT never sends
+    // upward at all. That last rule is load-bearing: the artifact host's
+    // frame-ancestors allows claude.ai (and friends) to frame an
+    // artifact, so window.top can be a FOREIGN document — a top-addressed
+    // protocol would hand page uuids to that ancestor and accept forged
+    // "page text" from it, minting attacker HTML as an artifact-origin
+    // blob document. The chain never touches the ancestor: requests stop
+    // at the root, replies are origin-addressed per hop (never '*' when
+    // an origin exists), and both directions are origin-gated (on https
+    // a foreign sender's origin can never equal this document's; in
+    // opaque contexts — file:// — everything serializes as 'null', where
+    // an embedded EXTERNAL frame still fails the gate by carrying its
+    // own real origin, and a sandboxed child of such a frame is excluded
+    // by the own-child-frames check plus uuid unguessability). Shape is
+    // deny-by-default: one request form, one reply form, no error
+    // replies.
+    // window.origin is the SERIALIZED SECURITY origin ('null' in opaque
+    // contexts such as a sandboxed preview iframe) — location.origin is
+    // computed from the URL and stays 'https://…' even when the document
+    // is sandboxed, which would misgate every opaque chain.
+    const OWN_TARGET = /^https?:[/][/]/.test(window.origin || '')
+      ? window.origin
+      : '*';
+    function trustedOrigin(e) {
+      if (e.origin === window.origin) return true; // https chains; opaque==opaque
+      // file:// trees: Chrome serializes the file document's origin as
+      // 'file://' while the blob: documents it mints serialize as 'null',
+      // so the two legitimate shapes can never string-match — accept the
+      // pair in both directions. https origins never serialize as either,
+      // and sender identity (own child frame / direct parent) is checked
+      // separately.
+      return (
+        (e.origin === 'null' &&
+          (window.origin === 'file://' ||
+            window.location.protocol === 'file:')) ||
+        (/^file:/.test(e.origin) && window.origin === 'null')
+      );
+    }
+    // Non-empty only in the root document (nested bundles ship an empty
+    // island), so it doubles as the root marker: the root answers from
+    // local text and treats a miss as authoritative — never relaying to
+    // its (possibly foreign) parent.
+    const isPageRoot = pageOrder.length > 0;
+    const blobUrls = {};
+    const resourceBlobs = {};
+    const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    const pendingFrames = {}; // uuid -> [{el, frag}] awaiting text for own frames
+    const pendingRelays = {}; // uuid -> [childWindow] awaiting text to pass down
+    function mountPage(el, frag, text) {
+      const pageBlob = new Blob([text], { type: 'text/html' });
+      const u = URL.createObjectURL(pageBlob);
+      resourceBlobs[u] = pageBlob;
+      el.src = u + frag;
+    }
+    function deliverPage(uuid, text) {
+      const frames = pendingFrames[uuid];
+      delete pendingFrames[uuid];
+      if (frames) for (const f of frames) mountPage(f.el, f.frag, text);
+      const relays = pendingRelays[uuid];
+      delete pendingRelays[uuid];
+      if (relays) {
+        for (const cw of relays) {
+          try { cw.postMessage({ __bundler_page: uuid, __bundler_text: text }, OWN_TARGET); } catch (err) { /* gone */ }
+        }
+      }
+    }
+    function ownFrameWindows() {
+      const out = [];
+      for (const f of Array.from(document.querySelectorAll('iframe'))) {
+        try { if (f.contentWindow) out.push(f.contentWindow); } catch (err) { /* detached */ }
+      }
+      return out;
+    }
+    window.addEventListener('message', function (e) {
+      const d = e.data;
+      if (!d || typeof d !== 'object' || !e.source) return;
+      // Origin gate first; the structural checks below (own-child-frames
+      // for requests, direct-parent + solicited-uuid for replies, the
+      // root's never-relay rule) are what hold in fully opaque chains
+      // where origin strings can't discriminate — a sandboxed root's
+      // FOREIGN wrapper still fails all three even though both serialize
+      // as real-vs-'null' rather than matching.
+      if (!trustedOrigin(e)) return;
+      if (typeof d.__bundler_need === 'string' && UUID_SHAPE.test(d.__bundler_need)) {
+        // Requests are honored only for this document's own child frames.
+        if (ownFrameWindows().indexOf(e.source) < 0) return;
+        const uuid = d.__bundler_need;
+        const text = pageTexts[uuid];
+        if (typeof text === 'string') {
+          try { e.source.postMessage({ __bundler_page: uuid, __bundler_text: text }, OWN_TARGET); } catch (err) { /* gone */ }
+          return;
+        }
+        if (isPageRoot || window.parent === window) return; // authoritative miss
+        const waiting = pendingRelays[uuid];
+        if (waiting) {
+          if (waiting.indexOf(e.source) < 0) waiting.push(e.source);
+          return;
+        }
+        // Never-answered uuids would otherwise accumulate forever under a
+        // request spray; past the cap (far above any real page count) new
+        // relays are dropped rather than remembered.
+        if (Object.keys(pendingRelays).length >= 128) return;
+        pendingRelays[uuid] = [e.source];
+        window.parent.postMessage({ __bundler_need: uuid }, OWN_TARGET);
+      } else if (
+        typeof d.__bundler_page === 'string' &&
+        UUID_SHAPE.test(d.__bundler_page) &&
+        typeof d.__bundler_text === 'string'
+      ) {
+        // The shape test is load-bearing beyond tidiness: the solicited
+        // check below uses the in operator, which matches prototype keys
+        // ('__proto__', 'constructor') — an unshaped key would reach
+        // deliverPage and throw, painting the error banner.
+        // Text is accepted only from the direct parent — the document
+        // that minted this one.
+        if (e.source !== window.parent || window.parent === window) return;
+        if (!(d.__bundler_page in pendingFrames) && !(d.__bundler_page in pendingRelays)) return;
+        deliverPage(d.__bundler_page, d.__bundler_text);
+      }
+    });
+
+    const uuids = Object.keys(manifest);
+    setStatus('Unpacking ' + uuids.length + ' assets...');
+
+    await Promise.all(uuids.map(async (uuid) => {
+      const entry = manifest[uuid];
+      try {
+        const binaryStr = atob(entry.data);
+        const bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+
+        let finalBytes = bytes;
+        if (entry.compressed) {
+          if (typeof DecompressionStream !== 'undefined') {
+            const ds = new DecompressionStream('gzip');
+            const writer = ds.writable.getWriter();
+            const reader = ds.readable.getReader();
+            writer.write(bytes);
+            writer.close();
+            const chunks = [];
+            let totalLen = 0;
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              chunks.push(value);
+              totalLen += value.length;
+            }
+            finalBytes = new Uint8Array(totalLen);
+            let offset = 0;
+            for (const chunk of chunks) { finalBytes.set(chunk, offset); offset += chunk.length; }
+          } else {
+            console.warn('DecompressionStream not available, asset ' + uuid + ' may not render');
+          }
+        }
+
+        if (pageSet.has(uuid)) {
+          pageTexts[uuid] = new TextDecoder().decode(finalBytes);
+          return;
+        }
+        if (FONT_MIME.test(entry.mime) && MIME_TOKEN.test(entry.mime)) {
+          // Strict artifact hosts allow font-src data: but not blob:.
+          blobUrls[uuid] = 'data:' + entry.mime + ';base64,' +
+            (entry.compressed ? toBase64(finalBytes) : entry.data);
+        } else {
+          const blob = new Blob([finalBytes], { type: entry.mime });
+          blobUrls[uuid] = URL.createObjectURL(blob);
+          resourceBlobs[blobUrls[uuid]] = blob;
+        }
+      } catch (err) {
+        console.error('Failed to decode asset ' + uuid + ':', err);
+        const blob = new Blob([], { type: entry.mime });
+        blobUrls[uuid] = URL.createObjectURL(blob);
+        resourceBlobs[blobUrls[uuid]] = blob;
+      }
+    }));
+
+    const extResEl = document.querySelector('script[type="__bundler/ext_resources"]');
+    const extResources = extResEl ? JSON.parse(extResEl.textContent) : [];
+    const resourceMap = {};
+    for (const entry of extResources) {
+      if (blobUrls[entry.uuid]) resourceMap[entry.id] = blobUrls[entry.uuid];
+    }
+
+    // Artifact-host CSP (connect-src 'self') refuses fetch() of blob: URLs —
+    // consumers read these Blobs directly. Survives the swap like the error sink.
+    window.__resourceBlobs = resourceBlobs;
+
+    setStatus('Rendering...');
+    // Page uuids have no blob here — they ride inside about:blank#<uuid>
+    // frame markers the pass below resolves after the swap.
+    for (const uuid of uuids) {
+      if (pageSet.has(uuid)) continue;
+      template = template.split(uuid).join(blobUrls[uuid]);
+    }
+
+    // Strip integrity + crossorigin — blob URLs from a file:// document inherit
+    // a null origin, so crossorigin forces a CORS fetch that SRI then rejects.
+    // The manifest bytes are ours; SRI protects against CDN compromise, not this.
+    template = template.replace(/\s+integrity="[^"]*"/gi, '').replace(/\s+crossorigin="[^"]*"/gi, '');
+
+    const resourceScript = '<script>window.__resources = ' +
+      JSON.stringify(resourceMap).replace(/<\//g, '<\\/') +
+      ';</' + 'script>';
+    // Inject after <head> so the DOCTYPE stays first; prepending the script
+    // would push the parser into quirks mode. DOMParser always emits a <head>
+    // (synthesizing one if the source HTML omitted it) but may carry
+    // attributes through, so match the full opening tag. slice() rather than
+    // replace() keeps us clear of $-pattern substitution in resourceScript.
+    const headOpen = template.match(/<head[^>]*>/i);
+    if (headOpen) {
+      const i = headOpen.index + headOpen[0].length;
+      template = template.slice(0, i) + resourceScript + template.slice(i);
+    }
+
+    // Parse the template and swap the root element. Scripts inserted via
+    // DOMParser/replaceWith are inert per spec — re-create each with
+    // createElement so they execute, awaiting onload for src scripts to
+    // preserve ordering (React before ReactDOM before Babel before text/babel).
+    const doc = new DOMParser().parseFromString(template, 'text/html');
+    document.documentElement.replaceWith(doc.documentElement);
+
+    // Resolve page-frame markers: mint this document's own blob for each
+    // framed page — from local text when this is the root, otherwise by
+    // asking the direct parent over the relay protocol above. An
+    // unanswered request leaves the frame on about:blank, the same
+    // degraded state as a refused embed.
+    {
+      const MARKER = /^about:blank#([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(#.*)?$/;
+      const needed = [];
+      for (const el of Array.from(document.querySelectorAll('iframe'))) {
+        const m = MARKER.exec(el.getAttribute('src') || '');
+        if (!m) continue;
+        const text = pageTexts[m[1]];
+        if (typeof text === 'string') {
+          mountPage(el, m[2] || '', text);
+        } else if (window.parent !== window && !isPageRoot) {
+          const had = pendingFrames[m[1]];
+          (pendingFrames[m[1]] = had || []).push({ el: el, frag: m[2] || '' });
+          if (!had) needed.push(m[1]);
+        }
+      }
+      for (const uuid of needed) {
+        window.parent.postMessage({ __bundler_need: uuid }, OWN_TARGET);
+      }
+    }
+
+    const dead = Array.from(document.scripts);
+    for (const old of dead) {
+      const s = document.createElement('script');
+      for (const a of old.attributes) s.setAttribute(a.name, a.value);
+      s.textContent = old.textContent;
+      // text/babel scripts with a src: read and inline. transformScriptTags
+      // does XHR against the src, but blob:null/ from a file:// origin is
+      // silently dropped. Inlining makes it a plain inline babel script,
+      // which transformScriptTags handles unconditionally.
+      if ((s.type === 'text/babel' || s.type === 'text/jsx') && s.src) {
+        const pre = resourceBlobs[s.src.split('#')[0]];
+        s.textContent = pre ? await pre.text() : await (await fetch(s.src)).text();
+        s.removeAttribute('src');
+      }
+      const p = s.src ? new Promise(function(r) { s.onload = s.onerror = r; }) : null;
+      old.replaceWith(s);
+      if (p) await p;
+    }
+    // Babel standalone auto-transforms type=text/babel on DOMContentLoaded,
+    // which fired before we swapped the document. Trigger manually if present.
+    if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
+      window.Babel.transformScriptTags();
+    }
+  } catch (err) {
+    setStatus('Error unpacking: ' + err.message);
+    console.error('Bundle unpack error:', err);
+  }
+});
+
+  </script>
+
+  <script type="__bundler/manifest">
+{}
+  </script>
+
+  <script type="__bundler/ext_resources">
+[]
+  </script>
+
+  <script type="__bundler/page_order">
+[]
+  </script>
+
+  <script type="__bundler/template">
+"<!DOCTYPE html>\n<html lang=\"en\"><head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>8 Cubes<\u002Ftitle>\n<style>\n  html, body { margin: 0; background: #000; }\n  /* 1.5x screen-height section; the canvas stays pinned while it scrolls */\n  #section { height: 150vh; position: relative; }\n  #app { position: sticky; top: 0; height: 100vh; overflow: hidden; }\n  canvas { display: block; }\n  /* Dark cinematic overlay */\n  #grade {\n    position: fixed; inset: 0; pointer-events: none; z-index: 5;\n    background:\n      radial-gradient(ellipse 70% 60% at 50% 46%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 82%, rgba(0,0,0,0.9) 100%);\n    mix-blend-mode: multiply;\n  }\n  #grain {\n    position: fixed; inset: -50%; pointer-events: none; z-index: 6;\n    opacity: 0.06; mix-blend-mode: overlay;\n    background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\");\n    animation: grain 0.6s steps(3) infinite;\n  }\n  @keyframes grain {\n    0%{transform:translate(0,0)} 33%{transform:translate(-3%,2%)} 66%{transform:translate(2%,-3%)} 100%{transform:translate(0,0)}\n  }\n<\u002Fstyle>\n<script type=\"importmap\">\n{\n  \"imports\": {\n    \"three\": \"https://unpkg.com/three@0.184.0/build/three.module.js\",\n    \"three/addons/geometries/RoundedBoxGeometry.js\": \"https://unpkg.com/three@0.184.0/examples/jsm/geometries/RoundedBoxGeometry.js\"\n  }\n}\n<\u002Fscript>\n<\u002Fhead>\n<body>\n<section id=\"section\">\n  <div id=\"app\"><\u002Fdiv>\n<\u002Fsection>\n<div id=\"grade\"><\u002Fdiv>\n<div id=\"grain\"><\u002Fdiv>\n\n<script type=\"module\">\nimport * as THREE from 'three';\nimport { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';\n\nconst app = document.getElementById('app');\n\nconst renderer = new THREE.WebGLRenderer({ antialias: true });\nrenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));\nrenderer.setSize(app.clientWidth, app.clientHeight);\nrenderer.toneMapping = THREE.ACESFilmicToneMapping;\nrenderer.toneMappingExposure = 1.15;\napp.appendChild(renderer.domElement);\n\nconst scene = new THREE.Scene();\nscene.background = new THREE.Color(0x000000);\n\nconst camera = new THREE.PerspectiveCamera(30, app.clientWidth / app.clientHeight, 0.1, 100);\ncamera.position.set(0, 0, 11);\n\n/* ---------- Chrome environment: distinct colour per facing direction ---------- */\nfunction makeEnv() {\n  const W = 1024, H = 512;\n  const c = document.createElement('canvas');\n  c.width = W; c.height = H;\n  const g = c.getContext('2d');\n  // Dark studio base so most of each chrome face stays deep/black\n  g.fillStyle = '#050507'; g.fillRect(0, 0, W, H);\n\n  // Radial light panels: a bright hot core blooms out through two hues into shadow,\n  // so each reflective face shows a circular highlight->colour->colour->dark falloff\n  function panel(hot, c1, c2, cx, cy, r) {\n    const rg = g.createRadialGradient(cx, cy, 0, cx, cy, r);\n    rg.addColorStop(0.00, hot);                 // bright coloured bloom\n    rg.addColorStop(0.45, c1);                  // first hue\n    rg.addColorStop(0.82, c2);                  // second hue\n    rg.addColorStop(1.00, 'rgba(0,0,0,0)');     // fades into shadow\n    g.globalCompositeOperation = 'source-over';\n    g.fillStyle = rg;\n    g.fillRect(cx - r, cy - r, r * 2, r * 2);\n  }\n  // Near-black greyscale panels; only a faint, desaturated pink is slightly visible\n  panel('#3a3a3e', '#222226', '#141416',  40, 150, 250);   // dark grey\n  panel('#42424648', '#26262a', '#141416', 150, 140, 260); // dark grey\n  panel('#3c3c40', '#202024', '#131315', 300, 140, 260);   // dark grey\n  panel('#5a464e', '#3a2a30', '#161214', 450, 140, 260);   // faint desaturated pink\n  panel('#3a3a3e', '#212125', '#131315', 600, 140, 260);   // dark grey\n  panel('#40404450', '#242428', '#141416', 760, 140, 270); // dark grey\n  panel('#3a3a3e', '#202024', '#131315', 920, 150, 250);   // dark grey\n\n  // Bright chrome sky near the top -> white/pastel top faces\n  // Faint sheen strip only (no broad white sky, so top faces keep their hue)\n  g.globalCompositeOperation = 'lighter';\n  g.fillStyle = 'rgba(255,255,255,0.32)';\n  g.fillRect(0, 20, W, 4);\n\n  // Bottom stays pure black -> downward faces read black\n  g.globalCompositeOperation = 'source-over';\n  const floor = g.createLinearGradient(0, H * 0.6, 0, H);\n  floor.addColorStop(0, 'rgba(0,0,0,0)');\n  floor.addColorStop(1, 'rgba(0,0,0,1)');\n  g.fillStyle = floor; g.fillRect(0, 0, W, H);\n\n  const tex = new THREE.CanvasTexture(c);\n  tex.mapping = THREE.EquirectangularReflectionMapping;\n  tex.colorSpace = THREE.SRGBColorSpace;\n  return tex;\n}\nconst env = makeEnv();\nscene.environment = env;\n\n/* ---------- Colourful chrome matcap: hue by facing direction ---------- */\nfunction makeMatcap() {\n  const S = 512, R = S / 2;\n  const c = document.createElement('canvas');\n  c.width = S; c.height = S;\n  const g = c.getContext('2d');\n  g.fillStyle = '#000'; g.fillRect(0, 0, S, S);\n\n  // Chrome luminance: bright highlight high-left, deep shadow low-right\n  const val = g.createRadialGradient(R * 0.78, R * 0.6, R * 0.05, R, R, R * 1.25);\n  val.addColorStop(0.00, '#ffffff');\n  val.addColorStop(0.22, '#f2f2f5');\n  val.addColorStop(0.5, '#d0d0d6');\n  val.addColorStop(0.78, '#8a8a92');\n  val.addColorStop(1.00, '#2a2a30');\n  g.beginPath(); g.arc(R, R, R, 0, Math.PI * 2); g.closePath();\n  g.fillStyle = val; g.fill();\n\n  // Hue wheel by direction, applied over the chrome luminance\n  const con = g.createConicGradient(-Math.PI / 2, R, R);\n  con.addColorStop(0.00, '#ffd21e');  // top -> yellow\n  con.addColorStop(0.13, '#ff8a2a');  // orange\n  con.addColorStop(0.27, '#ff3fb0');  // pink\n  con.addColorStop(0.42, '#c04bff');  // violet\n  con.addColorStop(0.55, '#2b6bff');  // blue\n  con.addColorStop(0.68, '#12d2e0');  // cyan\n  con.addColorStop(0.80, '#28e06a');  // green\n  con.addColorStop(0.90, '#101014');  // black tone\n  con.addColorStop(1.00, '#ffd21e');  // wrap\n  g.globalCompositeOperation = 'color';\n  g.beginPath(); g.arc(R, R, R, 0, Math.PI * 2); g.closePath();\n  g.fillStyle = con; g.fill();\n\n  // Crisp specular sheen near the top-left\n  g.globalCompositeOperation = 'lighter';\n  const hi = g.createRadialGradient(R * 0.72, R * 0.5, 0, R * 0.72, R * 0.5, R * 0.45);\n  hi.addColorStop(0, 'rgba(255,255,255,0.9)');\n  hi.addColorStop(1, 'rgba(255,255,255,0)');\n  g.beginPath(); g.arc(R, R, R, 0, Math.PI * 2); g.closePath();\n  g.fillStyle = hi; g.fill();\n\n  const tex = new THREE.CanvasTexture(c);\n  tex.colorSpace = THREE.SRGBColorSpace;\n  return tex;\n}\nconst matcap = makeMatcap();\n\n/* ---------- Perforated dot texture ---------- */\nfunction makeDots() {\n  const c = document.createElement('canvas');\n  c.width = 256; c.height = 256;\n  const g = c.getContext('2d');\n  g.fillStyle = '#ffffff'; g.fillRect(0, 0, 256, 256);\n  const n = 16, s = 256 / n;\n  for (let x = 0; x < n; x++) {\n    for (let y = 0; y < n; y++) {\n      g.beginPath();\n      g.arc(x * s + s / 2, y * s + s / 2, s * 0.26, 0, Math.PI * 2);\n      g.fillStyle = '#b4b4b8';\n      g.fill();\n    }\n  }\n  const tex = new THREE.CanvasTexture(c);\n  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;\n  tex.repeat.set(2, 2);\n  tex.colorSpace = THREE.SRGBColorSpace;\n  return tex;\n}\nconst dots = makeDots();\n\n// Subtle surface variation so reflections aren't a perfect uniform mirror:\n// soft cloudy roughness + a faint micro-bump grain\nfunction makeSurface() {\n  const S = 256;\n  const c = document.createElement('canvas'); c.width = S; c.height = S;\n  const g = c.getContext('2d');\n  g.fillStyle = '#8f8f8f'; g.fillRect(0, 0, S, S);\n  // soft smudges = varying roughness\n  for (let i = 0; i < 40; i++) {\n    const x = Math.random() * S, y = Math.random() * S, r = 30 + Math.random() * 80;\n    const v = 90 + (Math.random() * 90 | 0);\n    const rad = g.createRadialGradient(x, y, 0, x, y, r);\n    rad.addColorStop(0, `rgba(${v},${v},${v},0.5)`);\n    rad.addColorStop(1, 'rgba(143,143,143,0)');\n    g.fillStyle = rad; g.fillRect(0, 0, S, S);\n  }\n  // fine grain\n  const img = g.getImageData(0, 0, S, S), d = img.data;\n  for (let i = 0; i < d.length; i += 4) {\n    const n = (Math.random() - 0.5) * 34;\n    d[i] += n; d[i + 1] += n; d[i + 2] += n;\n  }\n  g.putImageData(img, 0, 0);\n  const t = new THREE.CanvasTexture(c);\n  t.wrapS = t.wrapT = THREE.RepeatWrapping;\n  t.repeat.set(3, 3);\n  t.colorSpace = THREE.SRGBColorSpace;\n  return t;\n}\nconst surface = makeSurface();\n\n// Logo as an invisible SPOT-GLOSS: the flower area is a touch glossier than the\n// surrounding surface, so it only reveals itself inside a bright white reflection\n// and is otherwise completely invisible (not etched into the surface).\nfunction makeLogoGloss() {\n  const S = 256, C = S / 2;\n  const c = document.createElement('canvas'); c.width = S; c.height = S;\n  const g = c.getContext('2d');\n  // base = full material roughness everywhere\n  g.fillStyle = '#ffffff'; g.fillRect(0, 0, S, S);\n  // faint cloudy roughness variation\n  for (let i = 0; i < 22; i++) {\n    const x = Math.random() * S, y = Math.random() * S, r = 40 + Math.random() * 70;\n    const v = 210 + (Math.random() * 45 | 0);\n    const rad = g.createRadialGradient(x, y, 0, x, y, r);\n    rad.addColorStop(0, `rgba(${v},${v},${v},0.4)`); rad.addColorStop(1, 'rgba(255,255,255,0)');\n    g.fillStyle = rad; g.fillRect(0, 0, S, S);\n  }\n  // flower drawn a touch darker = slightly glossier (soft edges, not a hard etch)\n  g.save();\n  g.filter = 'blur(3px)';\n  g.fillStyle = '#e6e6e6';\n  const ring = 34, petalR = 30;\n  for (let i = 0; i < 5; i++) {\n    const a = -Math.PI / 2 + i * (Math.PI * 2 / 5);\n    g.beginPath(); g.arc(C + Math.cos(a) * ring, C + Math.sin(a) * ring, petalR, 0, Math.PI * 2); g.fill();\n  }\n  g.beginPath(); g.arc(C, C, 34, 0, Math.PI * 2); g.fill();\n  // asterisk centre back toward base roughness\n  g.strokeStyle = '#ffffff'; g.lineWidth = 8; g.lineCap = 'round';\n  for (let i = 0; i < 3; i++) {\n    const a = i * (Math.PI / 3);\n    g.beginPath();\n    g.moveTo(C - Math.cos(a) * 22, C - Math.sin(a) * 22);\n    g.lineTo(C + Math.cos(a) * 22, C + Math.sin(a) * 22);\n    g.stroke();\n  }\n  g.restore();\n  const t = new THREE.CanvasTexture(c);\n  t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;   // one logo per face, no tiling\n  t.colorSpace = THREE.NoColorSpace;\n  return t;\n}\nconst logoGloss = makeLogoGloss();\n\n/* ---------- Lights (subtle — env does most of the work) ---------- */\nscene.add(new THREE.AmbientLight(0x2a2a2e, 0.4));\nconst rimA = new THREE.DirectionalLight(0x6a5158, 0.7); rimA.position.set(-6, -3, 4); scene.add(rimA);  // faint desaturated pink\nconst rimB = new THREE.DirectionalLight(0xbdbdc2, 0.6); rimB.position.set(6, -4, 3); scene.add(rimB);   // grey\nconst front = new THREE.DirectionalLight(0xcfcfd4, 0.6); front.position.set(-2, 3, 8); scene.add(front); // grey\n\n/* ---------- Cube cluster ---------- */\nconst cluster = new THREE.Group();\nscene.add(cluster);\n\nconst size = 1.0;\nconst D = 1.25;                   // arm length — leaves ~½-cube gap, cubes never touch\nconst geo = new RoundedBoxGeometry(size, size, size, 8, 0.09);\n\n// 3D \"double cross\": one cube on each of the 6 axis directions (4 in-plane + top/bottom Z)\nconst positions = [\n  [ D, 0, 0], [-D, 0, 0], [ 0, D, 0], [ 0, -D, 0],\n  [ 0, 0, D], [ 0, 0, -D]\n];\n// Distinct roll axes so each cube tumbles differently as it orbits outward\nconst axes = [\n  [ 1,  0.4,  0.3], [ 0.3,  1, -0.4], [-0.4,  0.3,  1], [ 1, -0.5,  0.4],\n  [-0.3,  1,  0.5], [ 0.5,  0.3, -1]\n];\n\nconst cubes = [];\npositions.forEach((p, k) => {\n  const mat = new THREE.MeshStandardMaterial({\n    color: 0xffffff,\n    map: dots,\n    roughnessMap: logoGloss,\n    bumpMap: surface,\n    bumpScale: 0.012,\n    metalness: 1.0,\n    roughness: 0.32,\n    envMapIntensity: 1.15\n  });\n  const cube = new THREE.Mesh(geo, mat);\n  cube.position.set(p[0], p[1], p[2]);\n  cube.userData.home = cube.position.clone();\n  cube.userData.axis = new THREE.Vector3(...axes[k]).normalize();\n  cluster.add(cube);\n  cubes.push(cube);\n});\n\n/* ---------- Interaction ---------- */\nconst pointer = { x: 0, y: 0, tx: 0, ty: 0 };\n// Hover: formation breaks and cubes chase the cursor as a long helix trail\nconst follow = { w: 0, active: false, cx: 0, cy: 0 };\nconst trail = [];                        // recent cursor world positions\nconst trailDir = { x: 0, y: -1 };        // smoothed movement direction (for stable extrapolation)\nfunction worldSpan() {\n  const h = 2 * Math.tan((camera.fov * Math.PI / 180) / 2) * camera.position.z;\n  return { w: h * camera.aspect, h: h };\n}\nwindow.addEventListener('pointermove', (e) => {\n  pointer.tx = (e.clientX / window.innerWidth) * 2 - 1;\n  pointer.ty = (e.clientY / window.innerHeight) * 2 - 1;\n  const span = worldSpan();\n  follow.cx = pointer.tx * (span.w / 2) * 0.92;\n  follow.cy = -pointer.ty * (span.h / 2) * 0.92;\n  follow.active = true;\n});\ndocument.addEventListener('pointerleave', () => { follow.active = false; });\n// Sample a point a given path-distance back along the cursor trail.\n// If the trail is shorter than dist, extrapolate past its start along the\n// last movement direction so cubes always string out at full spacing.\nfunction trailAt(dist) {\n  if (!trail.length) return { x: 0, y: 0 };\n  let acc = 0;\n  for (let i = trail.length - 1; i > 0; i--) {\n    const a = trail[i], b = trail[i - 1];\n    const seg = Math.hypot(a.x - b.x, a.y - b.y);\n    if (acc + seg >= dist) {\n      const f = seg > 0 ? (dist - acc) / seg : 0;\n      return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };\n    }\n    acc += seg;\n  }\n  // extrapolate beyond the oldest point along the smoothed direction —\n  // never recomputed from raw points, so it can't flip frame-to-frame\n  const first = trail[0];\n  const rem = dist - acc;\n  return { x: first.x - trailDir.x * rem, y: first.y - trailDir.y * rem };\n}\n\nconst clock = new THREE.Clock();\nconst spin = { cluster: 0, cube: 0 };   // accumulated rotation angles\nfunction animate() {\n  const dt = Math.min(clock.getDelta(), 0.05);\n  const t = clock.getElapsedTime();\n  pointer.x += (pointer.tx - pointer.x) * 0.06;\n  pointer.y += (pointer.ty - pointer.y) * 0.06;\n  // blend 0 = fixed formation, 1 = free helix chasing the cursor\n  follow.w += ((follow.active ? 1 : 0) - follow.w) * 0.04;\n  const w = follow.w;\n  if (follow.active) {\n    const last = trail[trail.length - 1];\n    if (!last || Math.hypot(follow.cx - last.x, follow.cy - last.y) > 0.02) {\n      if (last) {\n        // slowly steer the smoothed direction toward actual motion\n        const mdx = follow.cx - last.x, mdy = follow.cy - last.y;\n        const mlen = Math.hypot(mdx, mdy);\n        if (mlen > 0.001) {\n          trailDir.x += (mdx / mlen - trailDir.x) * 0.06;\n          trailDir.y += (mdy / mlen - trailDir.y) * 0.06;\n          const n = Math.hypot(trailDir.x, trailDir.y) || 1;\n          trailDir.x /= n; trailDir.y /= n;\n        }\n      }\n      trail.push({ x: follow.cx, y: follow.cy });\n      if (trail.length > 400) trail.shift();\n    }\n  }\n\n  // Formation spin fades out as the helix takes over (accumulated per-frame —\n  // multiplying elapsed time by the blend made angles jump wildly when w changed)\n  cluster.rotation.y = (0.5 + pointer.x * 0.35) * (1 - w);\n  cluster.rotation.x = (-0.5 + pointer.y * 0.25) * (1 - w);\n  spin.cluster += 0.5607 * (1 - w) * dt;\n  cluster.rotation.z = spin.cluster;\n  spin.cube += 1.2 * w * dt;\n\n  // Expansion progress: tight packed cube (0) -> expanded hexagonal ring (1), ping-pong\n  const raw = Math.sin(t * 1.2335) * 0.5 + 0.5;         // 0..1\n  const p = raw * raw * (3 - 2 * raw);                // smoothstep ease\n  const s = 1.0 + p * 0.55;                            // initial ½-cube gaps -> expanded, always separated\n  cubes.forEach((c, k) => {\n    // formation target (cluster-local)\n    const fx = c.userData.home.x * s, fy = c.userData.home.y * s, fz = c.userData.home.z * s;\n    let txp, typ, tzp;\n    if (w < 0.002) {\n      txp = fx; typ = fy; tzp = fz;\n    } else {\n      // helix target: strung out along the cursor trail, spiralling around it,\n      // with an upward lift as the formation breaks (cubes rise, then follow)\n      const lift = Math.sin(Math.min(w, 1) * Math.PI) * 1.6;\n      const pt = trailAt(k * 1.9);                     // ~1.9 units apart -> never touch\n      const ang = t * 2.2 + k * 1.05;\n      const r = 0.62;\n      const hx = pt.x + Math.cos(ang) * r;\n      const hy = pt.y + lift + Math.sin(ang) * r * 0.35;\n      const hz = Math.sin(ang) * r;\n      txp = fx + (hx - fx) * w; typ = fy + (hy - fy) * w; tzp = fz + (hz - fz) * w;\n    }\n    // Per-cube smoothed target: raw targets can jump when the trail shifts;\n    // easing the target itself removes the fast twisting glitch\n    if (!c.userData.tgt) c.userData.tgt = new THREE.Vector3(txp, typ, tzp);\n    const tg = c.userData.tgt;\n    tg.x += (txp - tg.x) * 0.05; tg.y += (typ - tg.y) * 0.05; tg.z += (tzp - tg.z) * 0.05;\n    // Speed-limited chase: cubes drift toward their target, never teleport.\n    const maxStep = 4.5 * dt;                          // world units / second cap\n    let dx = tg.x - c.position.x, dy = tg.y - c.position.y, dz = tg.z - c.position.z;\n    // eased approach for smoothness, then hard cap on distance moved this frame\n    dx *= 0.08; dy *= 0.08; dz *= 0.08;\n    const dLen = Math.hypot(dx, dy, dz);\n    if (dLen > maxStep) { const f = maxStep / dLen; dx *= f; dy *= f; dz *= f; }\n    c.position.x += dx; c.position.y += dy; c.position.z += dz;\n    c.quaternion.setFromAxisAngle(c.userData.axis, p * (Math.PI / 2) + spin.cube);\n  });\n  // Solid bodies: soft mutual repulsion starts before contact and stiffens\n  // as cubes get closer, so they repel instead of entering each other\n  const contact = 1.75, buffer = 2.1;                  // repel zone starts at 2.1\n  for (let it = 0; it < 3; it++) {\n    for (let i = 0; i < cubes.length; i++) {\n      for (let j = i + 1; j < cubes.length; j++) {\n        const a = cubes[i].position, b = cubes[j].position;\n        let dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;\n        let d = Math.hypot(dx, dy, dz);\n        if (d < buffer) {\n          if (d < 1e-4) { dx = 1; dy = dz = 0; d = 1; }\n          // soft push inside the buffer, full correction inside contact\n          const overlap = d < contact ? (contact - d) : 0;\n          const soft = (buffer - Math.max(d, contact)) * 0.08;\n          const push = (overlap / 2 + soft / 2) / d;\n          a.x -= dx * push; a.y -= dy * push; a.z -= dz * push;\n          b.x += dx * push; b.y += dy * push; b.z += dz * push;\n        }\n      }\n    }\n  }\n\n  renderer.render(scene, camera);\n  requestAnimationFrame(animate);\n}\nanimate();\n\nwindow.addEventListener('resize', () => {\n  camera.aspect = app.clientWidth / app.clientHeight;\n  camera.updateProjectionMatrix();\n  renderer.setSize(app.clientWidth, app.clientHeight);\n});\n<\u002Fscript>\n\n\n<\u002Fbody><\u002Fhtml>"
+  </script>
+</body>
+</html>
