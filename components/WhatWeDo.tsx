@@ -430,14 +430,15 @@ export default function WhatWeDo() {
           copy/style, now heading this section instead of standing alone. */}
       <div className="max-w-3xl mx-auto text-center px-6 pt-24 pb-16 md:pt-32 md:pb-20">
         <h2 className="font-display leading-tight text-[clamp(1.5rem,2.6vw,2.75rem)]" style={{ color: '#F2F0EB' }}>
-          All the resources of an Agency,
+          All the resources of an Agency
           <br />
           <motion.span
             animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}
             transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
           >
             <TextGradient as="span">at your reach.</TextGradient>
-          </motion.span>
+          </motion.span>{' '}
+          On demand
         </h2>
       </div>
       {/* No shared width wrapper here — each card now carries its own

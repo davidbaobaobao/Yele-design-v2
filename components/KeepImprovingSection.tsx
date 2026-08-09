@@ -42,7 +42,7 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
       className="font-display leading-tight text-[clamp(1.5rem,2.6vw,2.75rem)]"
       style={{ color: '#F2F0EB' }}
     >
-      <span className="sr-only">We improve your website constantly.</span>
+      <span className="sr-only">We improve your website month after month.</span>
       <span aria-hidden="true">
         <span className="whitespace-nowrap">
           We <TypewriterWord words={WORDS} reduceMotion={reduceMotion} expandRight />
@@ -50,7 +50,7 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
         <br />
         your website
         <br />
-        constantly
+        <span className="whitespace-nowrap">month after month</span>
       </span>
     </h2>
   )
