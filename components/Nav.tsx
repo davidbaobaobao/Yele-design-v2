@@ -8,10 +8,14 @@ import { useLang } from '@/context/LanguageContext'
 import { CTAButton } from '@/components/ui/cta-button'
 import { scrollToSection } from '@/lib/nav-scroll'
 
+// href starting with '#' is a same-page scroll anchor (scrollToSection,
+// silently no-ops if the target isn't on the current page); anything else
+// is a real route rendered as a plain <Link>.
 const LINKS = [
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Work', href: '#trabajos' },
   { label: 'Pricing', href: '#precios' },
+  { label: 'Services', href: '/services' },
   { label: 'FAQ', href: '#faq' },
 ]
 
@@ -158,17 +162,20 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
           </Link>
 
           <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-            {LINKS.map(link => (
-              <button
-                key={link.href}
-                onClick={() => scrollTo(link.href)}
-                className={`font-body text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline ${
-                  showBoneText ? 'text-bone/80 hover:text-bone' : 'text-muted hover:text-ink'
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
+            {LINKS.map(link => {
+              const linkClass = `font-body text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline ${
+                showBoneText ? 'text-bone/80 hover:text-bone' : 'text-muted hover:text-ink'
+              }`
+              return link.href.startsWith('#') ? (
+                <button key={link.href} onClick={() => scrollTo(link.href)} className={linkClass}>
+                  {link.label}
+                </button>
+              ) : (
+                <Link key={link.href} href={link.href} className={linkClass}>
+                  {link.label}
+                </Link>
+              )
+            })}
           </div>
 
           <div className="hidden md:flex items-center gap-4">
@@ -210,15 +217,18 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
             transition={{ duration: 0.2 }}
             className="fixed top-20 left-4 right-4 z-40 bg-base/95 backdrop-blur-xl rounded-2xl border border-hairline p-4 md:hidden"
           >
-            {LINKS.map(link => (
-              <button
-                key={link.href}
-                onClick={() => scrollTo(link.href)}
-                className="w-full text-left font-body text-base text-ink py-3 border-b border-hairline last:border-0 cursor-pointer"
-              >
-                {link.label}
-              </button>
-            ))}
+            {LINKS.map(link => {
+              const mobileLinkClass = 'w-full text-left font-body text-base text-ink py-3 border-b border-hairline last:border-0 cursor-pointer'
+              return link.href.startsWith('#') ? (
+                <button key={link.href} onClick={() => scrollTo(link.href)} className={mobileLinkClass}>
+                  {link.label}
+                </button>
+              ) : (
+                <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className={`${mobileLinkClass} block`}>
+                  {link.label}
+                </Link>
+              )
+            })}
             <div className="flex items-center gap-3 pt-3">
               <button
                 type="button"

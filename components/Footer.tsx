@@ -155,6 +155,14 @@ export default function Footer() {
                         {t(es, en)}
                       </button>
                     ))}
+                    {/* Real route, not a same-page scroll anchor — services
+                        packages/add-ons page (app/services/page.tsx). */}
+                    <a
+                      href="/services"
+                      className="text-left font-body text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+                    >
+                      {t('Servicios', 'Services')}
+                    </a>
                   </div>
                 </nav>
 
