@@ -64,6 +64,14 @@ export default function ConveyorVideoSection() {
         aria-hidden="true"
       />
 
+      {/* Top-edge fade into the dark section above — same #0D0E12, so the
+          video's top edge blends in instead of cutting off hard against it. */}
+      <div
+        className="absolute inset-x-0 top-0 h-40 md:h-56 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, #0D0E12 0%, rgba(13,14,18,0) 100%)' }}
+        aria-hidden="true"
+      />
+
       {/* Top-left anchored, same left inset as the hero's own text column;
           items-start (not the hero's items-center) + top padding to clear
           the fixed nav instead of vertically centering. Standard non-hero

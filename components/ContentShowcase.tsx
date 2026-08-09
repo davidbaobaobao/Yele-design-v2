@@ -12,7 +12,8 @@ const SECTION_BG = '#0D0E12'
 
 // Flat brand pink (not TextGradient) with the same soft opacity pulse used
 // elsewhere on the site (StatsBold's "∞", AgencyIntro's "From $99/mo.") —
-// shared by the "*" separators and "any" in the marquee below.
+// shared by the "*" separators and each phrase's pink word in the three
+// marquees below.
 function PinkPulse({ children, reduceMotion }: { children: React.ReactNode; reduceMotion: boolean }) {
   return (
     <motion.span
@@ -275,73 +276,30 @@ function VideoTile({
 // scale like it used to.
 const MARQUEE_FONT = 'text-[clamp(1.5rem,2.6vw,2.75rem)]'
 
-// One repeating "Want content? * We create any content *" block — rendered
-// twice back-to-back inside a track that animates translateX(0 -> -50%),
-// the same seamless-loop marquee trick as ContactForm's "CONTACT US *" run
-// and LogoMarquee (hero-marquee-track / marqueeLeft in globals.css). Never
-// pauses on hover.
-function WantContentRun({ reduceMotion }: { reduceMotion: boolean }) {
-  return (
-    <div className="flex items-center shrink-0">
-      {Array.from({ length: 4 }, (_, i) => (
-        <div key={i} className="flex items-center shrink-0">
-          <span className={`font-display font-bold whitespace-nowrap ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
-            Want content?
-          </span>
-          <span className={`font-display font-bold mx-6 md:mx-10 ${MARQUEE_FONT}`}>
-            <PinkPulse reduceMotion={reduceMotion}>*</PinkPulse>
-          </span>
-          <span className={`font-display font-bold whitespace-nowrap ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
-            We create <PinkPulse reduceMotion={reduceMotion}>any</PinkPulse> content
-          </span>
-          <span className={`font-display font-bold mx-6 md:mx-10 ${MARQUEE_FONT}`}>
-            <PinkPulse reduceMotion={reduceMotion}>*</PinkPulse>
-          </span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// Sits after the video grid now (moved from between the two grids) — same
-// #0D0E12 as every other dark section, so it flows straight off the video
-// grid instead of reading as its own light beat. want-content-marquee-track
-// is the same marqueeLeft loop as hero-marquee-track, just ~22% slower.
-function WantContentMarquee() {
-  const reduceMotion = !!useHydratedReducedMotion()
-  return (
-    <section className="relative overflow-hidden py-2 md:py-3" style={{ backgroundColor: SECTION_BG }}>
-      <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
-        <WantContentRun reduceMotion={reduceMotion} />
-        <WantContentRun reduceMotion={reduceMotion} />
-      </div>
-    </section>
-  )
-}
-
-// One phrase in a PhraseMarqueeRun — `pink` (optional — "Social media
-// reels" has none) is the single word/phrase within `before`/`after` that
-// gets the PinkPulse fade/glow treatment; everything else stays bone.
+// One phrase in a PhraseMarqueeRun — `pink` (optional) is the single
+// word/phrase within `before`/`after` that gets the PinkPulse fade/glow
+// treatment; everything else stays bone.
 type MarqueePhrase = { before: string; pink?: string; after?: string }
 
 const IMAGE_MARQUEE_PHRASES: MarqueePhrase[] = [
-  { before: 'We create stunning ', pink: 'images', after: ' for your website' },
-  { before: 'Bring your ', pink: 'ideas', after: ' to life' },
-  { before: 'Custom ', pink: 'visuals', after: ' designed for your website' },
+  { before: 'We bring your ', pink: 'ideas', after: ' to life' },
+  { before: 'We create stunning ', pink: 'images', after: ' for you' },
 ]
 
 const VIDEO_MARQUEE_PHRASES: MarqueePhrase[] = [
-  { before: 'Bring your ', pink: 'story', after: ' to life' },
-  { before: 'Custom ', pink: 'videos', after: ' for your website' },
-  { before: 'Enhance your ', pink: 'brand' },
-  { before: 'Social media reels' },
+  { before: 'We bring your ', pink: 'story', after: ' to life' },
+  { before: 'We create custom ', pink: 'videos', after: ' for you' },
 ]
 
-// Generic version of WantContentRun above — same "*"-separated seamless
-// loop, but driven by a phrase list (each with at most one pink word)
-// instead of a fixed two-phrase pattern. Shared by both the image and
-// video pre-grid marquees below so they're never two near-duplicate
-// implementations drifting apart.
+const WANT_CONTENT_MARQUEE_PHRASES: MarqueePhrase[] = [
+  { before: 'We ', pink: 'enhance', after: ' your brand' },
+  { before: 'We ', pink: 'create', after: ' any content' },
+]
+
+// "*"-separated seamless loop driven by a phrase list (each with at most
+// one pink word). Shared by all three marquees on this page (the two
+// pre-grid ones and WantContentMarquee below) so they're never near-
+// duplicate implementations drifting apart.
 function PhraseMarqueeRun({ phrases, reduceMotion }: { phrases: MarqueePhrase[]; reduceMotion: boolean }) {
   return (
     <div className="flex items-center shrink-0">
@@ -376,6 +334,23 @@ function PhraseMarquee({ phrases }: { phrases: MarqueePhrase[] }) {
       <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
         <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
         <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
+      </div>
+    </section>
+  )
+}
+
+// Sits after the video grid now (moved from between the two grids) — same
+// #0D0E12 as every other dark section, so it flows straight off the video
+// grid instead of reading as its own light beat. Same PhraseMarqueeRun
+// engine as the two marquees above (just its own phrase list + symmetric
+// py-* since, unlike those two, it has no grid below it to hug tight).
+function WantContentMarquee() {
+  const reduceMotion = !!useHydratedReducedMotion()
+  return (
+    <section className="relative overflow-hidden py-2 md:py-3" style={{ backgroundColor: SECTION_BG }}>
+      <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
+        <PhraseMarqueeRun phrases={WANT_CONTENT_MARQUEE_PHRASES} reduceMotion={reduceMotion} />
+        <PhraseMarqueeRun phrases={WANT_CONTENT_MARQUEE_PHRASES} reduceMotion={reduceMotion} />
       </div>
     </section>
   )
@@ -457,12 +432,12 @@ function PinnedVideoGrid() {
 }
 
 // Static (no scrolling) stand-in for a PhraseMarquee under reduced motion —
-// same wrapped-row treatment LogoMarquee/"Want content?" use.
-function StaticPhraseBlock({ phrases }: { phrases: MarqueePhrase[] }) {
-  // Top-only padding, matching PhraseMarquee's animated counterpart — this
-  // sits directly above its grid section, which should hug it tight.
+// same wrapped-row treatment LogoMarquee/"Want content?" use. symmetricPadding
+// matches WantContentMarquee's py-* (it has no grid below it to hug tight,
+// unlike the other two callers, which stay top-only via PhraseMarquee).
+function StaticPhraseBlock({ phrases, symmetricPadding = false }: { phrases: MarqueePhrase[]; symmetricPadding?: boolean }) {
   return (
-    <section className="relative pt-2 md:pt-3 px-6" style={{ backgroundColor: SECTION_BG }}>
+    <section className={`relative ${symmetricPadding ? 'py-2 md:py-3' : 'pt-2 md:pt-3'} px-6`} style={{ backgroundColor: SECTION_BG }}>
       <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
         {phrases.map((p, i) => (
           <span key={i} className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
@@ -579,19 +554,7 @@ function ContentShowcaseReduced() {
       {/* Static (no scrolling) stand-in for the marquee above — same
           wrapped-row treatment LogoMarquee uses for reduced motion. Sits
           after the video grid now, matching the animated version. */}
-      <section className="relative py-2 md:py-3 px-6" style={{ backgroundColor: SECTION_BG }}>
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-          <span className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
-            Want content?
-          </span>
-          <span className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#D46FC8' }}>
-            *
-          </span>
-          <span className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
-            We create <span style={{ color: '#D46FC8' }}>any</span> content
-          </span>
-        </div>
-      </section>
+      <StaticPhraseBlock phrases={WANT_CONTENT_MARQUEE_PHRASES} symmetricPadding />
     </>
   )
 }
