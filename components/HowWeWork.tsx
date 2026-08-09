@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValueEvent, useScroll, type Transition } from 'framer-motion'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useEarlyReveal } from '@/hooks/useEarlyReveal'
 
 const MEDIA_DIR = '/media/howwework2'
 
@@ -280,6 +281,11 @@ function HowWeWorkStep({
   const textOrder = visualFirst ? 'md:order-2' : 'md:order-1'
   const visualOrder = visualFirst ? 'md:order-1' : 'md:order-2'
 
+  const textRef = useRef<HTMLDivElement>(null)
+  const visualRef = useRef<HTMLDivElement>(null)
+  const textReveal = useEarlyReveal(textRef)
+  const visualReveal = useEarlyReveal(visualRef)
+
   if (reduceMotion) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-stretch md:min-h-[70vh] mb-24">
@@ -302,11 +308,11 @@ function HowWeWorkStep({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-stretch md:min-h-[70vh] mb-24">
       <motion.div
+        ref={textRef}
         className={textOrder}
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        initial={textReveal === 'shown' ? false : { opacity: 0, y: 24 }}
+        animate={textReveal === 'hidden' ? undefined : { opacity: 1, y: 0 }}
+        transition={textReveal === 'shown' ? { duration: 0 } : { duration: 0.25, ease: 'easeOut' }}
       >
         <StepText
           step={step}
@@ -318,11 +324,11 @@ function HowWeWorkStep({
       </motion.div>
 
       <motion.div
+        ref={visualRef}
         className={visualOrder}
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+        initial={visualReveal === 'shown' ? false : { opacity: 0, y: 24 }}
+        animate={visualReveal === 'hidden' ? undefined : { opacity: 1, y: 0 }}
+        transition={visualReveal === 'shown' ? { duration: 0 } : { duration: 0.25, delay: 0.05, ease: 'easeOut' }}
       >
         <StepVisual step={step} videoRef={videoRef} reduceMotion={reduceMotion} />
       </motion.div>

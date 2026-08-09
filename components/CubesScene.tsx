@@ -27,10 +27,13 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
       const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      // 1.5 rather than the usual 2 — this canvas now covers the full hero
+      // 1.25 rather than the usual 2 — this canvas now covers the full hero
       // (not a half-width box), so full DPR at that size is a meaningfully
-      // heavier per-frame cost for a visually marginal sharpness gain.
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+      // heavier per-frame cost for a visually marginal sharpness gain. Now
+      // that the cubes boot deferred (idle + IntersectionObserver-gated,
+      // see Hero.tsx), keeping the per-frame GPU cost down matters more
+      // than the last bit of sharpness.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
       renderer.setSize(getW(), getH());
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.28;
@@ -172,9 +175,20 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
         }
         renderer.render(scene,camera);
       }
+      // Throttled to ~30fps — the cluster's own motion (a slow rotation +
+      // pointer-follow lag) reads just as smooth at half the browser's
+      // usual 60fps cadence, for half the per-frame GPU/main-thread cost.
+      // Still schedules a raf every frame (so the callback keeps sampling
+      // performance.now() promptly) but only actually renders once enough
+      // time has passed.
+      const FRAME_INTERVAL = 1000 / 30;
+      let lastFrameTime = 0;
       function animate(){
-        frame();
         raf=requestAnimationFrame(animate);
+        const now = performance.now();
+        if (now - lastFrameTime < FRAME_INTERVAL) return;
+        lastFrameTime = now;
+        frame();
       }
 
       // First frame — reveal the canvas and tell the caller (Hero fades

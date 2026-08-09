@@ -80,7 +80,7 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
     if (w.requestIdleCallback) {
       idleId = w.requestIdleCallback(() => setIdleFired(true), { timeout: 1500 })
     } else {
-      idleId = window.setTimeout(() => setIdleFired(true), 1000)
+      idleId = window.setTimeout(() => setIdleFired(true), 800)
     }
     return () => {
       if (w.cancelIdleCallback) w.cancelIdleCallback(idleId)

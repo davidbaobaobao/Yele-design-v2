@@ -1,6 +1,8 @@
 'use client'
 
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
+import { useEarlyReveal } from '@/hooks/useEarlyReveal'
 
 export type FeatureCardMedia = {
   title: string
@@ -65,14 +67,17 @@ export default function FeatureCard({
     </div>
   )
 
+  const ref = useRef<HTMLDivElement>(null)
+  const reveal = useEarlyReveal(ref)
+
   if (reduceMotion) return inner
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
+      ref={ref}
+      initial={reveal === 'shown' ? false : { opacity: 0, y: 20 }}
+      animate={reveal === 'hidden' ? undefined : { opacity: 1, y: 0 }}
+      transition={reveal === 'shown' ? { duration: 0 } : { duration: 0.2, delay: index * 0.05, ease: 'easeOut' }}
     >
       {inner}
     </motion.div>
