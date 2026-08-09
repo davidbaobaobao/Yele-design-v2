@@ -5,6 +5,9 @@ import { motion, useMotionValueEvent, useScroll, type Transition } from 'framer-
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useEarlyReveal } from '@/hooks/useEarlyReveal'
+import { useEarlyLoad } from '@/hooks/useEarlyLoad'
+import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
+import PosterVideo from '@/components/ui/poster-video'
 
 const MEDIA_DIR = '/media/howwework2'
 
@@ -123,7 +126,7 @@ function Media({
 }: {
   videoBase: string
   alt: string
-  videoRef: React.Ref<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   reduceMotion: boolean
 }) {
   const poster = `${MEDIA_DIR}/${videoBase}_poster.jpg`
@@ -134,6 +137,7 @@ function Media({
   // panel's own overflow-hidden clip instead of needing to re-encode the
   // source file. Harmless on the other three at this size.
   const scaleStyle = { transform: 'scale(1.03)' }
+  useEarlyLoad(videoRef)
 
   if (reduceMotion) {
     // eslint-disable-next-line @next/next/no-img-element
@@ -141,16 +145,12 @@ function Media({
   }
 
   return (
-    <video
-      ref={videoRef}
-      muted
-      loop
-      playsInline
-      preload="none"
+    <PosterVideo
+      videoRef={videoRef}
       poster={poster}
+      posterAlt={alt}
       className="absolute inset-0 w-full h-full object-cover"
       style={scaleStyle}
-      aria-hidden="true"
     >
       {/* media-query <source>: mobile (iOS included — no webm support
           there) never considers the webm/desktop-mp4 pair below; desktop
@@ -158,7 +158,7 @@ function Media({
       <source media="(max-width: 767px)" src={`${MEDIA_DIR}/${videoBase}_mobile.mp4`} type="video/mp4" />
       <source src={`${MEDIA_DIR}/${videoBase}_hq.webm`} type="video/webm" />
       <source src={`${MEDIA_DIR}/${videoBase}_hq.mp4`} type="video/mp4" />
-    </video>
+    </PosterVideo>
   )
 }
 
@@ -248,7 +248,7 @@ function StepVisual({
   reduceMotion,
 }: {
   step: StepData
-  videoRef: React.Ref<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   reduceMotion: boolean
 }) {
   // Video panels stay as-is regardless of the section's dark/light state —
@@ -271,7 +271,7 @@ function HowWeWorkStep({
 }: {
   step: StepData
   index: number
-  videoRef: React.Ref<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   reduceMotion: boolean
   primaryColor: string
   secondaryColor: string
@@ -408,58 +408,12 @@ export default function HowWeWork() {
     window.dispatchEvent(new CustomEvent('nav:fademode', { detail: { dark: !pastThreshold } }))
   }, [pastThreshold, reduceMotion])
 
-  // One shared IntersectionObserver drives play/pause for all four videos —
-  // play once a step is >=30% visible, pause otherwise. Same iOS-safe
-  // attribute-setting + retry pattern used across the site's other video
-  // sections (WhatWeDo, WhyYele, BeyondWebsite).
-  useEffect(() => {
-    if (reduceMotion) return
-    const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
-    if (videos.length === 0) return
-
-    videos.forEach(v => {
-      v.setAttribute('muted', '')
-      v.setAttribute('playsinline', '')
-      v.setAttribute('webkit-playsinline', '')
-      v.muted = true
-    })
-
-    const play = (v: HTMLVideoElement) => {
-      if (!v.paused && !v.ended) return
-      v.muted = true
-      if (v.ended) v.currentTime = 0
-      if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
-      v.play().catch(() => {
-        setTimeout(() => {
-          if (v.paused || v.ended) {
-            v.muted = true
-            v.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, v.currentSrc))
-          }
-        }, 300)
-      })
-    }
-
-    const onEnded = (e: Event) => play(e.target as HTMLVideoElement)
-    videos.forEach(v => v.addEventListener('ended', onEnded))
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          const v = entry.target as HTMLVideoElement
-          if (entry.isIntersecting) play(v)
-          else v.pause()
-        })
-      },
-      { threshold: 0.3 }
-    )
-    videos.forEach(v => observer.observe(v))
-
-    return () => {
-      observer.disconnect()
-      videos.forEach(v => v.removeEventListener('ended', onEnded))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduceMotion])
+  // Play once a step is >=30% visible, pause otherwise. Also caps
+  // concurrent plays on Safari specifically (see the hook) — WebKit's
+  // decoder ceiling is what caused the one-by-one staggered start there.
+  // Same iOS-safe attribute-setting + retry pattern used across the
+  // site's other video sections (WhatWeDo, WhyYele, BeyondWebsite).
+  useCappedVideoPlayback(videoRefs, { reduceMotion })
 
   // ---- Reduced motion: skip the fade entirely — static white bg, black
   // text, still readable. No dark entry phase, so this section doesn't

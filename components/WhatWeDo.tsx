@@ -5,6 +5,9 @@ import Image from 'next/image'
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { TextGradient } from '@/components/ui/text-gradient'
+import { useEarlyLoad } from '@/hooks/useEarlyLoad'
+import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
+import PosterVideo from '@/components/ui/poster-video'
 
 const CARD_BG = '#16171C'
 const VIDEO_DIR = '/media/wesection'
@@ -158,13 +161,14 @@ function VideoPanel({
   title,
   reduceMotion,
 }: {
-  videoRef: React.Ref<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   videoBase: string
   title: string
   reduceMotion: boolean
 }) {
   const poster = `${VIDEO_DIR}/${videoBase}_poster.jpg`
   const fadeMask = 'linear-gradient(to right, transparent 0%, black 12%)'
+  useEarlyLoad(videoRef)
 
   return (
     <div
@@ -174,15 +178,11 @@ function VideoPanel({
       {reduceMotion ? (
         <Image src={poster} alt={title} fill sizes="(max-width: 768px) 100vw, 40vw" className="object-cover" />
       ) : (
-        <video
-          ref={videoRef}
-          muted
-          loop
-          playsInline
-          preload="none"
+        <PosterVideo
+          videoRef={videoRef}
           poster={poster}
+          posterAlt={title}
           className="absolute inset-0 w-full h-full object-cover"
-          aria-hidden="true"
         >
           {/* ffmpeg -i {videoBase}_hq.mp4 -vf "scale=480:-2" -c:v libx264
               -profile:v main -crf 30 -preset slow -pix_fmt yuv420p
@@ -193,7 +193,7 @@ function VideoPanel({
           <source media="(max-width: 767px)" src={`${VIDEO_DIR}/${videoBase}_mobile.mp4`} type="video/mp4" />
           <source src={`${VIDEO_DIR}/${videoBase}_hq.webm`} type="video/webm" />
           <source src={`${VIDEO_DIR}/${videoBase}_hq.mp4`} type="video/mp4" />
-        </video>
+        </PosterVideo>
       )}
     </div>
   )
@@ -231,7 +231,7 @@ function WhatWeDoCard({
 }: {
   card: CardData
   index: number
-  videoRef: React.Ref<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   dim: MotionValue<number> | null
   reduceMotion: boolean
   rootRef?: React.Ref<HTMLDivElement>
@@ -410,57 +410,11 @@ export default function WhatWeDo() {
   const video4Ref = useRef<HTMLVideoElement>(null)
   const videoRefs = [video1Ref, video2Ref, video3Ref, video4Ref]
 
-  // One shared IntersectionObserver drives play/pause for all four videos —
-  // play once a card is >=30% visible, pause otherwise. The stacking means
-  // at most two cards are ever meaningfully on screen at once.
-  useEffect(() => {
-    if (reduceMotion) return
-    const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
-    if (videos.length === 0) return
-
-    videos.forEach(v => {
-      v.setAttribute('muted', '')
-      v.setAttribute('playsinline', '')
-      v.setAttribute('webkit-playsinline', '')
-      v.muted = true
-    })
-
-    const play = (v: HTMLVideoElement) => {
-      if (!v.paused && !v.ended) return
-      v.muted = true
-      if (v.ended) v.currentTime = 0
-      if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
-      v.play().catch(() => {
-        setTimeout(() => {
-          if (v.paused || v.ended) {
-            v.muted = true
-            v.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, v.currentSrc))
-          }
-        }, 300)
-      })
-    }
-
-    const onEnded = (e: Event) => play(e.target as HTMLVideoElement)
-    videos.forEach(v => v.addEventListener('ended', onEnded))
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          const v = entry.target as HTMLVideoElement
-          if (entry.isIntersecting) play(v)
-          else v.pause()
-        })
-      },
-      { threshold: 0.3 }
-    )
-    videos.forEach(v => observer.observe(v))
-
-    return () => {
-      observer.disconnect()
-      videos.forEach(v => v.removeEventListener('ended', onEnded))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduceMotion])
+  // Play once a card is >=30% visible, pause otherwise — the stacking
+  // means at most two cards are ever meaningfully on screen at once. Also
+  // caps concurrent plays on Safari specifically (see the hook) — WebKit's
+  // decoder ceiling is what caused the one-by-one staggered start there.
+  useCappedVideoPlayback(videoRefs, { reduceMotion })
 
   return (
     // pt-px: the first card's own my-2 top margin has nothing (no padding

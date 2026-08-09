@@ -3,6 +3,8 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useEarlyReveal } from '@/hooks/useEarlyReveal'
+import { useEarlyLoad } from '@/hooks/useEarlyLoad'
+import PosterVideo from '@/components/ui/poster-video'
 
 export type FeatureCardMedia = {
   title: string
@@ -28,11 +30,15 @@ export default function FeatureCard({
 }: {
   card: FeatureCardMedia
   index: number
-  videoRef: React.Ref<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   reduceMotion: boolean
   panelBg: string
   titleColor: string
 }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const reveal = useEarlyReveal(ref)
+  useEarlyLoad(videoRef)
+
   const inner = (
     <div>
       <div className={`relative aspect-square rounded-2xl overflow-hidden ${panelBg}`}>
@@ -40,15 +46,11 @@ export default function FeatureCard({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={card.poster} alt={card.title} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
-          <video
-            ref={videoRef}
-            muted
-            loop
-            playsInline
-            preload="none"
+          <PosterVideo
+            videoRef={videoRef}
             poster={card.poster}
+            posterAlt={card.title}
             className="absolute inset-0 w-full h-full object-cover"
-            aria-hidden="true"
           >
             {/* media-query <source>: mobile (iOS included — no webm
                 support there) never considers the webm/desktop-mp4 pair
@@ -57,7 +59,7 @@ export default function FeatureCard({
             <source media="(max-width: 767px)" src={card.mobileSrc} type="video/mp4" />
             <source src={card.webmSrc} type="video/webm" />
             <source src={card.mp4Src} type="video/mp4" />
-          </video>
+          </PosterVideo>
         )}
       </div>
       <div className="mt-5">
@@ -66,9 +68,6 @@ export default function FeatureCard({
       </div>
     </div>
   )
-
-  const ref = useRef<HTMLDivElement>(null)
-  const reveal = useEarlyReveal(ref)
 
   if (reduceMotion) return inner
 

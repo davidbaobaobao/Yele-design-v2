@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { motion, type Transition } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useDealFade } from '@/components/DealFadeContext'
 import FeatureCard from './FeatureCard'
@@ -77,57 +78,12 @@ export default function BeyondWebsite() {
     useRef<HTMLVideoElement>(null),
   ]
 
-  // One shared IntersectionObserver drives play/pause for all six panels —
-  // play once a card is >=30% visible, pause otherwise, so we never force
-  // all six to decode/play at once.
-  useEffect(() => {
-    if (reduceMotion) return
-    const videos = videoRefs.map(r => r.current).filter((v): v is HTMLVideoElement => !!v)
-    if (videos.length === 0) return
-
-    videos.forEach(v => {
-      v.setAttribute('muted', '')
-      v.setAttribute('playsinline', '')
-      v.setAttribute('webkit-playsinline', '')
-      v.muted = true
-    })
-
-    const play = (v: HTMLVideoElement) => {
-      if (!v.paused && !v.ended) return
-      v.muted = true
-      if (v.ended) v.currentTime = 0
-      if (v.networkState === HTMLMediaElement.NETWORK_EMPTY) v.load()
-      v.play().catch(() => {
-        setTimeout(() => {
-          if (v.paused || v.ended) {
-            v.muted = true
-            v.play().catch(err => console.warn('[video autoplay] rejected after retry:', err?.name, err?.message, v.currentSrc))
-          }
-        }, 300)
-      })
-    }
-
-    const onEnded = (e: Event) => play(e.target as HTMLVideoElement)
-    videos.forEach(v => v.addEventListener('ended', onEnded))
-
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          const v = entry.target as HTMLVideoElement
-          if (entry.isIntersecting) play(v)
-          else v.pause()
-        })
-      },
-      { threshold: 0.3 }
-    )
-    videos.forEach(v => observer.observe(v))
-
-    return () => {
-      observer.disconnect()
-      videos.forEach(v => v.removeEventListener('ended', onEnded))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduceMotion])
+  // Play once a card is >=30% visible, pause otherwise, so we never force
+  // all six to decode/play at once. On Safari specifically, this hook also
+  // caps how many can be simultaneously playing (WebKit's decoder ceiling
+  // is what caused the one-by-one staggered start there); Chrome/Firefox
+  // never hit that cap.
+  useCappedVideoPlayback(videoRefs, { reduceMotion })
 
   if (reduceMotion) {
     return (
