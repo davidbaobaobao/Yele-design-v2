@@ -265,60 +265,13 @@ function VideoTile({
   )
 }
 
-// "Card 13" (1-indexed, matching the tile filenames/n numbering) — index
-// 12 (0-indexed) lands at the exact center column and the row just above
-// the bottom in both grids' layouts, i.e. the lower-center tile.
-const OVERLAY_TILE_INDEX = 12
-
-// Overlay text sitting IN FRONT of a tile grid, anchored to card 13's own
-// FINAL resting slot (tileGeometry gives the tile's settled position
-// directly — independent of the reveal progress that animates tiles up
-// into it) rather than centered over the whole grid, so it reads as text
-// sitting inside that one card. No wash/mask — flat color at 70% opacity
-// lets the tile under it still show through. Sized well below the
-// standard section-header token (which this used before centered) since
-// it now has to fit inside a single grid cell, not the whole viewport.
-function GridOverlay({
-  small,
-  big,
-  color,
-  cols,
-  rows,
-}: {
-  small: string
-  big: string
-  color: string
-  cols: number
-  rows: number
-}) {
-  const { width, height, centerX, centerY } = tileGeometry(OVERLAY_TILE_INDEX, cols, rows)
-  return (
-    <div
-      className="absolute z-20 flex flex-col items-center justify-center text-center px-1 pointer-events-none"
-      style={{
-        left: `${centerX}%`,
-        top: `${centerY}%`,
-        width: `${width}%`,
-        height: `${height}%`,
-        transform: 'translate(-50%, -50%)',
-      }}
-      aria-hidden="true"
-    >
-      <span
-        className="font-display leading-tight uppercase tracking-tight text-[clamp(0.6rem,1.7vw,1.3rem)]"
-        style={{ color }}
-      >
-        {small}
-      </span>
-      <span
-        className="font-display leading-tight uppercase tracking-tight text-[clamp(0.6rem,1.7vw,1.3rem)]"
-        style={{ color }}
-      >
-        {big}
-      </span>
-    </div>
-  )
-}
+// Standard non-hero section-header size (matches WhyYele.tsx/
+// AgencyIntro.tsx's shared h2 token, and the size the card-13 overlay text
+// used before it was removed) — all three marquees on this page (the two
+// pre-grid ones below, plus "Want content?" further down) share this one
+// size now, rather than "Want content?" running at a much larger hero-ish
+// scale like it used to.
+const MARQUEE_FONT = 'text-[clamp(1.5rem,2.6vw,2.75rem)]'
 
 // One repeating "Want content? * We create any content *" block — rendered
 // twice back-to-back inside a track that animates translateX(0 -> -50%),
@@ -330,16 +283,16 @@ function WantContentRun({ reduceMotion }: { reduceMotion: boolean }) {
     <div className="flex items-center shrink-0">
       {Array.from({ length: 4 }, (_, i) => (
         <div key={i} className="flex items-center shrink-0">
-          <span className="font-display font-bold whitespace-nowrap text-[clamp(1.75rem,4.5vw,3.5rem)]" style={{ color: '#F2F0EB' }}>
+          <span className={`font-display font-bold whitespace-nowrap ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
             Want content?
           </span>
-          <span className="font-display font-bold mx-6 md:mx-10 text-[clamp(1.75rem,4.5vw,3.5rem)]">
+          <span className={`font-display font-bold mx-6 md:mx-10 ${MARQUEE_FONT}`}>
             <PinkPulse reduceMotion={reduceMotion}>*</PinkPulse>
           </span>
-          <span className="font-display font-bold whitespace-nowrap text-[clamp(1.75rem,4.5vw,3.5rem)]" style={{ color: '#F2F0EB' }}>
+          <span className={`font-display font-bold whitespace-nowrap ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
             We create <PinkPulse reduceMotion={reduceMotion}>any</PinkPulse> content
           </span>
-          <span className="font-display font-bold mx-6 md:mx-10 text-[clamp(1.75rem,4.5vw,3.5rem)]">
+          <span className={`font-display font-bold mx-6 md:mx-10 ${MARQUEE_FONT}`}>
             <PinkPulse reduceMotion={reduceMotion}>*</PinkPulse>
           </span>
         </div>
@@ -364,6 +317,64 @@ function WantContentMarquee() {
   )
 }
 
+// One phrase in a PhraseMarqueeRun — `pink` (optional — "Social media
+// reels" has none) is the single word/phrase within `before`/`after` that
+// gets the PinkPulse fade/glow treatment; everything else stays bone.
+type MarqueePhrase = { before: string; pink?: string; after?: string }
+
+const IMAGE_MARQUEE_PHRASES: MarqueePhrase[] = [
+  { before: 'We create stunning ', pink: 'images', after: ' for your website' },
+  { before: 'Bring your ', pink: 'ideas', after: ' to life' },
+  { before: 'Custom ', pink: 'visuals', after: ' designed for your website' },
+]
+
+const VIDEO_MARQUEE_PHRASES: MarqueePhrase[] = [
+  { before: 'Bring your ', pink: 'story', after: ' to life' },
+  { before: 'Custom ', pink: 'videos', after: ' for your website' },
+  { before: 'Enhance your ', pink: 'brand' },
+  { before: 'Social media reels' },
+]
+
+// Generic version of WantContentRun above — same "*"-separated seamless
+// loop, but driven by a phrase list (each with at most one pink word)
+// instead of a fixed two-phrase pattern. Shared by both the image and
+// video pre-grid marquees below so they're never two near-duplicate
+// implementations drifting apart.
+function PhraseMarqueeRun({ phrases, reduceMotion }: { phrases: MarqueePhrase[]; reduceMotion: boolean }) {
+  return (
+    <div className="flex items-center shrink-0">
+      {Array.from({ length: 3 }, (_, r) => (
+        <div key={r} className="flex items-center shrink-0">
+          {phrases.map((p, i) => (
+            <div key={i} className="flex items-center shrink-0">
+              <span className={`font-display font-bold whitespace-nowrap ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
+                {p.before}
+                {p.pink && <PinkPulse reduceMotion={reduceMotion}>{p.pink}</PinkPulse>}
+                {p.after}
+              </span>
+              <span className={`font-display font-bold mx-6 md:mx-10 ${MARQUEE_FONT}`}>
+                <PinkPulse reduceMotion={reduceMotion}>*</PinkPulse>
+              </span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function PhraseMarquee({ phrases }: { phrases: MarqueePhrase[] }) {
+  const reduceMotion = !!useHydratedReducedMotion()
+  return (
+    <section className="relative overflow-hidden py-16 md:py-20" style={{ backgroundColor: SECTION_BG }}>
+      <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
+        <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
+        <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
+      </div>
+    </section>
+  )
+}
+
 // One tall (~320vh) wrapper + sticky inner + its OWN useScroll progress —
 // the shared shape behind both PinnedImageGrid and PinnedVideoGrid below.
 // Long enough that the pyramid reveal takes several controlled scrolls to
@@ -375,11 +386,9 @@ function WantContentMarquee() {
 function PinnedReveal({
   count,
   renderTile,
-  overlay,
 }: {
   count: number
   renderTile: (index: number, progress: MotionValue<number>) => React.ReactNode
-  overlay?: (progress: MotionValue<number>) => React.ReactNode
 }) {
   const wrapperRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ['start start', 'end end'] })
@@ -394,7 +403,6 @@ function PinnedReveal({
         <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d' }} aria-hidden="true">
           {Array.from({ length: count }, (_, i) => renderTile(i, scrollYProgress))}
         </div>
-        {overlay?.(scrollYProgress)}
       </div>
     </section>
   )
@@ -408,7 +416,6 @@ function PinnedImageGrid() {
     <PinnedReveal
       count={IMAGE_COUNT}
       renderTile={(i, progress) => <ImageTile key={i} index={i} progress={progress} cols={cols} rows={rows} />}
-      overlay={() => <GridOverlay small="WE CREATE" big="IMAGES" color="rgba(0,0,0,0.7)" cols={cols} rows={rows} />}
     />
   )
 }
@@ -438,9 +445,26 @@ function PinnedVideoGrid() {
       <PinnedReveal
         count={VIDEO_COUNT}
         renderTile={(i, progress) => <VideoTile key={i} index={i} progress={progress} mounted={mounted} />}
-        overlay={() => <GridOverlay small="AND" big="VIDEOS" color="rgba(255,255,255,0.7)" cols={VIDEO_COLS} rows={VIDEO_ROWS} />}
       />
     </div>
+  )
+}
+
+// Static (no scrolling) stand-in for a PhraseMarquee under reduced motion —
+// same wrapped-row treatment LogoMarquee/"Want content?" use.
+function StaticPhraseBlock({ phrases }: { phrases: MarqueePhrase[] }) {
+  return (
+    <section className="relative py-16 px-6" style={{ backgroundColor: SECTION_BG }}>
+      <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+        {phrases.map((p, i) => (
+          <span key={i} className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
+            {p.before}
+            {p.pink && <span style={{ color: '#D46FC8' }}>{p.pink}</span>}
+            {p.after}
+          </span>
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -489,6 +513,10 @@ function ContentShowcaseReduced() {
 
   return (
     <>
+      {/* Static stand-ins for the two pre-grid marquees — same wrapped-row
+          treatment as the "Want content?" one below. */}
+      <StaticPhraseBlock phrases={IMAGE_MARQUEE_PHRASES} />
+
       <section className="relative py-24 px-6" style={{ backgroundColor: SECTION_BG }}>
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-4 md:grid-cols-5 gap-1">
@@ -509,6 +537,8 @@ function ContentShowcaseReduced() {
           </div>
         </div>
       </section>
+
+      <StaticPhraseBlock phrases={VIDEO_MARQUEE_PHRASES} />
 
       <section className="relative py-24 px-6" style={{ backgroundColor: SECTION_BG }}>
         <div className="max-w-6xl mx-auto">
@@ -543,13 +573,13 @@ function ContentShowcaseReduced() {
           after the video grid now, matching the animated version. */}
       <section className="relative py-16 px-6" style={{ backgroundColor: SECTION_BG }}>
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#F2F0EB' }}>
+          <span className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
             Want content?
           </span>
-          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#D46FC8' }}>
+          <span className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#D46FC8' }}>
             *
           </span>
-          <span className="font-display font-bold text-[clamp(1.5rem,3.5vw,2.5rem)]" style={{ color: '#F2F0EB' }}>
+          <span className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
             We create <span style={{ color: '#D46FC8' }}>any</span> content
           </span>
         </div>
@@ -564,7 +594,9 @@ export default function ContentShowcase() {
 
   return (
     <>
+      <PhraseMarquee phrases={IMAGE_MARQUEE_PHRASES} />
       <PinnedImageGrid />
+      <PhraseMarquee phrases={VIDEO_MARQUEE_PHRASES} />
       <PinnedVideoGrid />
       <WantContentMarquee />
     </>
