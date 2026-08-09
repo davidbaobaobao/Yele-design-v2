@@ -90,17 +90,19 @@ function tileGeometry(index: number, cols: number, rows: number) {
 const START_Y = 100 // both grids: tiles start below the viewport, tileGeometry's 0-100 scale
 const START_SCALE = 0.94
 
-// Column pyramid — center column already 80% resolved at entry, tapering
-// linearly to 20% at the outermost columns. Derived from distance-to-center
-// (not a fixed lookup table) so the narrow 4-col mobile image layout gets
-// the same shape as the 5-col desktop one. Shared by both grids — both rise
-// from below using this baseline as-is.
+// Column pyramid — center column already fully resolved (100%) at entry,
+// tapering linearly to 50% at the outermost columns, so the grid is mostly
+// filled the moment the section is entered and there's minimal empty space
+// under the marquee. Derived from distance-to-center (not a fixed lookup
+// table) so the narrow 4-col mobile image layout gets the same shape as the
+// 5-col desktop one. Shared by both grids — both rise from below using this
+// baseline as-is.
 function columnInitialReveal(col: number, cols: number) {
   const centerCol = (cols - 1) / 2
   const maxDist = centerCol
-  if (maxDist === 0) return 0.8
+  if (maxDist === 0) return 1
   const dist = Math.abs(col - centerCol)
-  return 0.8 - 0.6 * (dist / maxDist)
+  return 1 - 0.5 * (dist / maxDist)
 }
 
 // Below this width, the desktop 5x4 grid produces awkward cells — swap to
