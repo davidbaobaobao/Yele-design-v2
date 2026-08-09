@@ -112,12 +112,13 @@ html.sand-helix-page body {
   will-change: transform;
 }
 
-/* Same loop as hero-marquee-track, ~22% slower (18s -> 22s) — used by the
-   "Want content?" marquee in ContentShowcase.tsx, kept as its own class so
+/* Same loop as hero-marquee-track, slowed further (22s -> 30s, ~36% slower)
+   for a calmer pace — used by all three marquees in ContentShowcase.tsx
+   (the two pre-grid ones plus "Want content?"), kept as its own class so
    it doesn't also slow down ContactForm's "CONTACT US *" run, which shares
    hero-marquee-track. */
 .want-content-marquee-track {
-  animation: marqueeLeft 22s linear infinite;
+  animation: marqueeLeft 30s linear infinite;
   will-change: transform;
 }
 

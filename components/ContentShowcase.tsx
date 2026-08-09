@@ -308,7 +308,7 @@ function WantContentRun({ reduceMotion }: { reduceMotion: boolean }) {
 function WantContentMarquee() {
   const reduceMotion = !!useHydratedReducedMotion()
   return (
-    <section className="relative overflow-hidden py-16 md:py-20" style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative overflow-hidden py-2 md:py-3" style={{ backgroundColor: SECTION_BG }}>
       <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
         <WantContentRun reduceMotion={reduceMotion} />
         <WantContentRun reduceMotion={reduceMotion} />
@@ -366,7 +366,7 @@ function PhraseMarqueeRun({ phrases, reduceMotion }: { phrases: MarqueePhrase[];
 function PhraseMarquee({ phrases }: { phrases: MarqueePhrase[] }) {
   const reduceMotion = !!useHydratedReducedMotion()
   return (
-    <section className="relative overflow-hidden py-16 md:py-20" style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative overflow-hidden py-2 md:py-3" style={{ backgroundColor: SECTION_BG }}>
       <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
         <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
         <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
@@ -454,7 +454,7 @@ function PinnedVideoGrid() {
 // same wrapped-row treatment LogoMarquee/"Want content?" use.
 function StaticPhraseBlock({ phrases }: { phrases: MarqueePhrase[] }) {
   return (
-    <section className="relative py-16 px-6" style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative py-2 md:py-3 px-6" style={{ backgroundColor: SECTION_BG }}>
       <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
         {phrases.map((p, i) => (
           <span key={i} className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
@@ -571,7 +571,7 @@ function ContentShowcaseReduced() {
       {/* Static (no scrolling) stand-in for the marquee above — same
           wrapped-row treatment LogoMarquee uses for reduced motion. Sits
           after the video grid now, matching the animated version. */}
-      <section className="relative py-16 px-6" style={{ backgroundColor: SECTION_BG }}>
+      <section className="relative py-2 md:py-3 px-6" style={{ backgroundColor: SECTION_BG }}>
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
           <span className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
             Want content?
