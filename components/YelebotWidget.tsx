@@ -13,12 +13,27 @@ const ROBOT_DIR = '/media/robot'
 // The pricing section's real id is #precios (Spanish, matches the rest of
 // this codebase's in-page anchors) — not the literal "pricing"/"contact"
 // naming a spec might assume. Verified against PreciosIndexSection.tsx and
-// ContactForm.tsx before wiring these.
+// ContactForm.tsx before wiring these. how-it-works/faq match Nav.tsx's own
+// anchors (HowWeWork.tsx / FAQClient.tsx).
 const PRICING_SECTION_ID = 'precios'
 const CONTACT_SECTION_ID = 'contacto'
+const HOW_IT_WORKS_SECTION_ID = 'how-it-works'
+const FAQ_SECTION_ID = 'faq'
+// Same number as the Contact section's own tel: link (ContactForm.tsx) and
+// the nav's "Call us" quick action below.
+const PHONE_TEL = 'tel:+12138458604'
 
 function scrollPageToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+// "Call us" does both: scrolls to the contact section AND launches the
+// device dialer — the scroll is a visual confirmation of intent that keeps
+// working even when the tel: link itself is a no-op (most desktop browsers
+// with no registered handler).
+function callUs() {
+  scrollPageToId(CONTACT_SECTION_ID)
+  window.location.href = PHONE_TEL
 }
 
 type Pill = { label: string; value: string; scrollToId?: string }
@@ -326,10 +341,15 @@ function StatusBubble({ label }: { label: string }) {
 const QUICK_ACTION_CLASS =
   'rounded-full border border-white/15 px-3 py-1.5 font-body text-xs font-medium text-white/70 transition-colors hover:border-[#D46FC8]/60 hover:text-white'
 
-// Genuine navigation (leaves the page) — only "Start for free" uses this now.
-function QuickLink({ href, children }: { href: string; children: ReactNode }) {
+// Highlighted variant — currently just "Pricing" and "Call us" — solid
+// brand pink instead of the outline treatment, same pill shape/size.
+const QUICK_ACTION_PINK_CLASS =
+  'rounded-full px-3 py-1.5 font-body text-xs font-medium text-white bg-[#D46FC8] hover:bg-[#DE85D2] transition-colors'
+
+// Genuine navigation (leaves the page) — only "Start for free"/"Services" use this now.
+function QuickLink({ href, children, pink = false }: { href: string; children: ReactNode; pink?: boolean }) {
   return (
-    <a href={href} className={QUICK_ACTION_CLASS}>
+    <a href={href} className={pink ? QUICK_ACTION_PINK_CLASS : QUICK_ACTION_CLASS}>
       {children}
     </a>
   )
@@ -337,9 +357,9 @@ function QuickLink({ href, children }: { href: string; children: ReactNode }) {
 
 // Same look as QuickLink but an in-page action (send a chat message and/or
 // scroll the page) instead of navigating away.
-function QuickAction({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+function QuickAction({ onClick, children, pink = false }: { onClick: () => void; children: ReactNode; pink?: boolean }) {
   return (
-    <button type="button" onClick={onClick} className={QUICK_ACTION_CLASS}>
+    <button type="button" onClick={onClick} className={pink ? QUICK_ACTION_PINK_CLASS : QUICK_ACTION_CLASS}>
       {children}
     </button>
   )
@@ -491,11 +511,19 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         )}
       </div>
 
-      <div className="flex flex-wrap shrink-0 gap-2 border-t border-white/8 px-5 pt-3">
-        <QuickAction onClick={() => handleSend('Book a call tomorrow')}>Book a call</QuickAction>
-        <QuickAction onClick={() => scrollPageToId(PRICING_SECTION_ID)}>Pricing</QuickAction>
-        <QuickAction onClick={() => scrollPageToId(CONTACT_SECTION_ID)}>Contact us</QuickAction>
-        <QuickLink href="/registro">Start for free</QuickLink>
+      <div className="flex flex-col shrink-0 gap-2 border-t border-white/8 px-5 pt-3">
+        <div className="flex flex-wrap gap-2">
+          <QuickAction pink onClick={() => scrollPageToId(PRICING_SECTION_ID)}>Pricing</QuickAction>
+          <QuickAction onClick={() => scrollPageToId(HOW_IT_WORKS_SECTION_ID)}>How it works</QuickAction>
+          <QuickLink href="/services">Services</QuickLink>
+          <QuickAction onClick={() => scrollPageToId(FAQ_SECTION_ID)}>FAQ</QuickAction>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <QuickAction pink onClick={callUs}>Call us</QuickAction>
+          <QuickAction onClick={() => handleSend('Book a call tomorrow')}>Book a call</QuickAction>
+          <QuickAction onClick={() => scrollPageToId(CONTACT_SECTION_ID)}>Contact us</QuickAction>
+          <QuickLink href="/registro">Start for free</QuickLink>
+        </div>
       </div>
 
       <form

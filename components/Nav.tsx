@@ -179,15 +179,14 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <button
+            <CTAButton
               type="button"
               onClick={() => scrollTo('#contacto')}
-              className={`font-body text-sm transition-colors cursor-pointer focus-visible:outline-none ${
-                showBoneText ? 'text-bone/80 hover:text-bone' : 'text-muted hover:text-ink'
-              }`}
+              variant="black"
+              className="text-xs px-5 py-2.5"
             >
               {t('Contáctanos', 'Contact us')}
-            </button>
+            </CTAButton>
             <CTAButton
               href={ctaHref}
               prefetch={false}
@@ -230,13 +229,17 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
               )
             })}
             <div className="flex items-center gap-3 pt-3">
-              <button
+              <CTAButton
                 type="button"
-                onClick={() => scrollTo('#contacto')}
-                className="font-body text-sm text-muted cursor-pointer"
+                onClick={() => {
+                  scrollTo('#contacto')
+                  setOpen(false)
+                }}
+                variant="black"
+                className="text-xs px-4 py-2.5"
               >
                 {t('Contáctanos', 'Contact us')}
-              </button>
+              </CTAButton>
               <CTAButton
                 href={ctaHref}
                 prefetch={false}

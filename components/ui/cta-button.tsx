@@ -23,6 +23,12 @@ const VARIANT_CLASS = {
   // untouched.
   white:
     'bg-white hover:bg-[#F0F0F0] text-[#16161A] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),inset_0_-2px_5px_rgba(0,0,0,0.07)]',
+  // Solid near-black, white text, no pink glow (see Glow below) — currently
+  // just the nav's "Contact us". #1A1A1F rather than pure #000 so it stays
+  // visible against the site's own near-black (#0D0E12) dark sections; the
+  // thin light border reinforces the edge further on top of that.
+  black:
+    'bg-[#1A1A1F] hover:bg-[#26262C] text-white border border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-2px_5px_rgba(0,0,0,0.35)]',
 } as const
 
 type Variant = keyof typeof VARIANT_CLASS
@@ -50,8 +56,9 @@ const PILL_CLASS =
 function Glow({ variant }: { variant: Variant }) {
   // The "white" pill (hero + nav CTA on dark sections) reads as a clean
   // white button — no pink bloom behind it. Its own VARIANT_CLASS shadow
-  // is the only depth cue it gets.
-  if (variant === 'white') return null
+  // is the only depth cue it gets. "black" (nav's "Contact us") is the same
+  // deal — explicitly no pink shade/glow, by request.
+  if (variant === 'white' || variant === 'black') return null
   return (
     <span
       aria-hidden="true"

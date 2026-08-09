@@ -139,12 +139,20 @@ export default function ContactForm() {
             </span>
           </h2>
 
-          <a
-            href="mailto:info@yele.design"
-            className="font-display text-2xl md:text-3xl text-white/90 hover:text-white transition-colors mb-12 w-fit"
-          >
-            info@yele.design
-          </a>
+          <div className="flex flex-col gap-2 mb-12 w-fit">
+            <a
+              href="mailto:info@yele.design"
+              className="font-display text-2xl md:text-3xl text-white/90 hover:text-white transition-colors"
+            >
+              info@yele.design
+            </a>
+            <a
+              href="tel:+12138458604"
+              className="font-display text-2xl md:text-3xl text-white/90 hover:text-white transition-colors"
+            >
+              +1 (213) 845-8604
+            </a>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 mt-auto">
             <IconCard href={WHATSAPP_URL} icon={<WhatsAppGlyph />} label="WhatsApp" />
