@@ -75,9 +75,19 @@ export function WebGLShader() {
       }
     `
 
+    // WebGL context creation can fail outright (GPU/driver issues, WebGL
+    // disabled by policy or a privacy extension, headless/sandboxed
+    // browsers with no GPU) — this renders unconditionally in the Footer
+    // on every page, so an uncaught throw here used to crash the entire
+    // site, not just one section. Returns false (skip animate()) instead.
     const initScene = () => {
       refs.scene = new THREE.Scene()
-      refs.renderer = new THREE.WebGLRenderer({ canvas, alpha: true })
+      try {
+        refs.renderer = new THREE.WebGLRenderer({ canvas, alpha: true })
+      } catch (err) {
+        console.warn("[WebGLShader] WebGL unavailable, skipping shader background:", err)
+        return false
+      }
       refs.renderer.setPixelRatio(window.devicePixelRatio)
       refs.renderer.setClearColor(new THREE.Color(0x000000), 0)
 
@@ -116,6 +126,7 @@ export function WebGLShader() {
       refs.scene.add(refs.mesh)
 
       handleResize()
+      return true
     }
 
     const animate = () => {
@@ -134,7 +145,7 @@ export function WebGLShader() {
       refs.uniforms.resolution.value = [width, height]
     }
 
-    initScene()
+    if (!initScene()) return
     animate()
     window.addEventListener("resize", handleResize)
 

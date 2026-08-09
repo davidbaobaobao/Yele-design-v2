@@ -26,7 +26,19 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
       const getH = () => app.clientHeight || 1;
       const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      // WebGL context creation can fail outright (GPU/driver issues, WebGL
+      // disabled by policy or a privacy extension, headless/sandboxed
+      // browsers with no GPU) — uncaught, this throw was taking down the
+      // ENTIRE page (no Error Boundary above Hero -> React unmounts the
+      // whole tree -> Next's generic "Application error" screen replaces
+      // everything, nav included). Bail out to the plain poster/gradient
+      // hero instead; nothing downstream depends on onReady firing.
+      try {
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      } catch (err) {
+        console.warn("[CubesScene] WebGL unavailable, skipping cubes:", err);
+        return;
+      }
       // 1.25 rather than the usual 2 — this canvas now covers the full hero
       // (not a half-width box), so full DPR at that size is a meaningfully
       // heavier per-frame cost for a visually marginal sharpness gain. Now

@@ -55,16 +55,16 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
-// Sits right after the try-for-free video section. min-h-[150vh] wrapper
+// Sits right after the try-for-free video section. min-h-[225vh] wrapper
 // with a sticky, exactly-100vh inner — the cubes stay pinned to the
-// viewport for that extra half-viewport of scroll, then release like any
+// viewport for that extra 1.25 viewports of scroll, then release like any
 // other sticky section (same shape as ContentShowcase's PinnedReveal,
 // just without a scroll-driven reveal transform: this is a plain CSS
-// sticky pin, not a scrollYProgress-tracked animation). The 1.5x is scroll
-// LENGTH only — the iframe itself always renders at a fixed 100vh, and the
-// artifact's own renderer is capped at DPR 1.25 internally (patched in
-// public/media/howwefind/8cubesfollow.html to match CubesScene.tsx's own
-// cap), so there's no 1.5x-resolution cost.
+// sticky pin, not a scrollYProgress-tracked animation). The extra wrapper
+// height is scroll LENGTH only — the iframe itself always renders at a
+// fixed 100vh, and the artifact's own renderer is capped at DPR 1.25
+// internally (patched in public/media/howwefind/8cubesfollow.html to
+// match CubesScene.tsx's own cap), so there's no extra-resolution cost.
 //
 // Poster-first, no pop: poster.jpeg is an always-mounted base layer (never
 // removed, so there's never a black frame even mid-load), and the iframe
@@ -130,7 +130,7 @@ export default function CubeFollowSection() {
   }, [showScene])
 
   return (
-    <section ref={ref} data-nav-dark className="relative w-full min-h-[150vh]" style={{ backgroundColor: '#0D0E12' }}>
+    <section ref={ref} data-nav-dark className="relative w-full min-h-[225vh]" style={{ backgroundColor: '#0D0E12' }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* z-0 + loading="eager" (not the next/image default "lazy") — this
             sits inside a position:sticky container, and a handful of

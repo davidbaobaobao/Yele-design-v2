@@ -161,7 +161,14 @@ export default function TubesCursor({ active, className }: { active: boolean; cl
       // reads clientWidth/clientHeight for the initial renderer size.
       const timer = window.setTimeout(() => {
         if (canvasRef.current && !appRef.current) {
-          appRef.current = new TubesScene(canvasRef.current)
+          // Same WebGL-can-fail-outright guard as CubesScene.tsx — this
+          // sits in the Footer, so an uncaught throw here used to crash
+          // every page on the site, not just the homepage.
+          try {
+            appRef.current = new TubesScene(canvasRef.current)
+          } catch (err) {
+            console.warn('[TubesCursor] WebGL unavailable, skipping cursor effect:', err)
+          }
         }
       }, 100)
       return () => window.clearTimeout(timer)
