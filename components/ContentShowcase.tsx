@@ -265,29 +265,54 @@ function VideoTile({
   )
 }
 
-// Centered overlay text sitting IN FRONT of a tile grid, on a fully
-// transparent background — no wash/mask of any kind, so the grid stays
-// visible through the letters at all times. Flat white at 30% opacity
-// (70% transparent), no shine/gradient — the alpha itself is what lets
-// the grid show through the letters. Standard non-hero section-header
-// size (matches WhyYele.tsx/AgencyIntro.tsx's shared h2 token) rather
-// than the much larger hero-scale sizing this used before.
-function GridOverlay({ small, big }: { small: string; big: string }) {
-  const textColor = 'rgba(255, 255, 255, 0.3)'
+// "Card 13" (1-indexed, matching the tile filenames/n numbering) — index
+// 12 (0-indexed) lands at the exact center column and the row just above
+// the bottom in both grids' layouts, i.e. the lower-center tile.
+const OVERLAY_TILE_INDEX = 12
+
+// Overlay text sitting IN FRONT of a tile grid, anchored to card 13's own
+// FINAL resting slot (tileGeometry gives the tile's settled position
+// directly — independent of the reveal progress that animates tiles up
+// into it) rather than centered over the whole grid, so it reads as text
+// sitting inside that one card. No wash/mask — flat color at 70% opacity
+// lets the tile under it still show through. Sized well below the
+// standard section-header token (which this used before centered) since
+// it now has to fit inside a single grid cell, not the whole viewport.
+function GridOverlay({
+  small,
+  big,
+  color,
+  cols,
+  rows,
+}: {
+  small: string
+  big: string
+  color: string
+  cols: number
+  rows: number
+}) {
+  const { width, height, centerX, centerY } = tileGeometry(OVERLAY_TILE_INDEX, cols, rows)
   return (
     <div
-      className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 pointer-events-none"
+      className="absolute z-20 flex flex-col items-center justify-center text-center px-1 pointer-events-none"
+      style={{
+        left: `${centerX}%`,
+        top: `${centerY}%`,
+        width: `${width}%`,
+        height: `${height}%`,
+        transform: 'translate(-50%, -50%)',
+      }}
       aria-hidden="true"
     >
       <span
-        className="font-display leading-tight uppercase tracking-tight text-[clamp(1.5rem,2.6vw,2.75rem)]"
-        style={{ color: textColor }}
+        className="font-display leading-tight uppercase tracking-tight text-[clamp(0.6rem,1.7vw,1.3rem)]"
+        style={{ color }}
       >
         {small}
       </span>
       <span
-        className="font-display leading-tight uppercase tracking-tight text-[clamp(1.5rem,2.6vw,2.75rem)]"
-        style={{ color: textColor }}
+        className="font-display leading-tight uppercase tracking-tight text-[clamp(0.6rem,1.7vw,1.3rem)]"
+        style={{ color }}
       >
         {big}
       </span>
@@ -383,7 +408,7 @@ function PinnedImageGrid() {
     <PinnedReveal
       count={IMAGE_COUNT}
       renderTile={(i, progress) => <ImageTile key={i} index={i} progress={progress} cols={cols} rows={rows} />}
-      overlay={() => <GridOverlay small="WE CREATE" big="IMAGES" />}
+      overlay={() => <GridOverlay small="WE CREATE" big="IMAGES" color="rgba(0,0,0,0.7)" cols={cols} rows={rows} />}
     />
   )
 }
@@ -413,7 +438,7 @@ function PinnedVideoGrid() {
       <PinnedReveal
         count={VIDEO_COUNT}
         renderTile={(i, progress) => <VideoTile key={i} index={i} progress={progress} mounted={mounted} />}
-        overlay={() => <GridOverlay small="AND" big="VIDEOS" />}
+        overlay={() => <GridOverlay small="AND" big="VIDEOS" color="rgba(255,255,255,0.7)" cols={VIDEO_COLS} rows={VIDEO_ROWS} />}
       />
     </div>
   )

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { TextGradient } from '@/components/ui/text-gradient'
 
 const CARD_BG = '#16171C'
 const VIDEO_DIR = '/media/wesection'
@@ -471,6 +472,20 @@ export default function WhatWeDo() {
     // shadow (which spreads past its own box into this section's own bg)
     // plus breathing space before the next section.
     <section data-nav-dark className="wwd-strip-vars relative bg-[#0D0E12] pt-px pb-40">
+      {/* Moved here from the old AgencyReachSection spacer beat — same
+          copy/style, now heading this section instead of standing alone. */}
+      <div className="max-w-3xl mx-auto text-center px-6 pt-24 pb-16 md:pt-32 md:pb-20">
+        <h2 className="font-display leading-tight text-[clamp(1.5rem,2.6vw,2.75rem)]" style={{ color: '#F2F0EB' }}>
+          All the resources of an Agency,
+          <br />
+          <motion.span
+            animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}
+            transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <TextGradient as="span">at your reach.</TextGradient>
+          </motion.span>
+        </h2>
+      </div>
       {/* No shared width wrapper here — each card now carries its own
           per-index width class (mx-auto) directly on its own sticky div, so
           widths can grow index-over-index while every card still centers on

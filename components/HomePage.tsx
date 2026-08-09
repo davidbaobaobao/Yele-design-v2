@@ -24,7 +24,7 @@ const VideoSnapController  = dynamic(() => import('@/components/VideoSnapControl
 const Showcase             = dynamic(() => import('@/components/Showcase'))
 const WebsiteWordsVideo    = dynamic(() => import('@/components/WebsiteWordsVideo'))
 const TryForFreeSection    = dynamic(() => import('@/components/TryForFreeSection'))
-const AgencyReachSection   = dynamic(() => import('@/components/AgencyReachSection'))
+const ScrollDownSpacer     = dynamic(() => import('@/components/ScrollDownSpacer'))
 const HowYeleAnimation     = dynamic(() => import('@/components/HowYeleAnimations').then(m => m.HowYeleAnimation))
 const FloatingStartFreeCTA = dynamic(() => import('@/components/FloatingStartFreeCTA'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
@@ -64,7 +64,7 @@ export default function HomePage() {
         </DealFadeProvider>
         <PreciosIndexSection />
         <TryForFreeSection />
-        <AgencyReachSection />
+        <ScrollDownSpacer />
         <HowYeleAnimation />
         <ContentShowcase />
         {/* TODO: ConveyorCards is temporarily disabled — will be replaced by
