@@ -181,11 +181,15 @@ function AnimationSubsection({
   useEffect(() => {
     const el = ref.current
     if (isLowPower || !el || !('IntersectionObserver' in window)) return
+    // 600px rather than the usual ~300px: with the conveyor section gone
+    // and these two sections now far apart (separated by ContentShowcase),
+    // each can safely boot earlier so WebGL has time to render its resting
+    // frame before the section is actually scrolled to — no boot pop.
     const loadIO = new IntersectionObserver(
       entries => {
         if (entries[0]?.isIntersecting) setNear(true)
       },
-      { rootMargin: '300px 0px' }
+      { rootMargin: '600px 0px' }
     )
     const unloadIO = new IntersectionObserver(
       entries => setFar(!entries[0]?.isIntersecting),
@@ -239,17 +243,30 @@ function AnimationSubsection({
   )
 }
 
-export default function HowYeleAnimations() {
+// Two independent sections, placed far apart in HomePage.tsx (sub-1 after
+// AgencyReachSection, sub-2 after ContentShowcase's pyramid reveal) rather
+// than stacked together — each gets its own IntersectionObserver above, so
+// with the distance between them (plus the conveyor section removed from
+// between the hero cubes and these), at most one of the two is ever near
+// the viewport, which alone keeps at most one live WebGL context.
+export function HowYeleAnimationSub1() {
   const reduceMotion = !!useHydratedReducedMotion()
-
   return (
-    <section id="how-yele-animations" data-nav-dark>
+    <section id="how-yele-sub1" data-nav-dark>
       <AnimationSubsection
         src={SRC_A}
         title="How Yele works — hover reveal"
         headline={<HeadlineA reduceMotion={reduceMotion} />}
         poster={<PosterA />}
       />
+    </section>
+  )
+}
+
+export function HowYeleAnimationSub2() {
+  const reduceMotion = !!useHydratedReducedMotion()
+  return (
+    <section id="how-yele-sub2" data-nav-dark>
       <AnimationSubsection
         src={SRC_B}
         title="How Yele works — eject and connect"

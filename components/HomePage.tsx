@@ -15,7 +15,9 @@ const AgencyIntro          = dynamic(() => import('@/components/AgencyIntro'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
 const ContentShowcase      = dynamic(() => import('@/components/ContentShowcase'))
-const ConveyorCards        = dynamic(() => import('@/components/ConveyorCards'))
+// ConveyorCards is temporarily disabled (see TODO at its render site below) —
+// import left here, commented, so re-enabling is a two-line uncomment.
+// const ConveyorCards        = dynamic(() => import('@/components/ConveyorCards'))
 const DealStatement        = dynamic(() => import('@/components/DealStatement'))
 const StatsBold            = dynamic(() => import('@/components/StatsBold'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
@@ -23,7 +25,8 @@ const Showcase             = dynamic(() => import('@/components/Showcase'))
 const WebsiteWordsVideo    = dynamic(() => import('@/components/WebsiteWordsVideo'))
 const TryForFreeSection    = dynamic(() => import('@/components/TryForFreeSection'))
 const AgencyReachSection   = dynamic(() => import('@/components/AgencyReachSection'))
-const HowYeleAnimations    = dynamic(() => import('@/components/HowYeleAnimations'))
+const HowYeleAnimationSub1 = dynamic(() => import('@/components/HowYeleAnimations').then(m => m.HowYeleAnimationSub1))
+const HowYeleAnimationSub2 = dynamic(() => import('@/components/HowYeleAnimations').then(m => m.HowYeleAnimationSub2))
 const FloatingStartFreeCTA = dynamic(() => import('@/components/FloatingStartFreeCTA'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
 const WhySubs              = dynamic(() => import('@/components/WhySubs'))
@@ -63,9 +66,14 @@ export default function HomePage() {
         <PreciosIndexSection />
         <TryForFreeSection />
         <AgencyReachSection />
-        <HowYeleAnimations />
+        <HowYeleAnimationSub1 />
         <ContentShowcase />
-        <ConveyorCards />
+        <HowYeleAnimationSub2 />
+        {/* TODO: ConveyorCards is temporarily disabled — will be replaced by
+            a video here. Component + public/conveyor/index.html are both
+            still in the codebase; re-enable by uncommenting this line and
+            its import above. */}
+        {/* <ConveyorCards /> */}
         <WebsiteWordsVideo />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
             room between the animation section's video grid and the We-
