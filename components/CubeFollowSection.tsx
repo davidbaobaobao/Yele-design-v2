@@ -55,15 +55,16 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
-// Sits right after the try-for-free video section. 1.5x-viewport wrapper
+// Sits right after the try-for-free video section. min-h-[150vh] wrapper
 // with a sticky, exactly-100vh inner — the cubes stay pinned to the
 // viewport for that extra half-viewport of scroll, then release like any
 // other sticky section (same shape as ContentShowcase's PinnedReveal,
 // just without a scroll-driven reveal transform: this is a plain CSS
 // sticky pin, not a scrollYProgress-tracked animation). The 1.5x is scroll
-// LENGTH only — the iframe itself always renders at a fixed 100vh, DPR is
-// whatever the artifact's own renderer picks (capped at 2 internally), so
-// there's no 1.5x-resolution cost.
+// LENGTH only — the iframe itself always renders at a fixed 100vh, and the
+// artifact's own renderer is capped at DPR 1.25 internally (patched in
+// public/media/howwefind/8cubesfollow.html to match CubesScene.tsx's own
+// cap), so there's no 1.5x-resolution cost.
 //
 // Poster-first, no pop: poster.jpeg is an always-mounted base layer (never
 // removed, so there's never a black frame even mid-load), and the iframe
@@ -129,15 +130,23 @@ export default function CubeFollowSection() {
   }, [showScene])
 
   return (
-    <section ref={ref} data-nav-dark className="relative w-full" style={{ height: '150vh', backgroundColor: '#0D0E12' }}>
+    <section ref={ref} data-nav-dark className="relative w-full min-h-[150vh]" style={{ backgroundColor: '#0D0E12' }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
+        {/* z-0 + loading="eager" (not the next/image default "lazy") — this
+            sits inside a position:sticky container, and a handful of
+            browsers miscalculate a lazy <img>'s viewport-intersection while
+            it's still in its pre-stuck resting position, so it can fail to
+            ever trigger. Eager-loading it removes that ambiguity entirely;
+            it's mounted well before the section is scrolled into view
+            regardless, so this doesn't cost an above-the-fold LCP slot. */}
         <Image
           src={POSTER}
           alt=""
           fill
+          loading="eager"
           quality={85}
           sizes="100vw"
-          className="object-cover"
+          className="z-0 object-cover"
           aria-hidden="true"
         />
 
@@ -152,7 +161,7 @@ export default function CubeFollowSection() {
               tuneCubeScene(e.currentTarget)
               window.setTimeout(() => setLive(true), 150)
             }}
-            className="absolute inset-0 h-full w-full transition-opacity duration-500"
+            className="absolute inset-0 z-[1] h-full w-full transition-opacity duration-500"
             style={{ border: 0, opacity: live ? 1 : 0 }}
           />
         )}
