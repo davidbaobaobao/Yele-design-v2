@@ -192,7 +192,7 @@ export default function ConveyorCards() {
   }, [])
 
   // Own independent visibility tracking, not a shared cross-component
-  // lock — the hero cubes and the two how-yele-animations subsections
+  // lock — the hero cubes and the how-yele-animations glass section
   // each track their own section the same way (see Hero.tsx). Because all
   // these sections are full-height and spread out down the page, at most
   // one of them is ever "near" the viewport at a time, which alone keeps

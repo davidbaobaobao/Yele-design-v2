@@ -24,8 +24,8 @@ const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false
 // IntersectionObserver paused its render LOOP off-screen, but the WebGL
 // CONTEXT itself (GPU memory/resources) stayed allocated for the rest of
 // the page's life once mounted. With three more WebGL-hosting sections on
-// the page (conveyor, two how-yele-animations subsections), that's a real
-// contributor to running out of GPU resources and freezing the tab — so
+// the page (conveyor, the how-yele-animations glass section), that's a
+// real contributor to running out of GPU resources and freezing the tab — so
 // past the initial idle-bootstrap gate, ongoing mount/unmount is driven by
 // the hero's own visibility: cubes fully unmount (React unmount ->
 // CubesScene's own cleanup effect cancels its rAF loop and disposes the

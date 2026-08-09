@@ -25,8 +25,7 @@ const Showcase             = dynamic(() => import('@/components/Showcase'))
 const WebsiteWordsVideo    = dynamic(() => import('@/components/WebsiteWordsVideo'))
 const TryForFreeSection    = dynamic(() => import('@/components/TryForFreeSection'))
 const AgencyReachSection   = dynamic(() => import('@/components/AgencyReachSection'))
-const HowYeleAnimationSub1 = dynamic(() => import('@/components/HowYeleAnimations').then(m => m.HowYeleAnimationSub1))
-const HowYeleAnimationSub2 = dynamic(() => import('@/components/HowYeleAnimations').then(m => m.HowYeleAnimationSub2))
+const HowYeleAnimation     = dynamic(() => import('@/components/HowYeleAnimations').then(m => m.HowYeleAnimation))
 const FloatingStartFreeCTA = dynamic(() => import('@/components/FloatingStartFreeCTA'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
 const WhySubs              = dynamic(() => import('@/components/WhySubs'))
@@ -66,9 +65,8 @@ export default function HomePage() {
         <PreciosIndexSection />
         <TryForFreeSection />
         <AgencyReachSection />
-        <HowYeleAnimationSub1 />
+        <HowYeleAnimation />
         <ContentShowcase />
-        <HowYeleAnimationSub2 />
         {/* TODO: ConveyorCards is temporarily disabled — will be replaced by
             a video here. Component + public/conveyor/index.html are both
             still in the codebase; re-enable by uncommenting this line and

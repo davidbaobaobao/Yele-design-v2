@@ -265,12 +265,13 @@ function VideoTile({
   )
 }
 
-// Big centered overlay text sitting IN FRONT of a tile grid, on a fully
+// Centered overlay text sitting IN FRONT of a tile grid, on a fully
 // transparent background — no wash/mask of any kind, so the grid stays
-// visible through the letters at all times. Flat pink at 25% opacity (75%
-// transparent), no shine/gradient — the alpha itself is what lets the grid
-// show through the letters. Sized to dominate the screen (the big word
-// alone runs up to 22rem/22vw).
+// visible through the letters at all times. Flat white at 30% opacity
+// (70% transparent), no shine/gradient — the alpha itself is what lets
+// the grid show through the letters. Standard non-hero section-header
+// size (matches WhyYele.tsx/AgencyIntro.tsx's shared h2 token) rather
+// than the much larger hero-scale sizing this used before.
 function GridOverlay({ small, big }: { small: string; big: string }) {
   const textColor = 'rgba(255, 255, 255, 0.3)'
   return (
@@ -279,13 +280,13 @@ function GridOverlay({ small, big }: { small: string; big: string }) {
       aria-hidden="true"
     >
       <span
-        className="font-display font-black uppercase tracking-tight text-[clamp(1.5rem,5vw,3rem)] leading-none mb-1 md:mb-2"
+        className="font-display leading-tight uppercase tracking-tight text-[clamp(1.5rem,2.6vw,2.75rem)]"
         style={{ color: textColor }}
       >
         {small}
       </span>
       <span
-        className="font-display font-black uppercase tracking-tighter text-[clamp(6rem,22vw,22rem)] leading-[0.82]"
+        className="font-display leading-tight uppercase tracking-tight text-[clamp(1.5rem,2.6vw,2.75rem)]"
         style={{ color: textColor }}
       >
         {big}

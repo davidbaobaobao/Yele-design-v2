@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useIsMobile } from '@/hooks/useIsMobile'
 
 // For WebGL-hosting sections specifically (hero cubes, conveyor cards,
-// the how-yele-animations subsections) — broader than useIsMobile's
+// the how-yele-animations glass section) — broader than useIsMobile's
 // viewport-width check, which drives layout/video-source decisions
 // elsewhere and shouldn't change meaning there. A touch-primary device
 // can have a wide viewport (e.g. a tablet in landscape) and still not be

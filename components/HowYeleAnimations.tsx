@@ -4,20 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
-import { TypewriterWord } from '@/components/ui/typewriter-word'
 import { TextGradient } from '@/components/ui/text-gradient'
 
-const WORDS = ['Professional?', 'Unforgettable?', 'Intuitive?', 'Standout?', 'Credible?', 'Welcoming?', 'Reliable?']
-
-const SRC_A = '/how-yele-animations/subsection1.html' // "Glass Grid Hover"
-const SRC_B = '/how-yele-animations/subsection2.html' // "Glass Grid Eject"
+const SRC = '/how-yele-animations/subsection2.html' // "Glass Grid Eject" — loads directly as the coin, no morph
 
 // Same-origin only — reaches into the iframe's own contentWindow/
 // contentDocument. Forwards wheel so the page scrolls over the iframe
-// instead of trapping it (each artifact's own body is overflow:hidden),
+// instead of trapping it (the artifact's own body is overflow:hidden),
 // and hides the artifact's built-in "MOVE YOUR CURSOR" hint (#hint),
 // which otherwise overlaps our headline overlay. Polled rather than a
-// single check at load: the bundler wrapper both artifacts use finishes
+// single check at load: the bundler wrapper this artifact uses finishes
 // unpacking asynchronously AFTER the iframe's own load event fires (it
 // swaps in the real document from a template on DOMContentLoaded), so
 // #hint doesn't exist in the DOM yet at the instant onLoad runs.
@@ -47,40 +43,23 @@ function tuneSubsection(iframe: HTMLIFrameElement) {
   }, 250)
 }
 
-const HEADLINE_STYLE: React.CSSProperties = {
-  fontSize: 'clamp(1.6rem, 3.75vw, 3.75rem)',
-  color: '#F2F0EB',
-}
-const HEADLINE_LINE1_STYLE: React.CSSProperties = {
-  fontSize: 'clamp(1.75rem, 5.5vw, 3.75rem)',
-}
+// Standard non-hero section-header size — matches WhyYele.tsx/
+// AgencyIntro.tsx's shared h2 token (font-display, leading-tight,
+// text-[clamp(1.5rem,2.6vw,2.75rem)]), not the larger hero-scale sizing
+// this headline used before.
+const HEADLINE_STYLE: React.CSSProperties = { color: '#F2F0EB' }
 
-// Sub 1 — reuses the exact headline/word-rotation this beat already used
-// as HowYeleMakesSection (replaced by this section).
-function HeadlineA({ reduceMotion }: { reduceMotion: boolean }) {
+// "best design" gets the same pink-shine (TextGradient) + soft opacity
+// pulse combo used elsewhere (e.g. AgencyIntro's "From $99/mo.").
+function Headline({ reduceMotion }: { reduceMotion: boolean }) {
   return (
-    <h2 className="font-display leading-tight text-center" style={HEADLINE_STYLE}>
-      <span className="sr-only">
-        How Yele can make your website professional, unforgettable, intuitive, standout, credible, welcoming, reliable.
-      </span>
-      <span aria-hidden="true">
-        <span className="block whitespace-nowrap" style={HEADLINE_LINE1_STYLE}>
-          How Yele can make your website
-        </span>
-        <TypewriterWord words={WORDS} reduceMotion={reduceMotion} />
-      </span>
-    </h2>
-  )
-}
-
-// Sub 2 — "best design" gets the same pink-shine (TextGradient) + soft
-// opacity pulse combo used elsewhere (e.g. AgencyIntro's "From $99/mo.").
-function HeadlineB({ reduceMotion }: { reduceMotion: boolean }) {
-  return (
-    <h2 className="font-display leading-tight text-center" style={HEADLINE_STYLE}>
+    <h2
+      className="font-display leading-tight text-center text-[clamp(1.5rem,2.6vw,2.75rem)]"
+      style={HEADLINE_STYLE}
+    >
       <span className="sr-only">We create the best design right for you.</span>
       <span aria-hidden="true">
-        <span className="block whitespace-nowrap" style={HEADLINE_LINE1_STYLE}>
+        <span className="block whitespace-nowrap">
           We create the{' '}
           <motion.span
             animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}
@@ -95,77 +74,21 @@ function HeadlineB({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
-// Posters — reuse each artifact's own lightweight loading-thumbnail SVG
-// (from its #__bundler_thumbnail fallback) as a stand-in for a real "at
-// rest" screenshot. Rendered as a permanent backdrop for every viewer
-// (see AnimationSubsection below), not just mobile: it's what makes the
-// section look already-lit the moment it scrolls into view, before the
-// live scene (desktop/fine-pointer only) has booted and crossfaded in.
-function PosterA() {
-  return (
-    <svg viewBox="0 0 1200 800" className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="1200" height="800" fill="#0D0E12" />
-      <circle cx="600" cy="400" r="230" fill="#a5647a" opacity="0.85" />
-      <g stroke="#3a3d46" strokeWidth="10" fill="none" opacity="0.9">
-        <rect x="330" y="130" width="250" height="250" rx="40" />
-        <rect x="620" y="130" width="250" height="250" rx="40" />
-        <rect x="330" y="420" width="250" height="250" rx="40" />
-        <rect x="620" y="420" width="250" height="250" rx="40" />
-      </g>
-    </svg>
-  )
-}
-function PosterB() {
-  return (
-    <svg viewBox="0 0 1200 800" className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="1200" height="800" fill="#0D0E12" />
-      <g stroke="#3a3d46" strokeWidth="10" fill="none" opacity="0.9">
-        <rect x="330" y="130" width="250" height="250" rx="40" />
-        <rect x="620" y="130" width="250" height="250" rx="40" />
-        <rect x="330" y="420" width="250" height="250" rx="40" />
-        <rect x="620" y="420" width="250" height="250" rx="40" />
-      </g>
-      <circle cx="600" cy="400" r="200" fill="none" stroke="#a5647a" strokeWidth="22" opacity="0.95" />
-      <circle cx="545" cy="360" r="42" fill="#e8dfe4" />
-      <circle cx="655" cy="360" r="42" fill="#e8dfe4" />
-      <circle cx="545" cy="450" r="42" fill="#e8dfe4" />
-      <circle cx="655" cy="450" r="42" fill="#e8dfe4" />
-      <circle cx="600" cy="405" r="30" fill="#b06a80" />
-    </svg>
-  )
-}
-
-// One normal-flow, full-height block. The poster is a permanent backdrop —
-// always rendered, from the very first paint — so the section already
-// looks "lit" (panels + sphere at rest) before it's ever scrolled to. The
-// iframe itself stays mounted permanently too; its `src` is toggled
-// imperatively (empty when far, real URL when near) rather than
-// conditionally rendering the element — this is what actually releases
-// the WebGL context, and matches the same pattern as the hero cubes and
-// conveyor (own IntersectionObserver on this section's own ref, no shared
-// cross-component lock — every WebGL-hosting section on this page is
-// full-height and far apart, so at most one is ever "near" at once). It
-// boots hidden (opacity 0) and crossfades in ~500ms after load — neither
-// artifact exposes a real "first frame rendered" signal reachable from
-// the parent (unlike conveyor's <three-d-stage>), so this is an
-// approximated settle delay, not a true readiness poll. Because the
-// poster matches the resting frame, the swap reads as invisible. Never
-// boots the live scene at all on mobile/coarse-pointer — poster only
-// there.
-function AnimationSubsection({
-  src,
-  title,
-  headline,
-  poster,
-}: {
-  src: string
-  title: string
-  headline: React.ReactNode
-  poster: React.ReactNode
-}) {
+// One normal-flow, full-height block, no poster — just the section's own
+// #0D0E12 background until the iframe has loaded and rendered a frame, at
+// which point the iframe AND the headline fade in together (~500ms), so
+// the scene and text arrive as one beat rather than the text just sitting
+// there over black. Lazy-loads: `src` is set once the section is ~600px
+// from view (own IntersectionObserver on this section's own ref, no
+// shared cross-component lock — every WebGL-hosting section on this page
+// is full-height and far apart, so at most one is ever "near" at once),
+// and cleared again once well past — same imperative src-toggle pattern
+// as the hero cubes/conveyor.
+function AnimationSection() {
   const ref = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const isLowPower = useIsLowPowerDevice()
+  const reduceMotion = !!useHydratedReducedMotion()
   const [tabHidden, setTabHidden] = useState(false)
   const [near, setNear] = useState(false)
   const [far, setFar] = useState(true)
@@ -181,10 +104,6 @@ function AnimationSubsection({
   useEffect(() => {
     const el = ref.current
     if (isLowPower || !el || !('IntersectionObserver' in window)) return
-    // 600px rather than the usual ~300px: with the conveyor section gone
-    // and these two sections now far apart (separated by ContentShowcase),
-    // each can safely boot earlier so WebGL has time to render its resting
-    // frame before the section is actually scrolled to — no boot pop.
     const loadIO = new IntersectionObserver(
       entries => {
         if (entries[0]?.isIntersecting) setNear(true)
@@ -209,70 +128,47 @@ function AnimationSubsection({
     const iframe = iframeRef.current
     if (!iframe) return
     if (showScene) {
-      if (iframe.getAttribute('src') !== src) iframe.src = src
+      if (iframe.getAttribute('src') !== SRC) iframe.src = SRC
     } else if (iframe.getAttribute('src')) {
       iframe.src = ''
       setLive(false)
     }
-  }, [showScene, src])
+  }, [showScene])
 
   return (
-    <div ref={ref} className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
-      <div className="absolute inset-0">{poster}</div>
-
+    <section ref={ref} id="how-yele-glass" data-nav-dark className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
       {!isLowPower && (
         <iframe
           ref={iframeRef}
-          title={title}
+          title="How Yele works — glass coin"
           scrolling="no"
           loading="lazy"
           onLoad={e => {
             if (!e.currentTarget.getAttribute('src')) return
             tuneSubsection(e.currentTarget)
-            window.setTimeout(() => setLive(true), 500)
+            // No readiness signal reachable from the parent for this
+            // artifact — a short approximated delay for the first WebGL
+            // frame to actually paint before revealing it.
+            window.setTimeout(() => setLive(true), 150)
           }}
-          className="absolute inset-0 h-full w-full transition-opacity duration-300"
+          className="absolute inset-0 h-full w-full transition-opacity duration-500"
           style={{ border: 0, opacity: live ? 1 : 0 }}
         />
       )}
 
-      <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6">
-        {headline}
+      {/* Mobile/coarse-pointer never loads the live scene at all (isLowPower
+          above), so the headline there isn't gated on `live` — it just
+          shows over the section's own black background. */}
+      <div
+        className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6 transition-opacity duration-500"
+        style={{ opacity: live || isLowPower ? 1 : 0 }}
+      >
+        <Headline reduceMotion={reduceMotion} />
       </div>
-    </div>
-  )
-}
-
-// Two independent sections, placed far apart in HomePage.tsx (sub-1 after
-// AgencyReachSection, sub-2 after ContentShowcase's pyramid reveal) rather
-// than stacked together — each gets its own IntersectionObserver above, so
-// with the distance between them (plus the conveyor section removed from
-// between the hero cubes and these), at most one of the two is ever near
-// the viewport, which alone keeps at most one live WebGL context.
-export function HowYeleAnimationSub1() {
-  const reduceMotion = !!useHydratedReducedMotion()
-  return (
-    <section id="how-yele-sub1" data-nav-dark>
-      <AnimationSubsection
-        src={SRC_A}
-        title="How Yele works — hover reveal"
-        headline={<HeadlineA reduceMotion={reduceMotion} />}
-        poster={<PosterA />}
-      />
     </section>
   )
 }
 
-export function HowYeleAnimationSub2() {
-  const reduceMotion = !!useHydratedReducedMotion()
-  return (
-    <section id="how-yele-sub2" data-nav-dark>
-      <AnimationSubsection
-        src={SRC_B}
-        title="How Yele works — eject and connect"
-        headline={<HeadlineB reduceMotion={reduceMotion} />}
-        poster={<PosterB />}
-      />
-    </section>
-  )
+export function HowYeleAnimation() {
+  return <AnimationSection />
 }
