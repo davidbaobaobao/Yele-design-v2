@@ -365,8 +365,12 @@ function PhraseMarqueeRun({ phrases, reduceMotion }: { phrases: MarqueePhrase[];
 
 function PhraseMarquee({ phrases }: { phrases: MarqueePhrase[] }) {
   const reduceMotion = !!useHydratedReducedMotion()
+  // Bottom padding dropped entirely (top-only, unlike WantContentMarquee's
+  // symmetric py-*) — this sits directly above the pinned image/video grid,
+  // which should hug it tight; WantContentMarquee has no such neighbor
+  // below it, so it keeps the symmetric spacing.
   return (
-    <section className="relative overflow-hidden py-2 md:py-3" style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative overflow-hidden pt-2 md:pt-3" style={{ backgroundColor: SECTION_BG }}>
       <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
         <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
         <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
@@ -453,8 +457,10 @@ function PinnedVideoGrid() {
 // Static (no scrolling) stand-in for a PhraseMarquee under reduced motion —
 // same wrapped-row treatment LogoMarquee/"Want content?" use.
 function StaticPhraseBlock({ phrases }: { phrases: MarqueePhrase[] }) {
+  // Top-only padding, matching PhraseMarquee's animated counterpart — this
+  // sits directly above its grid section, which should hug it tight.
   return (
-    <section className="relative py-2 md:py-3 px-6" style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative pt-2 md:pt-3 px-6" style={{ backgroundColor: SECTION_BG }}>
       <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
         {phrases.map((p, i) => (
           <span key={i} className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
