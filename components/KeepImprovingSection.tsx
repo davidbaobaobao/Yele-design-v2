@@ -174,7 +174,7 @@ export default function KeepImprovingSection() {
                 tuneRubikScene(e.currentTarget)
                 window.setTimeout(() => setLive(true), 150)
               }}
-              className="absolute inset-0 z-10 h-full w-full border-0 transition-opacity duration-500"
+              className="absolute inset-0 z-10 h-full w-full border-0 transition-opacity duration-700 ease-out"
               style={{ opacity: live ? 1 : 0 }}
             />
           )}

@@ -13,12 +13,19 @@ import { CTAButton } from '@/components/ui/cta-button'
 const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false })
 
 // Cubes are the single biggest contributor to TBT (a WebGL init + a
-// constant rAF loop on every page load). Deferring the FIRST mount until
-// the browser is idle AND the hero is actually on screen keeps that cost
-// off the critical path entirely — the poster/gradient/text paint
-// immediately, the cubes fill in a moment later once there's idle time to
-// spend on them. Its own canvas fades in on top of that (see
-// CubesScene.tsx) so the delayed mount doesn't read as a pop-in.
+// constant rAF loop on every page load) — the poster/gradient/text paint
+// immediately regardless, and the cubes fill in a moment later. Its own
+// canvas fades in on top of that (see CubesScene.tsx) so the delayed
+// mount doesn't read as a pop-in.
+//
+// This USED to gate the first mount behind requestIdleCallback (up to
+// 1500ms in Chrome, an 800ms flat setTimeout fallback in Safari) — that
+// idle-wait turned out to be the dominant chunk of the hero cube's own
+// boot time (measured ~2.7s Chrome / ~3.3s Safari to first visible cube),
+// not the WebGL/texture work itself. Swapped for a double-rAF instead:
+// still yields past the hero's own first paint (so this never competes
+// with it for the critical rendering path) without waiting for genuine
+// browser idle time, which can arrive arbitrarily late on a busy page.
 //
 // This used to be "mount once, never unmount" — CubesScene's own internal
 // IntersectionObserver paused its render LOOP off-screen, but the WebGL
@@ -26,7 +33,7 @@ const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false
 // the page's life once mounted. With three more WebGL-hosting sections on
 // the page (conveyor, the how-yele-animations glass section), that's a
 // real contributor to running out of GPU resources and freezing the tab — so
-// past the initial idle-bootstrap gate, ongoing mount/unmount is driven by
+// past the initial boot gate, ongoing mount/unmount is driven by
 // the hero's own visibility: cubes fully unmount (React unmount ->
 // CubesScene's own cleanup effect cancels its rAF loop and disposes the
 // renderer, actually freeing the context) once the hero is more than
@@ -34,7 +41,7 @@ const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false
 // this page are all full-height and far apart, so this alone keeps at
 // most one WebGL-hosting section "near" the viewport at any time.
 function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
-  const [idleFired, setIdleFired] = useState(false)
+  const [paintedFired, setPaintedFired] = useState(false)
   const [near, setNear] = useState(false)
   const [far, setFar] = useState(true)
   const isLowPower = useIsLowPowerDevice()
@@ -64,31 +71,33 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
     }
   }, [sectionRef, isLowPower])
 
-  // Safari has no requestIdleCallback — the `in` check above (on `window`
-  // itself) confused TS's narrowing into typing the else branch's
-  // `window` as `never`, so it's feature-detected on a locally-typed
-  // handle instead. Only gates the very FIRST mount (keeps the initial
-  // WebGL init off the critical path); subsequent re-mounts on scrolling
-  // back up don't need to wait for idle again.
+  // Only gates the very FIRST mount (keeps the initial WebGL init off the
+  // very first paint); subsequent re-mounts on scrolling back up don't
+  // need to wait at all. Also fires off the module fetches for this
+  // component's own chunk AND the "three" chunk it needs as early as
+  // possible, in parallel with that first-paint yield — webpack dedupes
+  // identical dynamic import() calls to the same module, so this warms
+  // both chunks in the network queue well before <CubesScene/> actually
+  // renders (gated below by `near`, which is already true almost
+  // instantly for the initial-load case), instead of paying for two
+  // sequential chunk fetches (this wrapper's own, then three.js inside
+  // its effect) at the moment it'd otherwise first try to mount.
   useEffect(() => {
     if (isLowPower) return
-    const w = window as Window & {
-      requestIdleCallback?: typeof requestIdleCallback
-      cancelIdleCallback?: typeof cancelIdleCallback
-    }
-    let idleId: number
-    if (w.requestIdleCallback) {
-      idleId = w.requestIdleCallback(() => setIdleFired(true), { timeout: 1500 })
-    } else {
-      idleId = window.setTimeout(() => setIdleFired(true), 800)
-    }
+    void import('@/components/CubesScene')
+    void import('three')
+    let raf1 = 0
+    let raf2 = 0
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setPaintedFired(true))
+    })
     return () => {
-      if (w.cancelIdleCallback) w.cancelIdleCallback(idleId)
-      else window.clearTimeout(idleId)
+      cancelAnimationFrame(raf1)
+      cancelAnimationFrame(raf2)
     }
   }, [isLowPower])
 
-  return idleFired && near && !far && !isLowPower
+  return paintedFired && near && !far && !isLowPower
 }
 
 const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']

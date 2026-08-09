@@ -39,7 +39,7 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
       className="font-display leading-tight text-center text-[clamp(1.5rem,2.6vw,2.75rem)]"
       style={{ color: '#F2F0EB' }}
     >
-      <span className="sr-only">We create the best design for your.</span>
+      <span className="sr-only">We create the best design for your website.</span>
       <span aria-hidden="true">
         <span className="block">We create</span>
         <motion.span
@@ -49,7 +49,7 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
         >
           <TextGradient as="span">the best design</TextGradient>
         </motion.span>
-        <span className="block">for your</span>
+        <span className="block whitespace-nowrap">for your website</span>
       </span>
     </h2>
   )
@@ -196,7 +196,7 @@ export default function CubeFollowSection() {
               tuneCubeScene(e.currentTarget)
               window.setTimeout(() => setLive(true), 150)
             }}
-            className="absolute inset-0 z-10 h-full w-full transition-opacity duration-500"
+            className="absolute inset-0 z-10 h-full w-full transition-opacity duration-700 ease-out"
             style={{ border: 0, opacity: live ? 1 : 0 }}
           />
         )}

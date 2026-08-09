@@ -41,21 +41,31 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
       }
       // 1.25 rather than the usual 2 — this canvas now covers the full hero
       // (not a half-width box), so full DPR at that size is a meaningfully
-      // heavier per-frame cost for a visually marginal sharpness gain. Now
-      // that the cubes boot deferred (idle + IntersectionObserver-gated,
-      // see Hero.tsx), keeping the per-frame GPU cost down matters more
-      // than the last bit of sharpness.
+      // heavier per-frame cost for a visually marginal sharpness gain, and
+      // keeping the per-frame GPU cost down matters more than the last bit
+      // of sharpness.
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
       renderer.setSize(getW(), getH());
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.28;
+      const EXPOSURE_TARGET = 1.28;
+      const EXPOSURE_START = 0.25;
+      const EXPOSURE_RAMP_MS = 800;
+      // Reduced motion: skip the ramp, land on the target immediately —
+      // there's no rAF loop running to drive it forward anyway (see the
+      // `if (!reduceMotion) animate()` below).
+      renderer.toneMappingExposure = reduceMotion ? EXPOSURE_TARGET : EXPOSURE_START;
+      let exposureRampStart = 0;
       // <canvas> is inline by default, which reserves baseline/descender
       // space around it inside a block container — a stray sliver at the
       // container's edge that isn't part of the rendered scene. block
-      // removes that reserved space entirely.
+      // removes that reserved space entirely. Starts faded/scaled down and
+      // eases in once the first frame has actually painted (below) —
+      // brightening in via toneMappingExposure at the same time so the
+      // cubes visibly "light up" rather than just fading in flat.
       renderer.domElement.style.display = "block";
       renderer.domElement.style.opacity = "0";
-      renderer.domElement.style.transition = "opacity 400ms ease";
+      renderer.domElement.style.transform = "scale(0.97)";
+      renderer.domElement.style.transition = "opacity 700ms ease-out, transform 700ms ease-out";
       app.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
@@ -66,7 +76,11 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
 
       // ---- environment texture (per-direction chrome colour) ----
       function makeEnv() {
-        const W = 1024, H = 512;
+        // Halved from 1024x512 — this is a reflection-environment map (all
+        // the cubes' chrome finish samples from it), not a directly-viewed
+        // texture, so the resolution cut is invisible on the rendered
+        // cubes but meaningfully cheaper to draw + upload on first boot.
+        const W = 512, H = 256;
         const c = document.createElement("canvas"); c.width = W; c.height = H;
         const g = c.getContext("2d")!;
         g.fillStyle = "#050507"; g.fillRect(0, 0, W, H);
@@ -77,15 +91,18 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
           g.globalCompositeOperation="source-over"; g.fillStyle=rg;
           g.fillRect(cx-r,cy-r,r*2,r*2);
         }
-        panel("#3a3a3e","#222226","#141416",40,150,250);
-        panel("#42424648","#26262a","#141416",150,140,260);
-        panel("#3c3c40","#202024","#131315",300,140,260);
-        panel("#5a464e","#3a2a30","#161214",450,140,260);
-        panel("#3a3a3e","#212125","#131315",600,140,260);
-        panel("#40404450","#242428","#141416",760,140,270);
-        panel("#3a3a3e","#202024","#131315",920,150,250);
+        // Coordinates halved alongside W/H above, so the same relative
+        // layout (panel spread, overlap, radius vs. canvas size) is
+        // preserved on the smaller canvas.
+        panel("#3a3a3e","#222226","#141416",20,75,125);
+        panel("#42424648","#26262a","#141416",75,70,130);
+        panel("#3c3c40","#202024","#131315",150,70,130);
+        panel("#5a464e","#3a2a30","#161214",225,70,130);
+        panel("#3a3a3e","#212125","#131315",300,70,130);
+        panel("#40404450","#242428","#141416",380,70,135);
+        panel("#3a3a3e","#202024","#131315",460,75,125);
         g.globalCompositeOperation="lighter";
-        g.fillStyle="rgba(255,255,255,0.32)"; g.fillRect(0,20,W,4);
+        g.fillStyle="rgba(255,255,255,0.32)"; g.fillRect(0,10,W,2);
         g.globalCompositeOperation="source-over";
         const floor=g.createLinearGradient(0,H*0.6,0,H);
         floor.addColorStop(0,"rgba(0,0,0,0)"); floor.addColorStop(1,"rgba(0,0,0,1)");
@@ -98,9 +115,13 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
 
       // ---- perforated dot map ----
       function makeDots(){
-        const c=document.createElement("canvas"); c.width=256; c.height=256;
-        const g=c.getContext("2d")!; g.fillStyle="#ffffff"; g.fillRect(0,0,256,256);
-        const n=16,s=256/n;
+        // Trimmed a notch (256 -> 192) — the 16x16 dot grid math below is
+        // all relative to this constant, so the pattern itself is
+        // unaffected, just drawn/uploaded a bit cheaper on first boot.
+        const SIZE=192;
+        const c=document.createElement("canvas"); c.width=SIZE; c.height=SIZE;
+        const g=c.getContext("2d")!; g.fillStyle="#ffffff"; g.fillRect(0,0,SIZE,SIZE);
+        const n=16,s=SIZE/n;
         for(let x=0;x<n;x++)for(let y=0;y<n;y++){g.beginPath();
           g.arc(x*s+s/2,y*s+s/2,s*0.26,0,Math.PI*2);g.fillStyle="#b4b4b8";g.fill();}
         const tex=new THREE.CanvasTexture(c);
@@ -111,7 +132,7 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
 
       // ---- roughness/bump surface ----
       function makeSurface(){
-        const S=256;const c=document.createElement("canvas");c.width=S;c.height=S;
+        const S=192;const c=document.createElement("canvas");c.width=S;c.height=S;
         const g=c.getContext("2d")!; g.fillStyle="#8f8f8f"; g.fillRect(0,0,S,S);
         for(let i=0;i<40;i++){const x=Math.random()*S,y=Math.random()*S,r=30+Math.random()*80;
           const v=90+(Math.random()*90|0);
@@ -185,6 +206,10 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
           c.position.copy((c.userData as any).home).multiplyScalar(sc);
           c.quaternion.setFromAxisAngle((c.userData as any).axis,pp*(Math.PI/2));
         }
+        if (exposureRampStart) {
+          const p = Math.min(1, (performance.now() - exposureRampStart) / EXPOSURE_RAMP_MS);
+          renderer.toneMappingExposure = EXPOSURE_START + (EXPOSURE_TARGET - EXPOSURE_START) * p;
+        }
         renderer.render(scene,camera);
       }
       // Throttled to ~30fps — the cluster's own motion (a slow rotation +
@@ -205,9 +230,15 @@ export default function CubesScene({ onReady }: { onReady?: () => void }) {
 
       // First frame — reveal the canvas and tell the caller (Hero fades
       // its wrapper in from here) — then either start the loop or, on
-      // reduced motion, stop at this single static frame.
+      // reduced motion, stop at this single static frame. Starting the
+      // exposure ramp here (not earlier) means EXPOSURE_START is what's
+      // actually baked into this very first rendered frame, so there's no
+      // one-frame flash of the brighter target exposure before the fade/
+      // scale transition has even begun.
       frame();
+      if (!reduceMotion) exposureRampStart = performance.now();
       renderer.domElement.style.opacity = "1";
+      renderer.domElement.style.transform = "scale(1)";
       onReadyRef.current?.();
       if (!reduceMotion) animate();
 
