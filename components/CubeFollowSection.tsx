@@ -166,6 +166,16 @@ export default function CubeFollowSection() {
           />
         )}
 
+        {/* Bottom-edge fade into the next section's own #0D0E12 marquee bg —
+            only the last 20% of the sticky area darkens, so the cubes blend
+            out smoothly instead of cutting off hard right as the marquee
+            begins. Same recipe as ConveyorVideoSection's top fade. */}
+        <div
+          className="pointer-events-none absolute inset-0 z-[2]"
+          style={{ background: 'linear-gradient(to bottom, rgba(13,14,18,0) 80%, #0D0E12 100%)' }}
+          aria-hidden="true"
+        />
+
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6">
           <Headline reduceMotion={reduceMotion} />
         </div>

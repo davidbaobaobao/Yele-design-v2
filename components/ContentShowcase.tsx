@@ -325,12 +325,11 @@ function PhraseMarqueeRun({ phrases, reduceMotion }: { phrases: MarqueePhrase[];
 
 function PhraseMarquee({ phrases }: { phrases: MarqueePhrase[] }) {
   const reduceMotion = !!useHydratedReducedMotion()
-  // Bottom padding dropped entirely (top-only, unlike WantContentMarquee's
-  // symmetric py-*) — this sits directly above the pinned image/video grid,
-  // which should hug it tight; WantContentMarquee has no such neighbor
-  // below it, so it keeps the symmetric spacing.
+  // Symmetric py-* (matching WantContentMarquee) — was top-only, which read
+  // lopsided since the text sat noticeably closer to the grid below than to
+  // the section above it.
   return (
-    <section className="relative overflow-hidden pt-2 md:pt-3" style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative overflow-hidden py-2 md:py-3" style={{ backgroundColor: SECTION_BG }}>
       <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
         <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
         <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
@@ -342,8 +341,7 @@ function PhraseMarquee({ phrases }: { phrases: MarqueePhrase[] }) {
 // Sits after the video grid now (moved from between the two grids) — same
 // #0D0E12 as every other dark section, so it flows straight off the video
 // grid instead of reading as its own light beat. Same PhraseMarqueeRun
-// engine as the two marquees above (just its own phrase list + symmetric
-// py-* since, unlike those two, it has no grid below it to hug tight).
+// engine as the two marquees above, same symmetric py-* too.
 function WantContentMarquee() {
   const reduceMotion = !!useHydratedReducedMotion()
   return (
@@ -432,12 +430,11 @@ function PinnedVideoGrid() {
 }
 
 // Static (no scrolling) stand-in for a PhraseMarquee under reduced motion —
-// same wrapped-row treatment LogoMarquee/"Want content?" use. symmetricPadding
-// matches WantContentMarquee's py-* (it has no grid below it to hug tight,
-// unlike the other two callers, which stay top-only via PhraseMarquee).
-function StaticPhraseBlock({ phrases, symmetricPadding = false }: { phrases: MarqueePhrase[]; symmetricPadding?: boolean }) {
+// same wrapped-row treatment LogoMarquee/"Want content?" use, same
+// symmetric py-* as all three animated marquees now.
+function StaticPhraseBlock({ phrases }: { phrases: MarqueePhrase[] }) {
   return (
-    <section className={`relative ${symmetricPadding ? 'py-2 md:py-3' : 'pt-2 md:pt-3'} px-6`} style={{ backgroundColor: SECTION_BG }}>
+    <section className="relative py-2 md:py-3 px-6" style={{ backgroundColor: SECTION_BG }}>
       <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
         {phrases.map((p, i) => (
           <span key={i} className={`font-display font-bold ${MARQUEE_FONT}`} style={{ color: '#F2F0EB' }}>
@@ -554,7 +551,7 @@ function ContentShowcaseReduced() {
       {/* Static (no scrolling) stand-in for the marquee above — same
           wrapped-row treatment LogoMarquee uses for reduced motion. Sits
           after the video grid now, matching the animated version. */}
-      <StaticPhraseBlock phrases={WANT_CONTENT_MARQUEE_PHRASES} symmetricPadding />
+      <StaticPhraseBlock phrases={WANT_CONTENT_MARQUEE_PHRASES} />
     </>
   )
 }
