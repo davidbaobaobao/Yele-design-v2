@@ -23,6 +23,7 @@ const Showcase             = dynamic(() => import('@/components/Showcase'))
 const WebsiteWordsVideo    = dynamic(() => import('@/components/WebsiteWordsVideo'))
 const TryForFreeSection    = dynamic(() => import('@/components/TryForFreeSection'))
 const CubeFollowSection    = dynamic(() => import('@/components/CubeFollowSection'))
+const KeepImprovingSection = dynamic(() => import('@/components/KeepImprovingSection'))
 const FloatingStartFreeCTA = dynamic(() => import('@/components/FloatingStartFreeCTA'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
 const WhySubs              = dynamic(() => import('@/components/WhySubs'))
@@ -64,6 +65,7 @@ export default function HomePage() {
         <CubeFollowSection />
         <ContentShowcase />
         <ConveyorVideoSection />
+        <KeepImprovingSection />
         <WebsiteWordsVideo />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
             room between the animation section's video grid and the We-
