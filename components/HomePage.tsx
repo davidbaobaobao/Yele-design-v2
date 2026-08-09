@@ -15,9 +15,7 @@ const AgencyIntro          = dynamic(() => import('@/components/AgencyIntro'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
 const ContentShowcase      = dynamic(() => import('@/components/ContentShowcase'))
-// ConveyorCards is temporarily disabled (see TODO at its render site below) —
-// import left here, commented, so re-enabling is a two-line uncomment.
-// const ConveyorCards        = dynamic(() => import('@/components/ConveyorCards'))
+const ConveyorVideoSection = dynamic(() => import('@/components/ConveyorVideoSection'))
 const DealStatement        = dynamic(() => import('@/components/DealStatement'))
 const StatsBold            = dynamic(() => import('@/components/StatsBold'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
@@ -67,11 +65,7 @@ export default function HomePage() {
         <ScrollDownSpacer />
         <HowYeleAnimation />
         <ContentShowcase />
-        {/* TODO: ConveyorCards is temporarily disabled — will be replaced by
-            a video here. Component + public/conveyor/index.html are both
-            still in the codebase; re-enable by uncommenting this line and
-            its import above. */}
-        {/* <ConveyorCards /> */}
+        <ConveyorVideoSection />
         <WebsiteWordsVideo />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
             room between the animation section's video grid and the We-

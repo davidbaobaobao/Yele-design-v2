@@ -244,10 +244,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${archivo.variable} ${instrumentSans.variable} ${ibmPlexMono.variable}`}>
       <head>
-        {/* TODO: re-enable alongside ConveyorCards (see components/
-            HomePage.tsx) — warms the connection for that section's iframe,
-            which pulls three.js from unpkg itself; see
-            components/ConveyorCards.tsx. Disabled while conveyor is. */}
+        {/* ConveyorCards (the WebGL embed this warmed the connection for —
+            it pulls three.js from unpkg itself) was replaced by
+            ConveyorVideoSection, a recorded video of the same scene — see
+            components/HomePage.tsx. No longer needed; component + its
+            public/conveyor/index.html asset are still in the codebase,
+            just unreferenced. */}
         {/* <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" /> */}
         <script
           type="application/ld+json"
