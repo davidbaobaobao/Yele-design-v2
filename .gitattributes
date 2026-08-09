@@ -3,3 +3,5 @@
 # checkout/checkin. -text disables that entirely for this file.
 public/conveyor/index.html -text
 public/how-yele-animations/*.html -text
+public/media/howwefind/8cubesfollow.html -text
+public/media/8rubik/8rubik.html -text

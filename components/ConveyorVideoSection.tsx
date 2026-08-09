@@ -72,6 +72,14 @@ export default function ConveyorVideoSection() {
         aria-hidden="true"
       />
 
+      {/* Bottom-edge fade into the next section (KeepImprovingSection, the
+          rubik-cube split section) below — same recipe, mirrored. */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-40 md:h-56 pointer-events-none"
+        style={{ background: 'linear-gradient(to top, #0D0E12 0%, rgba(13,14,18,0) 100%)' }}
+        aria-hidden="true"
+      />
+
       {/* Top-left anchored, same left inset as the hero's own text column;
           items-start (not the hero's items-center) + top padding to clear
           the fixed nav instead of vertically centering. Standard non-hero

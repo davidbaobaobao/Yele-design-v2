@@ -72,6 +72,19 @@ export default function WebsiteWordsVideo() {
           moment. */}
       <div className="absolute inset-0 bg-black/35 pointer-events-none" aria-hidden="true" />
 
+      {/* Top/bottom edge fades into the neighboring sections' own #0D0E12
+          bg — same recipe as ConveyorVideoSection's fades. */}
+      <div
+        className="absolute inset-x-0 top-0 h-32 md:h-48 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, #0D0E12 0%, rgba(13,14,18,0) 100%)' }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-x-0 bottom-0 h-32 md:h-48 pointer-events-none"
+        style={{ background: 'linear-gradient(to top, #0D0E12 0%, rgba(13,14,18,0) 100%)' }}
+        aria-hidden="true"
+      />
+
       <div className="relative z-10 h-full flex items-center justify-center text-center px-6">
         <h2 className="font-display leading-tight" style={{ fontSize: 'clamp(1.75rem, 4.5vw, 4rem)', color: WHITE }}>
           {/* Real, static text for SEO/a11y — the animated span below is

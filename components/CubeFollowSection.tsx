@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import { TextGradient } from '@/components/ui/text-gradient'
@@ -58,23 +58,28 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
 // Sits right after the try-for-free video section. min-h-[225vh] wrapper
 // with a sticky, exactly-100vh inner — the cubes stay pinned to the
 // viewport for that extra 1.25 viewports of scroll, then release like any
-// other sticky section (same shape as ContentShowcase's PinnedReveal,
-// just without a scroll-driven reveal transform: this is a plain CSS
-// sticky pin, not a scrollYProgress-tracked animation). The extra wrapper
-// height is scroll LENGTH only — the iframe itself always renders at a
-// fixed 100vh, and the artifact's own renderer is capped at DPR 1.25
-// internally (patched in public/media/howwefind/8cubesfollow.html to
-// match CubesScene.tsx's own cap), so there's no extra-resolution cost.
+// other sticky section (same shape as ContentShowcase's PinnedReveal, just
+// a plain CSS sticky pin for the cubes/poster themselves — only the TEXT
+// tracks scrollYProgress, sliding up ~120px over the section's full scroll
+// range so it reads as drifting past the pinned cubes rather than sitting
+// static on top of them). The extra wrapper height is scroll LENGTH only —
+// the iframe itself always renders at a fixed 100vh, and the artifact's
+// own renderer is capped at DPR 1.25 internally (patched in
+// public/media/howwefind/8cubesfollow.html to match CubesScene.tsx's own
+// cap), so there's no extra-resolution cost.
 //
 // Poster-first, no pop: poster.jpeg mounts once the section is `near`
 // (~600px out, never on initial page load — this section is many screens
 // below the fold and its poster is ~1.3MB, not worth competing with the
 // hero's own critical assets) and, once mounted, never unmounts again —
 // so from that point on there's never a black frame even mid-load — and
-// the iframe fades in on top of it once it's had a moment to actually
-// paint a WebGL frame — same 150ms-after-onLoad approximation as
-// how-yele-animations' glass section (no readiness signal is reachable
-// from the parent for either artifact).
+// the iframe (transparent: alpha renderer + scene.background=null in
+// public/media/howwefind/8cubesfollow.html) fades in on top of it once
+// it's had a moment to actually paint a WebGL frame — same
+// 150ms-after-onLoad approximation as how-yele-animations' glass section
+// (no readiness signal is reachable from the parent for either artifact).
+// Because the iframe is transparent, the poster keeps showing continuously
+// behind/around the cubes even once it's "live" — nothing blocks it.
 //
 // Lazy-loads ~600px before view, unloads (src="") once well past — same
 // near/far IntersectionObserver pair as how-yele-animations/hero cubes.
@@ -128,6 +133,15 @@ export default function CubeFollowSection() {
       unloadIO.disconnect()
     }
   }, [])
+
+  // Text slide-up parallax: tracks scroll progress across the WHOLE 150vh
+  // (well, 225vh now) wrapper, not just the sticky window — 0 at the
+  // section's very top, 1 at its very bottom, so the text drifts a full
+  // 120px over the entire pinned-scroll range while the cubes themselves
+  // stay put, giving a "moving past them" feel rather than the text just
+  // sitting static over the pin.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  const textY = useTransform(scrollYProgress, [0, 1], [60, -60])
 
   const showScene = near && !far && !tabHidden && !isLowPower
 
@@ -197,9 +211,12 @@ export default function CubeFollowSection() {
           aria-hidden="true"
         />
 
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6">
+        <motion.div
+          className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6"
+          style={reduceMotion ? undefined : { y: textY }}
+        >
           <Headline reduceMotion={reduceMotion} />
-        </div>
+        </motion.div>
       </div>
     </section>
   )

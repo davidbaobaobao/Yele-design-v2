@@ -63,9 +63,12 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
 // IntersectionObserver pair (600px-out load, unload once well past),
 // tab-hidden pause, poster.jpeg mounts once `near` (not on initial page
 // load) and then never unmounts, so there's no black pop once it's there;
-// iframe fades in on top once it's had a moment to paint. Mobile/coarse-
-// pointer shows the poster only, no live iframe — the two columns stack
-// (animation top half, text bottom half) instead of sitting side by side.
+// the iframe is transparent (see public/media/8rubik/8rubik.html) and
+// fades in on top once it's had a moment to paint, so the poster stays
+// visible continuously behind the cubes rather than being blocked.
+// Mobile/coarse-pointer shows the poster only, no live iframe — the two
+// columns stack (animation top half, text bottom half) instead of sitting
+// side by side.
 export default function KeepImprovingSection() {
   const ref = useRef<HTMLElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -129,28 +132,37 @@ export default function KeepImprovingSection() {
 
   return (
     <section ref={ref} data-nav-dark className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
-      <div className="flex h-full w-full flex-col md:flex-row">
-        {/* LEFT half (top half on mobile): the animation */}
-        <div className="relative h-1/2 w-full overflow-hidden md:h-full md:w-1/2">
-          {/* Mounted only once `near` (~600px out) — not on initial page
-              load. This section is several screens below the fold; its
-              ~1.3MB poster loading unconditionally at page load competed
-              with the hero's own critical assets for bandwidth. Once
-              mounted it loads eagerly — no further lazy-loading ambiguity
-              once we've already decided it's time. */}
-          {near && (
-            <Image
-              src={POSTER}
-              alt=""
-              fill
-              loading="eager"
-              quality={85}
-              sizes="(min-width: 768px) 50vw, 100vw"
-              className="z-0 object-cover"
-              aria-hidden="true"
-            />
-          )}
+      {/* Continuous poster BEHIND BOTH halves — sized to the whole section
+          (not nested inside the left column), so the right-hand text sits
+          directly on the same image with no separate background, and the
+          left column's transparent iframe shows it continuously behind the
+          cubes too, not just up to the column's own edge. Mounted only once
+          `near` (~600px out) — not on initial page load. This section is
+          several screens below the fold; its ~1.3MB poster loading
+          unconditionally at page load competed with the hero's own
+          critical assets for bandwidth. Once mounted it loads eagerly — no
+          further lazy-loading ambiguity once we've already decided it's
+          time. */}
+      {near && (
+        <Image
+          src={POSTER}
+          alt=""
+          fill
+          loading="eager"
+          quality={85}
+          sizes="100vw"
+          className="z-0 object-cover"
+          aria-hidden="true"
+        />
+      )}
 
+      <div className="relative z-10 flex h-full w-full flex-col md:flex-row">
+        {/* LEFT half (top half on mobile): the animation. The iframe itself
+            is transparent (scene.background=null + alpha renderer, see
+            public/media/8rubik/8rubik.html) so the shared poster above
+            shows through continuously behind the cubes instead of a solid
+            block. */}
+        <div className="relative h-1/2 w-full overflow-hidden md:h-full md:w-1/2">
           {!isLowPower && (
             <iframe
               ref={iframeRef}
@@ -168,13 +180,21 @@ export default function KeepImprovingSection() {
           )}
         </div>
 
-        {/* RIGHT half (bottom half on mobile): the text */}
+        {/* RIGHT half (bottom half on mobile): the text — no background of
+            its own, sitting directly on the shared poster behind it. */}
         <div className="relative flex h-1/2 w-full items-center pl-8 pr-8 sm:pl-12 sm:pr-16 md:h-full md:w-1/2 md:pl-12 md:pr-20 lg:pl-16 lg:pr-24">
           <div className="pointer-events-none max-w-xl">
             <Headline reduceMotion={reduceMotion} />
           </div>
         </div>
       </div>
+
+      {/* Bottom-edge fade into the next section's own #0D0E12 bg. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-40 md:h-56"
+        style={{ background: 'linear-gradient(to top, #0D0E12 0%, rgba(13,14,18,0) 100%)' }}
+        aria-hidden="true"
+      />
     </section>
   )
 }

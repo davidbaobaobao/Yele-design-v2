@@ -79,6 +79,19 @@ export default function TryForFreeSection() {
           </>
         )}
       </video>
+
+      {/* Top/bottom edge fades into the neighboring sections' own #0D0E12
+          bg — same recipe as ConveyorVideoSection's top fade. */}
+      <div
+        className="absolute inset-x-0 top-0 h-40 md:h-56 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, #0D0E12 0%, rgba(13,14,18,0) 100%)' }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-x-0 bottom-0 h-40 md:h-56 pointer-events-none"
+        style={{ background: 'linear-gradient(to top, #0D0E12 0%, rgba(13,14,18,0) 100%)' }}
+        aria-hidden="true"
+      />
     </section>
   )
 }
