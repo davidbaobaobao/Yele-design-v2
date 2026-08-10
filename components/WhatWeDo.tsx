@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useEarlyLoad } from '@/hooks/useEarlyLoad'
 import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
@@ -169,13 +170,26 @@ function VideoPanel({
   const poster = `${VIDEO_DIR}/${videoBase}_poster.jpg`
   const fadeMask = 'linear-gradient(to right, transparent 0%, black 12%)'
   useEarlyLoad(videoRef)
+  // PosterVideo's own poster <img> has no near-view gate (it's meant to be
+  // always-visible immediately) — src is set directly in SSR'd markup, so
+  // a mobile browser's native HTML parser fetches it before any JS
+  // (including WhatWeDo's own isMobile check) ever runs. Gating its mount
+  // on this local `mounted` flag — which, like isMobile, starts false on
+  // both server and first client render — means it isn't in that initial
+  // markup at all for ANY device; React 18 batches this effect with
+  // WhatWeDo's own isMobile-resolving effect from the same commit, so on
+  // mobile the parent's `if (isMobile) return null` wins before this ever
+  // gets a chance to paint with a real poster URL, while desktop only
+  // sees a few-ms-later attach, not a visible pop.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   return (
     <div
       className="relative w-full aspect-video rounded-2xl overflow-hidden"
       style={{ WebkitMaskImage: fadeMask, maskImage: fadeMask }}
     >
-      {reduceMotion ? (
+      {!mounted ? null : reduceMotion ? (
         <Image src={poster} alt={title} fill sizes="(max-width: 768px) 100vw, 40vw" className="object-cover" />
       ) : (
         <PosterVideo
@@ -394,6 +408,7 @@ function useCoverDim(nextRef: React.RefObject<HTMLElement | null>) {
 
 export default function WhatWeDo() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const isMobile = useIsMobile()
   const viewportWidthPx = useViewportWidthPx()
 
   const card2Ref = useRef<HTMLDivElement>(null)
@@ -415,6 +430,11 @@ export default function WhatWeDo() {
   // caps concurrent plays on Safari specifically (see the hook) — WebKit's
   // decoder ceiling is what caused the one-by-one staggered start there.
   useCappedVideoPlayback(videoRefs, { reduceMotion })
+
+  // Mobile: disabled entirely — no cards, no videos/posters loaded. All
+  // hooks above still run unconditionally (Rules of Hooks); with nothing
+  // rendered, their refs stay null and their effects become no-ops.
+  if (isMobile) return null
 
   return (
     // pt-px: the first card's own my-2 top margin has nothing (no padding

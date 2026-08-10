@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { TextGradient } from '@/components/ui/text-gradient'
 
 const VIDEO_DIR = '/media/whysubs'
@@ -71,6 +72,18 @@ function ReasonItem({ index, title, continuousIndex }: { index: number; title: s
 
 export default function WhySubs() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const isMobile = useIsMobile()
+  // The video's `poster` attribute has no near-view gate (meant to be
+  // visible immediately) — set directly in SSR'd markup, a mobile
+  // browser's native HTML parser fetches it before any JS (including the
+  // isMobile check below) ever runs. Gating it on this — which, like
+  // isMobile, starts false on both server and first client render — keeps
+  // it out of that initial markup entirely; React 18 batches this effect
+  // with useIsMobile's own from the same commit, so on mobile the
+  // `if (isMobile) return null` below wins before this ever paints with a
+  // real poster URL, while desktop only sees a few-ms-later attach.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -176,6 +189,13 @@ export default function WhySubs() {
     }
   }, [reduceMotion])
 
+  // Mobile: disabled entirely — no list, no video/poster loaded. All hooks
+  // above still run unconditionally (Rules of Hooks); with nothing
+  // rendered, their refs stay null and their effects become no-ops. Takes
+  // priority over the reduceMotion branch below (that one still shows a
+  // static fallback on desktop; mobile shows nothing at all here).
+  if (isMobile) return null
+
   const heading = (
     <h2 className="font-display text-left leading-tight text-[clamp(1.75rem,3.2vw,3rem)] max-w-md" style={{ color: '#F2F0EB' }}>
       Why subscription is <TextGradient as="span">better?</TextGradient>
@@ -229,7 +249,7 @@ export default function WhySubs() {
           loop
           playsInline
           preload="none"
-          poster={POSTER}
+          poster={mounted ? POSTER : undefined}
           className="absolute inset-0 w-full h-full object-cover"
           aria-hidden="true"
         >

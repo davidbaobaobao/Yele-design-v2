@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { TextGradient } from '@/components/ui/text-gradient'
 
 const SRC = '/media/howwefind/8cubesfollow.html'
@@ -90,6 +91,7 @@ export default function CubeFollowSection() {
   const ref = useRef<HTMLElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const isLowPower = useIsLowPowerDevice()
+  const isMobile = useIsMobile()
   const reduceMotion = !!useHydratedReducedMotion()
   const [tabHidden, setTabHidden] = useState(false)
   const [near, setNear] = useState(false)
@@ -155,6 +157,16 @@ export default function CubeFollowSection() {
       setLive(false)
     }
   }, [showScene])
+
+  // Mobile: the whole section is disabled, not just the iframe — no
+  // poster, no near-view gating, nothing. All hooks above are still
+  // called unconditionally (Rules of Hooks); with no DOM rendered, their
+  // refs stay null and their effects become no-ops (nothing to observe or
+  // fetch). useIsMobile() starts false on SSR/first paint, same as every
+  // other hydration-safe check in this codebase — the brief window before
+  // it resolves is inherent to client-only device detection and shared by
+  // every section gated this way.
+  if (isMobile) return null
 
   return (
     <section ref={ref} data-nav-dark className="relative w-full min-h-[225vh]" style={{ backgroundColor: '#0D0E12' }}>

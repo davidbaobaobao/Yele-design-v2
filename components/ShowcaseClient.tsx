@@ -155,7 +155,7 @@ function DesktopGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; 
 }
 
 /* ── Mobile sticky-scroll gallery ── */
-function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
+function MobileGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; noBg?: boolean; dark?: boolean }) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const travelMV = useMotionValue(0)
   const [wrapperH, setWrapperH] = useState('200vh')
@@ -183,12 +183,17 @@ function MobileGallery({ rows }: { rows: [CardData[], CardData[]] }) {
     ([p, t]: number[]) => -(p * t) - t * 0.08
   )
 
+  // Same logic as DesktopGallery's own gradFrom — was hardcoded from-white
+  // regardless of context, which read wrong (a bright edge fade against
+  // the dark #0D0E12 bg) on the homepage's dark Showcase instance.
+  const gradFrom = dark ? 'from-[#0D0E12]' : noBg ? 'from-white' : 'from-base'
+
   return (
     <div ref={wrapperRef} style={{ height: wrapperH }}>
       <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
         <div className="relative space-y-3">
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 z-10 bg-gradient-to-r from-white to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-white to-transparent" />
+          <div className={`pointer-events-none absolute inset-y-0 left-0 w-8 z-10 bg-gradient-to-r ${gradFrom} to-transparent`} />
+          <div className={`pointer-events-none absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l ${gradFrom} to-transparent`} />
           {rows.map((rowCards, rowIdx) => (
             <div key={rowIdx} className="overflow-visible">
               <motion.div
@@ -328,7 +333,7 @@ export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen, d
           </div>
         )}
         {rows ? (
-          <MobileGallery rows={rows} />
+          <MobileGallery rows={rows} noBg={noBg} dark={dark} />
         ) : (
           <div className="space-y-3 px-4 py-10">
             {[0, 1].map(row => (

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
 
 const SRC = '/media/8rubik/8rubik.html'
@@ -66,13 +67,15 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
 // the iframe is transparent (see public/media/8rubik/8rubik.html) and
 // fades in on top once it's had a moment to paint, so the poster stays
 // visible continuously behind the cubes rather than being blocked.
-// Mobile/coarse-pointer shows the poster only, no live iframe — the two
-// columns stack (animation top half, text bottom half) instead of sitting
-// side by side.
+// Coarse-pointer non-mobile devices (e.g. a touchscreen laptop) show the
+// poster only, no live iframe. Mobile disables the whole section outright
+// (see isMobile check below) — the two columns otherwise stack (animation
+// top half, text bottom half) instead of sitting side by side.
 export default function KeepImprovingSection() {
   const ref = useRef<HTMLElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const isLowPower = useIsLowPowerDevice()
+  const isMobile = useIsMobile()
   const reduceMotion = !!useHydratedReducedMotion()
   const [tabHidden, setTabHidden] = useState(false)
   const [near, setNear] = useState(false)
@@ -129,6 +132,12 @@ export default function KeepImprovingSection() {
       setLive(false)
     }
   }, [showScene])
+
+  // Mobile: the whole section is disabled, not just the iframe — no
+  // poster, no near-view gating. All hooks above still run unconditionally
+  // (Rules of Hooks); with nothing rendered, their refs stay null and
+  // their effects become no-ops.
+  if (isMobile) return null
 
   return (
     <section ref={ref} data-nav-dark className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
