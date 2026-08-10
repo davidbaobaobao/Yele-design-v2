@@ -41,8 +41,8 @@ const CARDS: CardData[] = [
     videoBase: 'whyyele2',
   },
   {
-    title: 'Built to convert',
-    description: 'Designed to turn visitors into calls, bookings and customers.',
+    title: 'Always maintained',
+    description: 'Hosting, security and updates handled around the clock. Your site never goes down, and you never lift a finger.',
     videoBase: 'whyyele5',
   },
 ]
