@@ -5,7 +5,7 @@ import { motion, type Transition } from 'framer-motion'
 import { CalendarDays } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { TextGradient } from '@/components/ui/text-gradient'
-import { trackContactFormSubmit } from '@/lib/gtag'
+import { trackContactCall, trackContactFormSubmit } from '@/lib/gtag'
 
 // Same number the floating WhatsApp button used before it was retired in
 // favor of the card below.
@@ -148,6 +148,7 @@ export default function ContactForm() {
             </a>
             <a
               href="tel:+12138458604"
+              onClick={() => trackContactCall()}
               className="font-display text-2xl md:text-3xl text-white/90 hover:text-white transition-colors"
             >
               +1 (213) 845-8604

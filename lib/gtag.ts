@@ -30,3 +30,24 @@ export function trackContactFormSubmit(email?: string) {
   if (email) window.gtag('set', 'user_data', { email })
   window.gtag('event', 'conversion', { send_to: CONTACT_CONVERSION_SEND_TO })
 }
+
+const CONTACT_CALL_SEND_TO = 'AW-18281072925/s7u4CKaRjN8cEJ2SjI1E'
+
+// Module-level, not per-caller — shared across every tel: CTA (contact
+// section phone link, Yelebot's "Call us" pill) so a rapid click across
+// two different CTAs still only counts once, same intent as Ads' own
+// conversion count setting, just also covering the "double click same
+// button" case client-side.
+let lastFiredAt = 0
+
+// Fires on click of any tel:+12138458604 CTA, before/at the tel: launch —
+// never blocks the navigation (gtag's own beacon uses sendBeacon/keepalive,
+// so it survives the tab handing off to the dialer). No email: a phone
+// call carries no address to match on.
+export function trackContactCall() {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
+  const now = Date.now()
+  if (now - lastFiredAt < 1000) return
+  lastFiredAt = now
+  window.gtag('event', 'conversion', { send_to: CONTACT_CALL_SEND_TO })
+}

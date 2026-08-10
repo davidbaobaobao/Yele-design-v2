@@ -6,7 +6,7 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { X, ArrowUp, ChevronDown } from 'lucide-react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
-import { trackBookCall } from '@/lib/gtag'
+import { trackBookCall, trackContactCall } from '@/lib/gtag'
 
 const ROBOT_DIR = '/media/robot'
 
@@ -19,8 +19,7 @@ const PRICING_SECTION_ID = 'precios'
 const CONTACT_SECTION_ID = 'contacto'
 const HOW_IT_WORKS_SECTION_ID = 'how-it-works'
 const FAQ_SECTION_ID = 'faq'
-// Same number as the Contact section's own tel: link (ContactForm.tsx) and
-// the nav's "Call us" quick action below.
+// Same number as the Contact section's own tel: link (ContactForm.tsx).
 const PHONE_TEL = 'tel:+12138458604'
 
 function scrollPageToId(id: string) {
@@ -30,9 +29,13 @@ function scrollPageToId(id: string) {
 // "Call us" does both: scrolls to the contact section AND launches the
 // device dialer — the scroll is a visual confirmation of intent that keeps
 // working even when the tel: link itself is a no-op (most desktop browsers
-// with no registered handler).
+// with no registered handler). trackContactCall() fires right before the
+// tel: launch, not after — the conversion beacon uses sendBeacon/keepalive
+// so it survives the tab handing off to the dialer, and firing here (not
+// blocking on it) means the dialer intent is never delayed by analytics.
 function callUs() {
   scrollPageToId(CONTACT_SECTION_ID)
+  trackContactCall()
   window.location.href = PHONE_TEL
 }
 
