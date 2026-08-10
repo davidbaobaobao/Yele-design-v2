@@ -374,11 +374,16 @@ function PinnedReveal({
 
   return (
     <section ref={wrapperRef} className="relative" style={{ height: '320vh' }}>
-      {/* data-nav-hide: Nav watches for this attribute and hides itself
-          (opacity 0) for as long as a pinned section is on screen,
-          restoring once it scrolls past — the fixed header would otherwise
-          sit awkwardly on top of this full-bleed grid. */}
-      <div data-nav-hide className="sticky top-0 h-screen w-full overflow-hidden" style={{ backgroundColor: SECTION_BG }}>
+      {/* data-nav-dark: same treatment every other full-bleed dark section
+          on the page gets (Hero, TryForFreeSection, ConveyorVideoSection,
+          ...) — the nav switches to its transparent/light-text mode while
+          this is on screen, instead of the light backdrop-blur bar it'd
+          otherwise show over dark full-bleed media. (This used to hide the
+          nav outright via a separate data-nav-hide mechanism, which had a
+          bug where it could get stuck hidden and never reappear — nav is
+          now always visible, so it just needs the right theme here like
+          everywhere else.) */}
+      <div data-nav-dark className="sticky top-0 h-screen w-full overflow-hidden" style={{ backgroundColor: SECTION_BG }}>
         <div className="absolute inset-0" style={{ transformStyle: 'preserve-3d' }} aria-hidden="true">
           {Array.from({ length: count }, (_, i) => renderTile(i, scrollYProgress))}
         </div>

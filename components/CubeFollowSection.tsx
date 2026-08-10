@@ -39,9 +39,9 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
       className="font-display leading-tight text-center text-[clamp(1.5rem,2.6vw,2.75rem)]"
       style={{ color: '#F2F0EB' }}
     >
-      <span className="sr-only">We create the best design for your website.</span>
+      <span className="sr-only">We choose the best design for your website.</span>
       <span aria-hidden="true">
-        <span className="block">We create</span>
+        <span className="block">We choose</span>
         <motion.span
           className="block"
           animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}

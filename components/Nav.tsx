@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { CTAButton } from '@/components/ui/cta-button'
 import { scrollToSection } from '@/lib/nav-scroll'
 
-// href starting with '#' is a same-page scroll anchor (scrollToSection,
-// silently no-ops if the target isn't on the current page); anything else
-// is a real route rendered as a plain <Link>.
+// href starting with '#' is a same-page scroll anchor on pages that
+// actually render these sections (/ and /agency, HomePage's two routes —
+// see isSectionsPage below); everywhere else (e.g. /services, which has
+// none of these ids) it becomes a real "/#id" navigation instead, so the
+// link still works rather than silently no-oping. Anything not starting
+// with '#' is always a real route, rendered as a plain <Link>.
 const LINKS = [
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Work', href: '#trabajos' },
@@ -26,6 +30,12 @@ const LINKS = [
 // isn't part of this — it's a light (bg-base) section now.
 export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
   const { t } = useLang()
+  const pathname = usePathname()
+  // The only two routes that actually render HomePage.tsx's sections
+  // (#trabajos, #precios, #how-it-works, #faq, #contacto) — everywhere
+  // else those ids don't exist, so section links there navigate to
+  // "/#id" instead of trying (and failing) to scroll in place.
+  const isSectionsPage = pathname === '/' || pathname === '/agency'
   const [open, setOpen] = useState(false)
   const [overHero, setOverHero] = useState(hasHero)
   // Sections with a one-shot scroll-triggered bg flip (HowWeWork's Mercury
@@ -37,11 +47,6 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
   // (from the OTHER, uniformly-dark zones) decides as usual.
   const [fadeIntersecting, setFadeIntersecting] = useState(false)
   const [fadeDark, setFadeDark] = useState(true)
-  // Sections that want the nav fully out of the way (currently just
-  // ContentShowcase's pinned scroll-jack) mark themselves with
-  // data-nav-hide; the header hides while any of them is on screen and
-  // reappears once they've scrolled past.
-  const [navHidden, setNavHidden] = useState(false)
 
   useEffect(() => {
     if (!hasHero) return
@@ -97,25 +102,6 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
     }
   }, [])
 
-  useEffect(() => {
-    const hideZones = document.querySelectorAll('[data-nav-hide]')
-    if (hideZones.length === 0 || !('IntersectionObserver' in window)) return
-
-    const intersecting = new Set<Element>()
-    const io = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) intersecting.add(entry.target)
-          else intersecting.delete(entry.target)
-        })
-        setNavHidden(intersecting.size > 0)
-      },
-      { threshold: 0 }
-    )
-    hideZones.forEach(el => io.observe(el))
-    return () => io.disconnect()
-  }, [])
-
   // Also doubles as the nav's dark/light "theme" switch (logo + CTA color
   // below) — it's already exactly "is the nav currently over a dark-bg
   // section," including the fade sections' own live state, so there's no
@@ -134,7 +120,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
           showBoneText ? 'bg-transparent' : 'backdrop-blur-xl bg-base/70'
-        } ${navHidden ? 'opacity-0 pointer-events-none transition-opacity duration-300' : 'opacity-100 transition-opacity duration-300'}`}
+        }`}
       >
         <nav className="relative flex items-center justify-between h-20 px-6 md:px-10">
           {/* Both logos are stacked in the same grid cell (grid-area 1/1) and
@@ -166,12 +152,19 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
               const linkClass = `font-body text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:underline ${
                 showBoneText ? 'text-bone/80 hover:text-bone' : 'text-muted hover:text-ink'
               }`
-              return link.href.startsWith('#') ? (
+              if (!link.href.startsWith('#')) {
+                return (
+                  <Link key={link.href} href={link.href} className={linkClass}>
+                    {link.label}
+                  </Link>
+                )
+              }
+              return isSectionsPage ? (
                 <button key={link.href} onClick={() => scrollTo(link.href)} className={linkClass}>
                   {link.label}
                 </button>
               ) : (
-                <Link key={link.href} href={link.href} className={linkClass}>
+                <Link key={link.href} href={`/${link.href}`} className={linkClass}>
                   {link.label}
                 </Link>
               )
@@ -179,14 +172,20 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <CTAButton
-              type="button"
-              onClick={() => scrollTo('#contacto')}
-              variant="black"
-              className="text-xs px-5 py-2.5"
-            >
-              {t('Contáctanos', 'Contact us')}
-            </CTAButton>
+            {isSectionsPage ? (
+              <CTAButton
+                type="button"
+                onClick={() => scrollTo('#contacto')}
+                variant="black"
+                className="text-xs px-5 py-2.5"
+              >
+                {t('Contáctanos', 'Contact us')}
+              </CTAButton>
+            ) : (
+              <CTAButton href="/#contacto" variant="black" className="text-xs px-5 py-2.5">
+                {t('Contáctanos', 'Contact us')}
+              </CTAButton>
+            )}
             <CTAButton
               href={ctaHref}
               prefetch={false}
@@ -218,28 +217,46 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
           >
             {LINKS.map(link => {
               const mobileLinkClass = 'w-full text-left font-body text-base text-ink py-3 border-b border-hairline last:border-0 cursor-pointer'
-              return link.href.startsWith('#') ? (
+              if (!link.href.startsWith('#')) {
+                return (
+                  <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className={`${mobileLinkClass} block`}>
+                    {link.label}
+                  </Link>
+                )
+              }
+              return isSectionsPage ? (
                 <button key={link.href} onClick={() => scrollTo(link.href)} className={mobileLinkClass}>
                   {link.label}
                 </button>
               ) : (
-                <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className={`${mobileLinkClass} block`}>
+                <Link key={link.href} href={`/${link.href}`} onClick={() => setOpen(false)} className={`${mobileLinkClass} block`}>
                   {link.label}
                 </Link>
               )
             })}
             <div className="flex items-center gap-3 pt-3">
-              <CTAButton
-                type="button"
-                onClick={() => {
-                  scrollTo('#contacto')
-                  setOpen(false)
-                }}
-                variant="black"
-                className="text-xs px-4 py-2.5"
-              >
-                {t('Contáctanos', 'Contact us')}
-              </CTAButton>
+              {isSectionsPage ? (
+                <CTAButton
+                  type="button"
+                  onClick={() => {
+                    scrollTo('#contacto')
+                    setOpen(false)
+                  }}
+                  variant="black"
+                  className="text-xs px-4 py-2.5"
+                >
+                  {t('Contáctanos', 'Contact us')}
+                </CTAButton>
+              ) : (
+                <CTAButton
+                  href="/#contacto"
+                  onClick={() => setOpen(false)}
+                  variant="black"
+                  className="text-xs px-4 py-2.5"
+                >
+                  {t('Contáctanos', 'Contact us')}
+                </CTAButton>
+              )}
               <CTAButton
                 href={ctaHref}
                 prefetch={false}

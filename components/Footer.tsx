@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ChevronUp } from 'lucide-react'
 import { WebGLShader } from '@/components/ui/web-gl-shader'
 import { useLang } from '@/context/LanguageContext'
@@ -63,6 +65,11 @@ function useTypewriter(words: string[]) {
 
 export default function Footer() {
   const { t } = useLang()
+  const pathname = usePathname()
+  // Same as Nav.tsx: only / and /agency actually render these section ids
+  // (both render HomePage.tsx) — everywhere else (e.g. /services) they
+  // navigate to "/#id" instead of silently no-oping.
+  const isSectionsPage = pathname === '/' || pathname === '/agency'
   const { displayText, cursorVisible } = useTypewriter(WORDS)
 
   return (
@@ -133,6 +140,12 @@ export default function Footer() {
                 >
                   info@yele.design
                 </a>
+                <a
+                  href="tel:+12138458604"
+                  className="font-body text-sm text-white/60 hover:text-white transition-colors mt-1 block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+                >
+                  +1 (213) 845-8604
+                </a>
               </div>
 
               <div className="flex gap-12">
@@ -146,15 +159,25 @@ export default function Footer() {
                       { id: '#how-it-works',  es: 'Cómo funciona',  en: 'How it works' },
                       { id: '#precios',       es: 'Precios',        en: 'Pricing' },
                       { id: '#contacto',      es: 'Contacto',       en: 'Contact' },
-                    ].map(({ id, es, en }) => (
-                      <button
-                        key={id}
-                        onClick={() => scrollToSection(id)}
-                        className="text-left font-body text-sm text-white/60 hover:text-white transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
-                      >
-                        {t(es, en)}
-                      </button>
-                    ))}
+                    ].map(({ id, es, en }) =>
+                      isSectionsPage ? (
+                        <button
+                          key={id}
+                          onClick={() => scrollToSection(id)}
+                          className="text-left font-body text-sm text-white/60 hover:text-white transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+                        >
+                          {t(es, en)}
+                        </button>
+                      ) : (
+                        <Link
+                          key={id}
+                          href={`/${id}`}
+                          className="text-left font-body text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
+                        >
+                          {t(es, en)}
+                        </Link>
+                      )
+                    )}
                     {/* Real route, not a same-page scroll anchor — services
                         packages/add-ons page (app/services/page.tsx). */}
                     <a
