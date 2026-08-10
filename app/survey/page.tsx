@@ -7,7 +7,6 @@ import SelectCard from './_components/SelectCard'
 import StyleImageCard from './_components/StyleImageCard'
 import ColorImageCard from './_components/ColorImageCard'
 import VideoOptionCard from './_components/VideoOptionCard'
-import GoalImageCard from './_components/GoalImageCard'
 import SplitLayout from './_components/SplitLayout'
 import FullLayout from './_components/FullLayout'
 import ImmersiveGridLayout from './_components/ImmersiveGridLayout'
@@ -23,7 +22,7 @@ import {
   EFFECT_PAGE_2,
   EMPTY_ANSWERS,
   FUNCTIONALITY_OPTIONS,
-  GOAL_OPTIONS,
+  INVOLVEMENT_OPTIONS,
   PLAN_OPTIONS,
   STYLE_OPTIONS,
   TOTAL_STEPS,
@@ -390,31 +389,17 @@ export default function SurveyPage() {
         )}
 
         {step === 4 && (
-          <FullLayout wide title="What's your website goal?">
-            <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 md:gap-4">
-              <div className="flex flex-col gap-3 sm:h-[36vh] sm:flex-row sm:items-stretch sm:justify-center sm:gap-4">
-                {GOAL_OPTIONS.slice(0, 2).map((g) =>
-                  g.image ? (
-                    <GoalImageCard
-                      key={g.id}
-                      className="sm:h-full sm:w-auto"
-                      fileKey={g.image}
-                      title={g.title}
-                      description={g.description}
-                      selected={answers.goal === g.id}
-                      onClick={() => update('goal', g.id)}
-                    />
-                  ) : (
-                    <SelectCard key={g.id} title={g.title} description={g.description} selected={answers.goal === g.id} onClick={() => update('goal', g.id)} />
-                  )
-                )}
-              </div>
-              <SelectCard
-                title={GOAL_OPTIONS[2].title}
-                description={GOAL_OPTIONS[2].description}
-                selected={answers.goal === GOAL_OPTIONS[2].id}
-                onClick={() => update('goal', GOAL_OPTIONS[2].id)}
-              />
+          <FullLayout title="How involved do you want to be in the design process?">
+            <div className="flex flex-col gap-4">
+              {INVOLVEMENT_OPTIONS.map((i) => (
+                <SelectCard
+                  key={i.id}
+                  title={i.title}
+                  description={i.description}
+                  selected={answers.involvementLevel === i.id}
+                  onClick={() => update('involvementLevel', i.id)}
+                />
+              ))}
             </div>
           </FullLayout>
         )}

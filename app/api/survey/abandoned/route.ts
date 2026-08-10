@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { colorLabels, goalLabel, planLabel, styleLabels, TOTAL_STEPS } from '@/app/survey/_lib/data'
+import { colorLabels, goalLabel, involvementLabel, planLabel, styleLabels, TOTAL_STEPS } from '@/app/survey/_lib/data'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +21,7 @@ interface AbandonedRow {
   phone: string | null
   plan_interest: string | null
   goal: string | null
+  involvement_level: string | null
   styles: string[] | null
   colors: string[] | null
   business: string | null
@@ -47,7 +48,7 @@ export async function GET(request: Request) {
 
     const { data: rows, error } = await supabaseAdmin
       .from('survey_responses')
-      .select('id, updated_at, name, company, email, phone, plan_interest, goal, styles, colors, business, sells, current_step')
+      .select('id, updated_at, name, company, email, phone, plan_interest, goal, involvement_level, styles, colors, business, sells, current_step')
       .eq('completed', false)
       .eq('flagged', false)
       .lt('updated_at', cutoff)
@@ -112,6 +113,7 @@ function buildDigestEmail(leads: AbandonedRow[]): string {
         ${row('Email', lead.email)}
         ${row('Phone', lead.phone)}
         ${row('Plan', lead.plan_interest ? planLabel(lead.plan_interest) : null)}
+        ${row('Involvement', lead.involvement_level ? involvementLabel(lead.involvement_level) : null)}
         ${row('Goal', lead.goal ? goalLabel(lead.goal) : null)}
         ${row('Styles', lead.styles?.length ? styleLabels(lead.styles).join(', ') : null)}
         ${row('Colours', lead.colors?.length ? colorLabels(lead.colors).join(', ') : null)}

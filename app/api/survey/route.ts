@@ -6,6 +6,7 @@ import {
   effectLabels,
   functionalityLabels,
   goalLabel,
+  involvementLabel,
   planLabel,
   styleLabels,
   updateOftenLabels,
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
       phone,
       planInterest,
       goal,
+      involvementLevel,
       styles,
       colors,
       effects,
@@ -83,6 +85,7 @@ export async function POST(request: Request) {
       phone: phone || null,
       plan_interest: planInterest || null,
       goal: goal || null,
+      involvement_level: involvementLevel || null,
       styles: styles ?? [],
       colors: colors ?? [],
       effects: effects ?? [],
@@ -126,6 +129,7 @@ export async function POST(request: Request) {
             phone,
             planInterest,
             goal,
+            involvementLevel,
             styles,
             colors,
             effects,
@@ -163,6 +167,7 @@ interface CompletionEmailData {
   phone?: string
   planInterest?: string
   goal?: string
+  involvementLevel?: string
   styles?: string[]
   colors?: string[]
   effects?: string[]
@@ -248,7 +253,8 @@ function buildCompletionEmail(data: CompletionEmailData): string {
     ${section('Plan interest', row('Plan', data.planInterest ? planLabel(data.planInterest) : null))}
     ${section(
       'Design brief',
-      row('Goal', data.goal ? goalLabel(data.goal) : null) +
+      row('Involvement', data.involvementLevel ? involvementLabel(data.involvementLevel) : null) +
+        row('Goal', data.goal ? goalLabel(data.goal) : null) +
         row('Styles', data.styles?.length ? styleLabels(data.styles).join(', ') : null) +
         row('Colours', data.colors?.length ? colorLabels(data.colors).join(', ') : null) +
         row('Site feel', data.effects?.length ? effectLabels(data.effects).join(', ') : null)

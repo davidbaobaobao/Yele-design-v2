@@ -1,4 +1,11 @@
+// Kept for the existing DB column + downstream email/admin code that still
+// reads it (app/api/survey/route.ts, app/api/survey/abandoned/route.ts) —
+// step 4 no longer collects it (see InvolvementId below, which replaced it
+// in that slot), so this is only ever populated on rows submitted before
+// that change.
 export type GoalId = 'statement' | 'sell' | 'both'
+// ── Step 4 — design-process involvement (replaced the old "goal" question) ──
+export type InvolvementId = 'hands_on' | 'balanced' | 'hands_off'
 export type StyleId = 'minimalism' | 'swiss' | 'bento' | 'editorial' | 'luxury' | 'dark' | 'neobrutalism' | 'organic'
 export type StyleRound = 1 | 2
 // Stored shape in answers.styles — each style page (5, 6) only ever adds or
@@ -80,6 +87,7 @@ export interface SurveyAnswers {
   phone: string
   planInterest: PlanId | ''
   goal: GoalId | ''
+  involvementLevel: InvolvementId | ''
   styles: StyleKey[]
   colors: ColorId[]
   effects: EffectId[]
@@ -125,6 +133,7 @@ export const EMPTY_ANSWERS: SurveyAnswers = {
   phone: '',
   planInterest: '',
   goal: '',
+  involvementLevel: '',
   styles: [],
   colors: [],
   effects: [],
@@ -165,14 +174,34 @@ export const PLAN_OPTIONS: { id: PlanId; title: string; price: string; descripti
   { id: 'not_sure', title: 'Not sure yet', price: '', description: 'Show me everything — help me decide' },
 ]
 
-// ── Step 4 — goal ────────────────────────────────────────────────────────
-// statement/sell get large image cards (image under public/media/surveymedia/,
-// see GoalImageCard); "both" has no matching photo, so it stays a plain
-// SelectCard — image is undefined there on purpose.
+// ── Step 4 (legacy) — goal ───────────────────────────────────────────────
+// No longer shown in the survey UI (see INVOLVEMENT_OPTIONS below, which
+// took over step 4's slot) — kept only because goalLabel()/the `goal` DB
+// column are still read by app/api/survey/route.ts and
+// app/api/survey/abandoned/route.ts for rows submitted before that change.
 export const GOAL_OPTIONS: { id: GoalId; title: string; description: string; image?: string }[] = [
   { id: 'statement', title: 'Artistic', description: 'Make a statement.', image: 'statement' },
   { id: 'sell', title: 'Classic', description: 'Professional — convert and sell.', image: 'sell' },
   { id: 'both', title: 'Both / middle ground', description: 'Beautiful and built to sell' },
+]
+
+// ── Step 4 — design-process involvement ───────────────────────────────────
+export const INVOLVEMENT_OPTIONS: { id: InvolvementId; title: string; description: string }[] = [
+  {
+    id: 'hands_on',
+    title: 'Hands-on',
+    description: 'I want a say in the details. Weekly check-in calls, feedback at every step, and a voice in the design decisions.',
+  },
+  {
+    id: 'balanced',
+    title: 'Balanced',
+    description: "Keep me in the loop by email and I'll weigh in on the key choices — but I trust your expertise for the rest.",
+  },
+  {
+    id: 'hands_off',
+    title: 'Hands-off',
+    description: "I don't have much time. Run with it, check in occasionally, and I'll review the final result.",
+  },
 ]
 
 // ── Steps 5 & 6 — style, same 8 concepts shown twice ──────────────────────
@@ -341,6 +370,10 @@ export function planLabel(id: string): string {
 
 export function goalLabel(id: string): string {
   return GOAL_OPTIONS.find((g) => g.id === id)?.title ?? id
+}
+
+export function involvementLabel(id: string): string {
+  return INVOLVEMENT_OPTIONS.find((i) => i.id === id)?.title ?? id
 }
 
 // Keys are round-suffixed (e.g. "minimalism1"), so strip the trailing 1/2
