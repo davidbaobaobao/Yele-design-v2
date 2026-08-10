@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
-import { useIsMobile } from '@/hooks/useIsMobile'
 import { TextGradient } from '@/components/ui/text-gradient'
 
 const VIDEO_DIR = '/media/whysubs'
@@ -72,10 +71,17 @@ function ReasonItem({ index, title, continuousIndex }: { index: number; title: s
 
 export default function WhySubs() {
   const reduceMotion = !!useHydratedReducedMotion()
-  const isMobile = useIsMobile()
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
+  // Sits well below the fold (after Contact) — the video must not fetch on
+  // initial load. `src` (via <BgSources/>) stays off entirely until the
+  // section is close to view; same 600px rootMargin/pattern as
+  // TryForFreeSection's nearView. preload="none" unconditionally (was
+  // isMobile ? 'none' : 'auto' — but useIsMobile() starts false on both
+  // server and first client render, so that eager-loaded on every device's
+  // initial paint, not just desktop).
+  const [nearView, setNearView] = useState(false)
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -98,6 +104,26 @@ export default function WhySubs() {
     const idx = Math.max(0, Math.min(REASONS.length - 1, Math.round(v)))
     setActiveIndex(prev => (prev === idx ? prev : idx))
   })
+
+  useEffect(() => {
+    if (reduceMotion) return
+    const el = sectionRef.current
+    if (!el || !('IntersectionObserver' in window)) {
+      setNearView(true)
+      return
+    }
+    const io = new IntersectionObserver(
+      entries => {
+        if (entries[0]?.isIntersecting) {
+          setNearView(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: '600px 0px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [reduceMotion])
 
   // Pause the bg video once the (very tall) section is nowhere near the
   // viewport — it's always visible while any part of the section is on
@@ -202,12 +228,12 @@ export default function WhySubs() {
           muted
           loop
           playsInline
-          preload={isMobile ? 'none' : 'auto'}
+          preload="none"
           poster={POSTER}
           className="absolute inset-0 w-full h-full object-cover"
           aria-hidden="true"
         >
-          <BgSources />
+          {nearView && <BgSources />}
         </video>
         {/* Dark wash so the video reads as background texture behind the
             now-white text, instead of the light wash this used when text

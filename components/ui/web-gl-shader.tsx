@@ -77,9 +77,9 @@ export function WebGLShader() {
 
     // WebGL context creation can fail outright (GPU/driver issues, WebGL
     // disabled by policy or a privacy extension, headless/sandboxed
-    // browsers with no GPU) — this renders unconditionally in the Footer
-    // on every page, so an uncaught throw here used to crash the entire
-    // site, not just one section. Returns false (skip animate()) instead.
+    // browsers with no GPU) — this is the Footer's background, present on
+    // every page, so an uncaught throw here used to crash the entire site,
+    // not just one section. Returns false (skip animate()) instead.
     const initScene = () => {
       refs.scene = new THREE.Scene()
       try {
@@ -145,11 +145,35 @@ export function WebGLShader() {
       refs.uniforms.resolution.value = [width, height]
     }
 
-    if (!initScene()) return
-    animate()
-    window.addEventListener("resize", handleResize)
+    // Sits at the very bottom of the page (Footer, below Contact) — used to
+    // create its WebGL context and start a continuous rAF render loop
+    // unconditionally at mount, regardless of whether the footer was ever
+    // scrolled near. Gated behind an IntersectionObserver instead: context
+    // creation + the render loop only start once the footer is within
+    // ~400px of the viewport, and the loop pauses again (context stays
+    // allocated, just idle) if it scrolls back out.
+    let started = false
+    const io = new IntersectionObserver(
+      entries => {
+        const visible = !!entries[0]?.isIntersecting
+        if (visible) {
+          if (!started) {
+            started = true
+            if (!initScene()) return
+            window.addEventListener("resize", handleResize)
+          }
+          if (refs.renderer && refs.animationId == null) animate()
+        } else if (refs.animationId != null) {
+          cancelAnimationFrame(refs.animationId)
+          refs.animationId = null
+        }
+      },
+      { rootMargin: "400px 0px" }
+    )
+    io.observe(canvas)
 
     return () => {
+      io.disconnect()
       if (refs.animationId) cancelAnimationFrame(refs.animationId)
       window.removeEventListener("resize", handleResize)
       if (refs.mesh) {

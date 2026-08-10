@@ -140,6 +140,7 @@ function ReviewCard({
               alt={item.author_name}
               width={44}
               height={44}
+              loading="lazy"
               style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
               onError={() => setAvatarFailed(true)}
             />
