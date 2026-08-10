@@ -68,14 +68,14 @@ export default function HomePage() {
         <KeepImprovingSection />
         <WebsiteWordsVideo />
         {/* Both this and WhatWeDo are solid #0D0E12 — this is pure breathing
-            room between the animation section's video grid and the We-
-            section's stacked cards, not a color transition. */}
+            room between the animation section's video grid and Contact,
+            not a color transition. */}
         <div style={{ backgroundColor: '#0D0E12' }} className="h-20 md:h-32" aria-hidden="true" />
+        <ContactForm />
         <WhatWeDo />
         <TablaComparativa />
         <Testimonios noBg />
         <WhySubs />
-        <ContactForm />
         <FAQ dark />
         <VideoSnapController />
       </main>
