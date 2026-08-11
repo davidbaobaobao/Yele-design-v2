@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -56,18 +56,20 @@ function Headline({ reduceMotion }: { reduceMotion: boolean }) {
   )
 }
 
-// Sits right after the try-for-free video section. min-h-[225vh] wrapper
-// with a sticky, exactly-100vh inner — the cubes stay pinned to the
-// viewport for that extra 1.25 viewports of scroll, then release like any
-// other sticky section (same shape as ContentShowcase's PinnedReveal, just
-// a plain CSS sticky pin for the cubes/poster themselves — only the TEXT
-// tracks scrollYProgress, sliding up ~120px over the section's full scroll
-// range so it reads as drifting past the pinned cubes rather than sitting
-// static on top of them). The extra wrapper height is scroll LENGTH only —
-// the iframe itself always renders at a fixed 100vh, and the artifact's
-// own renderer is capped at DPR 1.25 internally (patched in
-// public/media/howwefind/8cubesfollow.html to match CubesScene.tsx's own
-// cap), so there's no extra-resolution cost.
+// Sits right after the try-for-free video section. A normal 1x (100vh)
+// section — no sticky pin, no extra scroll length. Used to be a 225vh
+// sticky-pinned section (2.25 viewports of scroll length with a matching
+// 150vh internal scroll surface baked into the artifact's own CSS); that
+// extra internal scroll surface was the actual source of a MacBook
+// trackpad "stuck scrolling" bug over the iframe (scrolling="no" doesn't
+// reliably suppress a trackpad's native momentum-scroll gesture over an
+// iframe whose own document is genuinely taller than its viewport, even
+// though mouse-wheel scrolling looked fine). Both this wrapper and the
+// artifact's internal #section/#app are now a flat 100vh with no
+// scrollable surface at all, so there's nothing left for the trackpad
+// gesture to get caught on. The artifact's own renderer is capped at DPR
+// 1.25 internally (patched in public/media/howwefind/8cubesfollow.html to
+// match CubesScene.tsx's own cap), so there's no extra-resolution cost.
 //
 // Poster-first, no pop: poster.jpeg mounts once the section is `near`
 // (~600px out, never on initial page load — this section is many screens
@@ -136,15 +138,6 @@ export default function CubeFollowSection() {
     }
   }, [])
 
-  // Text slide-up parallax: tracks scroll progress across the WHOLE 150vh
-  // (well, 225vh now) wrapper, not just the sticky window — 0 at the
-  // section's very top, 1 at its very bottom, so the text drifts a full
-  // 120px over the entire pinned-scroll range while the cubes themselves
-  // stay put, giving a "moving past them" feel rather than the text just
-  // sitting static over the pin.
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
-  const textY = useTransform(scrollYProgress, [0, 1], [60, -60])
-
   const showScene = near && !far && !tabHidden && !isLowPower
 
   useEffect(() => {
@@ -169,66 +162,55 @@ export default function CubeFollowSection() {
   if (isMobile) return null
 
   return (
-    <section ref={ref} data-nav-dark className="relative w-full min-h-[225vh]" style={{ backgroundColor: '#0D0E12' }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* Mounted only once `near` (~600px out) — not on initial page load
-            regardless of scroll position. Was loading="eager" and always
-            mounted, which fetched this ~1.3MB poster immediately on every
-            page load (this section is many screens below the fold),
-            competing with the hero's own critical assets. Gating on `near`
-            (an IntersectionObserver on the SECTION itself, not the image)
-            also sidesteps the actual bug that made loading="eager"
-            necessary before: a lazy <img> sitting inside a position:sticky
-            container can have its own viewport-intersection miscalculated
-            by the browser while still in its pre-stuck resting position,
-            so it can fail to ever trigger. Once mounted it loads eagerly —
-            no further lazy-loading ambiguity once we've already decided
-            it's time. */}
-        {near && (
-          <Image
-            src={POSTER}
-            alt=""
-            fill
-            loading="eager"
-            quality={85}
-            sizes="100vw"
-            className="z-0 object-cover"
-            aria-hidden="true"
-          />
-        )}
-
-        {!isLowPower && (
-          <iframe
-            ref={iframeRef}
-            title="Cursor-following cubes"
-            scrolling="no"
-            loading="lazy"
-            onLoad={e => {
-              if (!e.currentTarget.getAttribute('src')) return
-              tuneCubeScene(e.currentTarget)
-              window.setTimeout(() => setLive(true), 150)
-            }}
-            className="absolute inset-0 z-10 h-full w-full transition-opacity duration-700 ease-out"
-            style={{ border: 0, opacity: live ? 1 : 0 }}
-          />
-        )}
-
-        {/* Bottom-edge fade into the next section's own #0D0E12 marquee bg —
-            only the last 20% of the sticky area darkens, so the cubes blend
-            out smoothly instead of cutting off hard right as the marquee
-            begins. Same recipe as ConveyorVideoSection's top fade. */}
-        <div
-          className="pointer-events-none absolute inset-0 z-[15]"
-          style={{ background: 'linear-gradient(to bottom, rgba(13,14,18,0) 80%, #0D0E12 100%)' }}
+    <section ref={ref} data-nav-dark className="relative w-full h-screen overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
+      {/* Mounted only once `near` (~600px out) — not on initial page load
+          regardless of scroll position. Was loading="eager" and always
+          mounted, which fetched this ~1.3MB poster immediately on every
+          page load (this section is many screens below the fold),
+          competing with the hero's own critical assets. Once mounted it
+          loads eagerly — no further lazy-loading ambiguity once we've
+          already decided it's time. */}
+      {near && (
+        <Image
+          src={POSTER}
+          alt=""
+          fill
+          loading="eager"
+          quality={85}
+          sizes="100vw"
+          className="z-0 object-cover"
           aria-hidden="true"
         />
+      )}
 
-        <motion.div
-          className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6"
-          style={reduceMotion ? undefined : { y: textY }}
-        >
-          <Headline reduceMotion={reduceMotion} />
-        </motion.div>
+      {!isLowPower && (
+        <iframe
+          ref={iframeRef}
+          title="Cursor-following cubes"
+          scrolling="no"
+          loading="lazy"
+          onLoad={e => {
+            if (!e.currentTarget.getAttribute('src')) return
+            tuneCubeScene(e.currentTarget)
+            window.setTimeout(() => setLive(true), 150)
+          }}
+          className="absolute inset-0 z-10 h-full w-full transition-opacity duration-700 ease-out"
+          style={{ border: 0, opacity: live ? 1 : 0 }}
+        />
+      )}
+
+      {/* Bottom-edge fade into the next section's own #0D0E12 marquee bg —
+          only the last 20% of the section darkens, so the cubes blend out
+          smoothly instead of cutting off hard right as the marquee begins.
+          Same recipe as ConveyorVideoSection's top fade. */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[15]"
+        style={{ background: 'linear-gradient(to bottom, rgba(13,14,18,0) 80%, #0D0E12 100%)' }}
+        aria-hidden="true"
+      />
+
+      <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6">
+        <Headline reduceMotion={reduceMotion} />
       </div>
     </section>
   )
