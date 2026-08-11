@@ -50,6 +50,7 @@ export default function HomePage() {
         {/* <Mission /> */}
         <LogoMarquee />
         <WhyYele />
+        <PreciosIndexSection />
         <AgencyIntro />
         <div id="trabajos" data-nav-dark className="scroll-mt-24">
           <Showcase noHeader noBg fullScreen dark />
@@ -60,7 +61,6 @@ export default function HomePage() {
           <DealStatement />
           <StatsBold />
         </DealFadeProvider>
-        <PreciosIndexSection />
         <TryForFreeSection />
         <CubeFollowSection />
         <ContentShowcase />
