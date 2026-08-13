@@ -1,21 +1,25 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, type Transition } from 'framer-motion'
+import { motion, useMotionValueEvent, useScroll, type Transition } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import { useEarlyLoad } from '@/hooks/useEarlyLoad'
 import PosterVideo from '@/components/ui/poster-video'
-import { useDealFade } from '@/components/DealFadeContext'
 
-// Shares DealFadeContext with BeyondWebsite (directly above) and
-// DealStatement/StatsBold (directly below) — same white->black flip, same
-// instant, same 500ms transition, so this section reads as one continuous
-// surface turning dark alongside the other three, not an independently
-// timed fade. Media tiles (bg-[#EEEDE9]) stay fixed regardless, same
-// convention as BeyondWebsite's video panels — they're media, not
-// text/background.
+// Self-contained white->black flip (same one-shot 500ms tween mechanic as
+// HowWeWork/DealStatement — see either file's own comment for the full
+// rationale) — NOT shared with DealStatement/BeyondWebsite/StatsBold's own
+// DealFadeContext group below. This section owns its own scroll trigger so
+// it's fully black by the time it scrolls out of view, independent of
+// whatever "Here's the deal" is doing beneath it. Anchored on the
+// name+description row at the BOTTOM of the section (its own "lower
+// portion") rather than the section's top edge, so the flip fires once
+// that row reaches the top of the viewport — late enough that the grid
+// above has mostly scrolled past already. Media tiles (bg-[#EEEDE9]) stay
+// fixed regardless, same convention as BeyondWebsite's video panels —
+// they're media, not text/background.
 const DARK_BG = '#0D0E12'
 const LIGHT_BG = '#FFFFFF'
 const DARK_TEXT = '#FFFFFF'
@@ -52,10 +56,10 @@ const PROJECTS: FeaturedProject[] = [
     description:
       "Tampa's leading water-damage and disaster-restoration specialists — reachable 24/7, when every minute counts.",
     bullets: [
-      'Instant AI quotes — customers get pricing, availability and repair timelines on the spot, lifting conversion when speed matters most.',
-      'Self-scheduling on a synced calendar — visits booked and confirmed instantly, no human back-and-forth.',
-      'Smart AI chat that answers anything — pricing, damage types, repair timelines, scheduling and confirmation, 24/7.',
-      'Local SEO targeted to their service area, driving a steady stream of qualified leads.',
+      'Instant AI quotes — pricing, availability and timelines on the spot.',
+      'Self-scheduling on a synced calendar — booked and confirmed instantly.',
+      'AI chat answering pricing, damage, timing and booking, 24/7.',
+      'Local SEO for their service area — more qualified leads.',
     ],
     mediaDir: '/media/renovationbros',
     col1Video: '1',
@@ -68,15 +72,21 @@ const PROJECTS: FeaturedProject[] = [
   },
 ]
 
-// object-cover tile shared by every grid slot — aspect ratio governs its
-// own standalone height on mobile (single-column stack); md:aspect-auto +
-// md:h-full instead fills whatever the desktop grid cell resolves to.
+// object-cover tile shared by every grid slot — the aspect-ratio class each
+// caller adds (aspect-[4/3]/aspect-[9/16]/aspect-video) governs its height
+// on both mobile (single-column stack) and desktop (md:self-start keeps it
+// pinned to that real aspect instead of stretching to match a taller
+// sibling in the same auto row).
 const TILE_CLASS = 'relative rounded-2xl overflow-hidden'
 
 export default function LatestFeaturedWork() {
   const reduceMotion = !!useHydratedReducedMotion()
-  const { pastThreshold } = useDealFade()
   const project = PROJECTS[0]
+
+  const sectionRef = useRef<HTMLElement>(null)
+  const footerRef = useRef<HTMLDivElement>(null)
+  const footerPageTopRef = useRef(0)
+  const [pastThreshold, setPastThreshold] = useState(false)
 
   const col1VideoRef = useRef<HTMLVideoElement>(null)
   const col45VideoRef = useRef<HTMLVideoElement>(null)
@@ -84,60 +94,98 @@ export default function LatestFeaturedWork() {
   useEarlyLoad(col1VideoRef)
   useEarlyLoad(col45VideoRef)
 
+  // Anchored on the name+description row (this section's own "lower
+  // portion") — re-measured on resize/load/body mutation since content
+  // above this section can still be reflowing the page after mount, same
+  // as HowWeWork/DealStatement's own version of this pattern.
+  useEffect(() => {
+    if (reduceMotion) return
+    const measure = () => {
+      const el = footerRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      footerPageTopRef.current = rect.top + window.scrollY
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    window.addEventListener('load', measure)
+    const ro = new ResizeObserver(measure)
+    ro.observe(document.body)
+    return () => {
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('load', measure)
+      ro.disconnect()
+    }
+  }, [reduceMotion])
+
+  const { scrollY } = useScroll()
+  useMotionValueEvent(scrollY, 'change', v => {
+    if (reduceMotion) return
+    // Fires once the name+description row's top has scrolled up to the
+    // very top of the viewport — i.e. once the grid above it has mostly
+    // scrolled past, so the section reads as fully black well before it
+    // actually leaves view.
+    const past = v >= footerPageTopRef.current
+    setPastThreshold(prev => (prev === past ? prev : past))
+  })
+
+  useEffect(() => {
+    if (reduceMotion) return
+    window.dispatchEvent(new CustomEvent('nav:fademode', { detail: { dark: pastThreshold } }))
+  }, [pastThreshold, reduceMotion])
+
   if (reduceMotion) {
     return (
-      <section className="relative bg-white py-28 px-6">
-        <div className="max-w-6xl mx-auto">
-          <span className="block font-mono text-sm text-muted mb-4">LATEST FEATURED WORK</span>
+      <section id="trabajos" className="relative bg-white py-28 scroll-mt-24">
+        <span className="block font-mono text-sm text-muted mb-4 px-3 md:px-4">LATEST FEATURED WORK</span>
 
-          <div className="grid grid-cols-1 gap-3 mt-10">
-            <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${project.mediaDir}/${project.col1Video}_poster.webp`}
-                alt={`${project.name} — project photo`}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-            <div className="rounded-2xl p-6" style={{ backgroundColor: LIGHT_CARD_BG }}>
-              <ul className="flex flex-col gap-3">
-                {project.bullets.map(b => (
-                  <li key={b} className="font-body text-sm leading-relaxed text-ink flex gap-2.5">
-                    <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#D46FC8]" />
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className={`${TILE_CLASS} aspect-[9/16]`} style={{ backgroundColor: MEDIA_BG }}>
-              <Image src={`${project.mediaDir}/${project.col2TallImage}.webp`} alt={`${project.name} — project photo`} fill sizes="100vw" className="object-cover" />
-            </div>
-            <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
-              <Image src={`${project.mediaDir}/${project.col3TopImage}.webp`} alt="" fill sizes="100vw" className="object-cover" />
-            </div>
-            <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
-              <Image src={`${project.mediaDir}/${project.col3BottomImage}.webp`} alt="" fill sizes="100vw" className="object-cover" />
-            </div>
-            <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
-              <Image src={`${project.mediaDir}/${project.col4BottomImage}.webp`} alt="" fill sizes="100vw" className="object-cover" />
-            </div>
-            <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
-              <Image src={`${project.mediaDir}/${project.col5BottomImage}.webp`} alt="" fill sizes="100vw" className="object-cover" />
-            </div>
-            <div className={`${TILE_CLASS} aspect-video`} style={{ backgroundColor: MEDIA_BG }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${project.mediaDir}/${project.col45Video}_poster.webp`}
-                alt={`${project.name} — project photo`}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
+        <div className="grid grid-cols-1 gap-3 mt-10 px-3 md:px-4">
+          <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${project.mediaDir}/${project.col1Video}_poster.webp`}
+              alt={`${project.name} — project photo`}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           </div>
+          <div className="rounded-2xl p-5" style={{ backgroundColor: LIGHT_CARD_BG }}>
+            <ul className="flex flex-col gap-2.5">
+              {project.bullets.map(b => (
+                <li key={b} className="font-body text-[13px] leading-snug text-ink flex gap-2">
+                  <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#D46FC8]" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className={`${TILE_CLASS} aspect-[9/16]`} style={{ backgroundColor: MEDIA_BG }}>
+            <Image src={`${project.mediaDir}/${project.col2TallImage}.webp`} alt={`${project.name} — project photo`} fill sizes="100vw" className="object-cover" />
+          </div>
+          <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
+            <Image src={`${project.mediaDir}/${project.col3TopImage}.webp`} alt="" fill sizes="100vw" className="object-cover" />
+          </div>
+          <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
+            <Image src={`${project.mediaDir}/${project.col3BottomImage}.webp`} alt="" fill sizes="100vw" className="object-cover" />
+          </div>
+          <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
+            <Image src={`${project.mediaDir}/${project.col4BottomImage}.webp`} alt="" fill sizes="100vw" className="object-cover" />
+          </div>
+          <div className={`${TILE_CLASS} aspect-[4/3]`} style={{ backgroundColor: MEDIA_BG }}>
+            <Image src={`${project.mediaDir}/${project.col5BottomImage}.webp`} alt="" fill sizes="100vw" className="object-cover" />
+          </div>
+          <div className={`${TILE_CLASS} aspect-video`} style={{ backgroundColor: MEDIA_BG }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${project.mediaDir}/${project.col45Video}_poster.webp`}
+              alt={`${project.name} — project photo`}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+        </div>
 
-          <div className="mt-8 flex flex-col gap-4">
-            <h3 className="font-display text-2xl text-ink">{project.name}</h3>
-            <p className="font-body text-sm text-muted max-w-md">{project.description}</p>
-          </div>
+        <div className="mt-8 flex flex-col gap-4 px-3 md:px-4">
+          <h3 className="font-display text-2xl text-ink">{project.name}</h3>
+          <p className="font-body text-sm text-muted max-w-md">{project.description}</p>
         </div>
       </section>
     )
@@ -149,32 +197,45 @@ export default function LatestFeaturedWork() {
   const cardBg = pastThreshold ? DARK_CARD_BG : LIGHT_CARD_BG
 
   return (
-    <section data-nav-fade className="relative py-28 px-6">
+    <section ref={sectionRef} id="trabajos" data-nav-fade className="relative py-28 scroll-mt-24">
       <motion.div
         className="absolute inset-0 -z-10"
         animate={{ backgroundColor: bgColor }}
         transition={FLIP_TRANSITION}
         aria-hidden="true"
       />
-      <div className="max-w-6xl mx-auto">
-        <motion.span
-          className="block font-mono text-sm mb-4"
-          animate={{ color: secondaryColor }}
-          transition={FLIP_TRANSITION}
-        >
-          LATEST FEATURED WORK
-        </motion.span>
+      <motion.span
+        className="block font-mono text-sm mb-4 px-3 md:px-4"
+        animate={{ color: secondaryColor }}
+        transition={FLIP_TRANSITION}
+      >
+        LATEST FEATURED WORK
+      </motion.span>
 
-        {/* 5-col / 2-row bento grid on desktop; a single flowing column on
-            mobile via `order-*` (each item also carries md:col-start/
-            md:row-start, which fully determines its desktop position —
-            order has no effect on grid items with explicit placement, so
-            the two schemes coexist without needing separate markup).
-            Mobile order follows the brief: video1 -> bullets -> images ->
-            landscape video. */}
-        <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-2 gap-3 md:gap-4 mt-10 md:h-[560px] lg:h-[640px]">
+      {/* Full-bleed edge to edge — no outer max-width container, just a
+          small px-3/md:px-4 gutter (same size as the inter-tile gap) so
+          the outer tiles sit right at the viewport edge instead of having
+          a large empty side margin like the rest of the page's max-w-6xl
+          sections.
+
+          5-col / 2-row bento grid on desktop; a single flowing column on
+          mobile via `order-*` (each item also carries md:col-start/
+          md:row-start, which fully determines its desktop position —
+          order has no effect on grid items with explicit placement, so
+          the two schemes coexist without needing separate markup).
+          Mobile order follows the brief: video1 -> bullets -> images ->
+          landscape video.
+
+          Rows are `auto`, not a fixed split height — each small tile
+          keeps its own real aspect ratio (aspect-[4/3]/aspect-video) and
+          `self-start` so it never stretches to match a taller sibling
+          (e.g. the wide landscape video, or the bullets card growing past
+          a single image's natural height); only the tall 9:16 column
+          (which spans both rows) is left to stretch, filling whatever
+          height the two auto rows resolve to. */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-3 md:gap-4 mt-10 px-3 md:px-4">
           <div
-            className={`${TILE_CLASS} order-1 md:order-none md:col-start-1 md:row-start-1 aspect-[4/3] md:aspect-auto md:h-full`}
+            className={`${TILE_CLASS} order-1 md:order-none md:col-start-1 md:row-start-1 aspect-[4/3] md:self-start`}
             style={{ backgroundColor: MEDIA_BG }}
           >
             <PosterVideo
@@ -188,15 +249,15 @@ export default function LatestFeaturedWork() {
           </div>
 
           <motion.div
-            className="order-2 md:order-none md:col-start-1 md:row-start-2 rounded-2xl p-6 flex flex-col justify-center"
+            className="order-2 md:order-none md:col-start-1 md:row-start-2 md:self-start rounded-2xl p-5 flex flex-col justify-center"
             animate={{ backgroundColor: cardBg }}
             transition={FLIP_TRANSITION}
           >
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-2.5">
               {project.bullets.map(b => (
                 <motion.li
                   key={b}
-                  className="font-body text-[13px] leading-relaxed flex gap-2.5"
+                  className="font-body text-[13px] leading-snug flex gap-2"
                   animate={{ color: textColor }}
                   transition={FLIP_TRANSITION}
                 >
@@ -208,7 +269,7 @@ export default function LatestFeaturedWork() {
           </motion.div>
 
           <div
-            className={`${TILE_CLASS} order-3 md:order-none md:col-start-2 md:row-start-1 md:row-span-2 aspect-[9/16] md:aspect-auto md:h-full`}
+            className={`${TILE_CLASS} order-3 md:order-none md:col-start-2 md:row-start-1 md:row-span-2 aspect-[9/16] md:h-full`}
             style={{ backgroundColor: MEDIA_BG }}
           >
             <Image
@@ -221,7 +282,7 @@ export default function LatestFeaturedWork() {
           </div>
 
           <div
-            className={`${TILE_CLASS} order-4 md:order-none md:col-start-3 md:row-start-1 aspect-[4/3] md:aspect-auto md:h-full`}
+            className={`${TILE_CLASS} order-4 md:order-none md:col-start-3 md:row-start-1 aspect-[4/3] md:self-start`}
             style={{ backgroundColor: MEDIA_BG }}
           >
             <Image
@@ -234,7 +295,7 @@ export default function LatestFeaturedWork() {
           </div>
 
           <div
-            className={`${TILE_CLASS} order-5 md:order-none md:col-start-3 md:row-start-2 aspect-[4/3] md:aspect-auto md:h-full`}
+            className={`${TILE_CLASS} order-5 md:order-none md:col-start-3 md:row-start-2 aspect-[4/3] md:self-start`}
             style={{ backgroundColor: MEDIA_BG }}
           >
             <Image
@@ -247,7 +308,7 @@ export default function LatestFeaturedWork() {
           </div>
 
           <div
-            className={`${TILE_CLASS} order-6 md:order-none md:col-start-4 md:row-start-2 aspect-[4/3] md:aspect-auto md:h-full`}
+            className={`${TILE_CLASS} order-6 md:order-none md:col-start-4 md:row-start-2 aspect-[4/3] md:self-start`}
             style={{ backgroundColor: MEDIA_BG }}
           >
             <Image
@@ -260,7 +321,7 @@ export default function LatestFeaturedWork() {
           </div>
 
           <div
-            className={`${TILE_CLASS} order-7 md:order-none md:col-start-5 md:row-start-2 aspect-[4/3] md:aspect-auto md:h-full`}
+            className={`${TILE_CLASS} order-7 md:order-none md:col-start-5 md:row-start-2 aspect-[4/3] md:self-start`}
             style={{ backgroundColor: MEDIA_BG }}
           >
             <Image
@@ -273,7 +334,7 @@ export default function LatestFeaturedWork() {
           </div>
 
           <div
-            className={`${TILE_CLASS} order-8 md:order-none md:col-start-4 md:col-span-2 md:row-start-1 aspect-video md:aspect-auto md:h-full`}
+            className={`${TILE_CLASS} order-8 md:order-none md:col-start-4 md:col-span-2 md:row-start-1 aspect-video md:self-start`}
             style={{ backgroundColor: MEDIA_BG }}
           >
             <PosterVideo
@@ -287,22 +348,21 @@ export default function LatestFeaturedWork() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <motion.h3
-            className="font-display text-2xl"
-            animate={{ color: textColor }}
-            transition={FLIP_TRANSITION}
-          >
-            {project.name}
-          </motion.h3>
-          <motion.p
-            className="font-body text-sm max-w-md md:text-right"
-            animate={{ color: secondaryColor }}
-            transition={FLIP_TRANSITION}
-          >
-            {project.description}
-          </motion.p>
-        </div>
+      <div ref={footerRef} className="mt-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4 px-3 md:px-4">
+        <motion.h3
+          className="font-display text-2xl"
+          animate={{ color: textColor }}
+          transition={FLIP_TRANSITION}
+        >
+          {project.name}
+        </motion.h3>
+        <motion.p
+          className="font-body text-sm max-w-md md:text-right"
+          animate={{ color: secondaryColor }}
+          transition={FLIP_TRANSITION}
+        >
+          {project.description}
+        </motion.p>
       </div>
     </section>
   )

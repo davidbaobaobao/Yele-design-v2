@@ -53,7 +53,10 @@ export default function HomePage() {
         <WhyYele />
         <PreciosIndexSection />
         <AgencyIntro />
-        <div id="trabajos" data-nav-dark className="scroll-mt-24">
+        {/* No id="trabajos" here anymore — LatestFeaturedWork below owns
+            the #trabajos anchor now, since it's the section all "Work"
+            links should land on. */}
+        <div data-nav-dark>
           <Showcase noHeader noBg fullScreen dark />
         </div>
         <HowWeWork />
