@@ -14,6 +14,7 @@ const WhyYele              = dynamic(() => import('@/components/WhyYele'))
 const AgencyIntro          = dynamic(() => import('@/components/AgencyIntro'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
+const LatestFeaturedWork   = dynamic(() => import('@/components/LatestFeaturedWork'))
 const ContentShowcase      = dynamic(() => import('@/components/ContentShowcase'))
 const ConveyorVideoSection = dynamic(() => import('@/components/ConveyorVideoSection'))
 const DealStatement        = dynamic(() => import('@/components/DealStatement'))
@@ -58,6 +59,7 @@ export default function HomePage() {
         <HowWeWork />
         <DealFadeProvider>
           <BeyondWebsite />
+          <LatestFeaturedWork />
           <DealStatement />
           <StatsBold />
         </DealFadeProvider>
