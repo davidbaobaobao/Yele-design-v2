@@ -68,10 +68,10 @@ const PROJECTS: FeaturedProject[] = [
       "Tampa's leading water-damage and disaster-restoration specialists — reachable 24/7, when every minute counts.",
     mediaDir: '/media/renovationbros',
     columns: [
-      { type: 'stack', top: '7', bottom: '3' },
-      { type: 'tall', image: '2' },
-      { type: 'video', video: '5', poster: '5_poster' },
-      { type: 'stack', top: '6', bottom: '4' },
+      { type: 'stack', top: '7', bottom: '1' },
+      { type: 'tall', image: '5' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'stack', top: '6', bottom: '2' },
     ],
   },
 ]
