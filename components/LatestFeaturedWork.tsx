@@ -68,10 +68,11 @@ const PROJECTS: FeaturedProject[] = [
       "Tampa's leading water-damage and disaster-restoration specialists — reachable 24/7, when every minute counts.",
     mediaDir: '/media/renovationbros',
     columns: [
-      { type: 'stack', top: '7', bottom: '1' },
-      { type: 'tall', image: '5' },
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
       { type: 'video', video: '4', poster: '4_poster' },
-      { type: 'stack', top: '6', bottom: '2' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
     ],
   },
 ]
@@ -263,14 +264,14 @@ export default function LatestFeaturedWork() {
                     file={col.top}
                     alt={`${project.name} — project photo`}
                     sizes="30vh"
-                    className="h-[calc(50%-8px)] aspect-[4/3]"
+                    className="h-[calc(50%-8px)] aspect-[3/4]"
                   />
                   <ImageCell
                     mediaDir={project.mediaDir}
                     file={col.bottom}
                     alt={`${project.name} — project photo`}
                     sizes="30vh"
-                    className="h-[calc(50%-8px)] aspect-[4/3]"
+                    className="h-[calc(50%-8px)] aspect-[3/4]"
                   />
                 </div>
               )
