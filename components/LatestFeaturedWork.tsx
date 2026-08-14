@@ -56,10 +56,9 @@ type FeaturedProject = {
   columns: FeaturedColumn[]
 }
 
-// One project for now — kept as an array so a future project just adds
-// another entry here; the counter + nudge arrows already switch activeIndex
-// and reset scroll position, they're only disabled while there's nothing to
-// switch to.
+// Restoration Bros loads first (position 1 / default activeIndex 0); Duna
+// is second. The counter + nudge arrows switch activeIndex and reset scroll
+// position; add a third project by just appending another entry here.
 const PROJECTS: FeaturedProject[] = [
   {
     name: 'Restoration Bros',
@@ -71,6 +70,19 @@ const PROJECTS: FeaturedProject[] = [
       { type: 'stack', top: '1', bottom: '2' },
       { type: 'tall', image: '3' },
       { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
+    ],
+  },
+  {
+    name: 'Duna',
+    subtitle: 'Product Mock-up',
+    blurb: 'Complete product branding for Duna. Organic medjool dates.',
+    mediaDir: '/media/duna',
+    columns: [
+      { type: 'stack', top: '2', bottom: '4' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '1', poster: '1_poster' },
       { type: 'tall', image: '5' },
       { type: 'stack', top: '6', bottom: '7' },
     ],
@@ -113,6 +125,7 @@ function NudgeButton({
   borderColor,
   textColor,
   bgColor,
+  pulse,
 }: {
   direction: 'prev' | 'next'
   disabled: boolean
@@ -120,11 +133,12 @@ function NudgeButton({
   borderColor: string
   textColor: string
   bgColor: string
+  pulse?: boolean
 }) {
   const [hovered, setHovered] = useState(false)
   const filled = hovered && !disabled
   return (
-    <button
+    <motion.button
       type="button"
       disabled={disabled}
       onClick={onClick}
@@ -137,9 +151,15 @@ function NudgeButton({
         backgroundColor: filled ? textColor : 'transparent',
         color: filled ? bgColor : textColor,
       }}
+      // "Come click me" invite: gentle opacity+scale pulse, only while
+      // pulse is true (right arrow, before the visitor has navigated).
+      // Pointer events are untouched — opacity/scale don't affect hit
+      // testing, so the button stays clickable throughout the pulse.
+      animate={pulse ? { opacity: [1, 0.55, 1], scale: [1, 1.08, 1] } : { opacity: 1, scale: 1 }}
+      transition={pulse ? { duration: 1.6, ease: 'easeInOut', repeat: Infinity } : { duration: 0.2 }}
     >
       {direction === 'prev' ? '←' : '→'}
-    </button>
+    </motion.button>
   )
 }
 
@@ -148,6 +168,7 @@ export default function LatestFeaturedWork() {
   const { pastThreshold, setPastThreshold } = useDealFade()
 
   const [activeIndex, setActiveIndex] = useState(0)
+  const [hasInteracted, setHasInteracted] = useState(false)
   const project = PROJECTS[activeIndex]
 
   const sectionRef = useRef<HTMLElement>(null)
@@ -159,6 +180,15 @@ export default function LatestFeaturedWork() {
 
   useEffect(() => {
     trackRef.current?.scrollTo({ left: 0 })
+    // Every project shares the same physical <video> element (only the
+    // <source> child's src changes) — a plain prop/DOM update alone
+    // doesn't make an already-mounted <video> notice a new source, so
+    // switching projects needs an explicit reload + replay.
+    const v = videoRef.current
+    if (v) {
+      v.load()
+      v.play().catch(() => {})
+    }
   }, [activeIndex])
 
   // Owns the shared flip. Anchored on this section's own top (re-measured
@@ -299,6 +329,7 @@ export default function LatestFeaturedWork() {
                   poster={`${project.mediaDir}/${col.poster}.webp`}
                   posterAlt={`${project.name} — project video`}
                   className="absolute inset-0 h-full w-full object-cover"
+                  resetKey={activeIndex}
                 >
                   <source src={`${project.mediaDir}/${col.video}.mp4`} type="video/mp4" />
                 </PosterVideo>
@@ -365,7 +396,10 @@ export default function LatestFeaturedWork() {
           <NudgeButton
             direction="prev"
             disabled={PROJECTS.length <= 1 || activeIndex === 0}
-            onClick={() => setActiveIndex(i => Math.max(0, i - 1))}
+            onClick={() => {
+              setHasInteracted(true)
+              setActiveIndex(i => Math.max(0, i - 1))
+            }}
             borderColor={borderColor}
             textColor={titleColor}
             bgColor={bgColor}
@@ -373,10 +407,14 @@ export default function LatestFeaturedWork() {
           <NudgeButton
             direction="next"
             disabled={PROJECTS.length <= 1 || activeIndex === PROJECTS.length - 1}
-            onClick={() => setActiveIndex(i => Math.min(PROJECTS.length - 1, i + 1))}
+            onClick={() => {
+              setHasInteracted(true)
+              setActiveIndex(i => Math.min(PROJECTS.length - 1, i + 1))
+            }}
             borderColor={borderColor}
             textColor={titleColor}
             bgColor={bgColor}
+            pulse={!hasInteracted && !reduceMotion && PROJECTS.length > 1 && activeIndex < PROJECTS.length - 1}
           />
         </div>
 

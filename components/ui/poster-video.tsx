@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
+import { useEffect, useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
 
 // Shared card-video poster/crossfade pattern — used by WhyYele/
 // BeyondWebsite (via FeatureCard.tsx), HowWeWork.tsx, and WhatWeDo.tsx to
@@ -28,6 +28,7 @@ export default function PosterVideo({
   className,
   style,
   children,
+  resetKey,
 }: {
   videoRef: RefObject<HTMLVideoElement | null>
   poster: string
@@ -36,8 +37,21 @@ export default function PosterVideo({
   className?: string
   style?: CSSProperties
   children: ReactNode
+  // Callers that swap the <source> under an already-mounted PosterVideo
+  // (e.g. a slideshow reusing one <video> element across projects) pass a
+  // value that changes with the source — the crossfade's `playing`-gated
+  // reveal is otherwise sticky (see the file comment) and would keep
+  // showing the outgoing video's last frame instead of falling back to
+  // the new poster while the new source loads.
+  resetKey?: string | number
 }) {
   const [videoVisible, setVideoVisible] = useState(false)
+
+  useEffect(() => {
+    if (resetKey === undefined) return
+    setVideoVisible(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey])
 
   return (
     <>
