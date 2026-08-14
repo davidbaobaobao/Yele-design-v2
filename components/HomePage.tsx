@@ -14,7 +14,10 @@ const WhyYele              = dynamic(() => import('@/components/WhyYele'))
 const AgencyIntro          = dynamic(() => import('@/components/AgencyIntro'))
 const HowWeWork            = dynamic(() => import('@/components/HowWeWork'))
 const BeyondWebsite        = dynamic(() => import('@/components/BeyondWebsite'))
-const LatestFeaturedWork   = dynamic(() => import('@/components/LatestFeaturedWork'))
+// LatestFeaturedWork is disabled for now (see below) — component kept in
+// the codebase, just not imported/rendered. Re-add this line when it's
+// wanted again.
+// const LatestFeaturedWork   = dynamic(() => import('@/components/LatestFeaturedWork'))
 const ContentShowcase      = dynamic(() => import('@/components/ContentShowcase'))
 const ConveyorVideoSection = dynamic(() => import('@/components/ConveyorVideoSection'))
 const DealStatement        = dynamic(() => import('@/components/DealStatement'))
@@ -53,16 +56,21 @@ export default function HomePage() {
         <WhyYele />
         <PreciosIndexSection />
         <AgencyIntro />
-        {/* No id="trabajos" here anymore — LatestFeaturedWork below owns
-            the #trabajos anchor now, since it's the section all "Work"
-            links should land on. */}
-        <div data-nav-dark>
+        {/* LatestFeaturedWork is disabled below (component kept, just not
+            rendered), so this Showcase wrapper temporarily takes back the
+            #trabajos anchor that "Work" nav/footer links point to. Drop
+            this id again when LatestFeaturedWork is re-enabled — it owns
+            #trabajos itself and having both would be a duplicate id. */}
+        <div id="trabajos" data-nav-dark>
           <Showcase noHeader noBg fullScreen dark />
         </div>
         <HowWeWork />
         <DealFadeProvider>
           <BeyondWebsite />
-          <LatestFeaturedWork />
+          {/* LatestFeaturedWork disabled for now — component kept in the
+              codebase, just not rendered. Re-enable by uncommenting when
+              it's wanted again (and remove the #trabajos id added above). */}
+          {/* <LatestFeaturedWork /> */}
           <DealStatement />
           <StatsBold />
         </DealFadeProvider>
