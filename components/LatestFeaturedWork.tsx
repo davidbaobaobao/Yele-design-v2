@@ -37,6 +37,11 @@ const LIGHT_BORDER = 'rgba(22, 22, 26, 0.25)'
 const CELL_BG = '#222222'
 const FLIP_TRANSITION: Transition = { duration: 0.5, ease: 'easeInOut' }
 const EDGE_HOVER_SPEED = 10
+// Small pink filled circle (soft ring for contrast against both light and
+// dark thumbnails) replacing the default w-/e-resize cursor on the edge-hover
+// pan zones only — the rest of the section keeps normal cursor behavior.
+const PAN_CURSOR =
+  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='9' fill='%23D46FC8' fill-opacity='.85' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 14 14, pointer`
 
 type FeaturedColumn =
   | { type: 'stack'; top: string; bottom: string }
@@ -306,19 +311,19 @@ export default function LatestFeaturedWork() {
         </div>
       </div>
 
-      {/* Edge-hover zones — absolute, 90px, gradient hint, w-/e-resize cursor */}
+      {/* Edge-hover zones — absolute, 90px, gradient hint, custom pink-circle cursor */}
       <div
         onMouseEnter={() => startHover(-1)}
         onMouseLeave={stopHover}
-        className="pointer-events-auto absolute inset-y-0 left-0 z-[5] w-[90px] cursor-w-resize opacity-0 transition-opacity duration-300 hover:opacity-100"
-        style={{ background: `linear-gradient(to right, ${bgColor}CC, transparent)` }}
+        className="pointer-events-auto absolute inset-y-0 left-0 z-[5] w-[90px] opacity-0 transition-opacity duration-300 hover:opacity-100"
+        style={{ background: `linear-gradient(to right, ${bgColor}CC, transparent)`, cursor: PAN_CURSOR }}
         aria-hidden="true"
       />
       <div
         onMouseEnter={() => startHover(1)}
         onMouseLeave={stopHover}
-        className="pointer-events-auto absolute inset-y-0 right-0 z-[5] w-[90px] cursor-e-resize opacity-0 transition-opacity duration-300 hover:opacity-100"
-        style={{ background: `linear-gradient(to left, ${bgColor}CC, transparent)` }}
+        className="pointer-events-auto absolute inset-y-0 right-0 z-[5] w-[90px] opacity-0 transition-opacity duration-300 hover:opacity-100"
+        style={{ background: `linear-gradient(to left, ${bgColor}CC, transparent)`, cursor: PAN_CURSOR }}
         aria-hidden="true"
       />
 
