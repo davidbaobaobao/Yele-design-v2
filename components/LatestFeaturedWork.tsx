@@ -24,7 +24,7 @@ import { useDealFade } from '@/components/DealFadeContext'
 // between this section and StatsBold, no longer participates — it has its
 // own fixed dark background instead of re-deriving one from this trigger.
 const TRIGGER_VIEWPORT_FRACTION = 0.7
-const DARK_BG = '#141414'
+const DARK_BG = '#0D0E12'
 const LIGHT_BG = '#FFFFFF'
 const DARK_TITLE = '#f2f1ee'
 const LIGHT_TITLE = '#16161A'
