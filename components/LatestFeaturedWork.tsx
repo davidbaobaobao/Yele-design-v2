@@ -9,27 +9,26 @@ import { useEarlyLoad } from '@/hooks/useEarlyLoad'
 import PosterVideo from '@/components/ui/poster-video'
 import { useDealFade } from '@/components/DealFadeContext'
 
-// One-screen (100vh), full-bleed (100vw) horizontal-pan gallery matching
-// yele.design's featuredwork.html: a flex row of STACK/TALL/VIDEO columns,
-// each exactly the track's own height, wider in total than the viewport and
-// scrolled horizontally inside its own overflow-x container. Sits between
-// BeyondWebsite and DealStatement in HomePage.tsx's DealFadeProvider group,
-// so it reads the SAME shared pastThreshold those two (and StatsBold) do —
-// all four flip white->black at the exact same scroll instant, as one
-// continuous surface, rather than on an independent timer of its own.
-const DARK_BG = '#0D0E12'
+// Structure/spacing/behavior mirrors the reference bundle exactly (track
+// padding 40px 40px 0, 16px gaps, calc(50% - 8px) stack cells, 52px title,
+// 90px edge-hover zones, 52px round nudge buttons, etc.) — only the fonts
+// are swapped for the site's own (Archivo/IBM Plex Mono/Instrument Sans in
+// place of the reference's Instrument Serif/Inter Tight). Sits inside
+// HomePage.tsx's DealFadeProvider group (between BeyondWebsite and
+// DealStatement) so its white->dark flip reads as the SAME shared instant
+// those two (and StatsBold) already flip at, instead of its own timer.
+const DARK_BG = '#141414'
 const LIGHT_BG = '#FFFFFF'
-const DARK_TEXT = '#FFFFFF'
-const LIGHT_TEXT = '#16161A'
-const DARK_SECONDARY = 'rgba(242, 240, 235, 0.7)'
-const LIGHT_SECONDARY = 'rgba(22, 22, 26, 0.6)'
+const DARK_TITLE = '#f2f1ee'
+const LIGHT_TITLE = '#16161A'
+const DARK_SECONDARY = '#9a9a96'
+const LIGHT_SECONDARY = 'rgba(22, 22, 26, 0.55)'
+const DARK_BLURB = '#c9c8c4'
+const LIGHT_BLURB = 'rgba(22, 22, 26, 0.75)'
 const DARK_BORDER = '#3a3a38'
 const LIGHT_BORDER = 'rgba(22, 22, 26, 0.25)'
 const CELL_BG = '#222222'
 const FLIP_TRANSITION: Transition = { duration: 0.5, ease: 'easeInOut' }
-// Cursor must be within this many px of the scroll area's edge to trigger
-// auto-pan; px/frame speed for that auto-pan.
-const EDGE_HOVER_ZONE = 90
 const EDGE_HOVER_SPEED = 10
 
 type FeaturedColumn =
@@ -79,7 +78,10 @@ function ImageCell({
   className: string
 }) {
   return (
-    <div className={`group relative overflow-hidden rounded-[10px] ${className}`} style={{ backgroundColor: CELL_BG }}>
+    <div
+      className={`group relative overflow-hidden rounded-[10px] ${className}`}
+      style={{ backgroundColor: CELL_BG }}
+    >
       <Image
         src={`${mediaDir}/${file}.webp`}
         alt={alt}
@@ -95,13 +97,15 @@ function NudgeButton({
   direction,
   disabled,
   onClick,
-  accentColor,
+  borderColor,
+  textColor,
   bgColor,
 }: {
   direction: 'prev' | 'next'
   disabled: boolean
   onClick: () => void
-  accentColor: string
+  borderColor: string
+  textColor: string
   bgColor: string
 }) {
   const [hovered, setHovered] = useState(false)
@@ -113,25 +117,15 @@ function NudgeButton({
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      aria-label={direction === 'prev' ? 'Previous project' : 'Next project'}
-      className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border transition-colors duration-300 disabled:opacity-30 disabled:pointer-events-none"
-      style={{ borderColor: accentColor, backgroundColor: filled ? accentColor : 'transparent' }}
+      aria-label={direction === 'prev' ? 'Scroll left' : 'Scroll right'}
+      className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border text-[18px] transition-colors duration-[250ms] disabled:opacity-30 disabled:pointer-events-none"
+      style={{
+        borderColor: filled ? textColor : borderColor,
+        backgroundColor: filled ? textColor : 'transparent',
+        color: filled ? bgColor : textColor,
+      }}
     >
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-        style={{ transform: direction === 'prev' ? 'rotate(180deg)' : undefined }}
-      >
-        <path
-          d="M6 3l5 5-5 5"
-          stroke={filled ? bgColor : accentColor}
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      {direction === 'prev' ? '←' : '→'}
     </button>
   )
 }
@@ -143,107 +137,45 @@ export default function LatestFeaturedWork() {
   const [activeIndex, setActiveIndex] = useState(0)
   const project = PROJECTS[activeIndex]
 
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [atStart, setAtStart] = useState(true)
-  const [atEnd, setAtEnd] = useState(false)
+  const trackRef = useRef<HTMLDivElement>(null)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   useCappedVideoPlayback([videoRef], { reduceMotion })
   useEarlyLoad(videoRef)
 
-  // Switching projects resets the pan back to the start — see PROJECTS'
-  // own comment on why this is wired up even though there's only one entry.
   useEffect(() => {
-    scrollRef.current?.scrollTo({ left: 0 })
+    trackRef.current?.scrollTo({ left: 0 })
   }, [activeIndex])
 
-  // Horizontal pan: native trackpad/touch horizontal scroll and mouse-drag
-  // both work via plain overflow-x-auto with no JS. This effect only adds
-  // the "on top" behaviors: click-and-drag panning, and edge-hover
-  // auto-scroll (cursor within EDGE_HOVER_ZONE px of either edge pans that
-  // direction continuously, ~EDGE_HOVER_SPEED px/frame, with the cursor
-  // itself swapping to w-resize/e-resize while in a zone).
+  // Edge-hover auto-pan: cursor within EDGE_HOVER_ZONE px of either edge
+  // scrolls that direction continuously (~EDGE_HOVER_SPEED px/frame) while
+  // hovered, same mouseenter/mouseleave-driven rAF loop as the reference.
+  const dirRef = useRef(0)
+  const rafRef = useRef(0)
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-
-    const updateEdges = () => {
-      setAtStart(el.scrollLeft <= 1)
-      setAtEnd(el.scrollLeft >= el.scrollWidth - el.clientWidth - 1)
-    }
-    updateEdges()
-    el.addEventListener('scroll', updateEdges, { passive: true })
-
-    let dragging = false
-    let dragStartX = 0
-    let dragStartScrollLeft = 0
-    const onPointerDown = (e: PointerEvent) => {
-      dragging = true
-      dragStartX = e.clientX
-      dragStartScrollLeft = el.scrollLeft
-      el.setPointerCapture(e.pointerId)
-      el.style.cursor = 'grabbing'
-    }
-    const onPointerMove = (e: PointerEvent) => {
-      if (!dragging) return
-      el.scrollLeft = dragStartScrollLeft - (e.clientX - dragStartX)
-    }
-    const endDrag = (e: PointerEvent) => {
-      dragging = false
-      el.style.cursor = 'grab'
-      if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId)
-    }
-    el.addEventListener('pointerdown', onPointerDown)
-    el.addEventListener('pointermove', onPointerMove)
-    el.addEventListener('pointerup', endDrag)
-    el.addEventListener('pointercancel', endDrag)
-    const preventGhostDrag = (e: DragEvent) => e.preventDefault()
-    el.addEventListener('dragstart', preventGhostDrag)
-
-    let hoverDir = 0
-    let rafId = 0
     const step = () => {
-      if (hoverDir !== 0) el.scrollLeft += hoverDir * EDGE_HOVER_SPEED
-      rafId = requestAnimationFrame(step)
-    }
-    const onPointerMoveForHover = (e: PointerEvent) => {
-      if (reduceMotion || dragging) {
-        hoverDir = 0
-        return
+      const el = trackRef.current
+      if (el && dirRef.current !== 0) {
+        el.scrollLeft += dirRef.current * EDGE_HOVER_SPEED
       }
-      const rect = el.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      if (x < EDGE_HOVER_ZONE) hoverDir = -1
-      else if (x > rect.width - EDGE_HOVER_ZONE) hoverDir = 1
-      else hoverDir = 0
-      el.style.cursor = hoverDir === -1 ? 'w-resize' : hoverDir === 1 ? 'e-resize' : 'grab'
+      rafRef.current = requestAnimationFrame(step)
     }
-    const onPointerLeave = () => {
-      hoverDir = 0
-      el.style.cursor = 'grab'
-    }
-    if (!reduceMotion) {
-      el.addEventListener('pointermove', onPointerMoveForHover)
-      el.addEventListener('pointerleave', onPointerLeave)
-      rafId = requestAnimationFrame(step)
-    }
+    rafRef.current = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [])
 
-    return () => {
-      el.removeEventListener('scroll', updateEdges)
-      el.removeEventListener('pointerdown', onPointerDown)
-      el.removeEventListener('pointermove', onPointerMove)
-      el.removeEventListener('pointerup', endDrag)
-      el.removeEventListener('pointercancel', endDrag)
-      el.removeEventListener('dragstart', preventGhostDrag)
-      el.removeEventListener('pointermove', onPointerMoveForHover)
-      el.removeEventListener('pointerleave', onPointerLeave)
-      if (rafId) cancelAnimationFrame(rafId)
-    }
-  }, [reduceMotion])
+  const startHover = (dir: number) => {
+    if (reduceMotion) return
+    dirRef.current = dir
+  }
+  const stopHover = () => {
+    dirRef.current = 0
+  }
 
   const bgColor = pastThreshold ? DARK_BG : LIGHT_BG
-  const textColor = pastThreshold ? DARK_TEXT : LIGHT_TEXT
+  const titleColor = pastThreshold ? DARK_TITLE : LIGHT_TITLE
   const secondaryColor = pastThreshold ? DARK_SECONDARY : LIGHT_SECONDARY
+  const blurbColor = pastThreshold ? DARK_BLURB : LIGHT_BLURB
   const borderColor = pastThreshold ? DARK_BORDER : LIGHT_BORDER
 
   return (
@@ -259,158 +191,144 @@ export default function LatestFeaturedWork() {
         aria-hidden="true"
       />
 
-      {/* Horizontal-pan gallery track — fills the remaining section height
-          (min-h-0 lets a flex child actually shrink to that instead of
-          overflowing based on its content's natural size). The inner row is
-          w-max (shrink-to-fit) so it can be WIDER than the viewport and
-          trigger this wrapper's overflow-x. */}
-      <div className="relative flex-1 min-h-0">
-        <div
-          ref={scrollRef}
-          className="h-full w-full overflow-x-auto overflow-y-hidden cursor-grab pt-10 px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          <div className="flex h-full w-max gap-4">
-            {project.columns.map((col, i) => {
-              if (col.type === 'stack') {
-                return (
-                  <div key={i} className="flex h-full flex-col items-start gap-4">
-                    <ImageCell
-                      mediaDir={project.mediaDir}
-                      file={col.top}
-                      alt={`${project.name} — project photo`}
-                      sizes="30vh"
-                      className="flex-1 aspect-[4/3]"
-                    />
-                    <ImageCell
-                      mediaDir={project.mediaDir}
-                      file={col.bottom}
-                      alt={`${project.name} — project photo`}
-                      sizes="30vh"
-                      className="flex-1 aspect-[4/3]"
-                    />
-                  </div>
-                )
-              }
-              if (col.type === 'tall') {
-                return (
-                  <ImageCell
-                    key={i}
-                    mediaDir={project.mediaDir}
-                    file={col.image}
-                    alt={`${project.name} — project photo`}
-                    sizes="45vh"
-                    className="h-full aspect-[1/2]"
-                  />
-                )
-              }
+      {/* Track — flex:1 1 auto, min-height:0, padding 40px 40px 0 */}
+      <div
+        ref={trackRef}
+        className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pt-10 px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <div className="flex h-full w-max gap-4">
+          {project.columns.map((col, i) => {
+            if (col.type === 'stack') {
               return (
-                <div
-                  key={i}
-                  className="relative h-full aspect-video overflow-hidden rounded-[10px]"
-                  style={{ backgroundColor: CELL_BG }}
-                >
-                  <PosterVideo
-                    videoRef={videoRef}
-                    poster={`${project.mediaDir}/${col.poster}.webp`}
-                    posterAlt={`${project.name} — project video`}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  >
-                    <source src={`${project.mediaDir}/${col.video}.mp4`} type="video/mp4" />
-                  </PosterVideo>
-                  <div className="pointer-events-none absolute bottom-4 left-4 flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden="true" />
-                    <span className="font-mono text-[12px] uppercase tracking-[0.08em] text-white/85">Showreel</span>
-                  </div>
+                <div key={i} className="flex h-full flex-col items-start gap-4">
+                  <ImageCell
+                    mediaDir={project.mediaDir}
+                    file={col.top}
+                    alt={`${project.name} — project photo`}
+                    sizes="30vh"
+                    className="h-[calc(50%-8px)] aspect-[4/3]"
+                  />
+                  <ImageCell
+                    mediaDir={project.mediaDir}
+                    file={col.bottom}
+                    alt={`${project.name} — project photo`}
+                    sizes="30vh"
+                    className="h-[calc(50%-8px)] aspect-[4/3]"
+                  />
                 </div>
               )
-            })}
-          </div>
+            }
+            if (col.type === 'tall') {
+              return (
+                <ImageCell
+                  key={i}
+                  mediaDir={project.mediaDir}
+                  file={col.image}
+                  alt={`${project.name} — project photo`}
+                  sizes="45vh"
+                  className="h-full aspect-[1/2]"
+                />
+              )
+            }
+            return (
+              <div
+                key={i}
+                className="relative h-full aspect-video overflow-hidden rounded-[10px]"
+                style={{ backgroundColor: CELL_BG }}
+              >
+                <PosterVideo
+                  videoRef={videoRef}
+                  poster={`${project.mediaDir}/${col.poster}.webp`}
+                  posterAlt={`${project.name} — project video`}
+                  className="absolute inset-0 h-full w-full object-cover"
+                >
+                  <source src={`${project.mediaDir}/${col.video}.mp4`} type="video/mp4" />
+                </PosterVideo>
+                <div className="pointer-events-none absolute left-4 bottom-[14px] flex items-center gap-2 text-white/85">
+                  <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true" />
+                  <span className="font-mono text-[12px] uppercase tracking-[0.08em]">Showreel</span>
+                </div>
+              </div>
+            )
+          })}
         </div>
-
-        {/* Edge fades hinting more content — fade out once fully panned to
-            that side. Purely visual, sit above the gallery but under the
-            bottom bar. */}
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 w-[90px] transition-opacity duration-300"
-          style={{
-            background: `linear-gradient(to right, transparent, ${bgColor})`,
-            transition: 'background 0.5s ease-in-out, opacity 0.3s ease-out',
-            opacity: atEnd ? 0 : 1,
-          }}
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 w-[90px] transition-opacity duration-300"
-          style={{
-            background: `linear-gradient(to left, transparent, ${bgColor})`,
-            transition: 'background 0.5s ease-in-out, opacity 0.3s ease-out',
-            opacity: atStart ? 0 : 1,
-          }}
-          aria-hidden="true"
-        />
       </div>
 
-      {/* Bottom bar — eyebrow/title/subtitle, project counter + nudge
-          arrows, and the blurb. A normal flex sibling below the track (not
-          an overlay), so it shares the section's own background. */}
+      {/* Edge-hover zones — absolute, 90px, gradient hint, w-/e-resize cursor */}
+      <div
+        onMouseEnter={() => startHover(-1)}
+        onMouseLeave={stopHover}
+        className="pointer-events-auto absolute inset-y-0 left-0 z-[5] w-[90px] cursor-w-resize opacity-0 transition-opacity duration-300 hover:opacity-100"
+        style={{ background: `linear-gradient(to right, ${bgColor}CC, transparent)` }}
+        aria-hidden="true"
+      />
+      <div
+        onMouseEnter={() => startHover(1)}
+        onMouseLeave={stopHover}
+        className="pointer-events-auto absolute inset-y-0 right-0 z-[5] w-[90px] cursor-e-resize opacity-0 transition-opacity duration-300 hover:opacity-100"
+        style={{ background: `linear-gradient(to left, ${bgColor}CC, transparent)` }}
+        aria-hidden="true"
+      />
+
+      {/* Bottom bar — padding 40px 48px 48px, gap 64px, align-items:flex-end */}
       <div className="flex shrink-0 items-end justify-between gap-16 px-12 pb-12 pt-10">
-        <div className="flex min-w-0 flex-col gap-3">
-          <motion.span
-            className="font-mono text-xs uppercase tracking-[0.14em]"
+        <div>
+          <motion.div
+            className="mb-3 font-mono text-xs uppercase tracking-[0.14em]"
             animate={{ color: secondaryColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
             Latest featured work
-          </motion.span>
-          <motion.h3
+          </motion.div>
+          <motion.div
             className="font-display text-[52px] leading-[1.05]"
-            animate={{ color: textColor }}
+            animate={{ color: titleColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
             {project.name}
-          </motion.h3>
-          <motion.p
-            className="font-body text-base"
+          </motion.div>
+          <motion.div
+            className="mt-[10px] font-body text-base"
             animate={{ color: secondaryColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
             {project.subtitle}
-          </motion.p>
+          </motion.div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-6">
+        <div className="flex shrink-0 items-center gap-3">
           <motion.span
-            className="font-mono text-xs uppercase tracking-[0.08em]"
+            className="mr-2 font-mono text-[13px] uppercase tracking-[0.08em]"
             animate={{ color: secondaryColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
             {activeIndex + 1} / {PROJECTS.length}
           </motion.span>
-          <div className="flex items-center gap-3">
-            <NudgeButton
-              direction="prev"
-              disabled={PROJECTS.length <= 1 || activeIndex === 0}
-              onClick={() => setActiveIndex(i => Math.max(0, i - 1))}
-              accentColor={borderColor}
-              bgColor={bgColor}
-            />
-            <NudgeButton
-              direction="next"
-              disabled={PROJECTS.length <= 1 || activeIndex === PROJECTS.length - 1}
-              onClick={() => setActiveIndex(i => Math.min(PROJECTS.length - 1, i + 1))}
-              accentColor={borderColor}
-              bgColor={bgColor}
-            />
-          </div>
+          <NudgeButton
+            direction="prev"
+            disabled={PROJECTS.length <= 1 || activeIndex === 0}
+            onClick={() => setActiveIndex(i => Math.max(0, i - 1))}
+            borderColor={borderColor}
+            textColor={titleColor}
+            bgColor={bgColor}
+          />
+          <NudgeButton
+            direction="next"
+            disabled={PROJECTS.length <= 1 || activeIndex === PROJECTS.length - 1}
+            onClick={() => setActiveIndex(i => Math.min(PROJECTS.length - 1, i + 1))}
+            borderColor={borderColor}
+            textColor={titleColor}
+            bgColor={bgColor}
+          />
         </div>
 
-        <motion.p
-          className="font-body max-w-[520px] shrink-0 text-base leading-[1.55]"
-          animate={{ color: secondaryColor }}
+        <motion.div
+          className="max-w-[520px] shrink-0 font-body text-base leading-[1.55] [text-wrap:pretty]"
+          animate={{ color: blurbColor }}
           transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
         >
           {project.blurb}
-        </motion.p>
+        </motion.div>
       </div>
     </section>
   )
