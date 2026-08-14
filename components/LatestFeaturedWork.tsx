@@ -65,7 +65,7 @@ const PROJECTS: FeaturedProject[] = [
     columns: [
       { type: 'stack', top: '7', bottom: '3' },
       { type: 'tall', image: '2' },
-      { type: 'video', video: '1', poster: '1_poster' },
+      { type: 'video', video: '5', poster: '5_poster' },
       { type: 'stack', top: '6', bottom: '4' },
     ],
   },
