@@ -16,10 +16,12 @@ import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useDealFade } from '@/components/DealFadeContext'
 
-// Third section sharing DealFadeContext with BeyondWebsite + DealStatement
-// above it — same white->black flip, same instant, same 500ms transition,
-// so all three stacked sections read as one continuous surface turning
-// dark. Same color pairs as the other two for an exact match.
+// Third section sharing DealFadeContext with BeyondWebsite + LatestFeaturedWork
+// above it (LatestFeaturedWork owns the actual trigger) — same white->black
+// flip, same instant, same 500ms transition, so all three read as one
+// continuous surface turning dark. Same color pairs as the other two for an
+// exact match. DealStatement sits between LatestFeaturedWork and this
+// section but no longer shares the context — it has its own fixed dark bg.
 const DARK_BG = '#0D0E12'
 const LIGHT_BG = '#FFFFFF'
 const DARK_TEXT = '#FFFFFF'

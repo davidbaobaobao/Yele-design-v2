@@ -10,10 +10,11 @@ import FeatureCard from './FeatureCard'
 
 const MEDIA_DIR = '/media/beyond'
 
-// Shares DealFadeContext with DealStatement directly below it, so this
-// section flips white->black at the EXACT same instant with the exact same
-// transition — the two read as one continuous surface turning dark, not a
-// seam between two independently-timed fades. The video panels themselves
+// Shares DealFadeContext with LatestFeaturedWork directly below it (which
+// owns the flip's actual trigger) and StatsBold two sections further down,
+// so this section flips white->black at the EXACT same instant with the
+// exact same transition — they read as one continuous surface turning
+// dark, not independently-timed fades. The video panels themselves
 // (bg-[#EEEDE9]) stay fixed regardless, same as every other flip-capable
 // section on this site — they're media, not text/background.
 const DARK_BG = '#0D0E12'

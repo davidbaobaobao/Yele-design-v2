@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, type Transition } from 'framer-motion'
+import { motion, useMotionValueEvent, useScroll, type Transition } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import { useEarlyLoad } from '@/hooks/useEarlyLoad'
@@ -13,10 +13,17 @@ import { useDealFade } from '@/components/DealFadeContext'
 // padding 40px 40px 0, 16px gaps, calc(50% - 8px) stack cells, 52px title,
 // 90px edge-hover zones, 52px round nudge buttons, etc.) — only the fonts
 // are swapped for the site's own (Archivo/IBM Plex Mono/Instrument Sans in
-// place of the reference's Instrument Serif/Inter Tight). Sits inside
-// HomePage.tsx's DealFadeProvider group (between BeyondWebsite and
-// DealStatement) so its white->dark flip reads as the SAME shared instant
-// those two (and StatsBold) already flip at, instead of its own timer.
+// place of the reference's Instrument Serif/Inter Tight). Loads white and
+// owns the white->black flip for HomePage.tsx's DealFadeProvider group
+// (shared with BeyondWebsite before it and StatsBold after), using the
+// exact same scroll-position mechanic "Here's the deal" (DealStatement)
+// used to own: fires once this section's own top has scrolled up to
+// roughly TRIGGER_VIEWPORT_FRACTION down the viewport (while it's still
+// mostly below the fold, right as it enters), reversible only by
+// scrolling back up above that page position. DealStatement, sandwiched
+// between this section and StatsBold, no longer participates — it has its
+// own fixed dark background instead of re-deriving one from this trigger.
+const TRIGGER_VIEWPORT_FRACTION = 0.7
 const DARK_BG = '#141414'
 const LIGHT_BG = '#FFFFFF'
 const DARK_TITLE = '#f2f1ee'
@@ -132,11 +139,12 @@ function NudgeButton({
 
 export default function LatestFeaturedWork() {
   const reduceMotion = !!useHydratedReducedMotion()
-  const { pastThreshold } = useDealFade()
+  const { pastThreshold, setPastThreshold } = useDealFade()
 
   const [activeIndex, setActiveIndex] = useState(0)
   const project = PROJECTS[activeIndex]
 
+  const sectionRef = useRef<HTMLElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
 
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -146,6 +154,49 @@ export default function LatestFeaturedWork() {
   useEffect(() => {
     trackRef.current?.scrollTo({ left: 0 })
   }, [activeIndex])
+
+  // Owns the shared flip. Anchored on this section's own top (re-measured
+  // on resize/load/body mutation since content above can still be
+  // reflowing the page after mount) — same measurement pattern
+  // DealStatement used to own, just pointed at this section instead of an
+  // inner paragraph. Skipped entirely under reduced motion, so the shared
+  // boolean just stays false and the group stays permanently light.
+  const sectionTopRef = useRef(0)
+  useEffect(() => {
+    if (reduceMotion) return
+    const measure = () => {
+      const el = sectionRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      sectionTopRef.current = rect.top + window.scrollY
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    window.addEventListener('load', measure)
+    const ro = new ResizeObserver(measure)
+    ro.observe(document.body)
+    return () => {
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('load', measure)
+      ro.disconnect()
+    }
+  }, [reduceMotion])
+
+  const { scrollY } = useScroll()
+  useMotionValueEvent(scrollY, 'change', v => {
+    if (reduceMotion) return
+    // Fires as soon as the section's top has scrolled up to
+    // ~TRIGGER_VIEWPORT_FRACTION down the viewport (i.e. while it's still
+    // mostly below the fold, right as it enters) rather than waiting for
+    // its top to reach the very top of the viewport.
+    const past = v >= sectionTopRef.current - window.innerHeight * TRIGGER_VIEWPORT_FRACTION
+    setPastThreshold(prev => (prev === past ? prev : past))
+  })
+
+  useEffect(() => {
+    if (reduceMotion) return
+    window.dispatchEvent(new CustomEvent('nav:fademode', { detail: { dark: pastThreshold } }))
+  }, [pastThreshold, reduceMotion])
 
   // Edge-hover auto-pan: cursor within EDGE_HOVER_ZONE px of either edge
   // scrolls that direction continuously (~EDGE_HOVER_SPEED px/frame) while
@@ -180,6 +231,7 @@ export default function LatestFeaturedWork() {
 
   return (
     <section
+      ref={sectionRef}
       id="trabajos"
       data-nav-fade
       className="relative h-screen w-full overflow-hidden flex flex-col scroll-mt-24"

@@ -9,12 +9,14 @@ type DealFadeContextValue = {
 
 const DealFadeContext = createContext<DealFadeContextValue | null>(null)
 
-// Shared between BeyondWebsite and DealStatement so both flip white->black
-// at the exact same instant with the exact same transition — the stacked
-// pair reads as one continuous surface turning dark, not two independently
-// timed fades. DealStatement owns the actual scroll measurement (it has the
-// anchor text the threshold is based on); BeyondWebsite just reads the
-// result and animates its own colors to match.
+// Shared between BeyondWebsite, LatestFeaturedWork, and StatsBold so all
+// three flip white->black at the exact same instant with the exact same
+// transition — they read as one continuous surface turning dark, not
+// independently timed fades. LatestFeaturedWork owns the actual trigger
+// (an IntersectionObserver on its own section); BeyondWebsite and
+// StatsBold just read the result and animate their own colors to match.
+// DealStatement, sandwiched between LatestFeaturedWork and StatsBold, does
+// NOT use this context — it has its own fixed dark background instead.
 export function DealFadeProvider({ children }: { children: ReactNode }) {
   const [pastThreshold, setPastThreshold] = useState(false)
   return <DealFadeContext.Provider value={{ pastThreshold, setPastThreshold }}>{children}</DealFadeContext.Provider>
