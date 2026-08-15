@@ -57,8 +57,9 @@ type FeaturedProject = {
 }
 
 // Restoration Bros loads first (position 1 / default activeIndex 0); Duna
-// is second. The counter + nudge arrows switch activeIndex and reset scroll
-// position; add a third project by just appending another entry here.
+// is second, Shinsetsu third. The counter + nudge arrows cycle activeIndex
+// (next from the last project wraps to the first, and vice versa) and
+// reset scroll position; add another project by just appending an entry.
 const PROJECTS: FeaturedProject[] = [
   {
     name: 'Restoration Bros',
@@ -83,6 +84,20 @@ const PROJECTS: FeaturedProject[] = [
       { type: 'stack', top: '2', bottom: '4' },
       { type: 'tall', image: '3' },
       { type: 'video', video: '1', poster: '1_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
+    ],
+  },
+  {
+    name: 'Shinsetsu',
+    subtitle: 'Travel Agency',
+    blurb:
+      "A boutique travel agency crafting tailor-made ski journeys across Hokkaido — from Niseko's legendary powder to quiet backcountry runs and onsen nights.",
+    mediaDir: '/media/hokkaido',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
       { type: 'tall', image: '5' },
       { type: 'stack', top: '6', bottom: '7' },
     ],
@@ -395,10 +410,10 @@ export default function LatestFeaturedWork() {
           </motion.span>
           <NudgeButton
             direction="prev"
-            disabled={PROJECTS.length <= 1 || activeIndex === 0}
+            disabled={PROJECTS.length <= 1}
             onClick={() => {
               setHasInteracted(true)
-              setActiveIndex(i => Math.max(0, i - 1))
+              setActiveIndex(i => (i - 1 + PROJECTS.length) % PROJECTS.length)
             }}
             borderColor={borderColor}
             textColor={titleColor}
@@ -406,15 +421,15 @@ export default function LatestFeaturedWork() {
           />
           <NudgeButton
             direction="next"
-            disabled={PROJECTS.length <= 1 || activeIndex === PROJECTS.length - 1}
+            disabled={PROJECTS.length <= 1}
             onClick={() => {
               setHasInteracted(true)
-              setActiveIndex(i => Math.min(PROJECTS.length - 1, i + 1))
+              setActiveIndex(i => (i + 1) % PROJECTS.length)
             }}
             borderColor={borderColor}
             textColor={titleColor}
             bgColor={bgColor}
-            pulse={!hasInteracted && !reduceMotion && PROJECTS.length > 1 && activeIndex < PROJECTS.length - 1}
+            pulse={!hasInteracted && !reduceMotion && PROJECTS.length > 1}
           />
         </div>
 

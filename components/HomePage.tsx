@@ -57,7 +57,7 @@ export default function HomePage() {
             the #trabajos anchor now, since it's the section all "Work"
             links should land on. */}
         <div data-nav-dark>
-          <Showcase noHeader noBg fullScreen dark />
+          <Showcase noHeader noBg fullScreen dark jumpToSelector="#trabajos" />
         </div>
         <HowWeWork />
         <DealFadeProvider>

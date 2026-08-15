@@ -26,6 +26,27 @@ export default function Showcase({
   noBg,
   fullScreen,
   dark,
-}: { noHeader?: boolean; noBg?: boolean; fullScreen?: boolean; dark?: boolean } = {}) {
-  return <ShowcaseClient projects={PROJECTS} noHeader={noHeader} noBg={noBg} fullScreen={fullScreen} dark={dark} />
+  jumpToSelector,
+}: {
+  noHeader?: boolean
+  noBg?: boolean
+  fullScreen?: boolean
+  dark?: boolean
+  // Opt-in: when set, clicking the carousel (or any of its cards) smooth-
+  // scrolls to this selector instead of doing nothing. Explicit per-caller
+  // rather than inferred from the other props, since Showcase is also
+  // rendered on pages (presupuesto, quote, es) that have no #trabajos
+  // section to jump to.
+  jumpToSelector?: string
+} = {}) {
+  return (
+    <ShowcaseClient
+      projects={PROJECTS}
+      noHeader={noHeader}
+      noBg={noBg}
+      fullScreen={fullScreen}
+      dark={dark}
+      jumpToSelector={jumpToSelector}
+    />
+  )
 }

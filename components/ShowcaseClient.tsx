@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useScroll, useTransform, useMotionValue, type MotionValue, type Transition } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
+import { scrollToSection } from '@/lib/nav-scroll'
 import type { ShowcaseProject } from './Showcase'
 
 function parseImages(raw: unknown): string[] {
@@ -56,7 +57,7 @@ const ROW1_END   = '-14.3vw'
 const ROW2_START = '0vw'
 const ROW2_END   = '10vw'
 
-function ScrollRow({ cards, xMotion, big }: { cards: CardData[]; xMotion: MotionValue<string>; big?: boolean }) {
+function ScrollRow({ cards, xMotion, big, clickable }: { cards: CardData[]; xMotion: MotionValue<string>; big?: boolean; clickable?: boolean }) {
   const cardW = big ? CARD_W_DESKTOP_BIG : CARD_W_DESKTOP
   return (
     <div className="overflow-hidden">
@@ -65,7 +66,7 @@ function ScrollRow({ cards, xMotion, big }: { cards: CardData[]; xMotion: Motion
           <div
             key={`${card.key}-${i}`}
             style={{ width: cardW }}
-            className={`flex-shrink-0 relative rounded-2xl overflow-hidden group cursor-default ${big ? 'aspect-[3/2]' : 'aspect-video'}`}
+            className={`flex-shrink-0 relative rounded-2xl overflow-hidden group ${clickable ? 'cursor-pointer' : 'cursor-default'} ${big ? 'aspect-[3/2]' : 'aspect-video'}`}
           >
             <Image
               src={card.image}
@@ -87,7 +88,7 @@ function ScrollRow({ cards, xMotion, big }: { cards: CardData[]; xMotion: Motion
 }
 
 /* ── Desktop sticky-scroll gallery (fullScreen mode) ── */
-function DesktopGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; noBg?: boolean; dark?: boolean }) {
+function DesktopGallery({ rows, noBg, dark, clickable }: { rows: [CardData[], CardData[]]; noBg?: boolean; dark?: boolean; clickable?: boolean }) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const travelMV   = useMotionValue(0)
   const [wrapperH, setWrapperH] = useState('250vh')
@@ -128,7 +129,7 @@ function DesktopGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; 
                   <div
                     key={`${card.key}-${i}`}
                     style={{ width: CARD_W_DESKTOP_GALLERY }}
-                    className="flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group cursor-default"
+                    className={`flex-shrink-0 aspect-video relative rounded-2xl overflow-hidden group ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
                   >
                     <Image
                       src={card.image}
@@ -155,7 +156,7 @@ function DesktopGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; 
 }
 
 /* ── Mobile sticky-scroll gallery ── */
-function MobileGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; noBg?: boolean; dark?: boolean }) {
+function MobileGallery({ rows, noBg, dark, clickable }: { rows: [CardData[], CardData[]]; noBg?: boolean; dark?: boolean; clickable?: boolean }) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const travelMV = useMotionValue(0)
   const [wrapperH, setWrapperH] = useState('200vh')
@@ -204,7 +205,7 @@ function MobileGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; n
                   <div
                     key={`${card.key}-${i}`}
                     style={{ width: CARD_W_MOBILE }}
-                    className="flex-shrink-0 aspect-[4/3] relative rounded-2xl overflow-hidden group cursor-default"
+                    className={`flex-shrink-0 aspect-[4/3] relative rounded-2xl overflow-hidden group ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
                   >
                     <Image
                       src={card.image}
@@ -230,7 +231,7 @@ function MobileGallery({ rows, noBg, dark }: { rows: [CardData[], CardData[]]; n
   )
 }
 
-export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen, dark }: { projects: ShowcaseProject[]; noHeader?: boolean; noBg?: boolean; fullScreen?: boolean; dark?: boolean }) {
+export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen, dark, jumpToSelector }: { projects: ShowcaseProject[]; noHeader?: boolean; noBg?: boolean; fullScreen?: boolean; dark?: boolean; jumpToSelector?: string }) {
   const { t } = useLang()
   const [rows, setRows] = useState<[CardData[], CardData[]] | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
@@ -278,7 +279,8 @@ export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen, d
     <section
       ref={sectionRef}
       id={noHeader ? undefined : 'trabajos'}
-      className={dark ? 'bg-[#0D0E12]' : noBg ? '' : 'bg-white'}
+      onClick={jumpToSelector ? () => scrollToSection(jumpToSelector) : undefined}
+      className={`${dark ? 'bg-[#0D0E12]' : noBg ? '' : 'bg-white'} ${jumpToSelector ? 'cursor-pointer' : ''}`}
     >
       {/* Desktop */}
       <div className={`hidden md:block ${noHeader ? (fullScreen ? '' : 'py-10') : 'py-32'}`}>
@@ -290,15 +292,15 @@ export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen, d
 
         {/* Sticky horizontal scroll on fullScreen; parallax on regular */}
         {fullScreen && rows ? (
-          <DesktopGallery rows={rows} noBg={noBg} dark={dark} />
+          <DesktopGallery rows={rows} noBg={noBg} dark={dark} clickable={!!jumpToSelector} />
         ) : (
           <div className="relative space-y-4 overflow-hidden">
             <div className={`pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-gradient-to-r ${gradFrom} to-transparent`} />
             <div className={`pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-gradient-to-l ${gradFrom} to-transparent`} />
             {rows ? (
               <>
-                <ScrollRow cards={rows[0]} xMotion={row1X} big={fullScreen} />
-                <ScrollRow cards={rows[1]} xMotion={row2X} big={fullScreen} />
+                <ScrollRow cards={rows[0]} xMotion={row1X} big={fullScreen} clickable={!!jumpToSelector} />
+                <ScrollRow cards={rows[1]} xMotion={row2X} big={fullScreen} clickable={!!jumpToSelector} />
               </>
             ) : (
               <>
@@ -333,7 +335,7 @@ export default function ShowcaseClient({ projects, noHeader, noBg, fullScreen, d
           </div>
         )}
         {rows ? (
-          <MobileGallery rows={rows} noBg={noBg} dark={dark} />
+          <MobileGallery rows={rows} noBg={noBg} dark={dark} clickable={!!jumpToSelector} />
         ) : (
           <div className="space-y-3 px-4 py-10">
             {[0, 1].map(row => (
