@@ -10,20 +10,20 @@ type FormData = {
   email: string
   phone: string
   company: string
-  rgpd: boolean
 }
 
 const inputClass =
-  'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 font-body text-sm text-white placeholder-white/35 focus:outline-none focus:border-[#D46FC8]/60 transition-colors'
-const labelClass = 'font-body text-xs text-white/50 mb-1.5 block'
-const errorClass = 'font-body text-xs text-red-400 mt-1'
+  'w-full bg-white border border-hairline rounded-xl px-4 py-3 font-body text-base text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors'
+const labelClass = 'font-body text-sm text-muted mb-1 block'
+const errorClass = 'font-body text-xs text-red-500 mt-1'
 
 // Path 1 of the split onboarding flow — public discovery form. Captures
 // lead details for any visitor (no auth, no plan/payment involved) and
 // hands off to the sales team via /api/lead. Distinct from /signup (Path
 // 2), the private paid flow reachable only by direct link — see the
 // "Already decided?" zone below, which is the one place this page links
-// there.
+// there. No RGPD checkbox — consent is implied by submitting, disclosed as
+// fine print under the CTA instead (see the button's sibling <p> below).
 export default function StartPage() {
   const router = useRouter()
   const [formData, setFormData] = useState<FormData>({
@@ -31,13 +31,12 @@ export default function StartPage() {
     email: '',
     phone: '',
     company: '',
-    rgpd: false,
   })
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
   const [loading, setLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  function set(key: keyof FormData, value: string | boolean) {
+  function set(key: keyof FormData, value: string) {
     setFormData(prev => ({ ...prev, [key]: value }))
     if (errors[key]) setErrors(prev => ({ ...prev, [key]: '' }))
   }
@@ -47,7 +46,6 @@ export default function StartPage() {
     if (!formData.name.trim()) e.name = 'Your name is required'
     if (!formData.email.trim()) e.email = 'Email is required'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'Invalid email'
-    if (!formData.rgpd) e.rgpd = 'You must accept the privacy policy'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -83,27 +81,25 @@ export default function StartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0E12] px-6 py-16 md:py-24">
-      <div className="max-w-md mx-auto">
+    <div className="min-h-screen md:h-screen md:overflow-hidden bg-white flex items-center justify-center px-6 py-8 md:py-4">
+      <div className="w-full max-w-md">
         <h1 className="sr-only">Let&apos;s build the best website in your industry</h1>
 
-        <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
-          <span className="w-2 h-2 rounded-full bg-[#D46FC8]" aria-hidden="true" />
-          <span className="font-display font-semibold text-sm text-white">
-            yele<span className="text-white/50 font-normal">.design</span>
-          </span>
+        <Link href="/" className="inline-flex items-center mb-5 focus-visible:outline-none" aria-label="yele">
+          {/* eslint-disable-next-line @next/next/no-img-element -- SVG, Next's image optimizer refuses to serve those */}
+          <img src="/media/logomedia/mainlogo.svg" alt="" className="h-8 w-auto" />
         </Link>
 
-        <div className="mb-8">
-          <h2 className="font-display font-semibold text-3xl text-white tracking-tight leading-tight mb-3">
+        <div className="mb-5">
+          <h2 className="font-display font-semibold text-4xl text-ink tracking-tight leading-[1.08] mb-2.5">
             Let&apos;s build the best website in your industry.
           </h2>
-          <p className="font-body text-sm text-white/60 leading-relaxed">
+          <p className="font-body text-base text-muted leading-relaxed">
             Share a few details and we&apos;ll come back with how Yele can elevate your business — bringing you more calls, bookings and customers.
           </p>
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-3">
           <div>
             <label className={labelClass}>
               Name <span className="text-[#D46FC8]">*</span>
@@ -139,7 +135,7 @@ export default function StartPage() {
             <input
               type="tel"
               className={inputClass}
-              placeholder="+34 600 000 000"
+              placeholder="+1 (213) 555-0123"
               value={formData.phone}
               onChange={e => set('phone', e.target.value)}
               autoComplete="tel"
@@ -150,70 +146,52 @@ export default function StartPage() {
             <label className={labelClass}>Describe your company</label>
             <textarea
               className={`${inputClass} resize-none`}
-              rows={3}
+              rows={2}
               placeholder="What do you do, and who do you do it for?"
               value={formData.company}
               onChange={e => set('company', e.target.value)}
             />
           </div>
 
-          <div>
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.rgpd}
-                onChange={e => set('rgpd', e.target.checked)}
-                className="mt-0.5 w-4 h-4 accent-[#D46FC8] flex-shrink-0"
-              />
-              <span className="font-body text-sm text-white/80">
-                I have read and accept the{' '}
-                <Link href="/privacy-policy" target="_blank" className="underline hover:text-white transition-colors">
-                  privacy policy
-                </Link>
-                <span className="text-[#D46FC8] ml-0.5">*</span>
-              </span>
-            </label>
-            {errors.rgpd && <p className={`${errorClass} ml-7`}>{errors.rgpd}</p>}
-          </div>
-
           {submitError && (
-            <p className="font-body text-xs text-red-400 text-center">{submitError}</p>
+            <p className="font-body text-xs text-red-500 text-center">{submitError}</p>
           )}
 
           <button
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-sm bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           >
             {loading ? 'Sending…' : "Let's chat"}
           </button>
+
+          <p className="text-center font-body text-xs text-muted leading-relaxed">
+            By clicking &quot;Let&apos;s chat&quot;, you agree to our{' '}
+            <Link href="/privacy-policy" className="underline hover:text-ink transition-colors">
+              Privacy Policy
+            </Link>.
+          </p>
         </div>
 
         {/* Secondary zone — visually separated so it never competes with
             the primary form/CTA above. */}
-        <div className="mt-12 pt-8 border-t border-white/10 text-center">
-          <p className="font-body text-xs text-white/40 mb-4">Already decided?</p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="mt-5 pt-4 border-t border-hairline text-center">
+          <p className="font-body text-xs text-muted mb-2.5">Already decided?</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5">
             <Link
               href="/signup"
-              className="font-body text-xs font-medium text-white/70 hover:text-white border border-white/15 rounded-full px-4 py-2 transition-colors"
+              className="font-body text-xs font-medium text-ink hover:text-muted border border-hairline rounded-full px-4 py-2 transition-colors"
             >
               Sign up now
             </Link>
             <Link
               href="/schedule"
-              className="font-body text-xs text-white/40 hover:text-white/70 transition-colors"
+              className="font-body text-xs text-muted hover:text-ink transition-colors"
             >
               Prefer to talk? Book a free 10-min intro call
             </Link>
           </div>
-        </div>
-
-        <div className="mt-8 text-center">
-          <Link href="/" className="font-body text-xs text-white/40 hover:text-white/70 transition-colors">
-            ← Back to home
-          </Link>
         </div>
       </div>
     </div>
