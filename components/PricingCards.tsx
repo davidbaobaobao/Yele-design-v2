@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
-import { Check } from 'lucide-react'
+import { Check, Info } from 'lucide-react'
 import { PLAN_PRICES, PLAN_PRICES_USD } from '@/lib/plan-prices'
 import { useLang } from '@/context/LanguageContext'
 import { CTAButton } from '@/components/ui/cta-button'
@@ -197,11 +197,11 @@ function FeatureTooltip({ text, dark }: { text: string; dark: boolean }) {
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
         aria-label="More info"
-        className={`inline-flex items-center justify-center w-4 h-4 rounded-full border text-[10px] leading-none font-body cursor-pointer transition-opacity ${
+        className={`inline-flex items-center justify-center w-4 h-4 rounded-full border cursor-pointer transition-opacity ${
           dark ? 'border-white/40 text-white/70 hover:opacity-100' : 'border-ink/40 text-ink/70 hover:opacity-100'
         } opacity-70`}
       >
-        ?
+        <Info size={10} strokeWidth={2.5} aria-hidden="true" />
       </button>
       {open && (
         <span
@@ -286,7 +286,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
         <span className={`we-pill-orange font-body font-semibold text-white rounded-full inline-flex items-center whitespace-nowrap self-start ${
           plan.highlighted ? 'text-sm px-4 py-1.5' : 'text-xs px-3 py-1'
         }`}>
-          {t('Primer mes gratis', 'First month free')}
+          {t('Paga cuando esté online', "Pay when it's live")}
         </span>
       </div>
 
@@ -327,7 +327,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
         variant={plan.highlighted ? 'light' : 'dark'}
         className="w-full"
       >
-        {t('Empezar gratis', 'Try for free')}
+        {t('Empezar', 'Get started')}
       </CTAButton>
     </motion.div>
   )

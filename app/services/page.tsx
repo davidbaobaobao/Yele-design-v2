@@ -215,13 +215,15 @@ export default function ServicesPage() {
                 Essential packages
               </h1>
               <p className="font-body text-lg text-white/60 max-w-xl mx-auto">
-                Everything you need, in one plan.
+                Pick a plan. We design your site. You pay only once it&apos;s live.
               </p>
             </div>
 
             <PricingCardsGrid />
 
-            <p className="text-center font-body text-sm font-bold text-bone mt-6">No lock-in. Cancel anytime.</p>
+            <p className="text-center font-body text-sm font-bold text-bone mt-6">
+              No upfront cost. Your first payment lands the day your site goes live. No contract — cancel anytime.
+            </p>
 
             <div className="text-center mt-4">
               <a

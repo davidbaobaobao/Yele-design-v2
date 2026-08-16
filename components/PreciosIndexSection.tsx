@@ -89,12 +89,21 @@ export default function PreciosIndexSection() {
           >
             {t('Precios', 'Pricing')}
           </h2>
+          <p className="font-body text-base text-white/60 mt-3">
+            {t(
+              'Elige un plan. Diseñamos tu web. Pagas solo cuando esté online.',
+              "Pick a plan. We design your site. You pay only once it's live."
+            )}
+          </p>
         </motion.div>
 
         <PricingCardsGrid />
 
         <p className="text-center font-body text-sm font-bold text-bone mt-6">
-          {t('Sin permanencia. Cancela cuando quieras.', 'No lock-in. Cancel anytime.')}
+          {t(
+            'Sin coste inicial. Tu primer pago llega el día que tu web esté online. Sin permanencia — cancela cuando quieras.',
+            'No upfront cost. Your first payment lands the day your site goes live. No contract — cancel anytime.'
+          )}
         </p>
 
         <div className="text-center mt-4">
