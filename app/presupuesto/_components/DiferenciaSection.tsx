@@ -151,7 +151,7 @@ export default function DiferenciaSection() {
             className="flex flex-wrap gap-3"
           >
             <CTAButton
-              href={t('/registro?lang=es', '/registro')}
+              href="/start"
               variant="light"
               className="text-base font-semibold px-8 py-3.5"
             >

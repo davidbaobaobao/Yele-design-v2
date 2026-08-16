@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
         // flows land here with a fresh session either way, so this is the
         // one place that can tell them apart for both — Supabase sets
         // created_at and last_sign_in_at within the same instant only on
-        // an account's very first sign-in. A signal from /registro alone
+        // an account's very first sign-in. A signal from /signup alone
         // can't do this reliably: signInWithOtp() only *sends* the email
         // link there, the account itself isn't resolved until the user
         // clicks it and lands here.

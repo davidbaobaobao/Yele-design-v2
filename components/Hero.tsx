@@ -189,7 +189,7 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center gap-4 mt-8">
-            <CTAButton href="/registro" variant="white">
+            <CTAButton href="/start" variant="white">
               Start for free
             </CTAButton>
             <a

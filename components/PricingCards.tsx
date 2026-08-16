@@ -323,7 +323,7 @@ function PricingCard({ plan, index, t }: { plan: Plan; index: number; t: TFn }) 
           (bone) on Pro's dark card, "dark" (near-black) on Starter/
           Frontier's light bg-base cards, for contrast either way. */}
       <CTAButton
-        href={t(`/registro?plan=${plan.key}-es`, `/registro?plan=${plan.key}`)}
+        href="/start"
         variant={plan.highlighted ? 'light' : 'dark'}
         className="w-full"
       >

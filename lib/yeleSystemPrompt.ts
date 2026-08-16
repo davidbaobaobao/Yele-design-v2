@@ -61,7 +61,7 @@ improvements, real 24/7 support. Vs an agency ($3k–$20k, 6–12 weeks) or DIY
 (weeks/months + your time), Yele is one flat monthly price.
 
 LINKS (suggest as plain text, pick what fits)
-- Start for free / sign up: yele.design/registro
+- Start for free / sign up: yele.design/start
 - Book a call: /schedule
 - Style quiz (get a tailored plan): /survey
 - Pricing: the Pricing section on the page

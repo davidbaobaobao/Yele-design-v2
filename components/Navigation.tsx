@@ -120,7 +120,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
             </a>
 
             <CTAButton
-              href={t('/registro?lang=es', '/registro')}
+              href="/start"
               prefetch={false}
               variant={isDark ? 'light' : 'dark'}
               className="text-xs px-4 py-2"
@@ -179,7 +179,7 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 {t('Ingresar', 'Log in')}
               </a>
               <CTAButton
-                href={t('/registro?lang=es', '/registro')}
+                href="/start"
                 prefetch={false}
                 onClick={() => setOpen(false)}
                 variant="dark"

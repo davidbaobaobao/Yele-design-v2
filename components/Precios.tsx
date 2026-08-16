@@ -214,7 +214,7 @@ function PricingCard({ plan, index, isAnnual, t, withShadow }: {
       </ul>
 
       <motion.a
-        href={`/registro?plan=${plan.key}`}
+        href="/start"
         aria-label={t(`Empezar con el plan ${plan.es.name}`, `Get started with ${plan.en.name} plan`)}
         className={`relative overflow-hidden block text-center font-body font-medium text-sm py-3.5 rounded-xl cursor-pointer ${
           plan.highlighted

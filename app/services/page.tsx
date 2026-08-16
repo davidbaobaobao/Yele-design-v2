@@ -180,7 +180,7 @@ function ServiceCard({ item }: { item: ServiceItem }) {
         </p>
         <p className="font-body text-sm leading-relaxed text-white/60 flex-1 mb-6">{item.description}</p>
 
-        <CTAButton href="/registro" variant="white" className="text-xs px-5 py-2.5 self-start">
+        <CTAButton href="/start" variant="white" className="text-xs px-5 py-2.5 self-start">
           Get started
         </CTAButton>
       </div>

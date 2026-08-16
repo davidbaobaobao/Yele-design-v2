@@ -113,7 +113,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
     scrollToSection(href)
   }
 
-  const ctaHref = t('/registro?lang=es', '/registro')
+  const ctaHref = '/start'
 
   return (
     <>

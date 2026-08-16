@@ -1,8 +1,22 @@
-// Shared Google Ads conversion helpers. Same typed-gtag pattern as
-// onboarding_form_submit/sign_up in app/empezar/page.tsx; conversions used
-// across more than one file (unlike those two) live here instead.
+// Shared Google Ads conversion helpers. Same typed-gtag pattern as sign_up
+// in app/empezar/page.tsx; conversions used across more than one file (or
+// that outgrew their original single-file home) live here instead.
 declare global {
   interface Window { gtag?: (...args: unknown[]) => void }
+}
+
+const ONBOARDING_CONVERSION_SEND_TO = 'AW-18281072925/XzilCNn6jt4cEJ2SjI1E'
+
+// PRIMARY public conversion — a successful /start discovery-form submit
+// (moved here from the old /empezar paid-flow form, which onboarding_form_
+// submit no longer tracks). Fires once, right after /api/lead confirms the
+// submit succeeded, not on click and not before validation, so failed/
+// aborted submits never count. Enhanced Conversions: email is required so
+// Google can hash+match it.
+export function trackOnboardingFormSubmit(email: string) {
+  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
+  window.gtag('set', 'user_data', { email })
+  window.gtag('event', 'conversion', { send_to: ONBOARDING_CONVERSION_SEND_TO })
 }
 
 const BOOKCALL_CONVERSION_SEND_TO = 'AW-18281072925/VbuFCOimp94cEJ2SjI1E'

@@ -42,6 +42,10 @@ const nextConfig = {
       { source: '/aviso-legal',         destination: '/legal-notice',   permanent: true },
       { source: '/politica-privacidad', destination: '/privacy-policy', permanent: true },
       { source: '/condiciones-uso',     destination: '/terms',          permanent: true },
+      // Phase 8 — onboarding split into /start (public discovery) and
+      // /signup (private paid flow, was /registro); query params (?plan=,
+      // ?lang=) are passed through automatically.
+      { source: '/registro',            destination: '/signup',         permanent: true },
     ]
   },
   images: {

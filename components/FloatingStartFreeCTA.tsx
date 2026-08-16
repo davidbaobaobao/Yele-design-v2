@@ -57,7 +57,7 @@ export default function FloatingStartFreeCTA() {
       }`}
       aria-hidden={!visible}
     >
-      <CTAButton href="/registro" variant="pink" className="shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+      <CTAButton href="/start" variant="pink" className="shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
         Start for free
       </CTAButton>
     </div>

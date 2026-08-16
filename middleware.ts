@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/empezar')) {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
-      return NextResponse.redirect(new URL('/registro', request.url))
+      return NextResponse.redirect(new URL('/signup', request.url))
     }
   }
 

@@ -51,7 +51,7 @@ export default function FinaleSection() {
           viewport={{ once: true }}
         >
           <CTAButton
-            href={t('/registro?lang=es', '/registro')}
+            href="/start"
             variant="light"
             className="text-lg font-semibold px-10 py-4"
           >

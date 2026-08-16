@@ -525,7 +525,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           <QuickAction pink onClick={callUs}>Call us</QuickAction>
           <QuickAction onClick={() => handleSend('Book a call tomorrow')}>Book a call</QuickAction>
           <QuickAction onClick={() => scrollPageToId(CONTACT_SECTION_ID)}>Contact us</QuickAction>
-          <QuickLink href="/registro">Start for free</QuickLink>
+          <QuickLink href="/start">Start for free</QuickLink>
         </div>
       </div>
 

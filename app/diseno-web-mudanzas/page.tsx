@@ -135,7 +135,7 @@ export default function MudanzasPage() {
               Quien se muda pide presupuesto a varias empresas el mismo día y elige rápido. Si no te encuentra fácil en Google ni puede pedirte presupuesto sin esfuerzo, ni entras en la lista. Web profesional lista en 1 semana. Desde 49€/mes, sin pago inicial, sin permanencia.
             </p>
             <Link
-              href="/registro"
+              href="/start"
               className="inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Pedir mi web <span aria-hidden="true">→</span>
@@ -317,7 +317,7 @@ export default function MudanzasPage() {
               Sin pago inicial. Lista en 1 semana.
             </p>
             <Link
-              href="/registro"
+              href="/start"
               className="inline-flex items-center gap-2 font-body font-medium text-base bg-white text-ink px-8 py-4 rounded-2xl hover:bg-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Pedir mi web <span aria-hidden="true">→</span>

@@ -24,7 +24,12 @@ function PlanSaver() {
   return null
 }
 
-export default function RegistroPage() {
+// Path 2 of the split onboarding flow — private paid signup. Not linked
+// from any public CTA (see app/start/page.tsx for the public discovery
+// form); reachable only by a direct link sent to closed clients. Account
+// creation here → app/empezar (plan selection) → Stripe → app/gracias.
+// Was /registro — legacy links redirect via next.config.mjs.
+export default function SignupPage() {
   const supabase = createClientComponentClient()
 
   useEffect(() => {

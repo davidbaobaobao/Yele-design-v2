@@ -74,7 +74,7 @@ export default function CTASection() {
               </p>
 
               <motion.a
-                href="/registro"
+                href="/start"
                 className="relative overflow-hidden inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-8 py-4 rounded-2xl cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
                 whileHover="hover"
                 whileTap={{ scale: 0.97, transition: { duration: 0.15 } as Transition }}

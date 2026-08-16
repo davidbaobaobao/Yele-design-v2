@@ -91,7 +91,7 @@ export default function PlumbersPage() {
               Your professional website, live in 1 week. Show up in Google when someone in your area needs a plumber — and win jobs without paying commission per lead. From $99/mo, no setup fee, no commitment.
             </p>
             <Link
-              href="/registro"
+              href="/start"
               className="inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
@@ -170,7 +170,7 @@ export default function PlumbersPage() {
               No setup fee. Live in 1 week.
             </p>
             <Link
-              href="/registro"
+              href="/start"
               className="inline-flex items-center gap-2 font-body font-medium text-base bg-white text-ink px-8 py-4 rounded-2xl hover:bg-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>

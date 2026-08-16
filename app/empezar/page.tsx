@@ -11,27 +11,12 @@ declare global {
   interface Window { gtag?: (...args: unknown[]) => void }
 }
 
-// Google Ads conversion action for a successful onboarding form submit
-// (distinct from the purchase/welcome conversion fired in
-// app/gracias/GraciasClient.tsx).
-const ONBOARDING_CONVERSION_SEND_TO = 'AW-18281072925/XzilCNn6jt4cEJ2SjI1E'
-
-// Fires once, right after /api/intake confirms the submit succeeded (not
-// on button click, not before validation) — so failed/aborted submits
-// never count. Enhanced Conversions: the form's own email is passed as
-// user_data first so Google can hash+match it. Not awaited — gtag's own
-// dataLayer push is synchronous, and the caller's redirect/step-change
-// must not wait on it either way.
-function trackOnboardingFormSubmit(email: string) {
-  if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
-  window.gtag('set', 'user_data', { email })
-  window.gtag('event', 'conversion', { send_to: ONBOARDING_CONVERSION_SEND_TO })
-}
-
-// SECONDARY conversion — a genuinely new account being created (as opposed
-// to onboarding_form_submit above, which tracks the intake form). email is
-// optional here since it's best-effort for Enhanced Conversions matching,
-// not required to fire the conversion itself.
+// PRIMARY conversion — a genuinely new account being created. (The old
+// onboarding_form_submit conversion this file used to fire moved to
+// app/start/page.tsx / lib/gtag.ts — the public discovery form is now the
+// main top-of-funnel conversion; this flow is unlinked from any public CTA.)
+// email is optional here since it's best-effort for Enhanced Conversions
+// matching, not required to fire the conversion itself.
 const SIGNUP_CONVERSION_SEND_TO = 'AW-18281072925/oHpWCKb3od4cEJ2SjI1E'
 
 function trackSignUp(email?: string) {
@@ -44,11 +29,11 @@ function trackSignUp(email?: string) {
 // email-magic-link flows land after a real Supabase account check, and
 // appends ?new_signup=1 only when it just determined the account is
 // genuinely new (never for a returning login) — see that file for why the
-// detection has to happen there rather than in /registro. This component
+// detection has to happen there rather than in /signup. This component
 // fires the conversion for that signal exactly once, then strips the
 // param via router.replace so a refresh of /empezar can't re-fire it.
 // useSearchParams() requires its own Suspense boundary, same pattern as
-// PlanSaver in app/registro/page.tsx.
+// PlanSaver in app/signup/page.tsx.
 function SignupConversionTracker() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -180,12 +165,11 @@ const ES_PLANS = [
 ]
 
 type FormData = {
+  // Trimmed to just business name + consent — this flow now starts after
+  // auth (name/email already known from the session), and /start's public
+  // discovery form is where contact details/phone/description are captured.
+  // See app/start/page.tsx.
   nombre_negocio: string
-  nombre_contacto: string
-  ciudad: string
-  email: string
-  telefono: string
-  descripcion: string
   rgpd: boolean
 }
 
@@ -198,17 +182,8 @@ export default function EmpezarPage() {
   const [planLoading, setPlanLoading] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState('')
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
-  // Guards the Ads conversion against firing twice — handleSubmit can't
-  // normally run concurrently (the button disables on `loading`), but this
-  // makes "exactly once" true regardless of how it's re-entered.
-  const conversionFiredRef = useRef(false)
   const [formData, setFormData] = useState<FormData>({
     nombre_negocio: '',
-    nombre_contacto: '',
-    ciudad: '',
-    email: '',
-    telefono: '',
-    descripcion: '',
     rgpd: false,
   })
 
@@ -248,9 +223,6 @@ export default function EmpezarPage() {
 
   function validate(): boolean {
     const e: Partial<Record<keyof FormData, string>> = {}
-    if (!formData.nombre_contacto.trim()) e.nombre_contacto = 'Your name is required'
-    if (!formData.email.trim()) e.email = 'Email is required'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'Invalid email'
     if (!formData.rgpd) e.rgpd = 'You must accept the privacy policy'
     setErrors(e)
     return Object.keys(e).length === 0
@@ -262,28 +234,33 @@ export default function EmpezarPage() {
     setSubmitError('')
 
     const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      setSubmitError('Your session expired. Please sign in again.')
+      setLoading(false)
+      return
+    }
 
+    // Name/email are already known from the authenticated session — /start's
+    // public discovery form is where contact details are actually captured
+    // now, so this step only needs the optional business name + consent.
     const response = await fetch('/api/intake', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+        Authorization: `Bearer ${session.access_token}`,
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        nombre_negocio: formData.nombre_negocio,
+        nombre_contacto: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Client',
+        email: session.user.email,
+        rgpd: formData.rgpd,
+      }),
     })
 
     if (!response.ok) {
       setSubmitError('Something went wrong. Please try again or email us at info@yele.design')
       setLoading(false)
       return
-    }
-
-    // Submission confirmed successful — fire the Ads conversion here, not
-    // on click and not before validation, so failed/aborted submits never
-    // count. Not awaited: doesn't block the checkout/pricing flow below.
-    if (!conversionFiredRef.current) {
-      conversionFiredRef.current = true
-      trackOnboardingFormSubmit(formData.email)
     }
 
     const result = await response.json()
@@ -443,10 +420,10 @@ export default function EmpezarPage() {
         <div className="mb-8">
           <p className="font-body text-xs font-medium text-[#34C759] uppercase tracking-widest mb-2">Step 1 of 2</p>
           <h2 className="font-display font-semibold text-2xl text-ink tracking-tight mb-1">
-            Tell us about your business
+            One last step
           </h2>
           <p className="font-body text-sm text-muted">
-            We&apos;ll set everything up for you. Takes less than 2 minutes.
+            Confirm and choose your plan — takes less than a minute.
           </p>
         </div>
 
@@ -459,68 +436,6 @@ export default function EmpezarPage() {
               placeholder="e.g. Barber Montserrat"
               value={formData.nombre_negocio}
               onChange={e => set('nombre_negocio', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Your name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="Your full name"
-              value={formData.nombre_contacto}
-              onChange={e => set('nombre_contacto', e.target.value)}
-            />
-            {errors.nombre_contacto && <p className={errorClass}>{errors.nombre_contacto}</p>}
-          </div>
-
-          <div>
-            <label className={labelClass}>City</label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="e.g. Barcelona"
-              value={formData.ciudad}
-              onChange={e => set('ciudad', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Email <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="email"
-              className={inputClass}
-              placeholder="you@email.com"
-              value={formData.email}
-              onChange={e => set('email', e.target.value)}
-              autoComplete="email"
-            />
-            {errors.email && <p className={errorClass}>{errors.email}</p>}
-          </div>
-
-          <div>
-            <label className={labelClass}>Phone number</label>
-            <input
-              type="tel"
-              className={inputClass}
-              placeholder="+34 600 000 000"
-              value={formData.telefono}
-              onChange={e => set('telefono', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Describe your business in a few words</label>
-            <textarea
-              className={`${inputClass} resize-none`}
-              rows={3}
-              placeholder="e.g. Family barbershop in central Barcelona, open for 10 years..."
-              value={formData.descripcion}
-              onChange={e => set('descripcion', e.target.value)}
             />
           </div>
 

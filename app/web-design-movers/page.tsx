@@ -131,7 +131,7 @@ export default function MoversPage() {
               When someone has a move date, they request quotes from several movers the same day and decide fast. If you&rsquo;re not easy to find on Google and don&rsquo;t make it easy to request a quote, you don&rsquo;t even make the shortlist. Professional website live in 1 week. From $99/mo, no setup fee, no commitment.
             </p>
             <Link
-              href="/registro"
+              href="/start"
               className="inline-flex items-center gap-2 font-body font-medium text-base bg-ink text-white px-7 py-3.5 rounded-2xl hover:bg-black transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
@@ -309,7 +309,7 @@ export default function MoversPage() {
               No setup fee. Live in 1 week.
             </p>
             <Link
-              href="/registro"
+              href="/start"
               className="inline-flex items-center gap-2 font-body font-medium text-base bg-white text-ink px-8 py-4 rounded-2xl hover:bg-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0066CC]"
             >
               Get my website <span aria-hidden="true">→</span>
