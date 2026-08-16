@@ -173,11 +173,7 @@ function ServiceCard({ item }: { item: ServiceItem }) {
           </span>
         )}
 
-        <h3 className="font-display text-lg text-bone mb-1.5">{item.name}</h3>
-        <p className="font-body text-2xl font-semibold text-white mb-3">
-          ${item.price}
-          <span className="text-sm font-medium text-white/50">/mo</span>
-        </p>
+        <h3 className="font-display text-lg text-bone mb-2">{item.name}</h3>
         <p className="font-body text-sm leading-relaxed text-white/60 flex-1 mb-6">{item.description}</p>
 
         <CTAButton href="/start" variant="white" className="text-xs px-5 py-2.5 self-start">

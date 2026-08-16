@@ -238,6 +238,10 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
                   No upfront cost <span aria-hidden="true" className="opacity-50">·</span> No contract, cancel anytime
                 </span>
               </span>
+              <span className="inline-flex items-center justify-center sm:justify-start gap-2">
+                <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+                Fast delivery
+              </span>
             </div>
           ) : (
             <div
