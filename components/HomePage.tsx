@@ -37,20 +37,22 @@ const Footer               = dynamic(() => import('@/components/Footer'))
 // Single source of truth for the homepage's section composition — rendered
 // by both app/page.tsx (/) and app/agency/page.tsx (/agency, a noindexed
 // Google Ads landing duplicate) so the two stay pixel-identical without
-// copy-pasting section markup.
-export default function HomePage() {
+// copy-pasting section markup. `variant="agency"` swaps just the hero and
+// six-feature-card copy for that route (see Hero.tsx / WhyYele.tsx) —
+// everything else stays pixel-identical between the two routes.
+export default function HomePage({ variant = 'default' }: { variant?: 'default' | 'agency' } = {}) {
   return (
     <EnLangProvider>
       <Nav />
       <main id="main-content">
         <div id="dark-zone">
-          <Hero />
+          <Hero variant={variant} />
         </div>
         {/* Mission disabled for now — component kept in the codebase, just
             not rendered. Re-enable by uncommenting when it's wanted again. */}
         {/* <Mission /> */}
         <LogoMarquee />
-        <WhyYele />
+        <WhyYele variant={variant} />
         <PreciosIndexSection />
         <AgencyIntro />
         {/* No id="trabajos" here anymore — LatestFeaturedWork below owns

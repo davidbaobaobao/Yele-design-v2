@@ -28,5 +28,5 @@ export const metadata: Metadata = {
 }
 
 export default function Agency() {
-  return <HomePage />
+  return <HomePage variant="agency" />
 }

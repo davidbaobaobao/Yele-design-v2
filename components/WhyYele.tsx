@@ -14,7 +14,7 @@ type CardData = {
   videoBase: string
 }
 
-const CARDS: CardData[] = [
+const DEFAULT_CARDS: CardData[] = [
   {
     title: 'Custom design',
     description: 'Built from scratch for your business. No templates, no lookalikes.',
@@ -47,7 +47,43 @@ const CARDS: CardData[] = [
   },
 ]
 
-export default function WhyYele() {
+// /agency variant — same six poster/video assets in the same positions
+// (videoBase per index matches DEFAULT_CARDS above), title/description only.
+const AGENCY_CARDS: CardData[] = [
+  {
+    title: 'Custom design, never a template',
+    description: "Designed from scratch for your business. Nothing you'll see on anyone else's site.",
+    videoBase: 'whyyele1',
+  },
+  {
+    title: 'See it before you pay',
+    description: 'We design your website first. Your first payment lands the day it goes live.',
+    videoBase: 'whyyele3',
+  },
+  {
+    title: 'Content that looks the part',
+    description: 'Realistic photos, video and animation created for your site — the media of a high-budget website.',
+    videoBase: 'whyyele6',
+  },
+  {
+    title: 'Live in a week',
+    description: "First design in about seven days. Then we refine it with you until it's right.",
+    videoBase: 'whyyele4',
+  },
+  {
+    title: 'Everything included',
+    description: 'Hosting, domain, updates and support in one flat monthly price. No extras, no surprises.',
+    videoBase: 'whyyele2',
+  },
+  {
+    title: 'No contract, cancel anytime',
+    description: "Month to month. You stay because it works, not because you're stuck.",
+    videoBase: 'whyyele5',
+  },
+]
+
+export default function WhyYele({ variant = 'default' }: { variant?: 'default' | 'agency' } = {}) {
+  const CARDS = variant === 'agency' ? AGENCY_CARDS : DEFAULT_CARDS
   const reduceMotion = !!useHydratedReducedMotion()
 
   const videoRefs = [

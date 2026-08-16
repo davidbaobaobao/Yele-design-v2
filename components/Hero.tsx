@@ -110,7 +110,11 @@ const WHITE = '#F2F0EB'
 
 const WORDS = ['Last', 'Stand out', 'Perform', 'Convert', 'Endure', 'Grow']
 
-export default function Hero() {
+// /agency is a Google Ads landing page rendering the same shared HomePage
+// (see app/agency/page.tsx) — variant swaps just the subhead/CTAs/badges
+// copy for that route without touching the homepage's own copy or any
+// layout/animation/styling.
+export default function Hero({ variant = 'default' }: { variant?: 'default' | 'agency' } = {}) {
   const reduceMotion = !!useHydratedReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
   const showCubes = useDeferredCubes(sectionRef)
@@ -183,20 +187,30 @@ export default function Hero() {
           </h1>
 
           <p className="font-body mt-6 text-lg md:text-xl leading-snug" style={{ color: 'rgba(242, 240, 235, 0.7)' }}>
-            Website design, maintenance &amp; content creation
-            <br />
-            One subscription. From $99/mo.
+            {variant === 'agency' ? (
+              <>
+                For businesses that need to look as good as they are.
+                <br />
+                Custom design, content and maintenance — one subscription, from $99/mo.
+              </>
+            ) : (
+              <>
+                Website design, maintenance &amp; content creation
+                <br />
+                One subscription. From $99/mo.
+              </>
+            )}
           </p>
 
           <div className="flex flex-wrap items-center gap-4 mt-8">
             <CTAButton href="/start" variant="white">
-              Start for free
+              {variant === 'agency' ? 'Get started — nothing upfront' : 'Start for free'}
             </CTAButton>
             <a
-              href="#contacto"
+              href={variant === 'agency' ? '#precios' : '#contacto'}
               className="inline-block font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
             >
-              Contact us
+              {variant === 'agency' ? 'See pricing' : 'Contact us'}
             </a>
           </div>
 
@@ -205,20 +219,42 @@ export default function Hero() {
               from the hero subtitle's own size (text-lg/md:text-xl ->
               text-base/md:text-lg) — still reads as a real trust signal,
               just not competing with the subtitle for attention. */}
-          <div
-            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body text-base md:text-lg"
-            style={{ color: 'rgba(242, 240, 235, 0.55)' }}
-          >
-            {REASSURANCES.map((phrase, i) => (
-              <span key={phrase} className="inline-flex items-center gap-4">
-                {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-50">·</span>}
-                <span className="inline-flex items-center gap-2">
-                  <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
-                  {phrase}
+          {variant === 'agency' ? (
+            <div
+              className="flex flex-col gap-2 mt-10 font-body text-base md:text-lg text-center sm:text-left"
+              style={{ color: 'rgba(242, 240, 235, 0.55)' }}
+            >
+              <span className="inline-flex items-center justify-center sm:justify-start gap-2 font-medium">
+                <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+                See your website before you pay
+              </span>
+              {/* Single leading check + plain flowing text (not two
+                  separately-flexed phrases) so this wraps like a normal
+                  sentence on narrow screens instead of orphaning the second
+                  checkmark onto its own line. */}
+              <span className="inline-flex items-start justify-center sm:justify-start gap-2">
+                <Check size={16} className="opacity-70 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <span>
+                  No upfront cost <span aria-hidden="true" className="opacity-50">·</span> No contract, cancel anytime
                 </span>
               </span>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body text-base md:text-lg"
+              style={{ color: 'rgba(242, 240, 235, 0.55)' }}
+            >
+              {REASSURANCES.map((phrase, i) => (
+                <span key={phrase} className="inline-flex items-center gap-4">
+                  {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-50">·</span>}
+                  <span className="inline-flex items-center gap-2">
+                    <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+                    {phrase}
+                  </span>
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
