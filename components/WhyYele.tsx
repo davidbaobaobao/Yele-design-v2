@@ -47,8 +47,9 @@ const DEFAULT_CARDS: CardData[] = [
   },
 ]
 
-// /agency variant — same six poster/video assets in the same positions
-// (videoBase per index matches DEFAULT_CARDS above), title/description only.
+// /agency variant — title/description order unchanged; videoBase per slot
+// reassigned to the [1,3,2,5,6,4] order requested (independent of
+// DEFAULT_CARDS' own position→video mapping above).
 const AGENCY_CARDS: CardData[] = [
   {
     title: 'Custom design, never a template',
@@ -63,22 +64,22 @@ const AGENCY_CARDS: CardData[] = [
   {
     title: 'Content that looks the part',
     description: 'Realistic photos, video and animation created for your site — the media of a high-budget website.',
-    videoBase: 'whyyele6',
+    videoBase: 'whyyele2',
   },
   {
     title: 'Live in a week',
     description: "First design in about seven days. Then we refine it with you until it's right.",
-    videoBase: 'whyyele4',
+    videoBase: 'whyyele5',
   },
   {
     title: 'Everything included',
     description: 'Hosting, domain, updates and support in one flat monthly price. No extras, no surprises.',
-    videoBase: 'whyyele2',
+    videoBase: 'whyyele6',
   },
   {
     title: 'No contract, cancel anytime',
     description: "Month to month. You stay because it works, not because you're stuck.",
-    videoBase: 'whyyele5',
+    videoBase: 'whyyele4',
   },
 ]
 
