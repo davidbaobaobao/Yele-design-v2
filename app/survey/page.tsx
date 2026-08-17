@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Loader2, Plus, Sparkles, X } from 'lucide-react'
+import { Loader2, Sparkles } from 'lucide-react'
 import SelectCard from './_components/SelectCard'
 import StyleImageCard from './_components/StyleImageCard'
 import ColorImageCard from './_components/ColorImageCard'
@@ -22,25 +22,19 @@ import {
   EFFECT_PAGE_1,
   EFFECT_PAGE_2,
   EMPTY_ANSWERS,
-  FUNCTIONALITY_OPTIONS,
   PLAN_OPTIONS,
   STYLE_OPTIONS,
   TOTAL_STEPS,
-  UPDATE_OFTEN_OPTIONS,
-  customUpdateText,
-  isCustomUpdateEntry,
   isEmailValid,
   isImmersiveStep,
   isStepValid,
   isUrlLikelyValid,
-  makeCustomUpdateEntry,
   normalizeUrl,
   stepKeyAt,
   stepMode,
   styleKey,
   type ColorId,
   type EffectId,
-  type FunctionalityId,
   type StyleId,
   type StyleRound,
   type SurveyAnswers,
@@ -69,8 +63,6 @@ function SurveyPageInner() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [hydrated, setHydrated] = useState(false)
-  const [showCustomUpdateInput, setShowCustomUpdateInput] = useState(false)
-  const [customUpdateDraft, setCustomUpdateDraft] = useState('')
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
@@ -195,39 +187,6 @@ function SurveyPageInner() {
     setAnswers((prev) => ({
       ...prev,
       effects: prev.effects.includes(id) ? prev.effects.filter((v) => v !== id) : [...prev.effects, id],
-    }))
-  }, [])
-
-  const toggleUpdateOften = useCallback((id: string) => {
-    setAnswers((prev) => {
-      if (id === 'nothing') {
-        return { ...prev, updateOften: prev.updateOften.includes('nothing') ? [] : ['nothing'] }
-      }
-      const withoutExclusive = prev.updateOften.filter((v) => v !== 'nothing')
-      const next = withoutExclusive.includes(id) ? withoutExclusive.filter((v) => v !== id) : [...withoutExclusive, id]
-      return { ...prev, updateOften: next }
-    })
-  }, [])
-
-  const addCustomUpdateEntry = useCallback((text: string) => {
-    const trimmed = text.trim()
-    if (!trimmed) return
-    setAnswers((prev) => ({
-      ...prev,
-      updateOften: [...prev.updateOften.filter((v) => v !== 'nothing'), makeCustomUpdateEntry(trimmed)],
-    }))
-  }, [])
-
-  const removeUpdateOftenEntry = useCallback((value: string) => {
-    setAnswers((prev) => ({ ...prev, updateOften: prev.updateOften.filter((v) => v !== value) }))
-  }, [])
-
-  const toggleFunctionality = useCallback((id: FunctionalityId) => {
-    setAnswers((prev) => ({
-      ...prev,
-      functionality: prev.functionality.includes(id)
-        ? prev.functionality.filter((v) => v !== id)
-        : [...prev.functionality, id],
     }))
   }, [])
 
@@ -524,84 +483,6 @@ function SurveyPageInner() {
               <Checkbox checked={answers.noWebPresence} onChange={(v) => update('noWebPresence', v)} label="I'm not online yet — this is my first web presence." />
             </div>
           </SplitLayout>
-        )}
-
-        {key === 'updateOften' && (
-          <FullLayout title="What changes regularly in your business?" microcopy="These become sections you can edit yourself — no need to call us.">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {UPDATE_OFTEN_OPTIONS.map((u) => (
-                <SelectCard key={u.id} title={u.label} selected={answers.updateOften.includes(u.id)} onClick={() => toggleUpdateOften(u.id)} />
-              ))}
-
-              {answers.updateOften.filter(isCustomUpdateEntry).map((entry) => (
-                <div
-                  key={entry}
-                  className="relative flex flex-col justify-center gap-1 rounded-2xl border-2 border-[#0D0E12] bg-[#0D0E12] py-5 pl-5 pr-9 text-left shadow-[0_8px_28px_rgba(0,0,0,0.35)]"
-                >
-                  <span className="font-display text-base font-bold text-white">{customUpdateText(entry)}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeUpdateOftenEntry(entry)}
-                    aria-label="Remove"
-                    className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/15 hover:text-white"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-
-              {!showCustomUpdateInput ? (
-                <button
-                  type="button"
-                  onClick={() => setShowCustomUpdateInput(true)}
-                  className="flex min-h-[92px] items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink/25 bg-white px-5 py-5 font-body text-sm font-semibold text-ink shadow-[0_2px_14px_rgba(0,0,0,0.10)] transition-all hover:border-survey-bg/60"
-                >
-                  <Plus className="h-4 w-4" /> Other — add your own
-                </button>
-              ) : (
-                <div className="col-span-2 flex items-center gap-2 sm:col-span-3">
-                  <TextInput
-                    autoFocus
-                    value={customUpdateDraft}
-                    onChange={setCustomUpdateDraft}
-                    placeholder="e.g. Weekly specials"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault()
-                        addCustomUpdateEntry(customUpdateDraft)
-                        setCustomUpdateDraft('')
-                      }
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      addCustomUpdateEntry(customUpdateDraft)
-                      setCustomUpdateDraft('')
-                    }}
-                    className="shrink-0 rounded-full bg-ink px-5 py-3.5 font-body text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
-                  >
-                    Add
-                  </button>
-                </div>
-              )}
-            </div>
-          </FullLayout>
-        )}
-
-        {key === 'functionality' && (
-          <FullLayout title="What should your website do?">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {FUNCTIONALITY_OPTIONS.map((f) => (
-                <SelectCard
-                  key={f.id}
-                  title={f.label}
-                  selected={answers.functionality.includes(f.id)}
-                  onClick={() => toggleFunctionality(f.id)}
-                />
-              ))}
-            </div>
-          </FullLayout>
         )}
 
         {key === 'plan' && (

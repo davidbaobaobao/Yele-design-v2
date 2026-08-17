@@ -379,6 +379,10 @@ export function getFeatureBadge(minPlan: PlanId, planInterest: PlanId | ''): str
 // - The old "involvement" step (old step 4) is replaced by 'channel' —
 //   involvementLevel/InvolvementId stay for the same reason as above (still
 //   read by api/survey/route.ts's completion email for historical rows).
+// - The old "update often" and "functionality" steps (formerly steps 9-10
+//   of this 12-step flow) are removed entirely — same treatment: their
+//   SurveyAnswers fields (updateOften, functionality) + DB columns stay
+//   since api/survey/route.ts's completion email still reads them.
 export type StepKey =
   | 'contact'
   | 'style1'
@@ -388,8 +392,6 @@ export type StepKey =
   | 'effects2'
   | 'about'
   | 'links'
-  | 'updateOften'
-  | 'functionality'
   | 'plan'
   | 'channel'
 
@@ -402,8 +404,6 @@ export const STEP_ORDER: StepKey[] = [
   'effects2',
   'about',
   'links',
-  'updateOften',
-  'functionality',
   'plan',
   'channel',
 ]
