@@ -77,7 +77,12 @@ export default function StartPage() {
     // form used for this same conversion.
     trackOnboardingFormSubmit(formData.email)
 
-    router.push(`/received?name=${encodeURIComponent(formData.name)}`)
+    const params = new URLSearchParams({
+      name: formData.name,
+      email: formData.email,
+      company: formData.company,
+    })
+    router.push(`/received?${params.toString()}`)
   }
 
   return (

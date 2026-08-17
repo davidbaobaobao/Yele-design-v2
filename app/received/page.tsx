@@ -18,17 +18,28 @@ const STEPS = [
 ]
 
 // Thank-you landing after a successful /start discovery-form submit — the
-// bridge into the design survey rather than a dead end. `name` arrives as a
-// query param from /start's redirect (router.push(`/received?name=...`));
-// React escapes it automatically as plain JSX text, so no extra sanitizing
-// is needed beyond trimming/capping length for layout's sake.
+// bridge into the design survey rather than a dead end. name/email/company
+// arrive as query params from /start's redirect (router.push(`/received?
+// name=...&email=...&company=...`)); React escapes `name` automatically as
+// plain JSX text, so no extra sanitizing is needed beyond trimming/capping
+// length for layout's sake. email/company are forwarded as-is to /survey's
+// own query string below, where they go through the same trim/prefill
+// handling as name.
 export default function ReceivedPage({
   searchParams,
 }: {
-  searchParams: { name?: string }
+  searchParams: { name?: string; email?: string; company?: string }
 }) {
   const rawName = searchParams.name?.trim() ?? ''
   const name = rawName.length > 0 && rawName.length <= 60 ? rawName : ''
+
+  const surveyParams = new URLSearchParams()
+  if (rawName) surveyParams.set('name', rawName)
+  const email = searchParams.email?.trim() ?? ''
+  if (email) surveyParams.set('email', email)
+  const company = searchParams.company?.trim() ?? ''
+  if (company) surveyParams.set('company', company)
+  const surveyHref = surveyParams.toString() ? `/survey?${surveyParams.toString()}` : '/survey'
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6 py-16">
@@ -61,7 +72,7 @@ export default function ReceivedPage({
         </ol>
 
         <Link
-          href="/survey"
+          href={surveyHref}
           className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         >
           Take the 2-minute design survey

@@ -1,6 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+export const dynamic = 'force-dynamic'
+
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Loader2, Plus, Sparkles, X } from 'lucide-react'
 import SelectCard from './_components/SelectCard'
@@ -12,10 +15,7 @@ import FullLayout from './_components/FullLayout'
 import ImmersiveGridLayout from './_components/ImmersiveGridLayout'
 import PersistentLeftVideo from './_components/PersistentLeftVideo'
 import ArrowNav from './_components/ArrowNav'
-import ServicesRepeater from './_components/ServicesRepeater'
-import HoursPicker from './_components/HoursPicker'
-import UploadZone from './_components/UploadZone'
-import { FieldLabel, TextInput, Checkbox, Toggle, Select } from './_components/Fields'
+import { FieldLabel, TextInput, Checkbox } from './_components/Fields'
 import {
   COLOR_OPTIONS,
   EFFECT_PAGE_1,
@@ -27,16 +27,15 @@ import {
   STYLE_OPTIONS,
   TOTAL_STEPS,
   UPDATE_OFTEN_OPTIONS,
-  US_STATES,
   customUpdateText,
-  getFeatureBadge,
   isCustomUpdateEntry,
   isEmailValid,
+  isImmersiveStep,
   isStepValid,
   isUrlLikelyValid,
   makeCustomUpdateEntry,
-  needsManualEntry,
   normalizeUrl,
+  stepKeyAt,
   stepMode,
   styleKey,
   type ColorId,
@@ -61,7 +60,8 @@ function uuid(): string {
   })
 }
 
-export default function SurveyPage() {
+function SurveyPageInner() {
+  const searchParams = useSearchParams()
   const [sessionId, setSessionId] = useState('')
   const [step, setStep] = useState(1)
   const [done, setDone] = useState(false)
@@ -84,6 +84,7 @@ export default function SurveyPage() {
     }
     setSessionId(id)
 
+    let restoredFromStorage = false
     try {
       const savedAnswers = localStorage.getItem(ANSWERS_KEY)
       if (savedAnswers) {
@@ -99,15 +100,35 @@ export default function SurveyPage() {
             custom: { ...EMPTY_ANSWERS.hours.custom, ...parsed.hours?.custom },
           },
         })
+        restoredFromStorage = true
       }
     } catch {
       // ignore corrupt localStorage
+    }
+
+    // Prefill from the lead-funnel query params (/received -> /survey) —
+    // only on a genuinely fresh session. A returning visitor's in-progress
+    // answers (restored above) always win, so query params can never
+    // clobber something they already typed.
+    if (!restoredFromStorage) {
+      const qName = searchParams.get('name')?.trim() ?? ''
+      const qCompany = searchParams.get('company')?.trim() ?? ''
+      const qEmail = searchParams.get('email')?.trim() ?? ''
+      if (qName || qCompany || qEmail) {
+        setAnswers((prev) => ({
+          ...prev,
+          name: qName || prev.name,
+          company: qCompany || prev.company,
+          email: qEmail || prev.email,
+        }))
+      }
     }
 
     const savedStep = Number(localStorage.getItem(STEP_KEY))
     if (savedStep >= 1 && savedStep <= TOTAL_STEPS) setStep(savedStep)
 
     setHydrated(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // ── Persist to localStorage on every change ─────────────────────────────
@@ -142,7 +163,6 @@ export default function SurveyPage() {
   }, [answers, step, sessionId, hydrated, done])
 
   const valid = useMemo(() => isStepValid(step, answers), [step, answers])
-  const linksProvided = useMemo(() => !needsManualEntry(answers), [answers])
 
   const update = useCallback(<K extends keyof SurveyAnswers>(key: K, value: SurveyAnswers[K]) => {
     setAnswers((prev) => ({ ...prev, [key]: value }))
@@ -316,11 +336,8 @@ export default function SurveyPage() {
   }
 
   const mode = stepMode(step)
-  // The style/colours 8-card grids (two style pages + one colours page) and
-  // the two 4-card effect-video pages all need the full step box, top-
-  // aligned with a compact header, instead of FullLayout's centered/capped
-  // treatment — see ImmersiveGridLayout.
-  const immersive = step === 5 || step === 6 || step === 7 || step === 8 || step === 9
+  const immersive = isImmersiveStep(step)
+  const key = stepKeyAt(step)
 
   return (
     <div
@@ -329,8 +346,10 @@ export default function SurveyPage() {
       onTouchEnd={onTouchEnd}
     >
       {/* Mounted once for the whole survey — see PersistentLeftVideo's own
-          comment for why it can't live inside a per-step component. */}
-      <PersistentLeftVideo visible={step === 1 || step === 2 || step === 10} />
+          comment for why it can't live inside a per-step component. Only
+          the merged contact step uses it now — the merged "about" step
+          uses its own static leftImage instead (see below). */}
+      <PersistentLeftVideo visible={key === 'contact'} />
 
       {/* SPLIT steps: no wrapper padding/max-width here — SplitLayout itself
           is the full-bleed two-column grid, so its two panel colors reach
@@ -348,20 +367,16 @@ export default function SurveyPage() {
               : 'mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-12 md:px-10 md:pb-28 md:pt-16'
         }
       >
-        {step === 1 && (
+        {key === 'contact' && (
           <SplitLayout title="Who are we designing for?">
             <FieldLabel>Name</FieldLabel>
             <TextInput autoFocus value={answers.name} onChange={(v) => update('name', v)} onKeyDown={handleEnterAdvance} placeholder="Your name" />
             <FieldLabel className="mt-4">Company</FieldLabel>
             <TextInput value={answers.company} onChange={(v) => update('company', v)} onKeyDown={handleEnterAdvance} placeholder="Your business name" />
             <p className="mt-3 text-xs text-ink/60">At least one is required.</p>
-          </SplitLayout>
-        )}
 
-        {step === 2 && (
-          <SplitLayout title="How can we reach you?">
-            <FieldLabel>Email</FieldLabel>
-            <TextInput autoFocus type="email" value={answers.email} onChange={(v) => update('email', v)} onKeyDown={handleEnterAdvance} placeholder="you@email.com" />
+            <FieldLabel className="mt-6">Email</FieldLabel>
+            <TextInput type="email" value={answers.email} onChange={(v) => update('email', v)} onKeyDown={handleEnterAdvance} placeholder="you@email.com" />
             {answers.email.trim() !== '' && !isEmailValid(answers.email) && (
               <p className="mt-1.5 text-xs text-ink/70">That email doesn&apos;t look quite right.</p>
             )}
@@ -371,40 +386,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 3 && (
-          <FullLayout title="Which plan are you leaning towards?" microcopy="No commitment — you can change this anytime.">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {PLAN_OPTIONS.map((p) => (
-                <SelectCard
-                  key={p.id}
-                  title={p.title}
-                  price={p.price}
-                  description={p.description}
-                  selected={answers.planInterest === p.id}
-                  onClick={() => update('planInterest', p.id)}
-                />
-              ))}
-            </div>
-          </FullLayout>
-        )}
-
-        {step === 4 && (
-          <FullLayout title="How involved do you want to be in the design process?">
-            <div className="flex flex-col gap-4">
-              {INVOLVEMENT_OPTIONS.map((i) => (
-                <SelectCard
-                  key={i.id}
-                  title={i.title}
-                  description={i.description}
-                  selected={answers.involvementLevel === i.id}
-                  onClick={() => update('involvementLevel', i.id)}
-                />
-              ))}
-            </div>
-          </FullLayout>
-        )}
-
-        {step === 5 && (
+        {key === 'style1' && (
           <ImmersiveGridLayout title="Which designs catch your eye?" microcopy="Pick as many as you like.">
             <div className="flex h-full items-center justify-center">
               <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-4 md:gap-4">
@@ -425,7 +407,7 @@ export default function SurveyPage() {
           </ImmersiveGridLayout>
         )}
 
-        {step === 6 && (
+        {key === 'style2' && (
           <ImmersiveGridLayout title="And these?" microcopy="Pick as many as you like — same styles, a second look.">
             <div className="flex h-full items-center justify-center">
               <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-4 md:gap-4">
@@ -446,7 +428,7 @@ export default function SurveyPage() {
           </ImmersiveGridLayout>
         )}
 
-        {step === 7 && (
+        {key === 'colors' && (
           <ImmersiveGridLayout title="What colours do you like?" microcopy="Choose as many as you like.">
             <div className="grid h-full grid-cols-2 grid-rows-4 gap-2 sm:grid-cols-4 sm:grid-rows-2 md:gap-3">
               {COLOR_OPTIONS.map((c) => (
@@ -464,7 +446,7 @@ export default function SurveyPage() {
           </ImmersiveGridLayout>
         )}
 
-        {step === 8 && (
+        {key === 'effects1' && (
           <ImmersiveGridLayout title="What kind of effects do you like?" microcopy="Pick as many as you like.">
             <div className="grid h-full grid-cols-2 grid-rows-2 gap-2 md:gap-3">
               {EFFECT_PAGE_1.map((e) => (
@@ -481,7 +463,7 @@ export default function SurveyPage() {
           </ImmersiveGridLayout>
         )}
 
-        {step === 9 && (
+        {key === 'effects2' && (
           <ImmersiveGridLayout title="And these?" microcopy="Pick as many as you like.">
             <div className="grid h-full grid-cols-2 grid-rows-2 gap-2 md:gap-3">
               {EFFECT_PAGE_2.map((e) => (
@@ -498,21 +480,16 @@ export default function SurveyPage() {
           </ImmersiveGridLayout>
         )}
 
-        {step === 10 && (
-          <SplitLayout title="What do you do?">
+        {key === 'about' && (
+          <SplitLayout title="Tell us about your business" leftImage="page11">
             <FieldLabel>In one line — what does your business do?</FieldLabel>
             <TextInput autoFocus value={answers.business} onChange={(v) => update('business', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. We repair and sell vintage bicycles" />
+            <FieldLabel className="mt-4">What do you sell, and what makes you different?</FieldLabel>
+            <TextInput value={answers.sells} onChange={(v) => update('sells', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. Custom-built frames, lifetime tune-ups" />
           </SplitLayout>
         )}
 
-        {step === 11 && (
-          <SplitLayout title="What you sell / your edge" leftImage="page11">
-            <FieldLabel>What do you sell, and what makes you different?</FieldLabel>
-            <TextInput autoFocus value={answers.sells} onChange={(v) => update('sells', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. Custom-built frames, lifetime tune-ups" />
-          </SplitLayout>
-        )}
-
-        {step === 12 && (
+        {key === 'links' && (
           <SplitLayout title="Are you already online somewhere?" leftImage="page12">
             <p className="mb-3 text-sm text-ink/70">
               Drop your links — we&apos;ll pull your services, photos, reviews and hours so you don&apos;t have to type them.
@@ -549,70 +526,7 @@ export default function SurveyPage() {
           </SplitLayout>
         )}
 
-        {step === 13 && (
-          <SplitLayout title="What should we list on your site?" leftImage="page13">
-            {linksProvided && (
-              <button
-                type="button"
-                onClick={() => {
-                  update('servicesFromLinks', true)
-                  goForward()
-                }}
-                className="mb-5 self-start rounded-full bg-ink px-5 py-2.5 font-body text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
-              >
-                Skip — pull it from my links
-              </button>
-            )}
-            <p className="mb-4 text-sm text-ink/70">Rough is fine — we&apos;ll polish the wording.</p>
-            <ServicesRepeater rows={answers.services} onChange={(rows) => update('services', rows)} />
-          </SplitLayout>
-        )}
-
-        {step === 14 && (
-          <SplitLayout title="Where and when can customers find you?" leftImage="page14">
-            {linksProvided && (
-              <button
-                type="button"
-                onClick={() => {
-                  update('hours', { ...answers.hours, mode: 'google' })
-                  goForward()
-                }}
-                className="mb-5 self-start rounded-full bg-ink px-5 py-2.5 font-body text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
-              >
-                Skip — use my Google Business hours
-              </button>
-            )}
-            <FieldLabel>Location</FieldLabel>
-            <div className="mb-5">
-              <Toggle
-                value={answers.address.hasPhysical}
-                options={['I have a physical location', 'Online only / mobile business']}
-                onChange={(v) => update('address', { ...answers.address, hasPhysical: v })}
-              />
-            </div>
-            {answers.address.hasPhysical && (
-              <div className="mb-6 flex flex-col gap-3">
-                <TextInput value={answers.address.line1} onChange={(v) => update('address', { ...answers.address, line1: v })} placeholder="Street address" />
-                <div className="grid grid-cols-2 gap-3">
-                  <TextInput value={answers.address.city} onChange={(v) => update('address', { ...answers.address, city: v })} placeholder="City" />
-                  <TextInput value={answers.address.zip} onChange={(v) => update('address', { ...answers.address, zip: v })} placeholder="ZIP" />
-                </div>
-                <Select value={answers.address.state} onChange={(v) => update('address', { ...answers.address, state: v })}>
-                  <option value="">State</option>
-                  {US_STATES.map((s) => (
-                    <option key={s.code} value={s.code}>
-                      {s.name}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-            )}
-            <FieldLabel>Hours</FieldLabel>
-            <HoursPicker hours={answers.hours} onChange={(h) => update('hours', h)} />
-          </SplitLayout>
-        )}
-
-        {step === 15 && (
+        {key === 'updateOften' && (
           <FullLayout title="What changes regularly in your business?" microcopy="These become sections you can edit yourself — no need to call us.">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {UPDATE_OFTEN_OPTIONS.map((u) => (
@@ -675,14 +589,13 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 16 && (
+        {key === 'functionality' && (
           <FullLayout title="What should your website do?">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {FUNCTIONALITY_OPTIONS.map((f) => (
                 <SelectCard
                   key={f.id}
                   title={f.label}
-                  badge={getFeatureBadge(f.minPlan, answers.planInterest)}
                   selected={answers.functionality.includes(f.id)}
                   onClick={() => toggleFunctionality(f.id)}
                 />
@@ -691,52 +604,37 @@ export default function SurveyPage() {
           </FullLayout>
         )}
 
-        {step === 17 && (
-          <SplitLayout title="Show us what you've got" leftImage="page17">
-            <p className="mb-5 text-sm text-ink/70">You can always send more later.</p>
-            <FieldLabel>Logo</FieldLabel>
-            <div className="mb-2">
-              <UploadZone
-                sessionId={sessionId}
-                folder="logo"
-                accept=".png,.svg,.jpg,.jpeg,.pdf"
-                maxFiles={1}
-                urls={answers.logoUrl ? [answers.logoUrl] : []}
-                onChange={(urls) => update('logoUrl', urls[0] ?? '')}
-                label="Upload logo"
-                disabled={answers.needsBranding}
-              />
-            </div>
-            <div className="mb-6">
-              <Checkbox checked={answers.needsBranding} onChange={(v) => update('needsBranding', v)} label="I don't have a logo — I need one" />
-            </div>
-
-            <FieldLabel>Photos</FieldLabel>
-            <div className="mb-2">
-              <UploadZone
-                sessionId={sessionId}
-                folder="photos"
-                accept="image/*"
-                maxFiles={10}
-                urls={answers.photoUrls}
-                onChange={(urls) => update('photoUrls', urls)}
-                label="Add photos"
-                disabled={answers.usePhotosFromLinks || answers.noGoodPhotos}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              {linksProvided && (
-                <Checkbox
-                  checked={answers.usePhotosFromLinks}
-                  onChange={(v) => update('usePhotosFromLinks', v)}
-                  label="Use photos from my website / Instagram"
+        {key === 'plan' && (
+          <FullLayout title="Which plan are you leaning towards?" microcopy="No commitment — you can change this anytime.">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {PLAN_OPTIONS.map((p) => (
+                <SelectCard
+                  key={p.id}
+                  title={p.title}
+                  price={p.price}
+                  description={p.description}
+                  selected={answers.planInterest === p.id}
+                  onClick={() => update('planInterest', p.id)}
                 />
-              )}
-              <Checkbox checked={answers.noGoodPhotos} onChange={(v) => update('noGoodPhotos', v)} label="I don't have good photos yet" />
+              ))}
             </div>
-            {/* The submit action itself lives in the bottom bar now (see
-                ArrowNav's Finish button) rather than floating here. */}
-          </SplitLayout>
+          </FullLayout>
+        )}
+
+        {key === 'involvement' && (
+          <FullLayout title="How involved do you want to be in the design process?">
+            <div className="flex flex-col gap-4">
+              {INVOLVEMENT_OPTIONS.map((i) => (
+                <SelectCard
+                  key={i.id}
+                  title={i.title}
+                  description={i.description}
+                  selected={answers.involvementLevel === i.id}
+                  onClick={() => update('involvementLevel', i.id)}
+                />
+              ))}
+            </div>
+          </FullLayout>
         )}
 
         {submitError && <p className="mx-auto mt-4 max-w-md text-center text-sm font-semibold text-ink">{submitError}</p>}
@@ -752,5 +650,19 @@ export default function SurveyPage() {
         total={TOTAL_STEPS}
       />
     </div>
+  )
+}
+
+export default function SurveyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="fixed inset-0 flex items-center justify-center bg-survey-bg-soft">
+          <Loader2 className="h-6 w-6 animate-spin text-ink" />
+        </div>
+      }
+    >
+      <SurveyPageInner />
+    </Suspense>
   )
 }

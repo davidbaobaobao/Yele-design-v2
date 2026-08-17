@@ -349,18 +349,64 @@ export function getFeatureBadge(minPlan: PlanId, planInterest: PlanId | ''): str
   return 'Upgrade'
 }
 
-export const TOTAL_STEPS = 17
+// Stable step identifiers — the survey's actual page.tsx switches on these
+// instead of raw step numbers, so reordering/removing/merging steps is just
+// editing this one array. Historical numbering (kept in comments elsewhere
+// in this file, e.g. "Step 3 — plan interest") refers to the ORIGINAL
+// 17-step flow and no longer matches live position — the ids there are
+// still accurate, just not the position.
+//
+// Changes from the original 17-step flow:
+// - 'contact' merges the old name/company step + email/phone step into one.
+// - 'about' merges the old "what you do" step + "what you sell" step.
+// - 'plan' and 'involvement' moved from early (old steps 3-4) to the end.
+// - The old services / address+hours / uploads steps are removed entirely
+//   (their SurveyAnswers fields + DB columns stay — see api/survey/route.ts
+//   and the admin app, which still read them — just never collected here).
+export type StepKey =
+  | 'contact'
+  | 'style1'
+  | 'style2'
+  | 'colors'
+  | 'effects1'
+  | 'effects2'
+  | 'about'
+  | 'links'
+  | 'updateOften'
+  | 'functionality'
+  | 'plan'
+  | 'involvement'
 
-// 1 name/company · 2 contact · 3 plan · 4 goal · 5 style page A (8) ·
-// 6 style page B (8, same 8, round 2) · 7 colours (8, one page) ·
-// 8 effects page A (4) · 9 effects page B (4) · 10 business · 11 sells ·
-// 12 online links · 13 services · 14 hours/address · 15 update-often ·
-// 16 functionality · 17 uploads
-export const SPLIT_STEPS = new Set([1, 2, 10, 11, 12, 13, 14, 17])
-export const FULL_STEPS = new Set([3, 4, 5, 6, 7, 8, 9, 15, 16])
+export const STEP_ORDER: StepKey[] = [
+  'contact',
+  'style1',
+  'style2',
+  'colors',
+  'effects1',
+  'effects2',
+  'about',
+  'links',
+  'updateOften',
+  'functionality',
+  'plan',
+  'involvement',
+]
+
+export const TOTAL_STEPS = STEP_ORDER.length
+
+export function stepKeyAt(step: number): StepKey {
+  return STEP_ORDER[step - 1]
+}
+
+const SPLIT_KEYS = new Set<StepKey>(['contact', 'about', 'links'])
+const IMMERSIVE_KEYS = new Set<StepKey>(['style1', 'style2', 'colors', 'effects1', 'effects2'])
 
 export function stepMode(step: number): 'split' | 'full' {
-  return SPLIT_STEPS.has(step) ? 'split' : 'full'
+  return SPLIT_KEYS.has(stepKeyAt(step)) ? 'split' : 'full'
+}
+
+export function isImmersiveStep(step: number): boolean {
+  return IMMERSIVE_KEYS.has(stepKeyAt(step))
 }
 
 // ── Labels for email building ───────────────────────────────────────────
@@ -443,23 +489,21 @@ export function isUrlLikelyValid(value: string): boolean {
   }
 }
 
-// Everything is optional except these 3 gates. Steps 4-17 (goal, styles x2,
-// colours, effects x2, business, sells, links, services, address/hours,
-// update-often, functionality, uploads) are all freely skippable — their
-// defaults are already save-safe empty values.
+// Everything is optional except these 2 gates (contact info, plan). Every
+// other step is freely skippable — their defaults are already save-safe
+// empty values.
 export function isStepValid(step: number, a: SurveyAnswers): boolean {
-  switch (step) {
-    case 1:
-      return a.name.trim().length > 0 || a.company.trim().length > 0
-    case 2: {
+  switch (stepKeyAt(step)) {
+    case 'contact': {
+      const hasNameOrCompany = a.name.trim().length > 0 || a.company.trim().length > 0
       const hasPhone = a.phone.trim().length > 0
       const emailTrim = a.email.trim()
       const hasValidEmail = emailTrim.length > 0 && isEmailValid(emailTrim)
       const emailEnteredButInvalid = emailTrim.length > 0 && !hasValidEmail
-      if (emailEnteredButInvalid && !hasPhone) return false
-      return hasValidEmail || hasPhone
+      const hasContact = emailEnteredButInvalid && !hasPhone ? false : hasValidEmail || hasPhone
+      return hasNameOrCompany && hasContact
     }
-    case 3:
+    case 'plan':
       return a.planInterest !== ''
     default:
       return true
