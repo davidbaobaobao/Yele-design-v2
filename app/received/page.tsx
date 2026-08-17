@@ -5,39 +5,82 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-// Thank-you landing after a successful /start discovery-form submit.
-export default function ReceivedPage() {
+const STEPS = [
+  {
+    text: 'Tell us your direction — a 2-minute design survey (or a quick call if you’d rather talk).',
+  },
+  {
+    text: 'We design your first draft — real content, made for your business, ready in about a week.',
+  },
+  {
+    text: 'You approve, it goes live — and that’s the day of your first payment. Nothing before.',
+  },
+]
+
+// Thank-you landing after a successful /start discovery-form submit — the
+// bridge into the design survey rather than a dead end. `name` arrives as a
+// query param from /start's redirect (router.push(`/received?name=...`));
+// React escapes it automatically as plain JSX text, so no extra sanitizing
+// is needed beyond trimming/capping length for layout's sake.
+export default function ReceivedPage({
+  searchParams,
+}: {
+  searchParams: { name?: string }
+}) {
+  const rawName = searchParams.name?.trim() ?? ''
+  const name = rawName.length > 0 && rawName.length <= 60 ? rawName : ''
+
   return (
-    <div className="min-h-screen bg-[#0D0E12] flex items-center justify-center px-6">
-      <div className="max-w-md w-full text-center">
-        <Link href="/" className="inline-flex items-center gap-1.5 mb-10 focus-visible:outline-none">
-          <span className="w-2 h-2 rounded-full bg-[#D46FC8]" aria-hidden="true" />
-          <span className="font-display font-semibold text-sm text-white">
-            yele<span className="text-white/50 font-normal">.design</span>
-          </span>
+    <div className="min-h-screen bg-[#0D0E12] flex items-center justify-center px-6 py-16">
+      <div className="max-w-md w-full">
+        <Link href="/" className="inline-flex items-center mb-8 focus-visible:outline-none" aria-label="yele">
+          {/* eslint-disable-next-line @next/next/no-img-element -- SVG, Next's image optimizer refuses to serve those */}
+          <img src="/media/logomedia/mainlogo.svg" alt="" className="h-8 w-auto" />
         </Link>
 
-        <div className="w-12 h-12 rounded-full bg-[#D46FC8]/10 flex items-center justify-center mx-auto mb-6">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="#D46FC8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-
-        <h1 className="font-display font-semibold text-3xl text-white tracking-tight mb-3">
-          Thanks — we&apos;ve got your details.
+        <h1 className="font-display font-semibold text-3xl md:text-4xl text-white tracking-tight leading-tight mb-3">
+          {name ? (
+            <>You&apos;re in, {name}. Let&apos;s design your website.</>
+          ) : (
+            <>You&apos;re in. Let&apos;s design your website.</>
+          )}
         </h1>
-        <p className="font-body text-white/60 text-base leading-relaxed mb-10">
-          We&apos;ll email you shortly about how we can grow your business.
+        <p className="font-body text-white/60 text-base leading-relaxed mb-8">
+          We&apos;ve got your details. From here it&apos;s simple:
         </p>
 
+        <ol className="space-y-5 mb-10">
+          {STEPS.map((step, i) => (
+            <li key={i} className="flex gap-4">
+              <span className="font-display font-bold text-xl text-[#D46FC8] w-6 flex-shrink-0" aria-hidden="true">
+                {i + 1}
+              </span>
+              <p className="font-body text-sm text-white/80 leading-relaxed pt-0.5">{step.text}</p>
+            </li>
+          ))}
+        </ol>
+
         <Link
-          href="/schedule"
-          className="font-body text-sm text-white/70 hover:text-white transition-colors underline underline-offset-4"
+          href="/survey"
+          className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
-          Can&apos;t wait? Book a 10-min intro call →
+          Take the 2-minute design survey
         </Link>
 
-        <div className="mt-10">
+        <div className="text-center mt-4">
+          <Link
+            href="/schedule"
+            className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4"
+          >
+            Rather talk it through? Book a 15-min call →
+          </Link>
+        </div>
+
+        <p className="text-center font-body text-xs text-white/40 mt-8">
+          You&apos;ll hear from a real person within one business day.
+        </p>
+
+        <div className="text-center mt-6">
           <Link href="/" className="font-body text-xs text-white/40 hover:text-white/70 transition-colors">
             ← Back to home
           </Link>

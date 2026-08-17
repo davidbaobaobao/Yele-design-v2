@@ -77,7 +77,7 @@ export default function StartPage() {
     // form used for this same conversion.
     trackOnboardingFormSubmit(formData.email)
 
-    router.push('/received')
+    router.push(`/received?name=${encodeURIComponent(formData.name)}`)
   }
 
   return (
