@@ -221,11 +221,11 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
               just not competing with the subtitle for attention. */}
           {variant === 'agency' ? (
             <div
-              className="flex flex-col gap-2 mt-10 font-body text-base md:text-lg text-center sm:text-left"
-              style={{ color: 'rgba(242, 240, 235, 0.55)' }}
+              className="flex flex-col gap-2 mt-10 font-body font-semibold text-base md:text-lg text-center sm:text-left"
+              style={{ color: '#EDEAE3' }}
             >
-              <span className="inline-flex items-center justify-center sm:justify-start gap-2 font-medium">
-                <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+              <span className="inline-flex items-center justify-center sm:justify-start gap-2">
+                <Check size={16} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
                 See your website before you pay
               </span>
               {/* Single leading check + plain flowing text (not two
@@ -233,26 +233,26 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
                   sentence on narrow screens instead of orphaning the second
                   checkmark onto its own line. */}
               <span className="inline-flex items-start justify-center sm:justify-start gap-2">
-                <Check size={16} className="opacity-70 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <span>
-                  No upfront cost <span aria-hidden="true" className="opacity-50">·</span> No contract, cancel anytime
+                  No upfront cost <span aria-hidden="true" className="opacity-60">·</span> No contract, cancel anytime
                 </span>
               </span>
               <span className="inline-flex items-center justify-center sm:justify-start gap-2">
-                <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+                <Check size={16} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
                 Fast delivery
               </span>
             </div>
           ) : (
             <div
-              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body text-base md:text-lg"
-              style={{ color: 'rgba(242, 240, 235, 0.55)' }}
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body font-semibold text-base md:text-lg"
+              style={{ color: '#EDEAE3' }}
             >
               {REASSURANCES.map((phrase, i) => (
                 <span key={phrase} className="inline-flex items-center gap-4">
-                  {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-50">·</span>}
+                  {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-60">·</span>}
                   <span className="inline-flex items-center gap-2">
-                    <Check size={16} className="opacity-70 flex-shrink-0" aria-hidden="true" />
+                    <Check size={16} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
                     {phrase}
                   </span>
                 </span>
