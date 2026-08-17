@@ -4,8 +4,13 @@
 // in that slot), so this is only ever populated on rows submitted before
 // that change.
 export type GoalId = 'statement' | 'sell' | 'both'
-// ── Step 4 — design-process involvement (replaced the old "goal" question) ──
+// ── Step 4 (legacy) — design-process involvement. No longer shown in the
+// survey UI — the final step slot now asks preferred communication channel
+// instead (see PreferredChannelId below). Kept for the same reason as
+// GoalId above: existing DB rows + the completion email still read it.
 export type InvolvementId = 'hands_on' | 'balanced' | 'hands_off'
+// ── Final step — preferred communication channel ─────────────────────────
+export type PreferredChannelId = 'email' | 'phone'
 export type StyleId = 'minimalism' | 'swiss' | 'bento' | 'editorial' | 'luxury' | 'dark' | 'neobrutalism' | 'organic'
 export type StyleRound = 1 | 2
 // Stored shape in answers.styles — each style page (5, 6) only ever adds or
@@ -88,6 +93,7 @@ export interface SurveyAnswers {
   planInterest: PlanId | ''
   goal: GoalId | ''
   involvementLevel: InvolvementId | ''
+  preferredChannel: PreferredChannelId | ''
   styles: StyleKey[]
   colors: ColorId[]
   effects: EffectId[]
@@ -134,6 +140,7 @@ export const EMPTY_ANSWERS: SurveyAnswers = {
   planInterest: '',
   goal: '',
   involvementLevel: '',
+  preferredChannel: '',
   styles: [],
   colors: [],
   effects: [],
@@ -202,6 +209,12 @@ export const INVOLVEMENT_OPTIONS: { id: InvolvementId; title: string; descriptio
     title: 'Hands-off',
     description: "I don't have much time. Run with it, check in occasionally, and I'll review the final result.",
   },
+]
+
+// ── Final step — preferred communication channel ─────────────────────────
+export const CHANNEL_OPTIONS: { id: PreferredChannelId; title: string }[] = [
+  { id: 'email', title: 'Email' },
+  { id: 'phone', title: 'Phone' },
 ]
 
 // ── Steps 5 & 6 — style, same 8 concepts shown twice ──────────────────────
@@ -359,10 +372,13 @@ export function getFeatureBadge(minPlan: PlanId, planInterest: PlanId | ''): str
 // Changes from the original 17-step flow:
 // - 'contact' merges the old name/company step + email/phone step into one.
 // - 'about' merges the old "what you do" step + "what you sell" step.
-// - 'plan' and 'involvement' moved from early (old steps 3-4) to the end.
+// - 'plan' moved from early (old step 3) to the end.
 // - The old services / address+hours / uploads steps are removed entirely
 //   (their SurveyAnswers fields + DB columns stay — see api/survey/route.ts
 //   and the admin app, which still read them — just never collected here).
+// - The old "involvement" step (old step 4) is replaced by 'channel' —
+//   involvementLevel/InvolvementId stay for the same reason as above (still
+//   read by api/survey/route.ts's completion email for historical rows).
 export type StepKey =
   | 'contact'
   | 'style1'
@@ -375,7 +391,7 @@ export type StepKey =
   | 'updateOften'
   | 'functionality'
   | 'plan'
-  | 'involvement'
+  | 'channel'
 
 export const STEP_ORDER: StepKey[] = [
   'contact',
@@ -389,7 +405,7 @@ export const STEP_ORDER: StepKey[] = [
   'updateOften',
   'functionality',
   'plan',
-  'involvement',
+  'channel',
 ]
 
 export const TOTAL_STEPS = STEP_ORDER.length
@@ -420,6 +436,10 @@ export function goalLabel(id: string): string {
 
 export function involvementLabel(id: string): string {
   return INVOLVEMENT_OPTIONS.find((i) => i.id === id)?.title ?? id
+}
+
+export function channelLabel(id: string): string {
+  return CHANNEL_OPTIONS.find((c) => c.id === id)?.title ?? id
 }
 
 // Keys are round-suffixed (e.g. "minimalism1"), so strip the trailing 1/2

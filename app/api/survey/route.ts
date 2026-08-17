@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import {
+  channelLabel,
   colorLabels,
   effectLabels,
   functionalityLabels,
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
       planInterest,
       goal,
       involvementLevel,
+      preferredChannel,
       styles,
       colors,
       effects,
@@ -86,6 +88,7 @@ export async function POST(request: Request) {
       plan_interest: planInterest || null,
       goal: goal || null,
       involvement_level: involvementLevel || null,
+      preferred_channel: preferredChannel || null,
       styles: styles ?? [],
       colors: colors ?? [],
       effects: effects ?? [],
@@ -130,6 +133,7 @@ export async function POST(request: Request) {
             planInterest,
             goal,
             involvementLevel,
+            preferredChannel,
             styles,
             colors,
             effects,
@@ -168,6 +172,7 @@ interface CompletionEmailData {
   planInterest?: string
   goal?: string
   involvementLevel?: string
+  preferredChannel?: string
   styles?: string[]
   colors?: string[]
   effects?: string[]
@@ -248,7 +253,11 @@ function buildCompletionEmail(data: CompletionEmailData): string {
   <div style="padding:16px 32px 32px;">
     ${section(
       'Contact',
-      row('Name', data.name) + row('Company', data.company) + row('Email', data.email) + row('Phone', data.phone)
+      row('Name', data.name) +
+        row('Company', data.company) +
+        row('Email', data.email) +
+        row('Phone', data.phone) +
+        row('Preferred channel', data.preferredChannel ? channelLabel(data.preferredChannel) : null)
     )}
     ${section('Plan interest', row('Plan', data.planInterest ? planLabel(data.planInterest) : null))}
     ${section(

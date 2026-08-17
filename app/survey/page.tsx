@@ -17,12 +17,12 @@ import PersistentLeftVideo from './_components/PersistentLeftVideo'
 import ArrowNav from './_components/ArrowNav'
 import { FieldLabel, TextInput, Checkbox } from './_components/Fields'
 import {
+  CHANNEL_OPTIONS,
   COLOR_OPTIONS,
   EFFECT_PAGE_1,
   EFFECT_PAGE_2,
   EMPTY_ANSWERS,
   FUNCTIONALITY_OPTIONS,
-  INVOLVEMENT_OPTIONS,
   PLAN_OPTIONS,
   STYLE_OPTIONS,
   TOTAL_STEPS,
@@ -621,16 +621,15 @@ function SurveyPageInner() {
           </FullLayout>
         )}
 
-        {key === 'involvement' && (
-          <FullLayout title="How involved do you want to be in the design process?">
-            <div className="flex flex-col gap-4">
-              {INVOLVEMENT_OPTIONS.map((i) => (
+        {key === 'channel' && (
+          <FullLayout title="Which is your preferred communication channel?">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {CHANNEL_OPTIONS.map((c) => (
                 <SelectCard
-                  key={i.id}
-                  title={i.title}
-                  description={i.description}
-                  selected={answers.involvementLevel === i.id}
-                  onClick={() => update('involvementLevel', i.id)}
+                  key={c.id}
+                  title={c.title}
+                  selected={answers.preferredChannel === c.id}
+                  onClick={() => update('preferredChannel', c.id)}
                 />
               ))}
             </div>
