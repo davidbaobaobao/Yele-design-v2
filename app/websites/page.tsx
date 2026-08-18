@@ -1,0 +1,195 @@
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { Check } from 'lucide-react'
+import LeadForm from '@/components/LeadForm'
+import ClosingWords from './_components/ClosingWords'
+
+// Meta-ads landing page — mobile-first, deliberately lightweight (paid
+// traffic, LCP matters): no Nav/Footer, no WebGL/video, no framer-motion.
+// Server-rendered shell; the only client-side islands are the lead form
+// (components/LeadForm.tsx, shared with /start so the two never drift
+// apart) and the rotating-word closer (_components/ClosingWords.tsx).
+export const metadata: Metadata = {
+  title: "Let's build your website",
+  description:
+    'See the final product before paying. No setup fee, cancel anytime. Our agency takes care of everything — get your website built in about a week.',
+  alternates: {
+    canonical: 'https://yele.design/websites',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://yele.design/websites',
+    siteName: 'Yele',
+    title: "Let's build your website | Yele",
+    description: 'See the final product before paying. No setup fee, cancel anytime.',
+  },
+}
+
+const KEY_POINTS = [
+  'See the final product before paying',
+  'No setup fee, cancel anytime',
+  'Our agency takes care of everything',
+]
+
+const STEPS: { n: number; text: string; pill: string }[] = [
+  {
+    n: 1,
+    text: "Tell us your direction — a 2-minute design survey (or a quick call if you'd rather talk).",
+    pill: '~5 min',
+  },
+  {
+    n: 2,
+    text: "We design your first draft for your business. Then, from your feedback, we improve it until you're satisfied.",
+    pill: '~1 week',
+  },
+  {
+    n: 3,
+    text: "You approve, it goes live — and that's the day of your first payment. Nothing before.",
+    pill: 'Days, not months',
+  },
+  {
+    n: 4,
+    text: 'We keep improving it — constant support and updates on design and functionality.',
+    pill: '∞ Ongoing',
+  },
+]
+
+const PLANS: { name: string; price: number; highlight?: boolean; features: string[] }[] = [
+  {
+    name: 'Basic',
+    price: 99,
+    features: ['Functional website, no page limit', 'Custom domain', 'On-page SEO & indexing', '24/7 support'],
+  },
+  {
+    name: 'Pro',
+    price: 169,
+    highlight: true,
+    features: ['Everything in Basic, plus:', 'Branding', 'Payments & bookings', 'AI chat assistant'],
+  },
+]
+
+export default function WebsitesPage() {
+  return (
+    <main style={{ backgroundColor: '#0D0E12' }}>
+      {/* ---- 1+2: Hero + lead form ---- */}
+      <section className="px-6 pt-10 pb-14 md:pt-16 md:pb-20">
+        <div className="max-w-md mx-auto">
+          <Link href="/" className="inline-flex items-center mb-8 focus-visible:outline-none" aria-label="yele">
+            {/* eslint-disable-next-line @next/next/no-img-element -- SVG, Next's image optimizer refuses to serve those */}
+            <img src="/media/logomedia/mainlogo.svg" alt="" className="h-8 w-auto" />
+          </Link>
+
+          <h1 className="font-display font-bold text-4xl md:text-5xl text-white tracking-tight leading-[1.08] mb-5">
+            Let&apos;s build your website
+          </h1>
+
+          <ul className="space-y-2.5 mb-8">
+            {KEY_POINTS.map(point => (
+              <li key={point} className="flex items-start gap-2.5">
+                <Check size={18} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <span className="font-body text-base font-semibold text-white/90">{point}</span>
+              </li>
+            ))}
+          </ul>
+
+          <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" />
+        </div>
+      </section>
+
+      {/* ---- 3: How it works ---- */}
+      <section className="px-6 py-14 md:py-20 border-t border-white/10">
+        <div className="max-w-md md:max-w-2xl mx-auto">
+          <h2 className="font-display font-bold text-3xl text-white text-center mb-10">How it works</h2>
+          <div className="space-y-7">
+            {STEPS.map(step => (
+              <div key={step.n} className="flex gap-4">
+                <span
+                  className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8] text-white font-display font-bold text-base flex items-center justify-center"
+                  aria-hidden="true"
+                >
+                  {step.n}
+                </span>
+                <div className="flex-1 pt-1">
+                  <p className="font-body text-white/85 text-sm leading-relaxed mb-2.5">{step.text}</p>
+                  <span className="inline-block font-mono text-[11px] font-medium uppercase tracking-wide text-[#D46FC8] bg-[#D46FC8]/10 border border-[#D46FC8]/30 rounded-full px-3 py-1">
+                    {step.pill}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---- 4: Pricing ---- */}
+      <section className="px-6 py-14 md:py-20 border-t border-white/10">
+        <div className="max-w-md md:max-w-3xl mx-auto">
+          <h2 className="font-display font-bold text-3xl text-white text-center mb-2">Pricing</h2>
+          <p className="font-body text-base text-white/60 text-center mb-10">
+            Pick a plan. We design your site. You pay only once it&apos;s live.
+          </p>
+
+          <div className="grid gap-5 md:grid-cols-2">
+            {PLANS.map(plan => (
+              <div
+                key={plan.name}
+                className={`flex flex-col rounded-2xl p-6 ${
+                  plan.highlight
+                    ? 'bg-[#1C1D24] ring-1 ring-[#D46FC8]/40 shadow-[0_16px_48px_rgba(212,111,200,0.12)]'
+                    : 'bg-white/5 ring-1 ring-white/10'
+                }`}
+              >
+                <p className="font-body text-sm font-medium text-white/50 mb-2">{plan.name}</p>
+                <div className="flex items-end gap-1 mb-3">
+                  <span className="font-body text-xl font-semibold text-white/60">$</span>
+                  <span className="font-display font-bold text-4xl text-white tracking-tight">{plan.price}</span>
+                  <span className="font-body text-sm text-white/50 mb-1">/mo</span>
+                </div>
+                <span className="self-start we-pill-orange font-body font-semibold text-xs text-white rounded-full px-3 py-1 mb-5">
+                  Pay when it&apos;s live
+                </span>
+
+                <ul className="flex-1 space-y-2.5 mb-6">
+                  {plan.features.map(f => {
+                    const isHeader = f.includes('plus:')
+                    return (
+                      <li key={f} className="flex items-start gap-2.5">
+                        {!isHeader && <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />}
+                        <span className={`font-body text-sm text-white/80 ${isHeader ? 'font-bold' : ''}`}>{f}</span>
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                <a
+                  href="#lead-form"
+                  className="w-full inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3 rounded-xl transition-colors"
+                >
+                  Get started
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---- 5: Closing beat — light gradient bg, no video/WebGL ---- */}
+      <section
+        className="relative px-6 py-20 md:py-28 text-center overflow-hidden border-t border-white/10"
+        style={{
+          background:
+            'radial-gradient(ellipse 900px 500px at 50% 25%, rgba(212,111,200,0.28), transparent 70%), #0D0E12',
+        }}
+      >
+        <ClosingWords />
+        <a
+          href="#lead-form"
+          className="mt-9 inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-8 py-3.5 rounded-full transition-colors"
+        >
+          Let&apos;s start
+        </a>
+      </section>
+    </main>
+  )
+}
