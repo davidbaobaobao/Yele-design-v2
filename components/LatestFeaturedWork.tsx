@@ -56,11 +56,25 @@ type FeaturedProject = {
   columns: FeaturedColumn[]
 }
 
-// Restoration Bros loads first (position 1 / default activeIndex 0); Duna
-// is second, Shinsetsu third. The counter + nudge arrows cycle activeIndex
+// Shinsetsu loads first (position 1 / default activeIndex 0); Restoration
+// Bros is second, Duna third. The counter + nudge arrows cycle activeIndex
 // (next from the last project wraps to the first, and vice versa) and
 // reset scroll position; add another project by just appending an entry.
 const PROJECTS: FeaturedProject[] = [
+  {
+    name: 'Shinsetsu',
+    subtitle: 'Travel Agency',
+    blurb:
+      "A boutique travel agency crafting tailor-made ski journeys across Hokkaido — from Niseko's legendary powder to quiet backcountry runs and onsen nights.",
+    mediaDir: '/media/hokkaido',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
+    ],
+  },
   {
     name: 'Restoration Bros',
     subtitle: 'Website',
@@ -84,20 +98,6 @@ const PROJECTS: FeaturedProject[] = [
       { type: 'stack', top: '2', bottom: '4' },
       { type: 'tall', image: '3' },
       { type: 'video', video: '1', poster: '1_poster' },
-      { type: 'tall', image: '5' },
-      { type: 'stack', top: '6', bottom: '7' },
-    ],
-  },
-  {
-    name: 'Shinsetsu',
-    subtitle: 'Travel Agency',
-    blurb:
-      "A boutique travel agency crafting tailor-made ski journeys across Hokkaido — from Niseko's legendary powder to quiet backcountry runs and onsen nights.",
-    mediaDir: '/media/hokkaido',
-    columns: [
-      { type: 'stack', top: '1', bottom: '2' },
-      { type: 'tall', image: '3' },
-      { type: 'video', video: '4', poster: '4_poster' },
       { type: 'tall', image: '5' },
       { type: 'stack', top: '6', bottom: '7' },
     ],
@@ -374,19 +374,24 @@ export default function LatestFeaturedWork() {
         aria-hidden="true"
       />
 
-      {/* Bottom bar — padding 40px 48px 48px, gap 64px, align-items:flex-end */}
-      <div className="flex shrink-0 items-end justify-between gap-16 px-12 pb-12 pt-10">
+      {/* Bottom bar — padding 40px 48px 48px, gap 64px, align-items:flex-end.
+          `relative` so the counter+arrows group below can be absolutely
+          centered independent of this row's own flex distribution. */}
+      <div className="relative flex shrink-0 items-end justify-between gap-16 px-12 pb-12 pt-10">
         <div>
+          {/* "Latest featured work" is now the main headline (takes over
+              the big title styling); the project name drops to the
+              smaller subtitle-size line beneath it. */}
           <motion.div
-            className="mb-3 font-mono text-xs uppercase tracking-[0.14em]"
-            animate={{ color: secondaryColor }}
+            className="mb-3 font-display text-[52px] leading-[1.05]"
+            animate={{ color: titleColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
             Latest featured work
           </motion.div>
           <motion.div
-            className="font-display text-[52px] leading-[1.05]"
-            animate={{ color: titleColor }}
+            className="font-body text-base"
+            animate={{ color: secondaryColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
             {project.name}
@@ -400,37 +405,48 @@ export default function LatestFeaturedWork() {
           </motion.div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-3">
-          <motion.span
-            className="mr-2 font-mono text-[13px] uppercase tracking-[0.08em]"
-            animate={{ color: secondaryColor }}
-            transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
-          >
-            {activeIndex + 1} / {PROJECTS.length}
-          </motion.span>
-          <NudgeButton
-            direction="prev"
-            disabled={PROJECTS.length <= 1}
-            onClick={() => {
-              setHasInteracted(true)
-              setActiveIndex(i => (i - 1 + PROJECTS.length) % PROJECTS.length)
-            }}
-            borderColor={borderColor}
-            textColor={titleColor}
-            bgColor={bgColor}
-          />
-          <NudgeButton
-            direction="next"
-            disabled={PROJECTS.length <= 1}
-            onClick={() => {
-              setHasInteracted(true)
-              setActiveIndex(i => (i + 1) % PROJECTS.length)
-            }}
-            borderColor={borderColor}
-            textColor={titleColor}
-            bgColor={bgColor}
-            pulse={!hasInteracted && !reduceMotion && PROJECTS.length > 1}
-          />
+        {/* Absolutely centered in the bar regardless of how wide the left
+            text or the blurb are — was previously just the middle of 3
+            flex children (justify-between), which drifted whenever
+            project.name/blurb length changed. pointer-events-none on the
+            full-width wrapper (so it never blocks clicks on the title/
+            blurb either side of it), re-enabled on the actual button
+            group. bottom-12 matches the bar's own pb-12 so the buttons
+            still sit on the same baseline the other items-end content
+            does. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-12 flex justify-center">
+          <div className="pointer-events-auto flex shrink-0 items-center gap-3">
+            <motion.span
+              className="mr-2 font-mono text-[13px] uppercase tracking-[0.08em]"
+              animate={{ color: secondaryColor }}
+              transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
+            >
+              {activeIndex + 1} / {PROJECTS.length}
+            </motion.span>
+            <NudgeButton
+              direction="prev"
+              disabled={PROJECTS.length <= 1}
+              onClick={() => {
+                setHasInteracted(true)
+                setActiveIndex(i => (i - 1 + PROJECTS.length) % PROJECTS.length)
+              }}
+              borderColor={borderColor}
+              textColor={titleColor}
+              bgColor={bgColor}
+            />
+            <NudgeButton
+              direction="next"
+              disabled={PROJECTS.length <= 1}
+              onClick={() => {
+                setHasInteracted(true)
+                setActiveIndex(i => (i + 1) % PROJECTS.length)
+              }}
+              borderColor={borderColor}
+              textColor={titleColor}
+              bgColor={bgColor}
+              pulse={!hasInteracted && !reduceMotion && PROJECTS.length > 1}
+            />
+          </div>
         </div>
 
         <motion.div
