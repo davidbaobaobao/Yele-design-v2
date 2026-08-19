@@ -8,9 +8,8 @@ import dynamic from 'next/dynamic'
 // not just visually hidden on the excluded ones.
 const YelebotWidget = dynamic(() => import('@/components/YelebotWidget'), { ssr: false })
 
-// Explicitly scoped to just these two routes — everywhere else (including
-// /websites, another lead-gen landing page) keeps the widget.
-const EXCLUDED_ROUTES = ['/received', '/start']
+// Explicitly scoped to just these routes — everywhere else keeps the widget.
+const EXCLUDED_ROUTES = ['/received', '/start', '/websites', '/survey']
 
 export default function YelebotGate() {
   const pathname = usePathname()

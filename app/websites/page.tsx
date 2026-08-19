@@ -44,7 +44,7 @@ const STEPS: { n: number; title: string; desc: string; pill: string }[] = [
     n: 1,
     title: 'Tell us your direction',
     desc: "A 2-minute design survey (or a quick call if you'd rather talk).",
-    pill: '~5 min',
+    pill: '~2 min',
   },
   {
     n: 2,
