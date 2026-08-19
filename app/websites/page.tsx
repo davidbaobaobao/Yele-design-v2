@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Check } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import FAQ from '@/components/FAQ'
+import LogoMarquee from '@/components/LogoMarquee'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold, heavier sections — code-split so they don't weigh down the
@@ -136,6 +137,9 @@ export default function WebsitesPage() {
           <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" />
         </div>
       </section>
+
+      {/* ---- 2b: Logo marquee — reuses the homepage's, already dark-bg self-contained ---- */}
+      <LogoMarquee />
 
       {/* ---- 3: How it works — white bg, black text, larger type ---- */}
       <section className="px-6 py-14 md:py-20 bg-white">

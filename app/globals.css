@@ -133,6 +133,17 @@ html.sand-helix-page body {
   will-change: transform;
 }
 
+/* The track's absolute px/sec speed is fixed by its own content width, not
+   the viewport — so the same 35s duration covers a much bigger share of a
+   narrow phone screen every second than it does on desktop, reading as
+   noticeably faster/more frantic there. Slowing the duration down on
+   mobile brings the PERCEIVED speed back in line with desktop instead. */
+@media (max-width: 767px) {
+  .logo-marquee-track {
+    animation-duration: 48s;
+  }
+}
+
 @keyframes sparkleMain {
   0%   { transform: rotate(0deg)   scale(1);    opacity: 0.8; }
   50%  { transform: rotate(180deg) scale(1.22); opacity: 1;   }
