@@ -6,7 +6,7 @@ import { LanguageProvider } from '@/context/LanguageContext'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import CookieBanner from '@/components/CookieBanner'
-import YelebotWidget from '@/components/YelebotWidget'
+import YelebotGate from '@/components/YelebotGate'
 
 const archivo = Archivo({
   subsets: ['latin'],
@@ -266,7 +266,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </a>
           {children}
           <CookieBanner />
-          <YelebotWidget />
+          <YelebotGate />
         </LanguageProvider>
         <Analytics />
         <SpeedInsights />

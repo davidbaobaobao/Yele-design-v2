@@ -49,31 +49,31 @@ export default function ReceivedPage({
           <img src="/media/logomedia/mainlogo.svg" alt="" className="h-8 w-auto" />
         </Link>
 
-        <h1 className="font-display font-semibold text-3xl md:text-4xl text-ink tracking-tight leading-tight mb-3">
+        <h1 className="font-display font-semibold text-4xl md:text-5xl text-ink tracking-tight leading-tight mb-3">
           {name ? (
             <>You&apos;re in, {name}. Let&apos;s design your website.</>
           ) : (
             <>You&apos;re in. Let&apos;s design your website.</>
           )}
         </h1>
-        <p className="font-body text-muted text-base leading-relaxed mb-8">
+        <p className="font-body text-muted text-lg leading-relaxed mb-8">
           We&apos;ve got your details. From here it&apos;s simple:
         </p>
 
         <ol className="space-y-5 mb-10">
           {STEPS.map((step, i) => (
             <li key={i} className="flex gap-4">
-              <span className="font-display font-bold text-xl text-[#D46FC8] w-6 flex-shrink-0" aria-hidden="true">
+              <span className="font-display font-bold text-2xl text-[#D46FC8] w-7 flex-shrink-0" aria-hidden="true">
                 {i + 1}
               </span>
-              <p className="font-body text-sm text-ink/80 leading-relaxed pt-0.5">{step.text}</p>
+              <p className="font-body text-base text-ink/80 leading-relaxed pt-0.5">{step.text}</p>
             </li>
           ))}
         </ol>
 
         <Link
           href={surveyHref}
-          className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-lg bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         >
           Take the 2-minute design survey
         </Link>
@@ -81,18 +81,18 @@ export default function ReceivedPage({
         <div className="text-center mt-4">
           <Link
             href="/schedule"
-            className="font-body text-sm text-muted hover:text-ink transition-colors underline underline-offset-4"
+            className="font-body text-base text-muted hover:text-ink transition-colors underline underline-offset-4"
           >
             Rather talk it through? Book a 15-min call →
           </Link>
         </div>
 
-        <p className="text-center font-body text-xs text-muted mt-8">
+        <p className="text-center font-body text-sm text-muted mt-8">
           You&apos;ll hear from a real person within one business day.
         </p>
 
         <div className="text-center mt-6">
-          <Link href="/" className="font-body text-xs text-muted hover:text-ink transition-colors">
+          <Link href="/" className="font-body text-sm text-muted hover:text-ink transition-colors">
             ← Back to home
           </Link>
         </div>

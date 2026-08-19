@@ -2,15 +2,14 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
-import ClosingWords from './_components/ClosingWords'
 
 // Meta-ads landing page — mobile-first, deliberately lightweight (paid
 // traffic, LCP matters): no Nav/Footer, no WebGL/video, no framer-motion.
-// Server-rendered shell; the only client-side islands are the lead form
+// Server-rendered shell; the only client-side island is the lead form
 // (components/LeadForm.tsx, shared with /start so the two never drift
-// apart) and the rotating-word closer (_components/ClosingWords.tsx).
+// apart).
 export const metadata: Metadata = {
-  title: "Let's build your website",
+  title: "Let's start with your new website",
   description:
     'See the final product before paying. No setup fee, cancel anytime. Our agency takes care of everything — get your website built in about a week.',
   alternates: {
@@ -21,7 +20,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://yele.design/websites',
     siteName: 'Yele',
-    title: "Let's build your website | Yele",
+    title: "Let's start with your new website | Yele",
     description: 'See the final product before paying. No setup fee, cancel anytime.',
   },
 }
@@ -55,17 +54,39 @@ const STEPS: { n: number; text: string; pill: string }[] = [
   },
 ]
 
+// Full feature lists — matches components/PricingCards.tsx's Starter/Pro
+// plans exactly (Basic = Starter, "Everything in Starter" reworded to
+// "Basic" to match this page's own plan name). Tooltips from the main
+// site's cards aren't reproduced here — just the bullet text itself, per
+// "don't shorten them."
 const PLANS: { name: string; price: number; highlight?: boolean; features: string[] }[] = [
   {
     name: 'Basic',
     price: 99,
-    features: ['Functional website, no page limit', 'Custom domain', 'On-page SEO & indexing', '24/7 support'],
+    features: [
+      'Functional website, no page limit',
+      'Custom domain',
+      'Control panel — update your content',
+      'On-page SEO & indexing',
+      'Custom email',
+      'Media creation — basic',
+      '24/7 support',
+    ],
   },
   {
     name: 'Pro',
     price: 169,
     highlight: true,
-    features: ['Everything in Basic, plus:', 'Branding', 'Payments & bookings', 'AI chat assistant'],
+    features: [
+      'Everything in Basic, plus:',
+      'Branding',
+      'Payment system',
+      'Calendar & reservations',
+      'Periodic redesign of website elements',
+      'Media creation — Advanced',
+      'Advanced SEO optimization',
+      'AI Intelligent Chatbot',
+    ],
   },
 ]
 
@@ -81,7 +102,7 @@ export default function WebsitesPage() {
           </Link>
 
           <h1 className="font-display font-bold text-4xl md:text-5xl text-white tracking-tight leading-[1.08] mb-5">
-            Let&apos;s build your website
+            Let&apos;s start with your new website
           </h1>
 
           <ul className="space-y-2.5 mb-8">
@@ -97,22 +118,22 @@ export default function WebsitesPage() {
         </div>
       </section>
 
-      {/* ---- 3: How it works ---- */}
-      <section className="px-6 py-14 md:py-20 border-t border-white/10">
+      {/* ---- 3: How it works — white bg, black text, larger type ---- */}
+      <section className="px-6 py-14 md:py-20 bg-white">
         <div className="max-w-md md:max-w-2xl mx-auto">
-          <h2 className="font-display font-bold text-3xl text-white text-center mb-10">How it works</h2>
-          <div className="space-y-7">
+          <h2 className="font-display font-bold text-3xl text-ink text-center mb-10">How it works</h2>
+          <div className="space-y-8">
             {STEPS.map(step => (
               <div key={step.n} className="flex gap-4">
                 <span
-                  className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8] text-white font-display font-bold text-base flex items-center justify-center"
+                  className="flex-shrink-0 w-11 h-11 rounded-full bg-[#D46FC8] text-white font-display font-bold text-lg flex items-center justify-center"
                   aria-hidden="true"
                 >
                   {step.n}
                 </span>
-                <div className="flex-1 pt-1">
-                  <p className="font-body text-white/85 text-sm leading-relaxed mb-2.5">{step.text}</p>
-                  <span className="inline-block font-mono text-[11px] font-medium uppercase tracking-wide text-[#D46FC8] bg-[#D46FC8]/10 border border-[#D46FC8]/30 rounded-full px-3 py-1">
+                <div className="flex-1 pt-1.5">
+                  <p className="font-body text-ink text-lg leading-relaxed mb-3">{step.text}</p>
+                  <span className="inline-block font-mono text-xs font-medium uppercase tracking-wide text-[#D46FC8] bg-[#D46FC8]/10 border border-[#D46FC8]/30 rounded-full px-3 py-1">
                     {step.pill}
                   </span>
                 </div>
@@ -123,7 +144,7 @@ export default function WebsitesPage() {
       </section>
 
       {/* ---- 4: Pricing ---- */}
-      <section className="px-6 py-14 md:py-20 border-t border-white/10">
+      <section className="px-6 py-14 md:py-20">
         <div className="max-w-md md:max-w-3xl mx-auto">
           <h2 className="font-display font-bold text-3xl text-white text-center mb-2">Pricing</h2>
           <p className="font-body text-base text-white/60 text-center mb-10">
@@ -166,29 +187,12 @@ export default function WebsitesPage() {
                   href="#lead-form"
                   className="w-full inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3 rounded-xl transition-colors"
                 >
-                  Get started
+                  Let&apos;s start
                 </a>
               </div>
             ))}
           </div>
         </div>
-      </section>
-
-      {/* ---- 5: Closing beat — light gradient bg, no video/WebGL ---- */}
-      <section
-        className="relative px-6 py-20 md:py-28 text-center overflow-hidden border-t border-white/10"
-        style={{
-          background:
-            'radial-gradient(ellipse 900px 500px at 50% 25%, rgba(212,111,200,0.28), transparent 70%), #0D0E12',
-        }}
-      >
-        <ClosingWords />
-        <a
-          href="#lead-form"
-          className="mt-9 inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-8 py-3.5 rounded-full transition-colors"
-        >
-          Let&apos;s start
-        </a>
       </section>
     </main>
   )
