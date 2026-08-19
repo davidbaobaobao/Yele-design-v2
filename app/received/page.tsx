@@ -63,11 +63,27 @@ export default function ReceivedPage({
           We&apos;ve got your details. From here it&apos;s simple:
         </p>
 
-        <ol className="space-y-6 mb-10">
-          {STEPS.map((step, i) => (
-            <li key={i} className="flex gap-4">
+        <ol className="mb-10">
+          <li className="flex gap-4">
+            <span className="font-display font-bold text-3xl text-[#D46FC8] w-8 flex-shrink-0" aria-hidden="true">
+              1
+            </span>
+            <div className="pt-1 flex-1">
+              <p className="font-display font-bold text-ink text-xl mb-1">{STEPS[0].title}</p>
+              <p className="font-body font-normal text-ink/80 text-lg leading-relaxed mb-4">{STEPS[0].desc}</p>
+              <Link
+                href={surveyHref}
+                className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-xl bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              >
+                Continue
+              </Link>
+            </div>
+          </li>
+
+          {STEPS.slice(1).map((step, i) => (
+            <li key={i} className="flex gap-4 mt-6">
               <span className="font-display font-bold text-3xl text-[#D46FC8] w-8 flex-shrink-0" aria-hidden="true">
-                {i + 1}
+                {i + 2}
               </span>
               <div className="pt-1">
                 <p className="font-display font-bold text-ink text-xl mb-1">{step.title}</p>
@@ -76,13 +92,6 @@ export default function ReceivedPage({
             </li>
           ))}
         </ol>
-
-        <Link
-          href={surveyHref}
-          className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-xl bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-        >
-          Take the 2-minute design survey
-        </Link>
 
         <div className="text-center mt-4">
           <Link
