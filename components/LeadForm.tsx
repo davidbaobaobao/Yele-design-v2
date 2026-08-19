@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
+import { trackMetaLead } from '@/lib/metaPixel'
 
 type FormData = {
   name: string
@@ -12,20 +13,38 @@ type FormData = {
   company: string
 }
 
-// Shared discovery-lead form — same /api/lead backend, onboarding_form_submit
-// conversion, and /received redirect regardless of which page renders it.
-// Used by /start (Path 1 of the split onboarding flow, light theme) and
-// /websites (Meta-ads landing, dark theme) so the two never drift apart.
-// No RGPD checkbox — consent is implied by submitting, disclosed as fine
-// print under the CTA instead.
+function uuid(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID()
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
+// Shared discovery-lead form — same /api/lead backend and /received redirect
+// regardless of which page renders it. Used by /start and /websites (both
+// Google Ads traffic, light/dark theme respectively) and /newwebsite (Meta
+// ads only). No RGPD checkbox — consent is implied by submitting, disclosed
+// as fine print under the CTA instead.
 export default function LeadForm({
   variant = 'light',
   ctaLabel = "Let's chat",
   id,
+  platform = 'google',
 }: {
   variant?: 'light' | 'dark'
   ctaLabel?: string
   id?: string
+  // Which ad platform this submit should count toward. 'google' (default,
+  // /start + /websites) fires the existing onboarding_form_submit Google
+  // Ads conversion. 'meta' (/newwebsite only) fires the Meta Pixel "Lead"
+  // event instead — and NEVER the Google conversion, since /newwebsite is
+  // explicitly Meta-exclusive traffic that shouldn't count toward Google
+  // Ads. A shared event_id is generated and sent to /api/lead so Meta's
+  // Conversions API can dedupe against the browser-pixel fire once CAPI is
+  // wired up — see lib/metaPixel.ts.
+  platform?: 'google' | 'meta'
 }) {
   const router = useRouter()
   const isDark = variant === 'dark'
@@ -64,6 +83,10 @@ export default function LeadForm({
     setLoading(true)
     setSubmitError('')
 
+    // Only generated/sent for Meta traffic — /start and /websites keep
+    // their existing request payload unchanged.
+    const metaEventId = platform === 'meta' ? uuid() : undefined
+
     const response = await fetch('/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -72,6 +95,7 @@ export default function LeadForm({
         email: formData.email,
         phone: formData.phone,
         company: formData.company,
+        ...(metaEventId && { eventId: metaEventId }),
       }),
     })
 
@@ -85,7 +109,11 @@ export default function LeadForm({
     // aborted submits never count — and only once, ever, per mount.
     if (!conversionFiredRef.current) {
       conversionFiredRef.current = true
-      trackOnboardingFormSubmit(formData.email)
+      if (platform === 'meta') {
+        trackMetaLead(metaEventId!, formData.email)
+      } else {
+        trackOnboardingFormSubmit(formData.email)
+      }
     }
 
     const params = new URLSearchParams({
