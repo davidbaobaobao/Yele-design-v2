@@ -135,6 +135,15 @@ export default function WebsitesPage() {
           </ul>
 
           <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" />
+
+          <div className="text-center mt-4">
+            <Link
+              href="/schedule"
+              className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4"
+            >
+              Prefer to talk? Book a free 10-min intro call
+            </Link>
+          </div>
         </div>
       </section>
 
