@@ -10,12 +10,13 @@ import { EnLangProvider } from '@/components/LangProvider'
 // initial hero/form paint, same pattern components/HomePage.tsx uses for
 // its own below-fold sections.
 const Showcase = dynamic(() => import('@/components/Showcase'))
-const WhyYele = dynamic(() => import('@/components/WhyYele'))
 
 // Meta-ads landing page — mobile-first. Server-rendered shell; besides the
 // lead form (components/LeadForm.tsx, shared with /start), the sections
-// below reuse the same homepage components (Showcase, WhyYele, FAQ) rather
-// than re-implementing them, so all three stay in sync with the homepage.
+// below reuse the same homepage components (Showcase, FAQ) rather than
+// re-implementing them, so they stay in sync with the homepage. The 6-card
+// WhyYele video section was tried here and removed — too heavy for this
+// page's ad-landing purpose; still used, untouched, on the homepage.
 export const metadata: Metadata = {
   title: "Let's start with your new website",
   description:
@@ -224,10 +225,7 @@ export default function WebsitesPage() {
         <Showcase noHeader fullScreen dark />
       </section>
 
-      {/* ---- 5b: "We" 6-card section — reuses WhyYele, light theme for this page ---- */}
-      <WhyYele theme="light" />
-
-      {/* ---- 5c: "Let's start" CTA band ---- */}
+      {/* ---- 5b: "Let's start" CTA band ---- */}
       <section className="bg-white px-6 py-16 md:py-20 text-center">
         <h2 className="font-display font-bold text-3xl md:text-4xl text-ink mb-6">Ready to get started?</h2>
         <a
@@ -238,7 +236,7 @@ export default function WebsitesPage() {
         </a>
       </section>
 
-      {/* ---- 5d: FAQ — reuses the homepage FAQ, white bg / dark text ---- */}
+      {/* ---- 5c: FAQ — reuses the homepage FAQ, white bg / dark text ---- */}
       <div style={{ backgroundColor: '#FFFFFF' }}>
         <FAQ noBg />
       </div>
