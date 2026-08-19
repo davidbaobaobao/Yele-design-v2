@@ -144,6 +144,17 @@ html.sand-helix-page body {
   }
 }
 
+/* /websites-only, mobile-only: faster than the shared 48s mobile speed
+   above. Scoped via the .websites-marquee wrapper (app/websites/page.tsx)
+   so specificity (two classes vs. one) wins over .logo-marquee-track's own
+   mobile rule without touching it — homepage's marquee and /websites on
+   desktop are both unaffected. */
+@media (max-width: 767px) {
+  .websites-marquee .logo-marquee-track {
+    animation-duration: 16s;
+  }
+}
+
 @keyframes sparkleMain {
   0%   { transform: rotate(0deg)   scale(1);    opacity: 0.8; }
   50%  { transform: rotate(180deg) scale(1.22); opacity: 1;   }

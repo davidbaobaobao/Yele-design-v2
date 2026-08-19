@@ -138,8 +138,12 @@ export default function WebsitesPage() {
         </div>
       </section>
 
-      {/* ---- 2b: Logo marquee — reuses the homepage's, already dark-bg self-contained ---- */}
-      <LogoMarquee />
+      {/* ---- 2b: Logo marquee — reuses the homepage's, already dark-bg self-contained.
+          .websites-marquee scopes a faster mobile-only speed override (see
+          globals.css) without touching the homepage's own marquee speed. ---- */}
+      <div className="websites-marquee">
+        <LogoMarquee />
+      </div>
 
       {/* ---- 3: How it works — white bg, black text, larger type ---- */}
       <section className="px-6 py-14 md:py-20 bg-white">
