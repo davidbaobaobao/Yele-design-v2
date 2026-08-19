@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
-import { trackMetaLead } from '@/lib/metaPixel'
+import { trackMetaLead, getMetaCookies } from '@/lib/metaPixel'
 
 type FormData = {
   name: string
@@ -86,6 +86,7 @@ export default function LeadForm({
     // Only generated/sent for Meta traffic — /start and /websites keep
     // their existing request payload unchanged.
     const metaEventId = platform === 'meta' ? uuid() : undefined
+    const metaCookies = platform === 'meta' ? getMetaCookies() : {}
 
     const response = await fetch('/api/lead', {
       method: 'POST',
@@ -95,7 +96,12 @@ export default function LeadForm({
         email: formData.email,
         phone: formData.phone,
         company: formData.company,
-        ...(metaEventId && { eventId: metaEventId }),
+        ...(metaEventId && {
+          eventId: metaEventId,
+          source: 'meta',
+          fbc: metaCookies.fbc,
+          fbp: metaCookies.fbp,
+        }),
       }),
     })
 
@@ -110,7 +116,7 @@ export default function LeadForm({
     if (!conversionFiredRef.current) {
       conversionFiredRef.current = true
       if (platform === 'meta') {
-        trackMetaLead(metaEventId!, formData.email)
+        trackMetaLead(metaEventId!, { email: formData.email, phone: formData.phone, name: formData.name })
       } else {
         trackOnboardingFormSubmit(formData.email)
       }

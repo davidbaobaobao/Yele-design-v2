@@ -29,6 +29,10 @@ export default function CookieBanner() {
       ad_Storage: p.marketing ? 'granted' : 'denied',
       analytics_Storage: p.analytics ? 'granted' : 'denied',
     })
+    // Generic broadcast for any other consent-gated script to react to
+    // (currently: components/MetaPixelScript.tsx, /newwebsite-only) without
+    // this component needing to know Meta-specific details itself.
+    window.dispatchEvent(new Event('cookie-consent-updated'))
     setVisible(false)
   }
 

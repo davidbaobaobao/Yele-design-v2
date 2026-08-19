@@ -5,6 +5,7 @@ import { Check } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import FAQ from '@/components/FAQ'
 import LogoMarquee from '@/components/LogoMarquee'
+import MetaPixelScript from '@/components/MetaPixelScript'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold, heavier sections — code-split so they don't weigh down the
@@ -118,6 +119,7 @@ const PLANS: { name: string; price: number; highlight?: boolean; features: strin
 export default function NewWebsitePage() {
   return (
     <EnLangProvider>
+      <MetaPixelScript />
       <main style={{ backgroundColor: '#0D0E12' }}>
       {/* ---- 1+2: Hero + lead form ---- */}
       <section className="px-6 pt-10 pb-14 md:pt-16 md:pb-20">
