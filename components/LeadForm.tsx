@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
@@ -39,6 +39,11 @@ export default function LeadForm({
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
   const [loading, setLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  // Guards onboarding_form_submit against firing twice — the button
+  // disabling on `loading` already prevents a normal re-click, but this
+  // makes "exactly once" true regardless of how handleSubmit is re-entered
+  // (e.g. a double-click landing before the disabled state has committed).
+  const conversionFiredRef = useRef(false)
 
   function set(key: keyof FormData, value: string) {
     setFormData(prev => ({ ...prev, [key]: value }))
@@ -77,8 +82,11 @@ export default function LeadForm({
     }
 
     // Fire only after /api/lead confirms the submit succeeded, so failed/
-    // aborted submits never count.
-    trackOnboardingFormSubmit(formData.email)
+    // aborted submits never count — and only once, ever, per mount.
+    if (!conversionFiredRef.current) {
+      conversionFiredRef.current = true
+      trackOnboardingFormSubmit(formData.email)
+    }
 
     const params = new URLSearchParams({
       name: formData.name,
