@@ -83,8 +83,19 @@ const AGENCY_CARDS: CardData[] = [
   },
 ]
 
-export default function WhyYele({ variant = 'default' }: { variant?: 'default' | 'agency' } = {}) {
+export default function WhyYele({
+  variant = 'default',
+  theme = 'dark',
+}: {
+  variant?: 'default' | 'agency'
+  // 'light' — white section bg / dark heading+card-title text — used by
+  // /websites (reusing this section on a page whose surrounding sections
+  // are white). Only recolors the section chrome; card poster/video panels
+  // stay dark regardless (they're full-bleed media, not theme surfaces).
+  theme?: 'dark' | 'light'
+} = {}) {
   const CARDS = variant === 'agency' ? AGENCY_CARDS : DEFAULT_CARDS
+  const isLight = theme === 'light'
   const reduceMotion = !!useHydratedReducedMotion()
 
   const videoRefs = [
@@ -106,7 +117,7 @@ export default function WhyYele({ variant = 'default' }: { variant?: 'default' |
 
   const heading = (
     <h2 className="font-display leading-tight max-w-4xl text-[clamp(1.5rem,2.6vw,2.75rem)] mb-12">
-      <span style={{ color: '#F2F0EB' }}>
+      <span style={{ color: isLight ? '#16161A' : '#F2F0EB' }}>
         Building a website used to be a headache — slow, big upfront bills, endless
         back-and-forth.{' '}
       </span>
@@ -115,7 +126,10 @@ export default function WhyYele({ variant = 'default' }: { variant?: 'default' |
   )
 
   return (
-    <section data-nav-dark className="relative bg-[#0D0E12] pt-12 md:pt-16 pb-24 px-6">
+    <section
+      data-nav-dark={isLight ? undefined : true}
+      className={`relative pt-12 md:pt-16 pb-24 px-6 ${isLight ? 'bg-white' : 'bg-[#0D0E12]'}`}
+    >
       <div className="max-w-6xl mx-auto">
         {heading}
 
@@ -135,7 +149,7 @@ export default function WhyYele({ variant = 'default' }: { variant?: 'default' |
               videoRef={videoRefs[i]}
               reduceMotion={reduceMotion}
               panelBg="bg-[#16171C]"
-              titleColor="text-bone"
+              titleColor={isLight ? 'text-ink' : 'text-bone'}
             />
           ))}
         </div>

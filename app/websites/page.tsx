@@ -1,13 +1,21 @@
 import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
+import FAQ from '@/components/FAQ'
+import { EnLangProvider } from '@/components/LangProvider'
 
-// Meta-ads landing page — mobile-first, deliberately lightweight (paid
-// traffic, LCP matters): no Nav/Footer, no WebGL/video, no framer-motion.
-// Server-rendered shell; the only client-side island is the lead form
-// (components/LeadForm.tsx, shared with /start so the two never drift
-// apart).
+// Below-fold, heavier sections — code-split so they don't weigh down the
+// initial hero/form paint, same pattern components/HomePage.tsx uses for
+// its own below-fold sections.
+const Showcase = dynamic(() => import('@/components/Showcase'))
+const WhyYele = dynamic(() => import('@/components/WhyYele'))
+
+// Meta-ads landing page — mobile-first. Server-rendered shell; besides the
+// lead form (components/LeadForm.tsx, shared with /start), the sections
+// below reuse the same homepage components (Showcase, WhyYele, FAQ) rather
+// than re-implementing them, so all three stay in sync with the homepage.
 export const metadata: Metadata = {
   title: "Let's start with your new website",
   description:
@@ -31,25 +39,29 @@ const KEY_POINTS = [
   'Our agency takes care of everything',
 ]
 
-const STEPS: { n: number; text: string; pill: string }[] = [
+const STEPS: { n: number; title: string; desc: string; pill: string }[] = [
   {
     n: 1,
-    text: "Tell us your direction — a 2-minute design survey (or a quick call if you'd rather talk).",
+    title: 'Tell us your direction',
+    desc: "A 2-minute design survey (or a quick call if you'd rather talk).",
     pill: '~5 min',
   },
   {
     n: 2,
-    text: "We design your first draft for your business. Then, from your feedback, we improve it until you're satisfied.",
+    title: 'We design',
+    desc: "We design your first draft for your business. Then, from your feedback, we improve it until you're satisfied.",
     pill: '~1 week',
   },
   {
     n: 3,
-    text: "You approve, it goes live — and that's the day of your first payment. Nothing before.",
+    title: 'You approve',
+    desc: "It goes live — and that's the day of your first payment. Nothing before.",
     pill: 'Days, not months',
   },
   {
     n: 4,
-    text: 'We keep improving it — constant support and updates on design and functionality.',
+    title: 'We keep improving it',
+    desc: 'Constant support and updates on design and functionality.',
     pill: '∞ Ongoing',
   },
 ]
@@ -90,9 +102,15 @@ const PLANS: { name: string; price: number; highlight?: boolean; features: strin
   },
 ]
 
+// Reused components (Showcase, FAQ) read the active language from
+// LanguageContext via useLang() — without this, they'd render whatever the
+// global default resolves to instead of the English copy this page needs
+// (WhyYele doesn't use lang context, but wrapping everything is simplest
+// and harmless for it).
 export default function WebsitesPage() {
   return (
-    <main style={{ backgroundColor: '#0D0E12' }}>
+    <EnLangProvider>
+      <main style={{ backgroundColor: '#0D0E12' }}>
       {/* ---- 1+2: Hero + lead form ---- */}
       <section className="px-6 pt-10 pb-14 md:pt-16 md:pb-20">
         <div className="max-w-md mx-auto">
@@ -132,7 +150,8 @@ export default function WebsitesPage() {
                   {step.n}
                 </span>
                 <div className="flex-1 pt-1.5">
-                  <p className="font-body text-ink text-lg leading-relaxed mb-3">{step.text}</p>
+                  <p className="font-display font-bold text-ink text-xl mb-1.5">{step.title}</p>
+                  <p className="font-body font-normal text-ink/80 text-lg leading-relaxed mb-3">{step.desc}</p>
                   <span className="inline-block font-mono text-xs font-medium uppercase tracking-wide text-[#D46FC8] bg-[#D46FC8]/10 border border-[#D46FC8]/30 rounded-full px-3 py-1">
                     {step.pill}
                   </span>
@@ -194,6 +213,36 @@ export default function WebsitesPage() {
           </div>
         </div>
       </section>
-    </main>
+
+      {/* ---- 5a: Carousel — reuses the homepage's Showcase carousel, black bg ---- */}
+      <section style={{ backgroundColor: '#0D0E12' }} className="py-14 md:py-20">
+        <div className="max-w-6xl mx-auto px-6 mb-8 md:mb-12">
+          <h2 className="font-display font-semibold text-3xl md:text-4xl text-white tracking-tight">
+            Built for your industry
+          </h2>
+        </div>
+        <Showcase noHeader fullScreen dark />
+      </section>
+
+      {/* ---- 5b: "We" 6-card section — reuses WhyYele, light theme for this page ---- */}
+      <WhyYele theme="light" />
+
+      {/* ---- 5c: "Let's start" CTA band ---- */}
+      <section className="bg-white px-6 py-16 md:py-20 text-center">
+        <h2 className="font-display font-bold text-3xl md:text-4xl text-ink mb-6">Ready to get started?</h2>
+        <a
+          href="#lead-form"
+          className="inline-flex items-center justify-center font-body font-semibold text-lg bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-10 py-4 rounded-full transition-colors"
+        >
+          Let&apos;s start
+        </a>
+      </section>
+
+      {/* ---- 5d: FAQ — reuses the homepage FAQ, white bg / dark text ---- */}
+      <div style={{ backgroundColor: '#FFFFFF' }}>
+        <FAQ noBg />
+      </div>
+      </main>
+    </EnLangProvider>
   )
 }
