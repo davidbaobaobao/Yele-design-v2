@@ -13,7 +13,7 @@ import { CTAButton } from '@/components/ui/cta-button'
 // with its own heading + scroll-snap + ambient glow. Any change to plan
 // data, features or CTA hrefs here applies identically everywhere this is
 // used — that's the point, they must never drift apart.
-type Feature = { text: string; tooltip?: string }
+export type Feature = { text: string; tooltip?: string }
 
 export const plans = [
   {
@@ -170,7 +170,10 @@ type TFn = (es: string, en: string) => string
 // Click-to-toggle info popover for a single feature — accessible (button +
 // aria-expanded, closes on outside click or Esc) rather than a hover-only
 // tooltip, which doesn't work on touch devices.
-function FeatureTooltip({ text, dark }: { text: string; dark: boolean }) {
+// Exported so /websites and /newwebsite's own pricing cards can reuse the
+// exact same info-icon + popover (not just the tooltip copy) instead of
+// re-implementing it — see app/websites/page.tsx and app/newwebsite/page.tsx.
+export function FeatureTooltip({ text, dark }: { text: string; dark: boolean }) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLSpanElement>(null)
 

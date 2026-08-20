@@ -6,6 +6,7 @@ import LeadForm from '@/components/LeadForm'
 import FAQ from '@/components/FAQ'
 import LogoMarquee from '@/components/LogoMarquee'
 import ReputationBadge from '@/components/ReputationBadge'
+import { FeatureTooltip, type Feature } from '@/components/PricingCards'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold, heavier sections — code-split so they don't weigh down the
@@ -71,21 +72,24 @@ const STEPS: { n: number; title: string; desc: string; pill: string }[] = [
 
 // Full feature lists — matches components/PricingCards.tsx's Starter/Pro
 // plans exactly (Basic = Starter, "Everything in Starter" reworded to
-// "Basic" to match this page's own plan name). Tooltips from the main
-// site's cards aren't reproduced here — just the bullet text itself, per
-// "don't shorten them."
-const PLANS: { name: string; price: number; highlight?: boolean; features: string[] }[] = [
+// "Basic" to match this page's own plan name), tooltips included so the
+// info-icon explanations stay identical to the homepage pricing.
+const PLANS: { name: string; price: number; highlight?: boolean; features: Feature[] }[] = [
   {
     name: 'Basic',
     price: 99,
     features: [
-      'Functional website, no page limit',
-      'Custom domain',
-      'Control panel — update your content',
-      'On-page SEO & indexing',
-      'Custom email',
-      'Media creation — basic',
-      '24/7 support',
+      { text: 'Functional website, no page limit' },
+      { text: 'Custom domain' },
+      { text: 'Control panel — update your content' },
+      { text: 'On-page SEO & indexing' },
+      { text: 'Custom email' },
+      {
+        text: 'Media creation — basic',
+        tooltip:
+          "We create all the required videos and image content so your website looks stunning and unlike anyone else's.",
+      },
+      { text: '24/7 support' },
     ],
   },
   {
@@ -93,14 +97,20 @@ const PLANS: { name: string; price: number; highlight?: boolean; features: strin
     price: 169,
     highlight: true,
     features: [
-      'Everything in Basic, plus:',
-      'Branding',
-      'Payment system',
-      'Calendar & reservations',
-      'Periodic redesign of website elements',
-      'Media creation — Advanced',
-      'Advanced SEO optimization',
-      'AI Intelligent Chatbot',
+      { text: 'Everything in Basic, plus:' },
+      { text: 'Branding', tooltip: 'Company brand modernization and revamp.' },
+      { text: 'Payment system', tooltip: 'Accept payments for your products.' },
+      { text: 'Calendar & reservations' },
+      {
+        text: 'Periodic redesign of website elements',
+        tooltip: 'Every three months, different elements can be readjusted or redesigned.',
+      },
+      {
+        text: 'Media creation — Advanced',
+        tooltip: 'Up to 1 video + 20 images per month, on demand.',
+      },
+      { text: 'Advanced SEO optimization' },
+      { text: 'AI Intelligent Chatbot' },
     ],
   },
 ]
@@ -212,12 +222,20 @@ export default function WebsitesPage() {
                 </span>
 
                 <ul className="flex-1 space-y-2.5 mb-6">
-                  {plan.features.map(f => {
-                    const isHeader = f.includes('plus:')
+                  {plan.features.map(feat => {
+                    const isHeader = feat.text.includes('plus:')
                     return (
-                      <li key={f} className="flex items-start gap-2.5">
+                      <li key={feat.text} className="flex items-start gap-2.5">
                         {!isHeader && <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />}
-                        <span className={`font-body text-sm text-white/80 ${isHeader ? 'font-bold' : ''}`}>{f}</span>
+                        <span className={`font-body text-sm text-white/80 ${isHeader ? 'font-bold' : ''}`}>
+                          {feat.text}
+                          {feat.tooltip && (
+                            <>
+                              {' '}
+                              <FeatureTooltip text={feat.tooltip} dark />
+                            </>
+                          )}
+                        </span>
                       </li>
                     )
                   })}
