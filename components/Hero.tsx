@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, ChevronDown, Star } from 'lucide-react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
@@ -101,6 +101,8 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
 }
 
 const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
+
+const AVATARS = ['/media/miniavatar/1.webp', '/media/miniavatar/2.webp', '/media/miniavatar/3.webp', '/media/miniavatar/4.webp']
 
 // ffmpeg -i hero_poster.jpeg -vf "scale=2560:-2,gblur=sigma=1.5" -q:v 3 hero_poster.jpg —
 // source was a 1.3MB 2752x1536 export; higher res + a light blur pass (masks
@@ -257,6 +259,31 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
                   </span>
                 </span>
               ))}
+            </div>
+          )}
+
+          {variant !== 'agency' && (
+            <div className="flex flex-wrap items-center gap-3 mt-6 justify-center sm:justify-start">
+              <div className="flex items-center" aria-hidden="true">
+                {AVATARS.map((src, i) => (
+                  <Image
+                    key={src}
+                    src={src}
+                    alt=""
+                    width={40}
+                    height={40}
+                    className={`w-10 h-10 rounded-full object-cover ring-2 ring-black/40 border border-white/20 ${i > 0 ? '-ml-3' : ''}`}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col leading-tight">
+                <span className="flex gap-0.5" style={{ color: '#F5B301' }} aria-hidden="true">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={14} fill="#F5B301" strokeWidth={0} />
+                  ))}
+                </span>
+                <span className="font-body text-sm text-white/80">Delivered over 100+ projects</span>
+              </div>
             </div>
           )}
         </div>
