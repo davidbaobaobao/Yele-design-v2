@@ -5,6 +5,7 @@ import { Check } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import FAQ from '@/components/FAQ'
 import LogoMarquee from '@/components/LogoMarquee'
+import ReputationBadge from '@/components/ReputationBadge'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold, heavier sections — code-split so they don't weigh down the
@@ -125,7 +126,7 @@ export default function WebsitesPage() {
             Let&apos;s start with your new website
           </h1>
 
-          <ul className="space-y-2.5 mb-8">
+          <ul className="space-y-2.5 mb-6">
             {KEY_POINTS.map(point => (
               <li key={point} className="flex items-start gap-2.5">
                 <Check size={18} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
@@ -133,6 +134,8 @@ export default function WebsitesPage() {
               </li>
             ))}
           </ul>
+
+          <ReputationBadge className="mb-8" />
 
           <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" />
 
