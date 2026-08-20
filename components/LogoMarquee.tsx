@@ -6,6 +6,24 @@ const LOGO_DIR = '/media/logosmarquee'
 const LOGO_COUNT = 10
 const LOGOS = Array.from({ length: LOGO_COUNT }, (_, i) => i + 1)
 
+// Each logo's own SVG viewBox aspect ratio — the CSS (h-8/h-10, w-auto)
+// still controls the actual rendered size, but these width/height
+// attributes let the browser reserve the right aspect ratio before the
+// image loads, instead of collapsing to 0 width and reflowing the marquee
+// once every logo arrives.
+const LOGO_DIMENSIONS: Record<number, { width: number; height: number }> = {
+  1: { width: 276, height: 45 },
+  2: { width: 166, height: 42 },
+  3: { width: 298, height: 45 },
+  4: { width: 300, height: 43 },
+  5: { width: 204, height: 40 },
+  6: { width: 160, height: 62 },
+  7: { width: 123, height: 42 },
+  8: { width: 148, height: 42 },
+  9: { width: 152, height: 29 },
+  10: { width: 119, height: 42 },
+}
+
 // Plain <img>, not next/image — these are SVGs, and Next's image optimizer
 // refuses to serve SVGs at all unless dangerouslyAllowSVG is set globally
 // (a security tradeoff not worth making for one decorative marquee). The
@@ -13,10 +31,13 @@ const LOGOS = Array.from({ length: LOGO_COUNT }, (_, i) => i + 1)
 // regardless of its own internal fill values, then opacity dims it to sit
 // quietly on the dark strip until hovered.
 function LogoImg({ n }: { n: number }) {
+  const { width, height } = LOGO_DIMENSIONS[n]
   return (
     <img
       src={`${LOGO_DIR}/${n}.svg`}
       alt=""
+      width={width}
+      height={height}
       className="h-8 md:h-10 w-auto shrink-0 object-contain opacity-70 transition-opacity duration-300 hover:opacity-100"
       style={{ filter: 'brightness(0) invert(1)' }}
     />

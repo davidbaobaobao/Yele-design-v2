@@ -3,17 +3,20 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
-import FAQ from '@/components/FAQ'
-import LogoMarquee from '@/components/LogoMarquee'
 import MetaPixelScript from '@/components/MetaPixelScript'
 import ReputationBadge from '@/components/ReputationBadge'
-import { FeatureTooltip, type Feature } from '@/components/PricingCards'
 import { EnLangProvider } from '@/components/LangProvider'
 
-// Below-fold, heavier sections — code-split so they don't weigh down the
-// initial hero/form paint, same pattern components/HomePage.tsx uses for
-// its own below-fold sections.
+// Below-fold, heavier sections — code-split so none of this weighs down
+// the initial hero/form bundle, which is what this page's LCP (and its
+// conversion path) actually depends on. Everything below the fold can
+// arrive in its own chunk once the browser gets to it.
+const LogoMarquee = dynamic(() => import('@/components/LogoMarquee'))
+const HowItWorks = dynamic(() => import('@/components/websites/HowItWorks'))
+const PricingSection = dynamic(() => import('@/components/websites/PricingSection'))
 const Showcase = dynamic(() => import('@/components/Showcase'))
+const CTABand = dynamic(() => import('@/components/websites/CTABand'))
+const FAQ = dynamic(() => import('@/components/FAQ'))
 
 // Meta-ads-only landing page — a deliberate near-duplicate of /websites
 // (same hero/form/marquee/how-it-works/pricing/carousel/CTA/FAQ, same
@@ -50,78 +53,6 @@ const KEY_POINTS = [
   'Our agency takes care of everything',
 ]
 
-const STEPS: { n: number; title: string; desc: string; pill: string }[] = [
-  {
-    n: 1,
-    title: 'Tell us your direction',
-    desc: "A 2-minute design survey (or a quick call if you'd rather talk).",
-    pill: '~2 min',
-  },
-  {
-    n: 2,
-    title: 'We design',
-    desc: "We design your first draft for your business. Then, from your feedback, we improve it until you're satisfied.",
-    pill: '~1 week',
-  },
-  {
-    n: 3,
-    title: 'You approve',
-    desc: "It goes live — and that's the day of your first payment. Nothing before.",
-    pill: 'Days, not months',
-  },
-  {
-    n: 4,
-    title: 'We keep improving it',
-    desc: 'Constant support and updates on design and functionality.',
-    pill: '∞ Ongoing',
-  },
-]
-
-// Full feature lists — matches components/PricingCards.tsx's Starter/Pro
-// plans exactly (Basic = Starter, "Everything in Starter" reworded to
-// "Basic" to match this page's own plan name), tooltips included so the
-// info-icon explanations stay identical to the homepage pricing.
-const PLANS: { name: string; price: number; highlight?: boolean; features: Feature[] }[] = [
-  {
-    name: 'Basic',
-    price: 99,
-    features: [
-      { text: 'Functional website, no page limit' },
-      { text: 'Custom domain' },
-      { text: 'Control panel — update your content' },
-      { text: 'On-page SEO & indexing' },
-      { text: 'Custom email' },
-      {
-        text: 'Media creation — basic',
-        tooltip:
-          "We create all the required videos and image content so your website looks stunning and unlike anyone else's.",
-      },
-      { text: '24/7 support' },
-    ],
-  },
-  {
-    name: 'Pro',
-    price: 169,
-    highlight: true,
-    features: [
-      { text: 'Everything in Basic, plus:' },
-      { text: 'Branding', tooltip: 'Company brand modernization and revamp.' },
-      { text: 'Payment system', tooltip: 'Accept payments for your products.' },
-      { text: 'Calendar & reservations' },
-      {
-        text: 'Periodic redesign of website elements',
-        tooltip: 'Every three months, different elements can be readjusted or redesigned.',
-      },
-      {
-        text: 'Media creation — Advanced',
-        tooltip: 'Up to 1 video + 20 images per month, on demand.',
-      },
-      { text: 'Advanced SEO optimization' },
-      { text: 'AI Intelligent Chatbot' },
-    ],
-  },
-]
-
 // Reused components (Showcase, FAQ) read the active language from
 // LanguageContext via useLang() — without this, they'd render whatever the
 // global default resolves to instead of the English copy this page needs
@@ -137,7 +68,7 @@ export default function NewWebsitePage() {
         <div className="max-w-md mx-auto">
           <Link href="/" className="inline-flex items-center mb-8 focus-visible:outline-none" aria-label="yele">
             {/* eslint-disable-next-line @next/next/no-img-element -- SVG, Next's image optimizer refuses to serve those */}
-            <img src="/media/logomedia/mainlogo.svg" alt="" className="h-8 w-auto" />
+            <img src="/media/logomedia/mainlogo.svg" alt="" width={102} height={32} className="h-8 w-auto" />
           </Link>
 
           <h1 className="font-display font-bold text-4xl md:text-5xl text-white tracking-tight leading-[1.08] mb-5">
@@ -175,90 +106,10 @@ export default function NewWebsitePage() {
       <LogoMarquee />
 
       {/* ---- 3: How it works — white bg, black text, larger type ---- */}
-      <section className="px-6 py-14 md:py-20 bg-white">
-        <div className="max-w-md md:max-w-2xl mx-auto">
-          <h2 className="font-display font-bold text-3xl text-ink text-center mb-10">How it works</h2>
-          <div className="space-y-8">
-            {STEPS.map(step => (
-              <div key={step.n} className="flex gap-4">
-                <span
-                  className="flex-shrink-0 w-11 h-11 rounded-full bg-[#D46FC8] text-white font-display font-bold text-lg flex items-center justify-center"
-                  aria-hidden="true"
-                >
-                  {step.n}
-                </span>
-                <div className="flex-1 pt-1.5">
-                  <p className="font-display font-bold text-ink text-xl mb-1.5">{step.title}</p>
-                  <p className="font-body font-normal text-ink/80 text-lg leading-relaxed mb-3">{step.desc}</p>
-                  <span className="inline-block font-mono text-xs font-medium uppercase tracking-wide text-[#D46FC8] bg-[#D46FC8]/10 border border-[#D46FC8]/30 rounded-full px-3 py-1">
-                    {step.pill}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* ---- 4: Pricing ---- */}
-      <section className="px-6 py-14 md:py-20">
-        <div className="max-w-md md:max-w-3xl mx-auto">
-          <h2 className="font-display font-bold text-3xl text-white text-center mb-2">Pricing</h2>
-          <p className="font-body text-base text-white/60 text-center mb-10">
-            Pick a plan. We design your site. You pay only once it&apos;s live.
-          </p>
-
-          <div className="grid gap-5 md:grid-cols-2">
-            {PLANS.map(plan => (
-              <div
-                key={plan.name}
-                className={`flex flex-col rounded-2xl p-6 ${
-                  plan.highlight
-                    ? 'bg-[#1C1D24] ring-1 ring-[#D46FC8]/40 shadow-[0_16px_48px_rgba(212,111,200,0.12)]'
-                    : 'bg-white/5 ring-1 ring-white/10'
-                }`}
-              >
-                <p className="font-body text-sm font-medium text-white/50 mb-2">{plan.name}</p>
-                <div className="flex items-end gap-1 mb-3">
-                  <span className="font-body text-xl font-semibold text-white/60">$</span>
-                  <span className="font-display font-bold text-4xl text-white tracking-tight">{plan.price}</span>
-                  <span className="font-body text-sm text-white/50 mb-1">/mo</span>
-                </div>
-                <span className="self-start we-pill-orange font-body font-semibold text-xs text-white rounded-full px-3 py-1 mb-5">
-                  Pay when it&apos;s live
-                </span>
-
-                <ul className="flex-1 space-y-2.5 mb-6">
-                  {plan.features.map(feat => {
-                    const isHeader = feat.text.includes('plus:')
-                    return (
-                      <li key={feat.text} className="flex items-start gap-2.5">
-                        {!isHeader && <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />}
-                        <span className={`font-body text-sm text-white/80 ${isHeader ? 'font-bold' : ''}`}>
-                          {feat.text}
-                          {feat.tooltip && (
-                            <>
-                              {' '}
-                              <FeatureTooltip text={feat.tooltip} dark />
-                            </>
-                          )}
-                        </span>
-                      </li>
-                    )
-                  })}
-                </ul>
-
-                <a
-                  href="#lead-form"
-                  className="w-full inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3 rounded-xl transition-colors"
-                >
-                  Let&apos;s start
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PricingSection />
 
       {/* ---- 5a: Carousel — reuses the homepage's Showcase carousel, black bg ---- */}
       <section style={{ backgroundColor: '#0D0E12' }} className="py-14 md:py-20">
@@ -271,15 +122,7 @@ export default function NewWebsitePage() {
       </section>
 
       {/* ---- 5b: "Let's start" CTA band ---- */}
-      <section className="bg-white px-6 py-16 md:py-20 text-center">
-        <h2 className="font-display font-bold text-3xl md:text-4xl text-ink mb-6">Ready to get started?</h2>
-        <a
-          href="#lead-form"
-          className="inline-flex items-center justify-center font-body font-semibold text-lg bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-10 py-4 rounded-full transition-colors"
-        >
-          Let&apos;s start
-        </a>
-      </section>
+      <CTABand />
 
       {/* ---- 5c: FAQ — reuses the homepage FAQ, white bg / dark text ---- */}
       <div style={{ backgroundColor: '#FFFFFF' }}>

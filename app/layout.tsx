@@ -251,6 +251,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             public/conveyor/index.html asset are still in the codebase,
             just unreferenced. */}
         {/* <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" /> */}
+        {/* Warms the connection ahead of the afterInteractive tags below —
+            saves the DNS/TLS handshake time off the critical path once
+            those scripts actually start loading. */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://e.clarity.ms" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
@@ -270,12 +275,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </LanguageProvider>
         <Analytics />
         <SpeedInsights />
-        {/* Google Ads tag */}
+        {/* Google Ads tag — afterInteractive (not lazyOnload): loads right
+            after hydration, off the critical rendering path, but early
+            enough that gtag is reliably ready by the time a real user
+            submits a form (always at least several seconds into the visit),
+            so onboarding_form_submit + enhanced conversions keep firing. */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18281072925"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
-        <Script id="google-ads" strategy="lazyOnload">
+        <Script id="google-ads" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
