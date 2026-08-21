@@ -9,7 +9,7 @@ const RECIPIENTS = [
 ]
 
 const META_GRAPH_VERSION = 'v21.0'
-const NEWWEBSITE_URL = 'https://yele.design/newwebsite'
+const FALLBACK_SOURCE_URL = 'https://yele.design/'
 
 function sha256(value: string): string {
   return createHash('sha256').update(value).digest('hex')
@@ -24,13 +24,13 @@ function sha256(value: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    // eventId/adSource/fbc/fbp only arrive from /newwebsite's LeadForm
-    // instance (platform="meta", see components/LeadForm.tsx) — unused by
-    // /start and /websites, which stay Google-only. Renamed from the
-    // client's own `source` field to `adSource` here so it can't be
-    // confused with the DB `source` column below (that one tracks which
-    // on-site form the lead came from, a separate concern).
-    const { name, email, phone, company, eventId, source: adSource, fbc, fbp } = body
+    // eventId/fbc/fbp arrive from every LeadForm submit now (the Meta Pixel
+    // is site-wide — see components/MetaPixelScript.tsx), not just
+    // /newwebsite's Meta-exclusive traffic. The client also sends its own
+    // `source` (platform) field, but the CAPI call below no longer needs
+    // it — every submit gets a server-side Lead event regardless of
+    // platform — so it isn't destructured here.
+    const { name, email, phone, company, eventId, fbc, fbp } = body
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -77,14 +77,16 @@ export async function POST(request: Request) {
       console.log('[lead] RESEND_API_KEY not set — email skipped', { name, email, phone, company })
     }
 
-    // Meta Conversions API — server-side "Lead" event for /newwebsite only
-    // (adSource === 'meta'), deduped against the browser-pixel fire
-    // (lib/metaPixel.ts's trackMetaLead) via the shared eventId. Awaited
-    // (not truly fire-and-forget) since Vercel's serverless functions don't
-    // reliably keep running background work after the response is sent —
-    // wrapped in its own try/catch so a Meta-side failure never turns the
-    // lead submission itself into an error response.
-    if (adSource === 'meta' && eventId) {
+    // Meta Conversions API — server-side "Lead" event for every submit now
+    // (the Pixel is site-wide, so every lead is a potential Meta
+    // conversion regardless of source page/platform), deduped against the
+    // browser-pixel fire (lib/metaPixel.ts's trackMetaLead) via the shared
+    // eventId. Awaited (not truly fire-and-forget) since Vercel's
+    // serverless functions don't reliably keep running background work
+    // after the response is sent — wrapped in its own try/catch so a
+    // Meta-side failure never turns the lead submission itself into an
+    // error response.
+    if (eventId) {
       const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID
       const capiToken = process.env.META_CAPI_TOKEN
 
@@ -104,6 +106,12 @@ export async function POST(request: Request) {
           if (fbc) userData.fbc = fbc
           if (fbp) userData.fbp = fbp
 
+          // The page the lead actually came from (/start, /websites,
+          // /newwebsite, …) — Referer is the real submitting page since
+          // this is a same-origin fetch() POST, not a hardcoded constant
+          // now that every page can send a lead.
+          const sourceUrl = request.headers.get('referer') || FALLBACK_SOURCE_URL
+
           const capiRes = await fetch(
             `https://graph.facebook.com/${META_GRAPH_VERSION}/${pixelId}/events?access_token=${capiToken}`,
             {
@@ -115,7 +123,7 @@ export async function POST(request: Request) {
                   event_time: Math.floor(Date.now() / 1000),
                   event_id: eventId,
                   action_source: 'website',
-                  event_source_url: NEWWEBSITE_URL,
+                  event_source_url: sourceUrl,
                   user_data: userData,
                 }],
               }),

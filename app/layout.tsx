@@ -7,6 +7,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import CookieBanner from '@/components/CookieBanner'
 import YelebotGate from '@/components/YelebotGate'
+import MetaPixelScript from '@/components/MetaPixelScript'
 
 const archivo = Archivo({
   subsets: ['latin'],
@@ -275,6 +276,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </LanguageProvider>
         <Analytics />
         <SpeedInsights />
+        {/* Meta Pixel — site-wide for full-funnel attribution, gated behind
+            Marketing consent (opt-out default-granted — see lib/metaPixel.ts). */}
+        <MetaPixelScript />
         {/* Google Ads tag — afterInteractive (not lazyOnload): loads right
             after hydration, off the critical rendering path, but early
             enough that gtag is reliably ready by the time a real user

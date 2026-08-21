@@ -1,7 +1,6 @@
-// Meta Pixel — installed on /newwebsite ONLY (see components/MetaPixelScript.tsx
-// and app/newwebsite/page.tsx), not site-wide: Google's own gtag already
-// covers every other page (app/layout.tsx), and /newwebsite is explicitly
-// Meta-exclusive traffic that must never count toward Google Ads.
+// Meta Pixel — site-wide (mounted in app/layout.tsx via components/
+// MetaPixelScript.tsx) for full-funnel attribution, regardless of which
+// page/ad-platform a visitor lands on.
 declare global {
   interface Window { fbq?: (...args: unknown[]) => void }
 }
@@ -12,24 +11,29 @@ const CONSENT_KEY = 'cookie-consent'
 // Generic "the visitor changed their cookie choice" broadcast — dispatched
 // by components/CookieBanner.tsx (not Meta-specific there on purpose, so
 // that component stays a plain consent-preferences UI) and consumed here so
-// MetaPixelScript can mount the moment marketing consent is granted, without
-// needing a page reload or polling localStorage.
+// MetaPixelScript can mount/unmount the moment marketing consent changes,
+// without needing a page reload or polling localStorage.
 export const CONSENT_UPDATED_EVENT = 'cookie-consent-updated'
 
-// Meta Pixel is a marketing/advertising cookie in this site's own consent
-// taxonomy (components/CookieBanner.tsx's Essential/Analytics/Marketing
-// split) — distinct from "Analytics", and gated more conservatively than
-// Google Ads/Clarity's implied-consent-by-default pattern in app/layout.tsx
-// since fbq has no live consent-mode API to revoke effects after the fact
-// once loaded.
+// Opt-OUT model: Marketing (and Analytics) consent defaults to GRANTED the
+// moment a visitor arrives — no stored preference yet means implied
+// consent, not implied refusal. Only an explicit "Reject" in
+// components/CookieBanner.tsx writes `marketing: false`, which is the one
+// case this returns false. This matches Clarity/gtag's own default-granted
+// behavior in app/layout.tsx; unlike those, though, fbq has no live
+// consent-mode API to revoke effects after the fact once the base pixel
+// has loaded — so this same check is also read at every call site that
+// fires a NEW Meta event (trackMetaLead, trackMetaSurveyComplete below),
+// so an explicit Reject at least stops further events even though the
+// already-loaded pixel itself can't be un-loaded.
 export function hasMarketingConsent(): boolean {
   if (typeof window === 'undefined') return false
   try {
     const raw = localStorage.getItem(CONSENT_KEY)
-    if (!raw) return false
-    return JSON.parse(raw)?.marketing === true
+    if (!raw) return true
+    return JSON.parse(raw)?.marketing !== false
   } catch {
-    return false
+    return true
   }
 }
 
@@ -58,8 +62,8 @@ export function getMetaCookies(): { fbc?: string; fbp?: string } {
 // lowercased) text, not pre-hashed — only the server-side CAPI call in
 // app/api/lead/route.ts needs to hash manually.
 export function trackMetaLead(eventId: string, user: { email?: string; phone?: string; name?: string }) {
-  if (typeof window === 'undefined' || typeof window.fbq !== 'function') {
-    console.warn('[meta-pixel] fbq not loaded (consent not granted yet, or Pixel blocked) — Lead event not sent', { eventId })
+  if (typeof window === 'undefined' || typeof window.fbq !== 'function' || !hasMarketingConsent()) {
+    console.warn('[meta-pixel] fbq not loaded or Marketing consent withdrawn — Lead event not sent', { eventId })
     return
   }
   const em = user.email?.trim().toLowerCase()
@@ -75,4 +79,19 @@ export function trackMetaLead(eventId: string, user: { email?: string; phone?: s
   }
 
   window.fbq('trackSingle', META_PIXEL_ID, 'Lead', {}, { eventID: eventId })
+}
+
+// Fires once a visitor finishes /survey — a stronger buying-intent signal
+// than the initial Lead, so Meta's delivery/optimization can learn to find
+// more people who complete it, not just people who start it. No Advanced
+// Matching payload: the survey doesn't necessarily know the visitor's name/
+// email/phone by this point (some entry paths reach /survey without ever
+// going through a LeadForm first), so this only ever carries what the base
+// Pixel already picked up (cookies/browser fingerprinting) via trackSingle.
+export function trackMetaSurveyComplete() {
+  if (typeof window === 'undefined' || typeof window.fbq !== 'function' || !hasMarketingConsent()) {
+    console.warn('[meta-pixel] fbq not loaded or Marketing consent withdrawn — CompleteRegistration event not sent')
+    return
+  }
+  window.fbq('trackSingle', META_PIXEL_ID, 'CompleteRegistration')
 }

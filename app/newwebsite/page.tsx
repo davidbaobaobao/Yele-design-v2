@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
-import MetaPixelScript from '@/components/MetaPixelScript'
 import ReputationBadge from '@/components/ReputationBadge'
 import { EnLangProvider } from '@/components/LangProvider'
 
@@ -61,7 +60,6 @@ const KEY_POINTS = [
 export default function NewWebsitePage() {
   return (
     <EnLangProvider>
-      <MetaPixelScript />
       <main style={{ backgroundColor: '#0D0E12' }}>
       {/* ---- 1+2: Hero + lead form ---- */}
       <section className="px-6 pt-10 pb-14 md:pt-16 md:pb-20">

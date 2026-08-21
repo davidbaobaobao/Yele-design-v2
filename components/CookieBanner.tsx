@@ -11,34 +11,28 @@ declare global {
 type Prefs = { analytics: boolean; marketing: boolean }
 
 const CONSENT_KEY = 'cookie-consent'
-const GEO_COOKIE = 'yele_geo'
 // Deliberately generous/short — this is "did they keep browsing," not a
 // precision UX timer. Exact values aren't load-bearing.
 const SCROLL_THRESHOLD_PX = 200
 const AUTO_ACCEPT_TIMEOUT_MS = 5000
 
-function readCookie(name: string): string | undefined {
-  if (typeof document === 'undefined') return undefined
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
-  return match ? decodeURIComponent(match[1]) : undefined
-}
-
-// middleware.ts sets this from Vercel's edge geo header. Unknown/missing
-// (local dev, or a request the header didn't reach) is treated as EU — the
-// conservative branch — rather than assuming it's safe to imply Marketing
-// consent for a visitor we can't actually place.
-function isEuVisitor(): boolean {
-  return readCookie(GEO_COOKIE) !== 'other'
-}
-
+// Opt-OUT model: consent is GRANTED the instant a visitor arrives (Meta
+// Pixel/Clarity/gtag all fire immediately — see lib/metaPixel.ts's
+// hasMarketingConsent(), which defaults to true when nothing is stored
+// yet). This banner's job is purely to inform + offer an explicit Reject,
+// not to gate anything itself — "kept browsing without objecting" (a
+// scroll, a click elsewhere, a route change, or a few seconds passing)
+// simply persists that implied default to localStorage so the banner
+// doesn't re-prompt on the next visit; an explicit Reject is the ONLY
+// action that actually turns anything off.
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false)
   const [expanded, setExpanded] = useState(false)
-  const [prefs, setPrefs] = useState<Prefs>({ analytics: true, marketing: false })
+  const [prefs, setPrefs] = useState<Prefs>({ analytics: true, marketing: true })
   const bannerRef = useRef<HTMLDivElement>(null)
   // Guards against the explicit-click path and an auto-accept trigger both
   // resolving for the same visit (e.g. the "click elsewhere" listener
-  // firing on the same click that hit the Accept button, just a tick
+  // firing on the same click that hit the Reject button, just a tick
   // later) — whichever calls commit() first wins, everything after is a
   // no-op, regardless of exact event-ordering timing.
   const decidedRef = useRef(false)
@@ -55,45 +49,44 @@ export default function CookieBanner() {
     localStorage.setItem(CONSENT_KEY, JSON.stringify({ essential: true, ...p }))
     // Re-affirms consent with the user's actual choice — layout.tsx already
     // granted implied consent on load, this updates it once they've made an
-    // explicit selection (matters most for EU visitors, where Clarity
-    // enforces this signal; analytics_Storage=denied correctly keeps
-    // Clarity cookieless for anyone who picks "Reject").
+    // explicit selection (matters most for a Reject, where Clarity needs to
+    // stop treating the visitor as tracked; analytics_Storage=denied
+    // correctly keeps Clarity cookieless from that point on).
     window.clarity?.('consentv2', {
       ad_Storage: p.marketing ? 'granted' : 'denied',
       analytics_Storage: p.analytics ? 'granted' : 'denied',
     })
     // Broadcast for any other consent-gated script to react to (currently:
-    // components/MetaPixelScript.tsx, /newwebsite-only) without this
-    // component needing to know Meta-specific details itself.
+    // components/MetaPixelScript.tsx, site-wide) without this component
+    // needing to know Meta-specific details itself. Meta itself has no
+    // live consent-mode API — a Reject here stops FUTURE fbq calls (see
+    // lib/metaPixel.ts's hasMarketingConsent() checks at each call site),
+    // but can't retroactively undo whatever already fired before this
+    // point. That's expected for the implied-consent model, not a bug.
     window.dispatchEvent(new Event('cookie-consent-updated'))
     setVisible(false)
   }
 
-  // Explicit choice via the banner's own buttons — always the user's real
-  // pick, Marketing included, regardless of region (an affirmative click
-  // satisfies GDPR even for EU visitors).
+  // Explicit choice via the banner's own buttons.
   const save = (p: Prefs) => commit(p)
 
-  // Implied consent on continued navigation: the first of a scroll past
+  // Passive "kept browsing" persistence: the first of a scroll past
   // SCROLL_THRESHOLD_PX, a click anywhere outside the banner itself, a
-  // route change, or the timeout — whichever happens first — counts as
-  // "kept browsing without objecting." For EU/EEA/UK/CH visitors this only
-  // ever implies Essential + Analytics; GDPR requires an affirmative
-  // "Accept" click for Marketing, so that stays off until they actually
-  // click it (see `save` above). Non-EU visitors get full implied consent,
-  // Marketing included.
+  // route change, or the timeout — whichever happens first — just writes
+  // down the already-granted default so this banner doesn't reappear next
+  // visit. Nothing here needs to grant anything that wasn't already true.
   useEffect(() => {
     if (!visible) return
-    const autoAccept = () => commit({ analytics: true, marketing: !isEuVisitor() })
+    const persistDefault = () => commit({ analytics: true, marketing: true })
 
     const onScroll = () => {
-      if (window.scrollY > SCROLL_THRESHOLD_PX) autoAccept()
+      if (window.scrollY > SCROLL_THRESHOLD_PX) persistDefault()
     }
     const onClick = (e: MouseEvent) => {
       if (bannerRef.current?.contains(e.target as Node)) return
-      autoAccept()
+      persistDefault()
     }
-    const timer = setTimeout(autoAccept, AUTO_ACCEPT_TIMEOUT_MS)
+    const timer = setTimeout(persistDefault, AUTO_ACCEPT_TIMEOUT_MS)
 
     window.addEventListener('scroll', onScroll, { passive: true })
     // Capture phase, not bubble: an in-banner click (e.g. "Manage") can
@@ -116,7 +109,7 @@ export default function CookieBanner() {
   useEffect(() => {
     if (!visible) return
     if (pathname !== firstPathnameRef.current) {
-      commit({ analytics: true, marketing: !isEuVisitor() })
+      commit({ analytics: true, marketing: true })
     }
   }, [pathname, visible])
 
@@ -187,20 +180,12 @@ export default function CookieBanner() {
             <a href="/privacy-policy" className="font-body text-[11px] text-muted hover:text-ink transition-colors underline underline-offset-2">
               Privacy policy
             </a>
-            <div className="flex gap-2">
-              <button
-                onClick={() => save(prefs)}
-                className="font-body text-xs text-muted hover:text-ink transition-colors px-3 py-1.5 rounded-lg border border-black/10 hover:border-black/20"
-              >
-                Save selection
-              </button>
-              <button
-                onClick={() => save({ analytics: true, marketing: true })}
-                className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
-              >
-                Accept all
-              </button>
-            </div>
+            <button
+              onClick={() => save(prefs)}
+              className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
+            >
+              Save selection
+            </button>
           </div>
         </div>
       ) : (
@@ -226,12 +211,6 @@ export default function CookieBanner() {
               className="font-body text-xs text-muted hover:text-ink transition-colors px-2 py-1.5"
             >
               Reject
-            </button>
-            <button
-              onClick={() => save({ analytics: true, marketing: true })}
-              className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
-            >
-              Accept
             </button>
           </div>
         </div>

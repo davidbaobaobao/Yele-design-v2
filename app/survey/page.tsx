@@ -6,6 +6,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Loader2, Sparkles } from 'lucide-react'
+import { trackMetaSurveyComplete } from '@/lib/metaPixel'
 import SelectCard from './_components/SelectCard'
 import StyleImageCard from './_components/StyleImageCard'
 import ColorImageCard from './_components/ColorImageCard'
@@ -204,6 +205,10 @@ function SurveyPageInner() {
         body: JSON.stringify({ id: sessionId, ...answers, completed: true, currentStep: TOTAL_STEPS }),
       })
       if (!res.ok) throw new Error('request failed')
+      // A finished survey is a stronger buying-intent signal than the
+      // initial Lead — lets Meta's delivery optimize toward people who
+      // actually complete it, not just people who start it.
+      trackMetaSurveyComplete()
       setDone(true)
     } catch {
       setSubmitError("Couldn't submit — please try again.")

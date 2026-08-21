@@ -83,10 +83,12 @@ export default function LeadForm({
     setLoading(true)
     setSubmitError('')
 
-    // Only generated/sent for Meta traffic — /start and /websites keep
-    // their existing request payload unchanged.
-    const metaEventId = platform === 'meta' ? uuid() : undefined
-    const metaCookies = platform === 'meta' ? getMetaCookies() : {}
+    // Generated for every submit now — the Meta Pixel is site-wide (see
+    // components/MetaPixelScript.tsx), so every lead is a potential Meta
+    // conversion regardless of which page/ad-platform it came from, not
+    // just /newwebsite's Meta-exclusive traffic.
+    const metaEventId = uuid()
+    const metaCookies = getMetaCookies()
 
     const response = await fetch('/api/lead', {
       method: 'POST',
@@ -96,12 +98,10 @@ export default function LeadForm({
         email: formData.email,
         phone: formData.phone,
         company: formData.company,
-        ...(metaEventId && {
-          eventId: metaEventId,
-          source: 'meta',
-          fbc: metaCookies.fbc,
-          fbp: metaCookies.fbp,
-        }),
+        eventId: metaEventId,
+        source: platform,
+        fbc: metaCookies.fbc,
+        fbp: metaCookies.fbp,
       }),
     })
 
@@ -112,12 +112,14 @@ export default function LeadForm({
     }
 
     // Fire only after /api/lead confirms the submit succeeded, so failed/
-    // aborted submits never count — and only once, ever, per mount.
+    // aborted submits never count — and only once, ever, per mount. Meta
+    // Lead fires on every submit (site-wide pixel); the Google conversion
+    // stays scoped to platform === 'google' only (/start, /websites) —
+    // /newwebsite must never count toward Google Ads, unchanged from before.
     if (!conversionFiredRef.current) {
       conversionFiredRef.current = true
-      if (platform === 'meta') {
-        trackMetaLead(metaEventId!, { email: formData.email, phone: formData.phone, name: formData.name })
-      } else {
+      trackMetaLead(metaEventId, { email: formData.email, phone: formData.phone, name: formData.name })
+      if (platform === 'google') {
         trackOnboardingFormSubmit(formData.email)
       }
     }

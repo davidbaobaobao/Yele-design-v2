@@ -1,22 +1,34 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import { META_PIXEL_ID, hasMarketingConsent, CONSENT_UPDATED_EVENT } from '@/lib/metaPixel'
 
-// Meta Pixel base code (fbq init + PageView) — mounted ONLY on /newwebsite
-// (see that page), not in the root layout, since Google's own tag already
-// runs everywhere else and this page must stay Meta-exclusive.
+// Meta Pixel base code (fbq init + PageView) — mounted SITE-WIDE (app/
+// layout.tsx) for full-funnel attribution, regardless of which page/ad
+// platform a visitor lands on. Google's own gtag (also in app/layout.tsx)
+// keeps firing independently — the two don't interact.
 //
-// Gated behind explicit "Marketing" cookie consent (components/
-// CookieBanner.tsx) rather than the implied-consent-by-default pattern
-// Google Ads/Clarity use in app/layout.tsx — fbq has no live consent-mode
-// API to revoke effects after the fact once the base script has loaded and
-// set cookies, so this simply doesn't mount until consent is granted, and
-// starts the moment it is (via the CONSENT_UPDATED_EVENT the banner
-// dispatches) without needing a reload.
+// Gated behind "Marketing" cookie consent (components/CookieBanner.tsx),
+// which defaults to GRANTED the moment hasMarketingConsent() finds no
+// stored preference yet (opt-out model — see lib/metaPixel.ts) rather than
+// waiting for an explicit click, so this mounts on a visitor's very first
+// paint. Unlike Clarity/gtag's own default-granted pattern, though, fbq has
+// no live consent-mode API to revoke effects after the fact once the base
+// script has loaded and set cookies — an explicit "Reject" click unmounts
+// this (no further PageViews/events from it), but whatever already fired
+// before that point can't be retroactively undone. That's expected for
+// this implied-consent model, not a bug.
 export default function MetaPixelScript() {
   const [consented, setConsented] = useState(false)
+  const pathname = usePathname()
+  // The base script's own inline code below already fires one PageView the
+  // instant it first mounts — this ref stops the pathname-effect from
+  // firing a redundant SECOND PageView for that same initial route, while
+  // still catching every later SPA route change (client-side nav has no
+  // full page load of its own to trigger a fresh fbq PageView otherwise).
+  const isFirstPathnameRef = useRef(true)
 
   useEffect(() => {
     setConsented(hasMarketingConsent())
@@ -25,11 +37,20 @@ export default function MetaPixelScript() {
     return () => window.removeEventListener(CONSENT_UPDATED_EVENT, onUpdate)
   }, [])
 
+  useEffect(() => {
+    if (!consented) return
+    if (isFirstPathnameRef.current) {
+      isFirstPathnameRef.current = false
+      return
+    }
+    if (typeof window.fbq === 'function') window.fbq('track', 'PageView')
+  }, [pathname, consented])
+
   if (!consented || !META_PIXEL_ID) return null
 
   return (
     <>
-      <Script id="meta-pixel-newwebsite" strategy="afterInteractive">
+      <Script id="meta-pixel-base" strategy="afterInteractive">
         {`
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
