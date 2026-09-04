@@ -6,9 +6,8 @@ interface FullLayoutProps {
   title: ReactNode
   microcopy?: ReactNode
   children: ReactNode
-  // Wider container for grids meant to feel immersive/full-screen (style,
-  // colours) — other FULL steps (plan, goal, update-often, functionality)
-  // keep the narrower default.
+  // Wider container for grids meant to feel immersive/full-screen — the
+  // one remaining FULL step (channel) keeps the narrower default.
   wide?: boolean
 }
 

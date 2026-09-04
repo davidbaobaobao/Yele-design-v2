@@ -19,11 +19,12 @@ interface TextInputProps {
   autoFocus?: boolean
   onKeyDown?: (e: React.KeyboardEvent) => void
   className?: string
+  disabled?: boolean
 }
 
 // White card surface, dark ink text, subtle border, pink focus ring — reads
 // as a plain form field regardless of which pink panel it sits on.
-export function TextInput({ value, onChange, onBlur, placeholder, type = 'text', autoFocus, onKeyDown, className = '' }: TextInputProps) {
+export function TextInput({ value, onChange, onBlur, placeholder, type = 'text', autoFocus, onKeyDown, className = '', disabled }: TextInputProps) {
   return (
     <input
       type={type}
@@ -33,7 +34,33 @@ export function TextInput({ value, onChange, onBlur, placeholder, type = 'text',
       onKeyDown={onKeyDown}
       placeholder={placeholder}
       autoFocus={autoFocus}
-      className={`w-full rounded-xl border-2 border-ink/15 bg-white px-4 py-3.5 font-body text-base text-ink outline-none transition-all duration-200 placeholder:text-muted focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25 ${className}`}
+      disabled={disabled}
+      className={`w-full rounded-xl border-2 border-ink/15 bg-white px-4 py-3.5 font-body text-base text-ink outline-none transition-all duration-200 placeholder:text-muted focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    />
+  )
+}
+
+interface TextareaProps {
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  autoFocus?: boolean
+  rows?: number
+  className?: string
+}
+
+// Same surface/border/focus treatment as TextInput — deliberately has no
+// onKeyDown/Enter-to-advance wiring, unlike TextInput: Enter in a multi-line
+// field should insert a newline, not submit the step.
+export function Textarea({ value, onChange, placeholder, autoFocus, rows = 4, className = '' }: TextareaProps) {
+  return (
+    <textarea
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      autoFocus={autoFocus}
+      rows={rows}
+      className={`w-full resize-none rounded-xl border-2 border-ink/15 bg-white px-4 py-3.5 font-body text-base text-ink outline-none transition-all duration-200 placeholder:text-muted focus:border-survey-bg focus:ring-4 focus:ring-survey-bg/25 ${className}`}
     />
   )
 }

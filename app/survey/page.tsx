@@ -10,20 +10,16 @@ import { trackMetaSurveyComplete } from '@/lib/metaPixel'
 import SelectCard from './_components/SelectCard'
 import StyleImageCard from './_components/StyleImageCard'
 import ColorImageCard from './_components/ColorImageCard'
-import VideoOptionCard from './_components/VideoOptionCard'
 import SplitLayout from './_components/SplitLayout'
 import FullLayout from './_components/FullLayout'
 import ImmersiveGridLayout from './_components/ImmersiveGridLayout'
 import PersistentLeftVideo from './_components/PersistentLeftVideo'
 import ArrowNav from './_components/ArrowNav'
-import { FieldLabel, TextInput, Checkbox } from './_components/Fields'
+import { FieldLabel, TextInput, Textarea, Checkbox } from './_components/Fields'
 import {
   CHANNEL_OPTIONS,
   COLOR_OPTIONS,
-  EFFECT_PAGE_1,
-  EFFECT_PAGE_2,
   EMPTY_ANSWERS,
-  PLAN_OPTIONS,
   STYLE_OPTIONS,
   TOTAL_STEPS,
   isEmailValid,
@@ -35,7 +31,6 @@ import {
   stepMode,
   styleKey,
   type ColorId,
-  type EffectId,
   type StyleId,
   type StyleRound,
   type SurveyAnswers,
@@ -181,13 +176,6 @@ function SurveyPageInner() {
     setAnswers((prev) => ({
       ...prev,
       colors: prev.colors.includes(id) ? prev.colors.filter((v) => v !== id) : [...prev.colors, id],
-    }))
-  }, [])
-
-  const toggleEffect = useCallback((id: EffectId) => {
-    setAnswers((prev) => ({
-      ...prev,
-      effects: prev.effects.includes(id) ? prev.effects.filter((v) => v !== id) : [...prev.effects, id],
     }))
   }, [])
 
@@ -371,27 +359,6 @@ function SurveyPageInner() {
           </ImmersiveGridLayout>
         )}
 
-        {key === 'style2' && (
-          <ImmersiveGridLayout title="And these?" microcopy="Pick as many as you like — same styles, a second look.">
-            <div className="flex h-full items-center justify-center">
-              <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-4 md:gap-4">
-                {STYLE_OPTIONS.map((s) => (
-                  <StyleImageCard
-                    key={s.id}
-                    fileKey={s.fileKey}
-                    round={2}
-                    label={s.label}
-                    fallbackBg={s.fallbackBg}
-                    fallbackText={s.fallbackText}
-                    selected={answers.styles.includes(styleKey(s.id, 2))}
-                    onClick={() => toggleStyle(s.id, 2)}
-                  />
-                ))}
-              </div>
-            </div>
-          </ImmersiveGridLayout>
-        )}
-
         {key === 'colors' && (
           <ImmersiveGridLayout title="What colours do you like?" microcopy="Choose as many as you like.">
             <div className="grid h-full grid-cols-2 grid-rows-4 gap-2 sm:grid-cols-4 sm:grid-rows-2 md:gap-3">
@@ -410,101 +377,47 @@ function SurveyPageInner() {
           </ImmersiveGridLayout>
         )}
 
-        {key === 'effects1' && (
-          <ImmersiveGridLayout title="What kind of effects do you like?" microcopy="Pick as many as you like.">
-            <div className="grid h-full grid-cols-2 grid-rows-2 gap-2 md:gap-3">
-              {EFFECT_PAGE_1.map((e) => (
-                <VideoOptionCard
-                  key={e.id}
-                  fileKey={e.fileKey}
-                  label={e.label}
-                  caption={e.caption}
-                  selected={answers.effects.includes(e.id)}
-                  onClick={() => toggleEffect(e.id)}
-                />
-              ))}
-            </div>
-          </ImmersiveGridLayout>
-        )}
-
-        {key === 'effects2' && (
-          <ImmersiveGridLayout title="And these?" microcopy="Pick as many as you like.">
-            <div className="grid h-full grid-cols-2 grid-rows-2 gap-2 md:gap-3">
-              {EFFECT_PAGE_2.map((e) => (
-                <VideoOptionCard
-                  key={e.id}
-                  fileKey={e.fileKey}
-                  label={e.label}
-                  caption={e.caption}
-                  selected={answers.effects.includes(e.id)}
-                  onClick={() => toggleEffect(e.id)}
-                />
-              ))}
-            </div>
-          </ImmersiveGridLayout>
-        )}
-
         {key === 'about' && (
           <SplitLayout title="Tell us about your business" leftImage="page11">
-            <FieldLabel>In one line — what does your business do?</FieldLabel>
-            <TextInput autoFocus value={answers.business} onChange={(v) => update('business', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. We repair and sell vintage bicycles" />
-            <FieldLabel className="mt-4">What do you sell, and what makes you different?</FieldLabel>
-            <TextInput value={answers.sells} onChange={(v) => update('sells', v)} onKeyDown={handleEnterAdvance} placeholder="e.g. Custom-built frames, lifetime tune-ups" />
+            <FieldLabel>What does your business do? Be as detailed as possible.</FieldLabel>
+            <Textarea autoFocus value={answers.business} onChange={(v) => update('business', v)} placeholder="e.g. We repair and restore vintage bicycles, and build custom frames to order..." />
+            <FieldLabel className="mt-4">What do you sell, and how much does it cost approximately?</FieldLabel>
+            <Textarea value={answers.sells} onChange={(v) => update('sells', v)} placeholder="e.g. Custom-built frames from $800, tune-ups from $60..." />
           </SplitLayout>
         )}
 
         {key === 'links' && (
           <SplitLayout title="Are you already online somewhere?" leftImage="page12">
-            <p className="mb-3 text-sm text-ink/70">
-              Drop your links — we&apos;ll pull your services, photos, reviews and hours so you don&apos;t have to type them.
-            </p>
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-              {(
-                [
-                  ['website', 'Website'],
-                  ['googleBusiness', 'Google Business Profile'],
-                  ['instagram', 'Instagram'],
-                  ['facebook', 'Facebook'],
-                  ['other', 'Other'],
-                ] as const
-              ).map(([key, label]) => (
-                <div key={key} className={key === 'other' ? 'sm:col-span-2' : ''}>
-                  <FieldLabel className="!mb-1">{label}</FieldLabel>
-                  <TextInput
-                    type="url"
-                    value={answers.links[key]}
-                    onChange={(v) => updateLink(key, v)}
-                    onBlur={() => blurNormalizeLink(key)}
-                    onKeyDown={handleEnterAdvance}
-                    placeholder="yoursite.com"
-                  />
-                  {answers.links[key].trim() !== '' && !isUrlLikelyValid(answers.links[key]) && (
-                    <p className="mt-1 text-xs text-ink/70">That link doesn&apos;t look quite right.</p>
-                  )}
-                </div>
-              ))}
-            </div>
+            <FieldLabel>Website</FieldLabel>
+            <TextInput
+              type="url"
+              value={answers.links.website}
+              onChange={(v) => updateLink('website', v)}
+              onBlur={() => blurNormalizeLink('website')}
+              onKeyDown={handleEnterAdvance}
+              placeholder="yoursite.com"
+              disabled={answers.noWebPresence}
+            />
+            {!answers.noWebPresence && answers.links.website.trim() !== '' && !isUrlLikelyValid(answers.links.website) && (
+              <p className="mt-1 text-xs text-ink/70">That link doesn&apos;t look quite right.</p>
+            )}
+            <FieldLabel className="mt-4">Social media</FieldLabel>
+            <TextInput
+              type="url"
+              value={answers.links.other}
+              onChange={(v) => updateLink('other', v)}
+              onBlur={() => blurNormalizeLink('other')}
+              onKeyDown={handleEnterAdvance}
+              placeholder="instagram.com/yourbusiness"
+              disabled={answers.noWebPresence}
+            />
+            {!answers.noWebPresence && answers.links.other.trim() !== '' && !isUrlLikelyValid(answers.links.other) && (
+              <p className="mt-1 text-xs text-ink/70">That link doesn&apos;t look quite right.</p>
+            )}
             <div className="mt-3">
-              <Checkbox checked={answers.noWebPresence} onChange={(v) => update('noWebPresence', v)} label="I'm not online yet — this is my first web presence." />
+              <Checkbox checked={answers.noWebPresence} onChange={(v) => update('noWebPresence', v)} label="I'm not online yet" />
             </div>
           </SplitLayout>
-        )}
-
-        {key === 'plan' && (
-          <FullLayout title="Which plan are you leaning towards?" microcopy="No commitment — you can change this anytime.">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {PLAN_OPTIONS.map((p) => (
-                <SelectCard
-                  key={p.id}
-                  title={p.title}
-                  price={p.price}
-                  description={p.description}
-                  selected={answers.planInterest === p.id}
-                  onClick={() => update('planInterest', p.id)}
-                />
-              ))}
-            </div>
-          </FullLayout>
         )}
 
         {key === 'channel' && (

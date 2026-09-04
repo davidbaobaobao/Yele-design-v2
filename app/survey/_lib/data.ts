@@ -364,48 +364,34 @@ export function getFeatureBadge(minPlan: PlanId, planInterest: PlanId | ''): str
 
 // Stable step identifiers — the survey's actual page.tsx switches on these
 // instead of raw step numbers, so reordering/removing/merging steps is just
-// editing this one array. Historical numbering (kept in comments elsewhere
-// in this file, e.g. "Step 3 — plan interest") refers to the ORIGINAL
-// 17-step flow and no longer matches live position — the ids there are
-// still accurate, just not the position.
+// editing this one array.
 //
-// Changes from the original 17-step flow:
-// - 'contact' merges the old name/company step + email/phone step into one.
-// - 'about' merges the old "what you do" step + "what you sell" step.
-// - 'plan' moved from early (old step 3) to the end.
-// - The old services / address+hours / uploads steps are removed entirely
-//   (their SurveyAnswers fields + DB columns stay — see api/survey/route.ts
-//   and the admin app, which still read them — just never collected here).
-// - The old "involvement" step (old step 4) is replaced by 'channel' —
-//   involvementLevel/InvolvementId stay for the same reason as above (still
-//   read by api/survey/route.ts's completion email for historical rows).
-// - The old "update often" and "functionality" steps (formerly steps 9-10
-//   of this 12-step flow) are removed entirely — same treatment: their
-//   SurveyAnswers fields (updateOften, functionality) + DB columns stay
-//   since api/survey/route.ts's completion email still reads them.
+// THIS IS THE DEFINITIVE 6-step flow: contact -> channel -> about (business)
+// -> links (online presence) -> style1 (designs) -> colors -> finish.
+// Everything not in STEP_ORDER below (style2, effects1/effects2, plan, and
+// the older legacy steps already gone before this — services, address+hours,
+// uploads, update-often, functionality, involvement) is intentionally not
+// collected anymore. Their SurveyAnswers fields + DB columns are left in
+// place, unused, rather than deleted — api/survey/route.ts's completion
+// email still has (harmless, dead) code paths for some of them, and ripping
+// out the columns would need a migration for zero benefit. 'style1' kept
+// its historical name even though there's no more 'style2' page to pair
+// with — it's an internal id only, never shown to a visitor.
 export type StepKey =
   | 'contact'
-  | 'style1'
-  | 'style2'
-  | 'colors'
-  | 'effects1'
-  | 'effects2'
+  | 'channel'
   | 'about'
   | 'links'
-  | 'plan'
-  | 'channel'
+  | 'style1'
+  | 'colors'
 
 export const STEP_ORDER: StepKey[] = [
   'contact',
-  'style1',
-  'style2',
-  'colors',
-  'effects1',
-  'effects2',
+  'channel',
   'about',
   'links',
-  'plan',
-  'channel',
+  'style1',
+  'colors',
 ]
 
 export const TOTAL_STEPS = STEP_ORDER.length
@@ -415,7 +401,7 @@ export function stepKeyAt(step: number): StepKey {
 }
 
 const SPLIT_KEYS = new Set<StepKey>(['contact', 'about', 'links'])
-const IMMERSIVE_KEYS = new Set<StepKey>(['style1', 'style2', 'colors', 'effects1', 'effects2'])
+const IMMERSIVE_KEYS = new Set<StepKey>(['style1', 'colors'])
 
 export function stepMode(step: number): 'split' | 'full' {
   return SPLIT_KEYS.has(stepKeyAt(step)) ? 'split' : 'full'
@@ -509,9 +495,9 @@ export function isUrlLikelyValid(value: string): boolean {
   }
 }
 
-// Everything is optional except these 2 gates (contact info, plan). Every
-// other step is freely skippable — their defaults are already save-safe
-// empty values.
+// Everything is optional except this one gate (contact info). Every other
+// step is freely skippable — their defaults are already save-safe empty
+// values.
 export function isStepValid(step: number, a: SurveyAnswers): boolean {
   switch (stepKeyAt(step)) {
     case 'contact': {
@@ -523,8 +509,6 @@ export function isStepValid(step: number, a: SurveyAnswers): boolean {
       const hasContact = emailEnteredButInvalid && !hasPhone ? false : hasValidEmail || hasPhone
       return hasNameOrCompany && hasContact
     }
-    case 'plan':
-      return a.planInterest !== ''
     default:
       return true
   }
