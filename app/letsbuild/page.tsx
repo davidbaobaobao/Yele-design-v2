@@ -4,12 +4,14 @@ import Link from 'next/link'
 import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import ReputationBadge from '@/components/ReputationBadge'
+import PlanCTA from '@/components/letsbuild/PlanCTA'
+import CareVideo from '@/components/letsbuild/CareVideo'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold, heavier sections — code-split so the initial hero/form bundle
 // (the LCP + conversion path) stays light, same pattern as /websites.
 const LogoMarquee = dynamic(() => import('@/components/LogoMarquee'))
-const Showcase = dynamic(() => import('@/components/Showcase'))
+const LatestFeaturedWork = dynamic(() => import('@/components/LatestFeaturedWork'))
 const LetsBuildFAQ = dynamic(() => import('@/components/letsbuild/LetsBuildFAQ'))
 const BuildLeadForm = dynamic(() => import('@/components/letsbuild/BuildLeadForm'))
 
@@ -29,16 +31,22 @@ export const metadata: Metadata = {
 }
 
 const KEY_POINTS = [
+  'From $599',
   'No templates. Custom design and imagery',
   'Delivery under 4 weeks',
   'Our agency takes care of everything',
 ]
+
+// Plan-interest pills shown in the hero form; the pricing CTAs dispatch these
+// exact values to pre-select the matching pill.
+const PLAN_OPTIONS = ['Launch — $599', 'Business — $1,199', 'Pro — $2,299', 'Not sure yet']
 
 const TIERS = [
   {
     name: 'Launch',
     price: '$599',
     priceNote: '$599 one-time',
+    planValue: 'Launch — $599',
     blurb: 'Everything most small businesses need to get online professionally.',
     headline: null as string | null,
     features: [
@@ -47,6 +55,7 @@ const TIERS = [
       'Custom domain',
       'Contact and forms',
       'SEO and Google indexing',
+      'Professional image and video content',
     ],
     cta: 'Choose Launch',
     popular: false,
@@ -55,6 +64,7 @@ const TIERS = [
     name: 'Business',
     price: '$1,199',
     priceNote: '$1,199 one-time',
+    planValue: 'Business — $1,199',
     blurb: 'For businesses that want more functionality on their website.',
     headline: 'Everything in Launch, plus:',
     features: [
@@ -72,6 +82,7 @@ const TIERS = [
     name: 'Pro',
     price: 'From $2,299',
     priceNote: 'From $2,299',
+    planValue: 'Pro — $2,299',
     blurb: 'For businesses that need advanced functionality.',
     headline: 'Large e-commerce, plus:',
     features: [
@@ -162,8 +173,6 @@ export default function LetsBuildPage() {
               Let&apos;s build your website
             </h1>
 
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#D46FC8] mb-2">From $599</p>
-
             <ul className="space-y-1.5 mb-4">
               {KEY_POINTS.map(point => (
                 <li key={point} className="flex items-start gap-2.5">
@@ -175,7 +184,7 @@ export default function LetsBuildPage() {
 
             <ReputationBadge className="mb-5" />
 
-            <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" />
+            <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" planOptions={PLAN_OPTIONS} />
 
             <div className="text-center mt-3">
               <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
@@ -187,6 +196,9 @@ export default function LetsBuildPage() {
 
         {/* ---- TRUST MARQUEE ---- */}
         <LogoMarquee />
+
+        {/* ---- LATEST FEATURED WORK (index gallery, always dark, one screen) ---- */}
+        <LatestFeaturedWork forceDark />
 
         {/* ---- PRICING (white) + YELE CARE follows directly, no gap ---- */}
         <section className="bg-white px-6 py-16 md:py-24">
@@ -228,50 +240,58 @@ export default function LetsBuildPage() {
 
                   <div className="border-t border-hairline pt-4 mb-5">
                     <p className="font-body text-sm text-ink font-medium">{tier.priceNote}</p>
-                    <p className="font-body text-sm text-[#D46FC8]">+ $49/month Yele Care</p>
+                    <p className="font-body text-sm text-ink">+ $49/month Yele Care</p>
                   </div>
 
-                  <a
-                    href="#build-form"
-                    className={`w-full inline-flex items-center justify-center font-body font-medium text-base px-6 py-3 rounded-xl transition-colors ${
+                  <PlanCTA
+                    plan={tier.planValue}
+                    label={tier.cta}
+                    className={`w-full inline-flex items-center justify-center font-body font-medium text-base px-6 py-3 rounded-xl transition-colors cursor-pointer ${
                       tier.popular
                         ? 'bg-[#D46FC8] hover:bg-[#DE85D2] text-white'
                         : 'bg-ink hover:bg-ink/90 text-white'
                     }`}
-                  >
-                    {tier.cta}
-                  </a>
+                  />
                 </div>
               ))}
             </div>
 
-            {/* Yele Care — follows the tiers directly, 3 pillars */}
-            <div className="mt-12 md:mt-16 pt-10 md:pt-12 border-t border-hairline">
+            {/* Yele Care — follows the tiers directly, no divider */}
+            <div className="mt-10 md:mt-12">
               <div className="text-center mb-8 md:mb-10">
-                <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-2">Yele Care · $49/month</p>
                 <h3 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight">
-                  We don&apos;t disappear after launch.
+                  Every website includes Yele Care — <span className="text-[#D46FC8]">$49/month</span>
                 </h3>
+                <p className="font-body text-base text-muted mt-2">We don&apos;t disappear after launch.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="rounded-2xl border border-hairline p-6">
-                  <FilePlus2 size={22} className="text-[#D46FC8] mb-3" aria-hidden="true" />
-                  <h4 className="font-display font-bold text-lg text-ink mb-1.5">Content updates</h4>
+                  <CareVideo webm="/media/beyond/SEO_hq.webm" mp4="/media/beyond/SEO_hq.mp4" poster="/media/beyond/SEO_poster.jpg" />
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <FilePlus2 size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
+                    <h4 className="font-display font-bold text-lg text-ink">Content updates</h4>
+                  </div>
                   <p className="font-body text-sm text-muted leading-relaxed">
                     We help you add new content — new projects, new photos, new menu items, whatever your business needs.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-hairline p-6">
-                  <RefreshCw size={22} className="text-[#D46FC8] mb-3" aria-hidden="true" />
-                  <h4 className="font-display font-bold text-lg text-ink mb-1.5">Yearly website redesign</h4>
+                  <CareVideo webm="/media/beyond/ADS_hq.webm" mp4="/media/beyond/ADS_hq.mp4" poster="/media/beyond/ADS_poster.jpg" />
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <RefreshCw size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
+                    <h4 className="font-display font-bold text-lg text-ink">Yearly website redesign</h4>
+                  </div>
                   <p className="font-body text-sm text-muted leading-relaxed">
                     A full design refresh every year, so your website is <span className="text-ink font-semibold">never</span> outdated.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-hairline p-6">
-                  <Wrench size={22} className="text-[#D46FC8] mb-3" aria-hidden="true" />
-                  <h4 className="font-display font-bold text-lg text-ink mb-1.5">Maintenance &amp; management</h4>
+                  <CareVideo webm="/media/whyyele3/whyyele5.webm" mp4="/media/whyyele3/whyyele5.mp4" poster="/media/whyyele3/whyyele5_poster.jpg" />
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Wrench size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
+                    <h4 className="font-display font-bold text-lg text-ink">Maintenance &amp; management</h4>
+                  </div>
                   <p className="font-body text-sm text-muted leading-relaxed mb-3">
                     All the technical work handled so your site stays online, secure and running correctly.
                   </p>
@@ -285,30 +305,26 @@ export default function LetsBuildPage() {
                   </ul>
                 </div>
               </div>
-
-              <p className="font-body text-sm text-muted/70 mt-8 text-center">
-                Major redesigns, new functionality, and larger website changes are quoted separately.
-              </p>
             </div>
           </div>
         </section>
 
-        {/* ---- HOW IT WORKS ---- */}
-        <section className="bg-white px-6 py-16 md:py-24">
+        {/* ---- HOW IT WORKS (dark) ---- */}
+        <section className="px-6 py-16 md:py-24 border-t border-white/10" style={{ backgroundColor: DARK }}>
           <div className="max-w-4xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">How it works</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-10">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">How it works</p>
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-10">
               From idea to live website in four simple steps.
             </h2>
             <div className="space-y-8">
               {STEPS.map(step => (
                 <div key={step.n} className="flex gap-5">
-                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8]/10 text-[#D46FC8] font-display font-bold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center">
                     {step.n}
                   </span>
                   <div>
-                    <h3 className="font-display font-bold text-xl text-ink mb-1">{step.title}</h3>
-                    <p className="font-body text-base text-muted leading-relaxed max-w-2xl">{step.body}</p>
+                    <h3 className="font-display font-bold text-xl text-white mb-1">{step.title}</h3>
+                    <p className="font-body text-base text-white/70 leading-relaxed max-w-2xl">{step.body}</p>
                   </div>
                 </div>
               ))}
@@ -319,14 +335,6 @@ export default function LetsBuildPage() {
               </a>
             </div>
           </div>
-        </section>
-
-        {/* ---- LATEST PROJECTS ---- */}
-        <section style={{ backgroundColor: DARK }} className="py-14 md:py-20">
-          <div className="max-w-6xl mx-auto px-6 mb-8 md:mb-12">
-            <h2 className="font-display font-semibold text-3xl md:text-4xl text-white tracking-tight">Latest projects</h2>
-          </div>
-          <Showcase noHeader fullScreen dark />
         </section>
 
         {/* ---- BUILT TO GENERATE BUSINESS ---- */}

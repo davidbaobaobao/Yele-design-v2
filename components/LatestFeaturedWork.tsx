@@ -7,7 +7,7 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import { useEarlyLoad } from '@/hooks/useEarlyLoad'
 import PosterVideo from '@/components/ui/poster-video'
-import { useDealFade } from '@/components/DealFadeContext'
+import { useOptionalDealFade } from '@/components/DealFadeContext'
 
 // Structure/spacing/behavior mirrors the reference bundle exactly (track
 // padding 40px 40px 0, 16px gaps, calc(50% - 8px) stack cells, 52px title,
@@ -178,9 +178,16 @@ function NudgeButton({
   )
 }
 
-export default function LatestFeaturedWork() {
+export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: boolean } = {}) {
   const reduceMotion = !!useHydratedReducedMotion()
-  const { pastThreshold, setPastThreshold } = useDealFade()
+  // Homepage: reads the shared DealFadeProvider group (BeyondWebsite +
+  // StatsBold flip in sync). Standalone (/letsbuild, forceDark): no provider,
+  // no white->black flip — always dark, using a local no-op state so the same
+  // setter call sites keep working.
+  const dealCtx = useOptionalDealFade()
+  const [localPast, setLocalPast] = useState(false)
+  const pastThreshold = forceDark ? true : dealCtx ? dealCtx.pastThreshold : localPast
+  const setPastThreshold = dealCtx ? dealCtx.setPastThreshold : setLocalPast
 
   const [activeIndex, setActiveIndex] = useState(0)
   const [hasInteracted, setHasInteracted] = useState(false)
@@ -214,7 +221,7 @@ export default function LatestFeaturedWork() {
   // boolean just stays false and the group stays permanently light.
   const sectionTopRef = useRef(0)
   useEffect(() => {
-    if (reduceMotion) return
+    if (reduceMotion || forceDark) return
     const measure = () => {
       const el = sectionRef.current
       if (!el) return
@@ -231,11 +238,11 @@ export default function LatestFeaturedWork() {
       window.removeEventListener('load', measure)
       ro.disconnect()
     }
-  }, [reduceMotion])
+  }, [reduceMotion, forceDark])
 
   const { scrollY } = useScroll()
   useMotionValueEvent(scrollY, 'change', v => {
-    if (reduceMotion) return
+    if (reduceMotion || forceDark) return
     // Fires as soon as the section's top has scrolled up to
     // ~TRIGGER_VIEWPORT_FRACTION down the viewport (i.e. while it's still
     // mostly below the fold, right as it enters) rather than waiting for
@@ -245,9 +252,9 @@ export default function LatestFeaturedWork() {
   })
 
   useEffect(() => {
-    if (reduceMotion) return
+    if (reduceMotion || forceDark) return
     window.dispatchEvent(new CustomEvent('nav:fademode', { detail: { dark: pastThreshold } }))
-  }, [pastThreshold, reduceMotion])
+  }, [pastThreshold, reduceMotion, forceDark])
 
   // Edge-hover auto-pan: cursor within EDGE_HOVER_ZONE px of either edge
   // scrolls that direction continuously (~EDGE_HOVER_SPEED px/frame) while

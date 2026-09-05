@@ -27,3 +27,10 @@ export function useDealFade() {
   if (!ctx) throw new Error('useDealFade must be used within a DealFadeProvider')
   return ctx
 }
+
+// Non-throwing variant — returns null when there is no provider. Used by
+// LatestFeaturedWork's forceDark mode (/letsbuild), where the gallery runs
+// standalone and always-dark, outside the homepage's DealFadeProvider group.
+export function useOptionalDealFade() {
+  return useContext(DealFadeContext)
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
@@ -32,10 +32,16 @@ export default function LeadForm({
   ctaLabel = "Let's chat",
   id,
   platform = 'google',
+  planOptions,
 }: {
   variant?: 'light' | 'dark'
   ctaLabel?: string
   id?: string
+  // Optional plan-interest pills, only used on /letsbuild. When set, renders
+  // "Which plan are you interested in?" after the company field and listens
+  // for a `letsbuild:selectplan` window event (dispatched by the pricing
+  // CTAs) to pre-select a tier and scroll this form into view.
+  planOptions?: string[]
   // Which ad platform this submit should count toward. 'google' (default,
   // /start + /websites) fires the existing onboarding_form_submit Google
   // Ads conversion. 'meta' (/newwebsite only) fires the Meta Pixel "Lead"
@@ -63,6 +69,20 @@ export default function LeadForm({
   // makes "exactly once" true regardless of how handleSubmit is re-entered
   // (e.g. a double-click landing before the disabled state has committed).
   const conversionFiredRef = useRef(false)
+  const [selectedPlan, setSelectedPlan] = useState('')
+
+  // Pricing CTAs on /letsbuild dispatch this to pre-select a tier + scroll
+  // the form up into view. Only wired when planOptions is provided.
+  useEffect(() => {
+    if (!planOptions) return
+    function onSelect(e: Event) {
+      const detail = (e as CustomEvent<string>).detail
+      if (detail) setSelectedPlan(detail)
+      if (id) document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    window.addEventListener('letsbuild:selectplan', onSelect as EventListener)
+    return () => window.removeEventListener('letsbuild:selectplan', onSelect as EventListener)
+  }, [planOptions, id])
 
   function set(key: keyof FormData, value: string) {
     setFormData(prev => ({ ...prev, [key]: value }))
@@ -98,6 +118,7 @@ export default function LeadForm({
         email: formData.email,
         phone: formData.phone,
         company: formData.company,
+        packageInterest: selectedPlan ? [selectedPlan] : undefined,
         eventId: metaEventId,
         source: platform,
         fbc: metaCookies.fbc,
@@ -201,6 +222,33 @@ export default function LeadForm({
           onChange={e => set('company', e.target.value)}
         />
       </div>
+
+      {planOptions && (
+        <div>
+          <label className={labelClass}>Which plan are you interested in? (optional)</label>
+          <div className="flex flex-wrap gap-2">
+            {planOptions.map(p => {
+              const active = selectedPlan === p
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setSelectedPlan(active ? '' : p)}
+                  className={`font-body text-sm px-3.5 py-2 rounded-full border transition-colors cursor-pointer ${
+                    active
+                      ? 'bg-[#D46FC8] border-[#D46FC8] text-white'
+                      : isDark
+                        ? 'bg-white/5 border-white/15 text-white/80 hover:border-white/40'
+                        : 'bg-white border-hairline text-ink hover:border-ink'
+                  }`}
+                >
+                  {p}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {submitError && (
         <p className="font-body text-xs text-red-500 text-center">{submitError}</p>
