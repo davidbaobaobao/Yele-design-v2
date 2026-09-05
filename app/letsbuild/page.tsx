@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import ReputationBadge from '@/components/ReputationBadge'
-import PlanCTA from '@/components/letsbuild/PlanCTA'
+import PricingCards from '@/components/letsbuild/PricingCards'
 import CareVideo from '@/components/letsbuild/CareVideo'
 import { EnLangProvider } from '@/components/LangProvider'
 
@@ -40,63 +40,6 @@ const KEY_POINTS = [
 // Plan-interest pills shown in the hero form; the pricing CTAs dispatch these
 // exact values to pre-select the matching pill.
 const PLAN_OPTIONS = ['Launch — $599', 'Business — $1,199', 'Pro — $2,299']
-
-const TIERS = [
-  {
-    name: 'Launch',
-    price: '$599',
-    priceNote: '$599 one-time',
-    planValue: 'Launch — $599',
-    blurb: 'Everything most small businesses need to get online professionally.',
-    headline: null as string | null,
-    features: [
-      'Custom website design',
-      'Mobile optimization',
-      'Custom domain',
-      'Contact and forms',
-      'SEO and Google indexing',
-      'Professional image and video content',
-    ],
-    cta: 'Choose Launch',
-    popular: false,
-  },
-  {
-    name: 'Business',
-    price: '$1,199',
-    priceNote: '$1,199 one-time',
-    planValue: 'Business — $1,199',
-    blurb: 'For businesses that want more functionality on their website.',
-    headline: 'Everything in Launch, plus:',
-    features: [
-      'Calendar booking',
-      'Payment acceptance',
-      'Small e-commerce',
-      'Conversion optimization',
-      'Blog',
-      'Analytics',
-    ],
-    cta: 'Choose Business',
-    popular: true,
-  },
-  {
-    name: 'Pro',
-    price: 'From $2,299',
-    priceNote: 'From $2,299',
-    planValue: 'Pro — $2,299',
-    blurb: 'For businesses that need advanced functionality.',
-    headline: 'Large e-commerce, plus:',
-    features: [
-      'Custom functionality and dashboard',
-      'Advanced integrations',
-      'Multiple locations',
-      'Custom workflows',
-      'Complex payment flows',
-      'Business-specific solutions',
-    ],
-    cta: 'Talk to Us',
-    popular: false,
-  },
-]
 
 const CARE_INCLUDES = [
   'Website hosting',
@@ -219,60 +162,13 @@ export default function LetsBuildPage() {
               Pricing
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
-              {TIERS.map(tier => (
-                <div
-                  key={tier.name}
-                  className={`relative rounded-2xl p-6 md:p-7 flex flex-col bg-white ${
-                    tier.popular ? 'border-2 border-[#D46FC8] shadow-lg shadow-[#D46FC8]/10' : 'border border-hairline'
-                  }`}
-                >
-                  {tier.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#D46FC8] text-white font-body text-xs font-semibold px-3 py-1 rounded-full">
-                      Most Popular
-                    </span>
-                  )}
-                  <h3 className="font-display font-bold text-2xl text-ink">{tier.name}</h3>
-                  <div className="mt-1 mb-3">
-                    <span className="font-display font-bold text-3xl text-ink">{tier.price}</span>
-                  </div>
-                  <p className="font-body text-sm text-muted mb-5">{tier.blurb}</p>
-
-                  <ul className="space-y-2 mb-6 flex-1">
-                    {tier.headline && (
-                      <li className="font-body text-sm font-semibold text-ink">{tier.headline}</li>
-                    )}
-                    {tier.features.map(f => (
-                      <li key={f} className="flex items-start gap-2.5">
-                        <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
-                        <span className="font-body text-sm text-ink/75">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="border-t border-hairline pt-4 mb-5">
-                    <p className="font-body text-sm text-ink font-medium">{tier.priceNote}</p>
-                    <p className="font-body text-sm text-ink">+ $49/month Yele Care</p>
-                  </div>
-
-                  <PlanCTA
-                    plan={tier.planValue}
-                    label={tier.cta}
-                    className={`w-full inline-flex items-center justify-center font-body font-medium text-base px-6 py-3 rounded-xl transition-colors cursor-pointer ${
-                      tier.popular
-                        ? 'bg-[#D46FC8] hover:bg-[#DE85D2] text-white'
-                        : 'bg-ink hover:bg-ink/90 text-white'
-                    }`}
-                  />
-                </div>
-              ))}
-            </div>
+            <PricingCards />
 
             {/* Yele Care — follows the tiers directly, no divider */}
             <div className="mt-10 md:mt-12">
               <div className="text-center mb-8 md:mb-10">
                 <h3 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight">
-                  Looked after with Yele Care — <span className="text-[#D46FC8]">$49/month</span>
+                  Looked after with <span className="text-[#D46FC8]">Yele Care</span>
                 </h3>
                 <p className="font-body text-base text-muted mt-2">
                   Permanent attention that keeps everything working — for $49/month.

@@ -55,8 +55,9 @@ type FeaturedProject = {
   columns: FeaturedColumn[]
 }
 
-// Display order (activeIndex 0 loads first): Clark Fork, Clear Cool Water,
-// Blackcrest, Reptile Roadshow, Marketasa, Shinsetsu, Restoration Bros, Duna.
+// Display order (activeIndex 0 loads first): Clark Fork, Blackcrest,
+// Clear Cool Water, Reptile Roadshow, Marketasa, Shinsetsu, Restoration
+// Bros, Duna.
 // The counter + nudge arrows cycle activeIndex (next from the last project
 // wraps to the first, and vice versa) and reset scroll position; reorder by
 // moving an entry, add one by inserting an entry.
@@ -75,19 +76,6 @@ const PROJECTS: FeaturedProject[] = [
     ],
   },
   {
-    name: 'Clear Cool Water',
-    blurb:
-      'A Florida spring-water brand sold by the case. A clean, product-forward store with sourcing, purity data, and one-tap ordering.',
-    mediaDir: '/media/clearwater',
-    columns: [
-      { type: 'stack', top: '1', bottom: '2' },
-      { type: 'tall', image: '3' },
-      { type: 'video', video: '4', poster: '4_poster' },
-      { type: 'tall', image: '5' },
-      { type: 'stack', top: '6', bottom: '7' },
-    ],
-  },
-  {
     name: 'Blackcrest',
     blurb:
       'High-end architectural windows and doors. A product-led site with instant, size-based pricing — quote any opening in seconds.',
@@ -98,6 +86,19 @@ const PROJECTS: FeaturedProject[] = [
       { type: 'video', video: '4', poster: '4_poster' },
       { type: 'tall', image: '5' },
       { type: 'tall', image: '2' },
+    ],
+  },
+  {
+    name: 'Clear Cool Water',
+    blurb:
+      'A Florida spring-water brand sold by the case. A clean, product-forward store with sourcing, purity data, and one-tap ordering.',
+    mediaDir: '/media/clearwater',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
     ],
   },
   {
@@ -213,6 +214,7 @@ function NudgeButton({
 }) {
   const [hovered, setHovered] = useState(false)
   const filled = hovered && !disabled
+  const transparent = 'rgba(0,0,0,0)'
   return (
     <motion.button
       type="button"
@@ -227,12 +229,23 @@ function NudgeButton({
         backgroundColor: filled ? textColor : 'transparent',
         color: filled ? bgColor : textColor,
       }}
-      // "Come click me" invite: gentle opacity+scale pulse, only while
-      // pulse is true (right arrow, before the visitor has navigated).
-      // Pointer events are untouched — opacity/scale don't affect hit
-      // testing, so the button stays clickable throughout the pulse.
-      animate={pulse ? { opacity: [1, 0.45, 1], scale: [1, 1.06, 1] } : { opacity: 1, scale: 1 }}
-      transition={pulse ? { duration: 1.8, ease: 'easeInOut', repeat: Infinity } : { duration: 0.2 }}
+      // "Come click me" invite: while `pulse` is true (the next arrow), the
+      // button continuously blinks between filled (solid textColor bg, arrow
+      // in bgColor) and clear (transparent bg, arrow in textColor), with a
+      // gentle scale — much more visible than an opacity fade. When hovered,
+      // the static filled style takes over. Pointer events are untouched so
+      // it stays clickable throughout.
+      animate={
+        pulse && !filled
+          ? {
+              scale: [1, 1.09, 1],
+              backgroundColor: [transparent, textColor, transparent],
+              borderColor: [borderColor, textColor, borderColor],
+              color: [textColor, bgColor, textColor],
+            }
+          : { scale: 1 }
+      }
+      transition={pulse && !filled ? { duration: 1.5, ease: 'easeInOut', repeat: Infinity } : { duration: 0.2 }}
     >
       {direction === 'prev' ? '←' : '→'}
     </motion.button>
