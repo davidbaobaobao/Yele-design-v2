@@ -31,6 +31,16 @@ export async function POST(request: Request) {
     // it — every submit gets a server-side Lead event regardless of
     // platform — so it isn't destructured here.
     const { name, email, phone, company, eventId, fbc, fbp } = body
+    // Optional richer fields sent by the /letsbuild bottom form only. All
+    // backward-compatible: the shared LeadForm (/start, /websites,
+    // /newwebsite) never sends these, so they simply render as "(not
+    // provided)" / are omitted from the email for those pages.
+    const { businessName, currentWebsite, needs, packageInterest } = body as {
+      businessName?: string
+      currentWebsite?: string
+      needs?: string[]
+      packageInterest?: string[]
+    }
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -63,15 +73,23 @@ export async function POST(request: Request) {
         from: 'Yele Leads <noreply@yele.design>',
         to: RECIPIENTS,
         replyTo: email,
-        subject: `New lead — ${name}`,
+        subject: `New lead — ${name}${businessName ? ` (${businessName})` : ''}`,
         text: [
           `Name: ${name}`,
+          businessName ? `Business name: ${businessName}` : null,
           `Email: ${email}`,
           `Phone: ${phone || '(not provided)'}`,
+          currentWebsite ? `Current website: ${currentWebsite}` : null,
           '',
-          'Company description:',
+          'What the business does:',
           company || '(not provided)',
-        ].join('\n'),
+          Array.isArray(needs) && needs.length ? `\nWhat they need: ${needs.join(', ')}` : null,
+          Array.isArray(packageInterest) && packageInterest.length
+            ? `Package interest: ${packageInterest.join(', ')}`
+            : null,
+        ]
+          .filter(line => line !== null)
+          .join('\n'),
       })
     } else {
       console.log('[lead] RESEND_API_KEY not set — email skipped', { name, email, phone, company })
