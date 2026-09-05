@@ -103,6 +103,20 @@ const PROJECTS: FeaturedProject[] = [
     ],
   },
   {
+    name: 'Clear Cool Water',
+    subtitle: 'Website',
+    blurb:
+      'A Florida spring-water company selling purified, sparkling, and alkaline water by the case. We built a clean, product-forward e-commerce site — sourcing story, purity data, and one-tap case ordering.',
+    mediaDir: '/media/clearwater',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
+    ],
+  },
+  {
     name: 'Shinsetsu',
     subtitle: 'Travel Agency',
     blurb:
