@@ -48,10 +48,10 @@ const CARE_POINTS = [
 ]
 
 const STEPS = [
-  { n: '1', title: 'Tell us about your business', body: 'Complete our short form and tell us what your business does, what you need, and what you want your website to achieve.' },
-  { n: '2', title: 'Pay 50% to get started', body: 'We begin designing and building your website. You only pay the remaining 50% once your website is ready and approved for launch.' },
-  { n: '3', title: 'Review your website', body: "We'll show you the website and make the agreed revisions before launch." },
-  { n: '4', title: 'Go live', body: 'Once approved, we launch your new website and Yele Care keeps everything running afterwards.' },
+  { n: '1', title: 'Secure your spot', body: 'Get started by paying 50% to lock in your project and reserve your place in our schedule.' },
+  { n: '2', title: 'Tell us about your business', body: "Through video calls or email, we work with you until we have a clear picture of exactly what you're looking for." },
+  { n: '3', title: 'Review', body: 'We show you the finished website and make the agreed revisions before launch.' },
+  { n: '4', title: 'Go live', body: 'Approve, pay the remaining 50%, and we launch your website — Yele Care keeps everything running afterwards.' },
 ]
 
 const ACTIONS = [
@@ -209,7 +209,7 @@ export default function LetsBuildPage() {
               ))}
             </div>
             <div className="mt-10">
-              <a href="#build-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-7 py-3.5 rounded-xl transition-colors">
+              <a href="#lead-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-7 py-3.5 rounded-xl transition-colors">
                 Start My Website
               </a>
             </div>
