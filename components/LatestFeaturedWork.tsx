@@ -50,77 +50,21 @@ type FeaturedColumn =
 
 type FeaturedProject = {
   name: string
-  subtitle: string
   blurb: string
   mediaDir: string
   columns: FeaturedColumn[]
 }
 
-// Blackcrest loads first (position 1 / default activeIndex 0); Shinsetsu
-// second, Restoration Bros third, Duna fourth. The counter + nudge arrows
-// cycle activeIndex (next from the last project wraps to the first, and
-// vice versa) and reset scroll position; add another project by just
-// appending an entry.
+// Display order (activeIndex 0 loads first): Clark Fork, Clear Cool Water,
+// Blackcrest, Reptile Roadshow, Marketasa, Shinsetsu, Restoration Bros, Duna.
+// The counter + nudge arrows cycle activeIndex (next from the last project
+// wraps to the first, and vice versa) and reset scroll position; reorder by
+// moving an entry, add one by inserting an entry.
 const PROJECTS: FeaturedProject[] = [
   {
-    name: 'Blackcrest',
-    subtitle: 'Website',
-    blurb:
-      'High-end architectural windows and doors, custom-built and installed. We designed a product-led site with instant, size-based pricing — quote any opening in seconds, no sales call required.',
-    mediaDir: '/media/blackcrest',
-    columns: [
-      { type: 'stack', top: '6', bottom: '1' },
-      { type: 'tall', image: '3' },
-      { type: 'video', video: '4', poster: '4_poster' },
-      { type: 'tall', image: '5' },
-      { type: 'tall', image: '2' },
-    ],
-  },
-  {
-    name: 'Marketasa',
-    subtitle: 'Website',
-    blurb:
-      'A performance marketing agency running paid acquisition across Google and Meta. We built an editorial, high-contrast site that frames their case studies like a magazine — positioning them well above the template-driven competition.',
-    mediaDir: '/media/marketasa',
-    columns: [
-      { type: 'stack', top: '1', bottom: '2' },
-      { type: 'tall', image: '3' },
-      { type: 'video', video: '4', poster: '4_poster' },
-      { type: 'tall', image: '5' },
-    ],
-  },
-  {
-    name: 'Reptile Roadshow',
-    subtitle: 'Website',
-    blurb:
-      'A live exotic-animal experience company running reptile encounters and safari-style shows. We built a bold, jungle-toned site with tiered booking packages — turning a niche experience into an instantly bookable one.',
-    mediaDir: '/media/reptileroadshow',
-    columns: [
-      { type: 'stack', top: '1', bottom: '2' },
-      { type: 'tall', image: '3' },
-      { type: 'video', video: '4', poster: '4_poster' },
-      { type: 'tall', image: '5' },
-    ],
-  },
-  {
-    name: 'Clear Cool Water',
-    subtitle: 'Website',
-    blurb:
-      'A Florida spring-water company selling purified, sparkling, and alkaline water by the case. We built a clean, product-forward e-commerce site — sourcing story, purity data, and one-tap case ordering.',
-    mediaDir: '/media/clearwater',
-    columns: [
-      { type: 'stack', top: '1', bottom: '2' },
-      { type: 'tall', image: '3' },
-      { type: 'video', video: '4', poster: '4_poster' },
-      { type: 'tall', image: '5' },
-      { type: 'stack', top: '6', bottom: '7' },
-    ],
-  },
-  {
     name: 'Clark Fork',
-    subtitle: 'Website',
     blurb:
-      'A Montana builder crafting custom log and timber homes since 1993 — one crew, one contract, start to finish. We built a quiet, editorial site that lets the craftsmanship and the landscape carry the story.',
+      'Custom log and timber homes, built in Montana since 1993. A quiet, editorial site that lets the craft and the landscape speak.',
     mediaDir: '/media/clarkfork',
     columns: [
       { type: 'tall', image: '1' },
@@ -131,10 +75,59 @@ const PROJECTS: FeaturedProject[] = [
     ],
   },
   {
-    name: 'Shinsetsu',
-    subtitle: 'Travel Agency',
+    name: 'Clear Cool Water',
     blurb:
-      "A boutique travel agency crafting tailor-made ski journeys across Hokkaido — from Niseko's legendary powder to quiet backcountry runs and onsen nights.",
+      'A Florida spring-water brand sold by the case. A clean, product-forward store with sourcing, purity data, and one-tap ordering.',
+    mediaDir: '/media/clearwater',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
+    ],
+  },
+  {
+    name: 'Blackcrest',
+    blurb:
+      'High-end architectural windows and doors. A product-led site with instant, size-based pricing — quote any opening in seconds.',
+    mediaDir: '/media/blackcrest',
+    columns: [
+      { type: 'stack', top: '6', bottom: '1' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'tall', image: '2' },
+    ],
+  },
+  {
+    name: 'Reptile Roadshow',
+    blurb:
+      'Live exotic-animal shows and reptile encounters. A bold, jungle-toned site with tiered, instantly bookable packages.',
+    mediaDir: '/media/reptileroadshow',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+    ],
+  },
+  {
+    name: 'Marketasa',
+    blurb:
+      'A performance marketing agency. An editorial, high-contrast site that frames their case studies like a magazine.',
+    mediaDir: '/media/marketasa',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+    ],
+  },
+  {
+    name: 'Shinsetsu',
+    blurb:
+      "A boutique travel agency crafting tailor-made ski journeys across Hokkaido's legendary powder.",
     mediaDir: '/media/hokkaido',
     columns: [
       { type: 'stack', top: '1', bottom: '2' },
@@ -146,9 +139,8 @@ const PROJECTS: FeaturedProject[] = [
   },
   {
     name: 'Restoration Bros',
-    subtitle: 'Website',
     blurb:
-      "Tampa's leading water-damage and disaster-restoration specialists — reachable 24/7, when every minute counts.",
+      "Tampa's 24/7 water-damage and disaster-restoration specialists — built for the moment every minute counts.",
     mediaDir: '/media/renovationbros',
     columns: [
       { type: 'stack', top: '1', bottom: '2' },
@@ -160,8 +152,7 @@ const PROJECTS: FeaturedProject[] = [
   },
   {
     name: 'Duna',
-    subtitle: 'Product Mock-up',
-    blurb: 'Complete product branding for Duna. Organic medjool dates.',
+    blurb: 'Complete product branding for Duna — organic medjool dates.',
     mediaDir: '/media/duna',
     columns: [
       { type: 'stack', top: '2', bottom: '4' },
@@ -229,7 +220,7 @@ function NudgeButton({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       aria-label={direction === 'prev' ? 'Scroll left' : 'Scroll right'}
-      className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border text-[18px] transition-colors duration-[250ms] disabled:opacity-30 disabled:pointer-events-none"
+      className="flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-full border-2 text-[24px] transition-colors duration-[250ms] disabled:opacity-30 disabled:pointer-events-none"
       style={{
         borderColor: filled ? textColor : borderColor,
         backgroundColor: filled ? textColor : 'transparent',
@@ -361,7 +352,7 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
       ref={sectionRef}
       id="trabajos"
       data-nav-fade
-      className="relative h-screen w-full overflow-hidden flex flex-col scroll-mt-24"
+      className="relative w-full overflow-hidden flex flex-col scroll-mt-24 py-14 md:py-20"
     >
       <motion.div
         className="absolute inset-0 -z-10"
@@ -370,168 +361,151 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
         aria-hidden="true"
       />
 
-      {/* Track — flex:1 1 auto, min-height:0, padding 40px 40px 0 */}
-      <div
-        ref={trackRef}
-        className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pt-10 px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      {/* Section title — now on top */}
+      <motion.h2
+        className="px-6 md:px-12 mb-8 md:mb-10 font-display text-[38px] md:text-[52px] leading-[1.02]"
+        animate={{ color: titleColor }}
+        transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
       >
-        <div className="flex h-full w-max gap-4">
-          {project.columns.map((col, i) => {
-            if (col.type === 'stack') {
-              return (
-                <div key={i} className="flex h-full flex-col items-start gap-4">
+        Latest featured work
+      </motion.h2>
+
+      {/* Track wrapper — holds the scroll strip and its edge-hover pan zones.
+          Fixed, non-fullscreen height so the section reads compact. */}
+      <div className="relative">
+        <div
+          ref={trackRef}
+          className="h-[380px] sm:h-[440px] md:h-[500px] overflow-x-auto overflow-y-hidden px-6 md:px-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          <div className="flex h-full w-max gap-4">
+            {project.columns.map((col, i) => {
+              if (col.type === 'stack') {
+                return (
+                  <div key={i} className="flex h-full flex-col items-start gap-4">
+                    <ImageCell
+                      mediaDir={project.mediaDir}
+                      file={col.top}
+                      alt={`${project.name} — project photo`}
+                      sizes="240px"
+                      className="h-[calc(50%-8px)] aspect-square"
+                    />
+                    <ImageCell
+                      mediaDir={project.mediaDir}
+                      file={col.bottom}
+                      alt={`${project.name} — project photo`}
+                      sizes="240px"
+                      className="h-[calc(50%-8px)] aspect-square"
+                    />
+                  </div>
+                )
+              }
+              if (col.type === 'tall') {
+                return (
                   <ImageCell
+                    key={i}
                     mediaDir={project.mediaDir}
-                    file={col.top}
+                    file={col.image}
                     alt={`${project.name} — project photo`}
-                    sizes="30vh"
-                    className="h-[calc(50%-8px)] aspect-[3/4]"
+                    sizes="260px"
+                    className="h-full aspect-[1/2]"
                   />
-                  <ImageCell
-                    mediaDir={project.mediaDir}
-                    file={col.bottom}
-                    alt={`${project.name} — project photo`}
-                    sizes="30vh"
-                    className="h-[calc(50%-8px)] aspect-[3/4]"
-                  />
-                </div>
-              )
-            }
-            if (col.type === 'tall') {
+                )
+              }
               return (
-                <ImageCell
+                <div
                   key={i}
-                  mediaDir={project.mediaDir}
-                  file={col.image}
-                  alt={`${project.name} — project photo`}
-                  sizes="45vh"
-                  className="h-full aspect-[1/2]"
-                />
-              )
-            }
-            return (
-              <div
-                key={i}
-                className="relative h-full aspect-video overflow-hidden rounded-[10px]"
-                style={{ backgroundColor: CELL_BG }}
-              >
-                <PosterVideo
-                  videoRef={videoRef}
-                  poster={`${project.mediaDir}/${col.poster}.webp`}
-                  posterAlt={`${project.name} — project video`}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  resetKey={activeIndex}
+                  className="relative h-full aspect-[3/2] overflow-hidden rounded-[10px]"
+                  style={{ backgroundColor: CELL_BG }}
                 >
-                  <source src={`${project.mediaDir}/${col.video}.mp4`} type="video/mp4" />
-                </PosterVideo>
-                <div className="pointer-events-none absolute left-4 bottom-[14px] flex items-center gap-2 text-white/85">
-                  <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true" />
-                  <span className="font-mono text-[12px] uppercase tracking-[0.08em]">Showreel</span>
+                  <PosterVideo
+                    videoRef={videoRef}
+                    poster={`${project.mediaDir}/${col.poster}.webp`}
+                    posterAlt={`${project.name} — project video`}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    resetKey={activeIndex}
+                  >
+                    <source src={`${project.mediaDir}/${col.video}.mp4`} type="video/mp4" />
+                  </PosterVideo>
+                  <div className="pointer-events-none absolute left-4 bottom-[14px] flex items-center gap-2 text-white/85">
+                    <span className="h-2 w-2 rounded-full bg-white" aria-hidden="true" />
+                    <span className="font-mono text-[12px] uppercase tracking-[0.08em]">Showreel</span>
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
+
+        {/* Edge-hover zones — absolute over the track only, gradient hint,
+            custom pink-circle cursor */}
+        <div
+          onMouseEnter={() => startHover(-1)}
+          onMouseLeave={stopHover}
+          className="pointer-events-auto absolute inset-y-0 left-0 z-[5] w-[90px] opacity-0 transition-opacity duration-300 hover:opacity-100"
+          style={{ background: `linear-gradient(to right, ${bgColor}CC, transparent)`, cursor: PAN_CURSOR }}
+          aria-hidden="true"
+        />
+        <div
+          onMouseEnter={() => startHover(1)}
+          onMouseLeave={stopHover}
+          className="pointer-events-auto absolute inset-y-0 right-0 z-[5] w-[90px] opacity-0 transition-opacity duration-300 hover:opacity-100"
+          style={{ background: `linear-gradient(to left, ${bgColor}CC, transparent)`, cursor: PAN_CURSOR }}
+          aria-hidden="true"
+        />
       </div>
 
-      {/* Edge-hover zones — absolute, 90px, gradient hint, custom pink-circle cursor */}
-      <div
-        onMouseEnter={() => startHover(-1)}
-        onMouseLeave={stopHover}
-        className="pointer-events-auto absolute inset-y-0 left-0 z-[5] w-[90px] opacity-0 transition-opacity duration-300 hover:opacity-100"
-        style={{ background: `linear-gradient(to right, ${bgColor}CC, transparent)`, cursor: PAN_CURSOR }}
-        aria-hidden="true"
-      />
-      <div
-        onMouseEnter={() => startHover(1)}
-        onMouseLeave={stopHover}
-        className="pointer-events-auto absolute inset-y-0 right-0 z-[5] w-[90px] opacity-0 transition-opacity duration-300 hover:opacity-100"
-        style={{ background: `linear-gradient(to left, ${bgColor}CC, transparent)`, cursor: PAN_CURSOR }}
-        aria-hidden="true"
-      />
-
-      {/* Bottom bar — padding 40px 48px 48px, gap 64px, align-items:flex-end.
-          `relative` so the counter+arrows group below can be absolutely
-          centered independent of this row's own flex distribution. */}
-      <div className="relative flex shrink-0 items-end justify-between gap-16 px-12 pb-12 pt-10">
-        <div>
-          {/* "Latest featured work" is now the main headline (takes over
-              the big title styling); the project name drops to the
-              smaller subtitle-size line beneath it. */}
+      {/* Bottom bar — project name (bold) + short description on the left,
+          counter + large nav arrows on the right. */}
+      <div className="flex shrink-0 items-end justify-between gap-8 px-6 md:px-12 pt-8 md:pt-10">
+        <div className="min-w-0">
           <motion.div
-            className="mb-3 font-display text-[52px] leading-[1.05]"
+            className="font-display font-bold text-2xl md:text-[30px] leading-tight"
             animate={{ color: titleColor }}
-            transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
-          >
-            Latest featured work
-          </motion.div>
-          <motion.div
-            className="font-body text-base"
-            animate={{ color: secondaryColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
             {project.name}
           </motion.div>
-          <motion.div
-            className="mt-[10px] font-body text-base"
+          <motion.p
+            className="mt-2 max-w-[460px] font-body text-sm md:text-base leading-[1.5] [text-wrap:pretty]"
+            animate={{ color: blurbColor }}
+            transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
+          >
+            {project.blurb}
+          </motion.p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-4">
+          <motion.span
+            className="mr-1 hidden sm:inline font-mono text-[14px] uppercase tracking-[0.08em]"
             animate={{ color: secondaryColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
-            {project.subtitle}
-          </motion.div>
+            {activeIndex + 1} / {PROJECTS.length}
+          </motion.span>
+          <NudgeButton
+            direction="prev"
+            disabled={PROJECTS.length <= 1}
+            onClick={() => {
+              setHasInteracted(true)
+              setActiveIndex(i => (i - 1 + PROJECTS.length) % PROJECTS.length)
+            }}
+            borderColor={borderColor}
+            textColor={titleColor}
+            bgColor={bgColor}
+          />
+          <NudgeButton
+            direction="next"
+            disabled={PROJECTS.length <= 1}
+            onClick={() => {
+              setHasInteracted(true)
+              setActiveIndex(i => (i + 1) % PROJECTS.length)
+            }}
+            borderColor={borderColor}
+            textColor={titleColor}
+            bgColor={bgColor}
+            pulse={!hasInteracted && !reduceMotion && PROJECTS.length > 1}
+          />
         </div>
-
-        {/* Absolutely centered in the bar regardless of how wide the left
-            text or the blurb are — was previously just the middle of 3
-            flex children (justify-between), which drifted whenever
-            project.name/blurb length changed. pointer-events-none on the
-            full-width wrapper (so it never blocks clicks on the title/
-            blurb either side of it), re-enabled on the actual button
-            group. bottom-12 matches the bar's own pb-12 so the buttons
-            still sit on the same baseline the other items-end content
-            does. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-12 flex justify-center">
-          <div className="pointer-events-auto flex shrink-0 items-center gap-3">
-            <motion.span
-              className="mr-2 font-mono text-[13px] uppercase tracking-[0.08em]"
-              animate={{ color: secondaryColor }}
-              transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
-            >
-              {activeIndex + 1} / {PROJECTS.length}
-            </motion.span>
-            <NudgeButton
-              direction="prev"
-              disabled={PROJECTS.length <= 1}
-              onClick={() => {
-                setHasInteracted(true)
-                setActiveIndex(i => (i - 1 + PROJECTS.length) % PROJECTS.length)
-              }}
-              borderColor={borderColor}
-              textColor={titleColor}
-              bgColor={bgColor}
-            />
-            <NudgeButton
-              direction="next"
-              disabled={PROJECTS.length <= 1}
-              onClick={() => {
-                setHasInteracted(true)
-                setActiveIndex(i => (i + 1) % PROJECTS.length)
-              }}
-              borderColor={borderColor}
-              textColor={titleColor}
-              bgColor={bgColor}
-              pulse={!hasInteracted && !reduceMotion && PROJECTS.length > 1}
-            />
-          </div>
-        </div>
-
-        <motion.div
-          className="max-w-[520px] shrink-0 font-body text-base leading-[1.55] [text-wrap:pretty]"
-          animate={{ color: blurbColor }}
-          transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
-        >
-          {project.blurb}
-        </motion.div>
       </div>
     </section>
   )

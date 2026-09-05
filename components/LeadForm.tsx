@@ -169,7 +169,7 @@ export default function LeadForm({
   const outlineClass = isDark ? 'focus-visible:outline-white' : 'focus-visible:outline-ink'
 
   return (
-    <div id={id} className="space-y-3">
+    <div id={id} className="space-y-2.5">
       <div>
         <label className={labelClass}>
           Name <span className="text-[#D46FC8]">*</span>
@@ -216,7 +216,7 @@ export default function LeadForm({
         <label className={labelClass}>Describe your company</label>
         <textarea
           className={`${inputClass} resize-none`}
-          rows={2}
+          rows={1}
           placeholder="What do you do, and who do you do it for?"
           value={formData.company}
           onChange={e => set('company', e.target.value)}
