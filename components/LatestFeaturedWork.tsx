@@ -117,6 +117,20 @@ const PROJECTS: FeaturedProject[] = [
     ],
   },
   {
+    name: 'Clark Fork',
+    subtitle: 'Website',
+    blurb:
+      'A Montana builder crafting custom log and timber homes since 1993 — one crew, one contract, start to finish. We built a quiet, editorial site that lets the craftsmanship and the landscape carry the story.',
+    mediaDir: '/media/clarkfork',
+    columns: [
+      { type: 'tall', image: '1' },
+      { type: 'stack', top: '2', bottom: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
+    ],
+  },
+  {
     name: 'Shinsetsu',
     subtitle: 'Travel Agency',
     blurb:
