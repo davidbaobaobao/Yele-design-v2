@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
+import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap, FilePlus2, RefreshCw, Wrench, ShieldCheck } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import ReputationBadge from '@/components/ReputationBadge'
 import PricingCards from '@/components/letsbuild/PricingCards'
-import CareVideo from '@/components/letsbuild/CareVideo'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold, heavier sections — code-split so the initial hero/form bundle
@@ -32,24 +31,20 @@ export const metadata: Metadata = {
 
 const KEY_POINTS = [
   'From $599',
-  'No templates. Custom design and imagery',
+  'No tasteless templates',
+  'No DIY — we build everything for you',
   'Delivery under 4 weeks',
-  'Our agency takes care of everything',
 ]
 
 // Plan-interest pills shown in the hero form; the pricing CTAs dispatch these
 // exact values to pre-select the matching pill.
-const PLAN_OPTIONS = ['Launch — $599', 'Business — $1,199', 'Pro — $2,299']
+const PLAN_OPTIONS = ['Launch — $599', 'Business — $1,199', 'Pro — $2,799']
 
-const CARE_INCLUDES = [
-  'Website hosting',
-  'Domain renewal when required',
-  'SSL and security',
-  'Backups',
-  'Uptime monitoring',
-  'Technical maintenance',
-  'Bug fixes',
-  'Support',
+const CARE_POINTS = [
+  { icon: ShieldCheck, title: 'Hosting & security', body: 'Hosting, SSL, backups, and uptime monitoring — all handled.' },
+  { icon: Wrench, title: 'Maintenance & support', body: 'Technical upkeep, bug fixes, and support whenever you need it.' },
+  { icon: FilePlus2, title: 'Content updates', body: 'New photos, projects, or menu items added for you.' },
+  { icon: RefreshCw, title: 'Yearly redesign', body: 'A full design refresh every year, so your site never looks dated.' },
 ]
 
 const STEPS = [
@@ -109,7 +104,7 @@ export default function LetsBuildPage() {
             — text/logo/trust on the left, form on the right — sized to ~58vh so
             the marquee and the top ~30% of the featured-work section peek below
             the fold. */}
-        <section className="min-h-[100svh] md:min-h-[58vh] flex flex-col justify-center px-6 md:px-12 py-4 md:py-10">
+        <section className="min-h-[100svh] md:min-h-0 md:h-[70vh] flex flex-col justify-center px-6 md:px-12 py-4 md:py-0">
           <div className="mx-auto w-full max-w-md md:max-w-5xl">
             <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
               {/* LEFT — logo, headline, key points, trust badge */}
@@ -171,49 +166,23 @@ export default function LetsBuildPage() {
                   Looked after with <span className="text-[#D46FC8]">Yele Care</span>
                 </h3>
                 <p className="font-body text-base text-muted mt-2">
-                  Permanent attention that keeps everything working — for $49/month.
+                  Permanent attention that keeps everything working — from $49/month.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="rounded-2xl border border-hairline p-6">
-                  <CareVideo webm="/media/beyond/SEO_hq.webm" mp4="/media/beyond/SEO_hq.mp4" poster="/media/beyond/SEO_poster.jpg" />
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <FilePlus2 size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
-                    <h4 className="font-display font-bold text-lg text-ink">Content updates</h4>
-                  </div>
-                  <p className="font-body text-sm text-muted leading-relaxed">
-                    We help you add new content — new projects, new photos, new menu items, whatever your business needs.
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-hairline p-6">
-                  <CareVideo webm="/media/beyond/ADS_hq.webm" mp4="/media/beyond/ADS_hq.mp4" poster="/media/beyond/ADS_poster.jpg" />
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <RefreshCw size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
-                    <h4 className="font-display font-bold text-lg text-ink">Yearly website redesign</h4>
-                  </div>
-                  <p className="font-body text-sm text-muted leading-relaxed">
-                    A full design refresh every year, so your website is <span className="text-ink font-semibold">never</span> outdated.
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-hairline p-6">
-                  <CareVideo webm="/media/whyyele3/whyyele5.webm" mp4="/media/whyyele3/whyyele5.mp4" poster="/media/whyyele3/whyyele5_poster.jpg" />
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Wrench size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
-                    <h4 className="font-display font-bold text-lg text-ink">Maintenance &amp; management</h4>
-                  </div>
-                  <p className="font-body text-sm text-muted leading-relaxed mb-3">
-                    All the technical work handled so your site stays online, secure and running correctly.
-                  </p>
-                  <ul className="flex flex-wrap gap-x-3 gap-y-1">
-                    {CARE_INCLUDES.map(item => (
-                      <li key={item} className="font-body text-xs text-muted flex items-center gap-1">
-                        <Check size={12} className="text-[#D46FC8]" aria-hidden="true" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+                {CARE_POINTS.map(point => {
+                  const Icon = point.icon
+                  return (
+                    <div key={point.title} className="flex items-start gap-3 rounded-2xl border border-hairline p-5">
+                      <Icon size={20} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <div>
+                        <h4 className="font-display font-bold text-base text-ink">{point.title}</h4>
+                        <p className="font-body text-sm text-muted leading-relaxed mt-0.5">{point.body}</p>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </div>

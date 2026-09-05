@@ -14,6 +14,7 @@ type Tier = {
   blurb: string
   headline: string | null
   features: Feature[]
+  care: string
   cta: string
   popular: boolean
 }
@@ -34,6 +35,7 @@ const TIERS: Tier[] = [
       { label: 'SEO and Google indexing' },
       { label: 'Professional image and video content' },
     ],
+    care: '$49',
     cta: 'Choose Launch',
     popular: false,
   },
@@ -52,14 +54,15 @@ const TIERS: Tier[] = [
       { label: 'Blog' },
       { label: 'Analytics' },
     ],
+    care: '$49',
     cta: 'Choose Business',
     popular: true,
   },
   {
     name: 'Pro',
-    price: 'From $2,299',
-    priceNote: 'From $2,299',
-    planValue: 'Pro — $2,299',
+    price: 'From $2,799',
+    priceNote: 'From $2,799',
+    planValue: 'Pro — $2,799',
     blurb: 'For businesses that need advanced functionality.',
     headline: 'Everything in Business, plus:',
     features: [
@@ -70,6 +73,7 @@ const TIERS: Tier[] = [
       { label: 'Custom workflows', info: 'Automated, business-specific processes built around how you actually operate.' },
       { label: 'Complex payment flows', info: 'Subscriptions, deposits, and multi-step or conditional checkout.' },
     ],
+    care: '$99',
     cta: 'Talk to Us',
     popular: false,
   },
@@ -167,7 +171,7 @@ function TiltCard({ tier }: { tier: Tier }) {
 
       <div className="mb-5 border-t border-hairline pt-4">
         <p className="font-body text-sm font-medium text-ink">{tier.priceNote}</p>
-        <p className="font-body text-sm text-ink">+ $49/month Yele Care</p>
+        <p className="font-body text-sm text-ink">+ {tier.care}/month Yele Care</p>
       </div>
 
       <PlanCTA
