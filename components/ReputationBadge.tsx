@@ -32,7 +32,7 @@ export default function ReputationBadge({ className = '' }: { className?: string
             <Star key={i} size={14} fill="#FFFFFF" strokeWidth={0} />
           ))}
         </span>
-        <span className="font-body text-sm text-white/80">Delivered over 100+ projects</span>
+        <span className="font-body text-sm text-white/80">Delivered over 320+ projects</span>
       </div>
     </div>
   )

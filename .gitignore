@@ -39,3 +39,4 @@ next-env.d.ts
 /video/
 /media/
 /public/video/
+.env*

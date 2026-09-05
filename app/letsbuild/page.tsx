@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap } from 'lucide-react'
+import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import ReputationBadge from '@/components/ReputationBadge'
 import { EnLangProvider } from '@/components/LangProvider'
@@ -40,43 +40,30 @@ const TIERS = [
     price: '$599',
     priceNote: '$599 one-time',
     blurb: 'Everything most small businesses need to get online professionally.',
+    headline: null as string | null,
     features: [
       'Custom website design',
-      'All standard pages needed for your business',
-      'Mobile and tablet optimization',
-      'Contact and lead forms',
-      'Call and WhatsApp buttons',
-      'Basic booking/calendar integration',
-      'Google Maps and social links',
-      'SEO foundation',
-      'Meta titles and descriptions',
-      'Google indexing setup',
-      'Analytics setup',
-      'Basic image and visual creation',
-      'Domain connection',
-      'Launch support',
+      'Mobile optimization',
+      'Custom domain',
+      'Contact and forms',
+      'SEO and Google indexing',
     ],
     cta: 'Choose Launch',
     popular: false,
   },
   {
     name: 'Business',
-    price: '$1,299',
-    priceNote: '$1,299 one-time',
-    blurb: 'For businesses that want their website to do more than simply look good.',
+    price: '$1,199',
+    priceNote: '$1,199 one-time',
+    blurb: 'For businesses that want more functionality on their website.',
+    headline: 'Everything in Launch, plus:',
     features: [
-      'Everything in Launch, plus:',
-      'More customized design',
-      'Conversion-focused page structure',
-      'Advanced forms',
-      'Advanced booking',
-      'Payments and deposits',
-      'Blog or CMS',
-      'CRM integrations',
-      'Marketing pixels and conversion tracking',
-      'More advanced content and visual support',
-      'Additional business integrations',
-      'More complex customer journeys',
+      'Calendar booking',
+      'Payment acceptance',
+      'Small e-commerce',
+      'Conversion optimization',
+      'Blog',
+      'Analytics',
     ],
     cta: 'Choose Business',
     popular: true,
@@ -86,17 +73,12 @@ const TIERS = [
     price: 'From $2,299',
     priceNote: 'From $2,299',
     blurb: 'For businesses that need advanced functionality.',
+    headline: 'Large e-commerce, plus:',
     features: [
-      'Everything in Business, plus:',
-      'E-commerce',
-      'Advanced booking systems',
-      'Custom functionality',
+      'Custom functionality and dashboard',
       'Advanced integrations',
       'Multiple locations',
-      'Membership features',
-      'Multilingual websites',
       'Custom workflows',
-      'Advanced CMS functionality',
       'Complex payment flows',
       'Business-specific solutions',
     ],
@@ -114,8 +96,6 @@ const CARE_INCLUDES = [
   'Technical maintenance',
   'Bug fixes',
   'Support',
-  'Small text and image updates',
-  'Annual website health and design review',
 ]
 
 const STEPS = [
@@ -170,32 +150,34 @@ export default function LetsBuildPage() {
   return (
     <EnLangProvider>
       <main style={{ backgroundColor: DARK }}>
-        {/* ---- HERO + quick lead form ---- */}
-        <section className="px-6 pt-10 pb-14 md:pt-16 md:pb-20">
-          <div className="max-w-md mx-auto">
-            <Link href="/" className="inline-flex items-center mb-8 focus-visible:outline-none" aria-label="yele">
+        {/* ---- HERO + quick lead form — sized to fit one viewport (desktop + mobile) ---- */}
+        <section className="min-h-[100svh] flex flex-col justify-center px-6 py-6">
+          <div className="max-w-md mx-auto w-full">
+            <Link href="/" className="inline-flex items-center mb-5 focus-visible:outline-none" aria-label="yele">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/media/logomedia/mainlogo.svg" alt="" width={102} height={32} className="h-8 w-auto" />
+              <img src="/media/logomedia/mainlogo.svg" alt="" width={102} height={32} className="h-7 w-auto" />
             </Link>
 
-            <h1 className="font-display font-bold text-4xl md:text-5xl text-white tracking-tight leading-[1.08] mb-5">
+            <h1 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight leading-[1.08] mb-3">
               Let&apos;s build your website
             </h1>
 
-            <ul className="space-y-2.5 mb-6">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#D46FC8] mb-2">From $599</p>
+
+            <ul className="space-y-1.5 mb-4">
               {KEY_POINTS.map(point => (
                 <li key={point} className="flex items-start gap-2.5">
-                  <Check size={18} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
-                  <span className="font-body text-base font-semibold text-white/90">{point}</span>
+                  <Check size={17} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
+                  <span className="font-body text-sm md:text-base font-semibold text-white/90">{point}</span>
                 </li>
               ))}
             </ul>
 
-            <ReputationBadge className="mb-8" />
+            <ReputationBadge className="mb-5" />
 
             <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" />
 
-            <div className="text-center mt-4">
+            <div className="text-center mt-3">
               <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
                 Prefer to talk? Book a free 10-min intro call
               </Link>
@@ -206,24 +188,19 @@ export default function LetsBuildPage() {
         {/* ---- TRUST MARQUEE ---- */}
         <LogoMarquee />
 
-        {/* ---- PRICING ---- */}
-        <section className="px-6 py-16 md:py-24">
+        {/* ---- PRICING (white) + YELE CARE follows directly, no gap ---- */}
+        <section className="bg-white px-6 py-16 md:py-24">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-10 md:mb-14">
-              <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">Pricing</p>
-              <h2 className="font-display font-bold text-3xl md:text-5xl text-white tracking-tight">
-                One-time build. $49/month support.
-              </h2>
-            </div>
+            <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
+              Pricing
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
               {TIERS.map(tier => (
                 <div
                   key={tier.name}
-                  className={`relative rounded-2xl p-6 md:p-7 flex flex-col ${
-                    tier.popular
-                      ? 'bg-white/[0.06] border border-[#D46FC8]/50'
-                      : 'bg-white/[0.03] border border-white/10'
+                  className={`relative rounded-2xl p-6 md:p-7 flex flex-col bg-white ${
+                    tier.popular ? 'border-2 border-[#D46FC8] shadow-lg shadow-[#D46FC8]/10' : 'border border-hairline'
                   }`}
                 >
                   {tier.popular && (
@@ -231,29 +208,26 @@ export default function LetsBuildPage() {
                       Most Popular
                     </span>
                   )}
-                  <h3 className="font-display font-bold text-2xl text-white">{tier.name}</h3>
+                  <h3 className="font-display font-bold text-2xl text-ink">{tier.name}</h3>
                   <div className="mt-1 mb-3">
-                    <span className="font-display font-bold text-3xl text-white">{tier.price}</span>
+                    <span className="font-display font-bold text-3xl text-ink">{tier.price}</span>
                   </div>
-                  <p className="font-body text-sm text-white/60 mb-5">{tier.blurb}</p>
+                  <p className="font-body text-sm text-muted mb-5">{tier.blurb}</p>
 
                   <ul className="space-y-2 mb-6 flex-1">
-                    {tier.features.map((f, i) => (
+                    {tier.headline && (
+                      <li className="font-body text-sm font-semibold text-ink">{tier.headline}</li>
+                    )}
+                    {tier.features.map(f => (
                       <li key={f} className="flex items-start gap-2.5">
-                        {i === 0 && f.startsWith('Everything') ? (
-                          <span className="font-body text-sm font-semibold text-white/90">{f}</span>
-                        ) : (
-                          <>
-                            <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
-                            <span className="font-body text-sm text-white/75">{f}</span>
-                          </>
-                        )}
+                        <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
+                        <span className="font-body text-sm text-ink/75">{f}</span>
                       </li>
                     ))}
                   </ul>
 
-                  <div className="border-t border-white/10 pt-4 mb-5">
-                    <p className="font-body text-sm text-white">{tier.priceNote}</p>
+                  <div className="border-t border-hairline pt-4 mb-5">
+                    <p className="font-body text-sm text-ink font-medium">{tier.priceNote}</p>
                     <p className="font-body text-sm text-[#D46FC8]">+ $49/month Yele Care</p>
                   </div>
 
@@ -262,7 +236,7 @@ export default function LetsBuildPage() {
                     className={`w-full inline-flex items-center justify-center font-body font-medium text-base px-6 py-3 rounded-xl transition-colors ${
                       tier.popular
                         ? 'bg-[#D46FC8] hover:bg-[#DE85D2] text-white'
-                        : 'bg-white hover:bg-white/90 text-ink'
+                        : 'bg-ink hover:bg-ink/90 text-white'
                     }`}
                   >
                     {tier.cta}
@@ -270,32 +244,52 @@ export default function LetsBuildPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
 
-        {/* ---- YELE CARE ---- */}
-        <section className="px-6 py-16 md:py-24 border-t border-white/10">
-          <div className="max-w-4xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">Yele Care</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-4">
-              We don&apos;t disappear after your website launches.
-            </h2>
-            <p className="font-body text-base md:text-lg text-white/70 leading-relaxed mb-2">
-              Every Yele website is supported by Yele Care for <span className="text-white font-semibold">$49/month</span>. We keep your website online, secure, updated, and working properly so you don&apos;t have to worry about it. Yearly design update so your website is never outdated.
-            </p>
+            {/* Yele Care — follows the tiers directly, 3 pillars */}
+            <div className="mt-12 md:mt-16 pt-10 md:pt-12 border-t border-hairline">
+              <div className="text-center mb-8 md:mb-10">
+                <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-2">Yele Care · $49/month</p>
+                <h3 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight">
+                  We don&apos;t disappear after launch.
+                </h3>
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 mt-8">
-              {CARE_INCLUDES.map(item => (
-                <div key={item} className="flex items-start gap-2.5">
-                  <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
-                  <span className="font-body text-base text-white/80">{item}</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="rounded-2xl border border-hairline p-6">
+                  <FilePlus2 size={22} className="text-[#D46FC8] mb-3" aria-hidden="true" />
+                  <h4 className="font-display font-bold text-lg text-ink mb-1.5">Content updates</h4>
+                  <p className="font-body text-sm text-muted leading-relaxed">
+                    We help you add new content — new projects, new photos, new menu items, whatever your business needs.
+                  </p>
                 </div>
-              ))}
-            </div>
+                <div className="rounded-2xl border border-hairline p-6">
+                  <RefreshCw size={22} className="text-[#D46FC8] mb-3" aria-hidden="true" />
+                  <h4 className="font-display font-bold text-lg text-ink mb-1.5">Yearly website redesign</h4>
+                  <p className="font-body text-sm text-muted leading-relaxed">
+                    A full design refresh every year, so your website is <span className="text-ink font-semibold">never</span> outdated.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-hairline p-6">
+                  <Wrench size={22} className="text-[#D46FC8] mb-3" aria-hidden="true" />
+                  <h4 className="font-display font-bold text-lg text-ink mb-1.5">Maintenance &amp; management</h4>
+                  <p className="font-body text-sm text-muted leading-relaxed mb-3">
+                    All the technical work handled so your site stays online, secure and running correctly.
+                  </p>
+                  <ul className="flex flex-wrap gap-x-3 gap-y-1">
+                    {CARE_INCLUDES.map(item => (
+                      <li key={item} className="font-body text-xs text-muted flex items-center gap-1">
+                        <Check size={12} className="text-[#D46FC8]" aria-hidden="true" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
 
-            <p className="font-body text-sm text-white/45 mt-8">
-              Major redesigns, new functionality, and larger website changes are quoted separately.
-            </p>
+              <p className="font-body text-sm text-muted/70 mt-8 text-center">
+                Major redesigns, new functionality, and larger website changes are quoted separately.
+              </p>
+            </div>
           </div>
         </section>
 
