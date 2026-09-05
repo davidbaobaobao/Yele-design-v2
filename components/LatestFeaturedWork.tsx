@@ -90,6 +90,19 @@ const PROJECTS: FeaturedProject[] = [
     ],
   },
   {
+    name: 'Reptile Roadshow',
+    subtitle: 'Website',
+    blurb:
+      'A live exotic-animal experience company running reptile encounters and safari-style shows. We built a bold, jungle-toned site with tiered booking packages — turning a niche experience into an instantly bookable one.',
+    mediaDir: '/media/reptileroadshow',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+    ],
+  },
+  {
     name: 'Shinsetsu',
     subtitle: 'Travel Agency',
     blurb:
