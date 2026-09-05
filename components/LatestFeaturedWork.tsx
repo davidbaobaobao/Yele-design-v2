@@ -179,7 +179,7 @@ function ImageCell({
 }) {
   return (
     <div
-      className={`group relative overflow-hidden rounded-[10px] ${className}`}
+      className={`group relative overflow-hidden rounded-[10px] transition-[transform,box-shadow] duration-[450ms] ease-[cubic-bezier(0.2,0.6,0.2,1)] will-change-transform hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/30 ${className}`}
       style={{ backgroundColor: CELL_BG }}
     >
       <Image
@@ -187,8 +187,9 @@ function ImageCell({
         alt={alt}
         fill
         sizes={sizes}
-        className="object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.2,0.6,0.2,1)] group-hover:scale-[1.04]"
+        className="object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.2,0.6,0.2,1)] group-hover:scale-[1.05]"
       />
+      <div className="pointer-events-none absolute inset-0 rounded-[10px] ring-0 ring-white/0 transition-all duration-[450ms] group-hover:ring-1 group-hover:ring-white/15" aria-hidden="true" />
     </div>
   )
 }
@@ -230,8 +231,8 @@ function NudgeButton({
       // pulse is true (right arrow, before the visitor has navigated).
       // Pointer events are untouched — opacity/scale don't affect hit
       // testing, so the button stays clickable throughout the pulse.
-      animate={pulse ? { opacity: [1, 0.55, 1], scale: [1, 1.08, 1] } : { opacity: 1, scale: 1 }}
-      transition={pulse ? { duration: 1.6, ease: 'easeInOut', repeat: Infinity } : { duration: 0.2 }}
+      animate={pulse ? { opacity: [1, 0.45, 1], scale: [1, 1.06, 1] } : { opacity: 1, scale: 1 }}
+      transition={pulse ? { duration: 1.8, ease: 'easeInOut', repeat: Infinity } : { duration: 0.2 }}
     >
       {direction === 'prev' ? '←' : '→'}
     </motion.button>
@@ -250,7 +251,6 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
   const setPastThreshold = dealCtx ? dealCtx.setPastThreshold : setLocalPast
 
   const [activeIndex, setActiveIndex] = useState(0)
-  const [hasInteracted, setHasInteracted] = useState(false)
   const project = PROJECTS[activeIndex]
 
   const sectionRef = useRef<HTMLElement>(null)
@@ -414,7 +414,7 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
               return (
                 <div
                   key={i}
-                  className="relative h-full aspect-[3/2] overflow-hidden rounded-[10px]"
+                  className="group relative h-full aspect-[3/2] overflow-hidden rounded-[10px] transition-[transform,box-shadow] duration-[450ms] ease-[cubic-bezier(0.2,0.6,0.2,1)] will-change-transform hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/30"
                   style={{ backgroundColor: CELL_BG }}
                 >
                   <PosterVideo
@@ -454,10 +454,14 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
         />
       </div>
 
-      {/* Bottom bar — project name (bold) + short description on the left,
-          counter + large nav arrows on the right. */}
-      <div className="flex shrink-0 items-end justify-between gap-8 px-6 md:px-12 pt-8 md:pt-10">
-        <div className="min-w-0">
+      {/* Bottom bar — project name (bold) + short (clamped) description on
+          the left. The counter + large nav arrows are absolutely positioned:
+          vertically anchored to the fixed-height text block (so they never
+          shift up/down as the description length changes) and horizontally
+          centered on desktop (pinned right on mobile to avoid overlapping
+          the text). */}
+      <div className="relative px-6 md:px-12 pt-8 md:pt-10">
+        <div className="max-w-[520px] min-h-[92px]">
           <motion.div
             className="font-display font-bold text-2xl md:text-[30px] leading-tight"
             animate={{ color: titleColor }}
@@ -466,7 +470,7 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
             {project.name}
           </motion.div>
           <motion.p
-            className="mt-2 max-w-[460px] font-body text-sm md:text-base leading-[1.5] [text-wrap:pretty]"
+            className="mt-2 max-w-[460px] font-body text-sm md:text-base leading-[1.5] line-clamp-2 [text-wrap:pretty]"
             animate={{ color: blurbColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
@@ -474,37 +478,39 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
           </motion.p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-4">
-          <motion.span
-            className="mr-1 hidden sm:inline font-mono text-[14px] uppercase tracking-[0.08em]"
-            animate={{ color: secondaryColor }}
-            transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
-          >
-            {activeIndex + 1} / {PROJECTS.length}
-          </motion.span>
-          <NudgeButton
-            direction="prev"
-            disabled={PROJECTS.length <= 1}
-            onClick={() => {
-              setHasInteracted(true)
-              setActiveIndex(i => (i - 1 + PROJECTS.length) % PROJECTS.length)
-            }}
-            borderColor={borderColor}
-            textColor={titleColor}
-            bgColor={bgColor}
-          />
-          <NudgeButton
-            direction="next"
-            disabled={PROJECTS.length <= 1}
-            onClick={() => {
-              setHasInteracted(true)
-              setActiveIndex(i => (i + 1) % PROJECTS.length)
-            }}
-            borderColor={borderColor}
-            textColor={titleColor}
-            bgColor={bgColor}
-            pulse={!hasInteracted && !reduceMotion && PROJECTS.length > 1}
-          />
+        <div className="pointer-events-none absolute right-6 top-8 md:top-10 md:right-auto md:left-1/2 md:-translate-x-1/2 h-[92px] flex items-center">
+          <div className="pointer-events-auto flex items-center gap-4">
+            <motion.span
+              className="mr-1 hidden sm:inline font-mono text-[14px] uppercase tracking-[0.08em]"
+              animate={{ color: secondaryColor }}
+              transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
+            >
+              {activeIndex + 1} / {PROJECTS.length}
+            </motion.span>
+            <NudgeButton
+              direction="prev"
+              disabled={PROJECTS.length <= 1}
+              onClick={() => {
+                setActiveIndex(i => (i - 1 + PROJECTS.length) % PROJECTS.length)
+              }}
+              borderColor={borderColor}
+              textColor={titleColor}
+              bgColor={bgColor}
+            />
+            <NudgeButton
+              direction="next"
+              disabled={PROJECTS.length <= 1}
+              onClick={() => {
+                setActiveIndex(i => (i + 1) % PROJECTS.length)
+              }}
+              borderColor={borderColor}
+              textColor={titleColor}
+              bgColor={bgColor}
+              // Keeps gently blinking to invite a click (stops only under
+              // reduced motion or with a single project).
+              pulse={!reduceMotion && PROJECTS.length > 1}
+            />
+          </div>
         </div>
       </div>
     </section>

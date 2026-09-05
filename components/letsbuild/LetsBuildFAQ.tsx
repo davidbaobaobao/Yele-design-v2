@@ -13,6 +13,10 @@ const FAQS: { q: string; a: string }[] = [
     a: 'Yes. Yele Care is $49/month and covers hosting, domain support, security, backups, maintenance, support, and small website updates.',
   },
   {
+    q: 'Is Yele Care compulsory?',
+    a: 'No. You are free to host and manage the website yourself. We strongly recommend Yele Care because it keeps your site hosted, secure, backed up, monitored, and up to date — with our team handling the technical side and small changes, so you never have to worry about it.',
+  },
+  {
     q: 'Do I need to pay everything upfront?',
     a: 'No. You pay 50% when we begin. The remaining 50% is paid when the website is finished and approved for launch.',
   },

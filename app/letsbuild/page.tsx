@@ -260,9 +260,11 @@ export default function LetsBuildPage() {
             <div className="mt-10 md:mt-12">
               <div className="text-center mb-8 md:mb-10">
                 <h3 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight">
-                  Every website includes Yele Care — <span className="text-[#D46FC8]">$49/month</span>
+                  Looked after with Yele Care — <span className="text-[#D46FC8]">$49/month</span>
                 </h3>
-                <p className="font-body text-base text-muted mt-2">We don&apos;t disappear after launch.</p>
+                <p className="font-body text-base text-muted mt-2">
+                  Permanent attention that keeps everything working — for $49/month.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
