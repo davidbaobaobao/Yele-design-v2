@@ -56,11 +56,39 @@ type FeaturedProject = {
   columns: FeaturedColumn[]
 }
 
-// Shinsetsu loads first (position 1 / default activeIndex 0); Restoration
-// Bros is second, Duna third. The counter + nudge arrows cycle activeIndex
-// (next from the last project wraps to the first, and vice versa) and
-// reset scroll position; add another project by just appending an entry.
+// Blackcrest loads first (position 1 / default activeIndex 0); Shinsetsu
+// second, Restoration Bros third, Duna fourth. The counter + nudge arrows
+// cycle activeIndex (next from the last project wraps to the first, and
+// vice versa) and reset scroll position; add another project by just
+// appending an entry.
 const PROJECTS: FeaturedProject[] = [
+  {
+    name: 'Blackcrest',
+    subtitle: 'Website',
+    blurb:
+      'High-end architectural windows and doors, custom-built and installed. We designed a product-led site with instant, size-based pricing — quote any opening in seconds, no sales call required.',
+    mediaDir: '/media/blackcrest',
+    columns: [
+      { type: 'stack', top: '6', bottom: '1' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'tall', image: '2' },
+    ],
+  },
+  {
+    name: 'Marketasa',
+    subtitle: 'Website',
+    blurb:
+      'A performance marketing agency running paid acquisition across Google and Meta. We built an editorial, high-contrast site that frames their case studies like a magazine — positioning them well above the template-driven competition.',
+    mediaDir: '/media/marketasa',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+    ],
+  },
   {
     name: 'Shinsetsu',
     subtitle: 'Travel Agency',
