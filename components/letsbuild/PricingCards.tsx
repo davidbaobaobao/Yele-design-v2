@@ -10,8 +10,8 @@ type Feature = { label: string; info?: string }
 
 type Tier = {
   name: string
-  price: string
-  priceNote: string
+  amount: string
+  from?: boolean
   planValue: string
   blurb: string
   headline: string | null
@@ -24,8 +24,7 @@ type Tier = {
 const TIERS: Tier[] = [
   {
     name: 'Launch',
-    price: '$599',
-    priceNote: 'One-time',
+    amount: '599',
     planValue: 'Launch — $599',
     blurb: 'Everything most small businesses need to get online professionally.',
     headline: null,
@@ -43,8 +42,7 @@ const TIERS: Tier[] = [
   },
   {
     name: 'Business',
-    price: '$1,199',
-    priceNote: 'One-time',
+    amount: '1,199',
     planValue: 'Business — $1,199',
     blurb: 'For businesses that want more functionality on their website.',
     headline: 'Everything in Launch, plus:',
@@ -62,8 +60,8 @@ const TIERS: Tier[] = [
   },
   {
     name: 'Pro',
-    price: 'From $2,799',
-    priceNote: 'One-time',
+    amount: '2,799',
+    from: true,
     planValue: 'Pro — $2,799',
     blurb: 'For businesses that need advanced functionality.',
     headline: 'Everything in Business, plus:',
@@ -137,9 +135,13 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
 
       <div className="relative mb-6">
         <p className={`font-body text-sm font-medium mb-2 ${hl ? 'text-white/50' : 'text-muted'}`}>{tier.name}</p>
-        <div className="mb-2 flex items-end gap-2">
-          <span className="font-display text-5xl font-semibold tracking-tight">{tier.price}</span>
-          <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>{tier.priceNote}</span>
+        <div className="mb-2 flex items-end gap-1">
+          {tier.from && (
+            <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>from</span>
+          )}
+          <span className={`mb-1 font-body text-2xl font-semibold ${hl ? 'text-white/60' : 'text-muted'}`}>$</span>
+          <span className="font-display text-5xl font-semibold tracking-tight">{tier.amount}</span>
+          <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>one-time</span>
         </div>
         <span
           className={`we-pill-orange inline-flex items-center self-start whitespace-nowrap rounded-full font-body font-semibold text-white ${
