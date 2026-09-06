@@ -29,12 +29,12 @@ const TIERS: Tier[] = [
     blurb: 'Everything most small businesses need to get online professionally.',
     headline: null,
     features: [
-      { label: 'Custom website design' },
-      { label: 'Mobile optimization' },
-      { label: 'Custom domain' },
+      { label: 'Custom website design', info: 'No AI or cheap templates — a bespoke design tailored to your business.' },
+      { label: 'Mobile optimization', info: 'Fast and responsive on phones, where almost half of your customers are.' },
+      { label: 'Custom domain and email', info: 'A professional address like yourbusiness.com and an email such as info@yourbusiness.com.' },
       { label: 'Contact and forms' },
-      { label: 'SEO and Google indexing' },
-      { label: 'Professional image and video content' },
+      { label: 'SEO and Google indexing', info: 'Helps customers find your business on Google and Google Maps.' },
+      { label: 'Professional image and video content', info: 'Our studio creates and edits professional, high-budget media content for your website.' },
     ],
     care: '$49',
     cta: 'Choose Launch',
@@ -51,8 +51,8 @@ const TIERS: Tier[] = [
       { label: 'Payment acceptance', info: 'Accept secure credit-card payments directly on your website.' },
       { label: 'Small e-commerce', info: 'Ideal for smaller catalogs — up to around 30 products.' },
       { label: 'Conversion optimization', info: 'Improved layout and clear calls-to-action to turn more visitors into customers.' },
-      { label: 'Blog' },
-      { label: 'Analytics' },
+      { label: 'Advanced SEO', info: 'Deeper, more advanced SEO implementation for stronger rankings.' },
+      { label: 'Detailed analytics' },
     ],
     care: '$49',
     cta: 'Choose Business',
@@ -143,13 +143,6 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
           <span className="font-display text-5xl font-semibold tracking-tight">{tier.amount}</span>
           <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>one-time</span>
         </div>
-        <span
-          className={`we-pill-orange inline-flex items-center self-start whitespace-nowrap rounded-full font-body font-semibold text-white ${
-            hl ? 'px-4 py-1.5 text-sm' : 'px-3 py-1 text-xs'
-          }`}
-        >
-          Pay 50% to start
-        </span>
       </div>
 
       <ul className="relative mb-8 flex flex-1 flex-col gap-3">

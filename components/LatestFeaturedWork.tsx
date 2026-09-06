@@ -56,8 +56,8 @@ type FeaturedProject = {
 }
 
 // Display order (activeIndex 0 loads first): Clark Fork, Blackcrest,
-// Clear Cool Water, Reptile Roadshow, Marketasa, Shinsetsu, Restoration
-// Bros, Duna.
+// Clear Cool Water, Reptile Roadshow, Shinsetsu, Restoration Bros, Duna,
+// Marketasa.
 // The counter + nudge arrows cycle activeIndex (next from the last project
 // wraps to the first, and vice versa) and reset scroll position; reorder by
 // moving an entry, add one by inserting an entry.
@@ -114,18 +114,6 @@ const PROJECTS: FeaturedProject[] = [
     ],
   },
   {
-    name: 'Marketasa',
-    blurb:
-      'A performance marketing agency. An editorial, high-contrast site that frames their case studies like a magazine.',
-    mediaDir: '/media/marketasa',
-    columns: [
-      { type: 'stack', top: '1', bottom: '2' },
-      { type: 'tall', image: '3' },
-      { type: 'video', video: '4', poster: '4_poster' },
-      { type: 'tall', image: '5' },
-    ],
-  },
-  {
     name: 'Shinsetsu',
     blurb:
       "A boutique travel agency crafting tailor-made ski journeys across Hokkaido's legendary powder.",
@@ -161,6 +149,18 @@ const PROJECTS: FeaturedProject[] = [
       { type: 'video', video: '1', poster: '1_poster' },
       { type: 'tall', image: '5' },
       { type: 'stack', top: '6', bottom: '7' },
+    ],
+  },
+  {
+    name: 'Marketasa',
+    blurb:
+      'A performance marketing agency. An editorial, high-contrast site that frames their case studies like a magazine.',
+    mediaDir: '/media/marketasa',
+    columns: [
+      { type: 'stack', top: '1', bottom: '2' },
+      { type: 'tall', image: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
     ],
   },
 ]

@@ -62,8 +62,8 @@ const GROW = [
 const WHY = [
   { title: 'Design refresh', body: 'A full redesign every year, so your website never looks dated.', webm: '/media/whyyele3/whyyele1.webm', mp4: '/media/whyyele3/whyyele1.mp4', poster: '/media/whyyele3/whyyele1_poster.jpg' },
   { title: 'Affordable & transparent', body: 'Professional websites from $699, with clear pricing and no confusing agency quotes.', webm: '/media/whyyele3/whyyele6.webm', mp4: '/media/whyyele3/whyyele6.mp4', poster: '/media/whyyele3/whyyele6_poster.jpg' },
-  { title: 'Custom', body: 'Designed around your business, not a generic template with your logo dropped on.', webm: '/media/whyyele3/whyyele2.webm', mp4: '/media/whyyele3/whyyele2.mp4', poster: '/media/whyyele3/whyyele2_poster.jpg' },
-  { title: 'Fast delivery', body: 'Delivery goal set for under 4 weeks.', webm: '/media/whyyele3/whyyele3.webm', mp4: '/media/whyyele3/whyyele3.mp4', poster: '/media/whyyele3/whyyele3_poster.jpg' },
+  { title: 'Custom', body: 'Designed around your business, not a generic template with your logo dropped on.', webm: '/media/whyyele3/whyyele3.webm', mp4: '/media/whyyele3/whyyele3.mp4', poster: '/media/whyyele3/whyyele3_poster.jpg' },
+  { title: 'Fast delivery', body: 'Delivery goal set for under 4 weeks.', webm: '/media/whyyele3/whyyele2.webm', mp4: '/media/whyyele3/whyyele2.mp4', poster: '/media/whyyele3/whyyele2_poster.jpg' },
   { title: 'Support 24/7', body: 'We stay with you after launch — support whenever you need it.', webm: '/media/beyond/AIcall_hq.webm', mp4: '/media/beyond/AIcall_hq.mp4', poster: '/media/beyond/AIcall_poster.jpg' },
   { title: 'Built for growth', body: 'Add SEO, advertising, content, AI, and automation as your business grows.', webm: '/media/beyond/Marketing_hq.webm', mp4: '/media/beyond/Marketing_hq.mp4', poster: '/media/beyond/Marketing_poster.jpg' },
 ]
@@ -79,7 +79,7 @@ export default function LetsBuildPage() {
             trust on the left, form on the right. Fills the viewport (marquee
             sits just below the fold), with top/bottom spacing from the padding
             + vertical centering. */}
-        <section className="min-h-[100svh] flex flex-col justify-center px-6 md:px-12 pt-20 pb-10 md:pt-24 md:pb-16">
+        <section className="min-h-[calc(100svh-132px)] flex flex-col justify-center px-6 md:px-12 pt-16 pb-8 md:pt-16 md:pb-10">
           <div className="mx-auto w-full max-w-md md:max-w-5xl">
             <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
               {/* LEFT — logo, headline, key points, trust badge */}
@@ -126,32 +126,29 @@ export default function LetsBuildPage() {
         <LatestFeaturedWork forceDark />
 
         {/* ---- PRICING (white, index-style cards) ---- */}
-        <section id="pricing" className="bg-white px-6 py-20 md:py-28">
+        <section id="pricing" className="bg-white px-6 pt-20 md:pt-28 pb-10 md:pb-12">
           <div className="max-w-6xl mx-auto">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-3">
+            <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
               Pricing
             </h2>
-            <p className="font-body text-base text-muted text-center mb-10 md:mb-14">
-              One-time build. Then Yele Care keeps everything running — from $49/month.
-            </p>
             <PricingCards />
 
-            <p className="max-w-2xl mx-auto text-center font-body text-sm md:text-base text-muted mt-10 leading-relaxed">
+            <p className="max-w-3xl mx-auto text-center font-body text-base md:text-lg font-medium text-ink mt-10 leading-relaxed">
               Pay 50% at the beginning of your project, and the remaining 50% at launch. Then Yele Care makes sure
-              everything works and your site stays updated — for <span className="text-ink font-medium">$49/month</span>.
+              everything works and your site stays updated — for $49/month.
             </p>
           </div>
         </section>
 
         {/* ---- YELE CARE (white, 3 cards with videos) ---- */}
-        <section className="bg-white px-6 py-16 md:py-24">
+        <section className="bg-white px-6 pt-6 md:pt-8 pb-16 md:pb-24">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight">
                 Looked after with <span className="text-[#D46FC8]">Yele Care</span>
               </h2>
               <p className="font-body text-base text-muted mt-2">
-                Permanent attention that keeps everything working — from $49/month.
+                Permanent attention that keeps everything working — for $49/month.
               </p>
             </div>
 
