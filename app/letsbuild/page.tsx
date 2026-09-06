@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap, FilePlus2, RefreshCw, Wrench, ShieldCheck } from 'lucide-react'
+import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import ReputationBadge from '@/components/ReputationBadge'
 import PricingCards from '@/components/letsbuild/PricingCards'
+import CareVideo from '@/components/letsbuild/CareVideo'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold, heavier sections — code-split so the initial hero/form bundle
@@ -40,16 +41,11 @@ const KEY_POINTS = [
 // exact values to pre-select the matching pill.
 const PLAN_OPTIONS = ['Launch — $599', 'Business — $1,199', 'Pro — $2,799']
 
-const CARE_POINTS = [
-  { icon: ShieldCheck, title: 'Hosting & security', body: 'Hosting, SSL, backups, and uptime monitoring — all handled.' },
-  { icon: Wrench, title: 'Maintenance & support', body: 'Technical upkeep, bug fixes, and support whenever you need it.' },
-  { icon: FilePlus2, title: 'Content updates', body: 'New photos, projects, or menu items added for you.' },
-  { icon: RefreshCw, title: 'Yearly redesign', body: 'A full design refresh every year, so your site never looks dated.' },
-]
+const CARE_INCLUDES = ['Hosting', 'SSL & security', 'Backups', 'Uptime monitoring']
 
 const STEPS = [
-  { n: '1', title: 'Secure your spot', body: 'Get started by paying 50% to lock in your project and reserve your place in our schedule.' },
-  { n: '2', title: 'Tell us about your business', body: "Through video calls or email, we work with you until we have a clear picture of exactly what you're looking for." },
+  { n: '1', title: 'Start now', body: 'Secure your spot by paying 50% — this locks in your project and reserves your place in our schedule.' },
+  { n: '2', title: 'Tell us about your business', body: 'A quick call or email so we understand your exact needs for the website before we design anything.' },
   { n: '3', title: 'Review', body: 'We show you the finished website and make the agreed revisions before launch.' },
   { n: '4', title: 'Go live', body: 'Approve, pay the remaining 50%, and we launch your website — Yele Care keeps everything running afterwards.' },
 ]
@@ -100,11 +96,11 @@ export default function LetsBuildPage() {
     <EnLangProvider>
       <main style={{ backgroundColor: DARK }}>
         {/* ---- HERO + quick lead form — sized to fit one viewport (desktop + mobile) ---- */}
-        {/* Mobile: single centered column (full viewport). Desktop: two columns
-            — text/logo/trust on the left, form on the right — sized to ~58vh so
-            the marquee and the top ~30% of the featured-work section peek below
-            the fold. */}
-        <section className="min-h-[100svh] md:min-h-0 md:h-[70vh] flex flex-col justify-center px-6 md:px-12 py-4 md:py-0">
+        {/* Mobile: single centered column. Desktop: two columns — text/logo/
+            trust on the left, form on the right. Fills the viewport (marquee
+            sits just below the fold), with top/bottom spacing from the padding
+            + vertical centering. */}
+        <section className="min-h-[100svh] flex flex-col justify-center px-6 md:px-12 pt-20 pb-10 md:pt-24 md:pb-16">
           <div className="mx-auto w-full max-w-md md:max-w-5xl">
             <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
               {/* LEFT — logo, headline, key points, trust badge */}
@@ -150,39 +146,80 @@ export default function LetsBuildPage() {
         {/* ---- LATEST FEATURED WORK (index gallery, always dark, one screen) ---- */}
         <LatestFeaturedWork forceDark />
 
-        {/* ---- PRICING (white) + YELE CARE follows directly, no gap ---- */}
-        <section className="bg-white px-6 py-16 md:py-24">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
+        {/* ---- PRICING (dark, index-style cards + ambient pink glow) ---- */}
+        <section id="pricing" className="relative overflow-hidden px-6 py-20 md:py-28" style={{ backgroundColor: DARK }}>
+          <div
+            className="pointer-events-none absolute inset-0 z-0"
+            aria-hidden="true"
+            style={{
+              background:
+                'radial-gradient(ellipse 480px 420px at 15% 55%, rgba(212,111,200,0.20), transparent 70%), ' +
+                'radial-gradient(ellipse 560px 480px at 50% 52%, rgba(212,111,200,0.26), transparent 70%), ' +
+                'radial-gradient(ellipse 480px 420px at 85% 55%, rgba(212,111,200,0.20), transparent 70%)',
+              filter: 'blur(70px)',
+            }}
+          />
+          <div className="relative z-10 max-w-6xl mx-auto">
+            <h2 className="font-display font-bold text-4xl md:text-5xl text-bone tracking-tight text-center mb-3">
               Pricing
             </h2>
-
+            <p className="font-body text-base text-white/60 text-center mb-10 md:mb-14">
+              One-time build. Then Yele Care keeps everything running — from $49/month.
+            </p>
             <PricingCards />
+          </div>
+        </section>
 
-            {/* Yele Care — follows the tiers directly, no divider */}
-            <div className="mt-10 md:mt-12">
-              <div className="text-center mb-8 md:mb-10">
-                <h3 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight">
-                  Looked after with <span className="text-[#D46FC8]">Yele Care</span>
-                </h3>
-                <p className="font-body text-base text-muted mt-2">
-                  Permanent attention that keeps everything working — from $49/month.
+        {/* ---- YELE CARE (white, 3 cards with videos) ---- */}
+        <section className="bg-white px-6 py-16 md:py-24">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight">
+                Looked after with <span className="text-[#D46FC8]">Yele Care</span>
+              </h2>
+              <p className="font-body text-base text-muted mt-2">
+                Permanent attention that keeps everything working — from $49/month.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="rounded-2xl border border-hairline p-6">
+                <CareVideo webm="/media/beyond/SEO_hq.webm" mp4="/media/beyond/SEO_hq.mp4" poster="/media/beyond/SEO_poster.jpg" />
+                <div className="flex items-center gap-2 mb-1.5">
+                  <FilePlus2 size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
+                  <h4 className="font-display font-bold text-lg text-ink">Content updates</h4>
+                </div>
+                <p className="font-body text-sm text-muted leading-relaxed">
+                  We help you add new content — new projects, new photos, new menu items, whatever your business needs.
                 </p>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
-                {CARE_POINTS.map(point => {
-                  const Icon = point.icon
-                  return (
-                    <div key={point.title} className="flex items-start gap-3 rounded-2xl border border-hairline p-5">
-                      <Icon size={20} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
-                      <div>
-                        <h4 className="font-display font-bold text-base text-ink">{point.title}</h4>
-                        <p className="font-body text-sm text-muted leading-relaxed mt-0.5">{point.body}</p>
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="rounded-2xl border border-hairline p-6">
+                <CareVideo webm="/media/beyond/ADS_hq.webm" mp4="/media/beyond/ADS_hq.mp4" poster="/media/beyond/ADS_poster.jpg" />
+                <div className="flex items-center gap-2 mb-1.5">
+                  <RefreshCw size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
+                  <h4 className="font-display font-bold text-lg text-ink">Yearly website redesign</h4>
+                </div>
+                <p className="font-body text-sm text-muted leading-relaxed">
+                  A full design refresh every year, so your website is <span className="text-ink font-semibold">never</span> outdated.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-hairline p-6">
+                <CareVideo webm="/media/whyyele3/whyyele5.webm" mp4="/media/whyyele3/whyyele5.mp4" poster="/media/whyyele3/whyyele5_poster.jpg" />
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Wrench size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
+                  <h4 className="font-display font-bold text-lg text-ink">Maintenance &amp; management</h4>
+                </div>
+                <p className="font-body text-sm text-muted leading-relaxed mb-3">
+                  All the technical work handled so your site stays online, secure and running correctly.
+                </p>
+                <ul className="flex flex-wrap gap-x-3 gap-y-1">
+                  {CARE_INCLUDES.map(item => (
+                    <li key={item} className="font-body text-xs text-muted flex items-center gap-1">
+                      <Check size={12} className="text-[#D46FC8]" aria-hidden="true" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
@@ -195,14 +232,17 @@ export default function LetsBuildPage() {
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-10">
               From idea to live website in four simple steps.
             </h2>
-            <div className="space-y-8">
+            <div className="space-y-4">
               {STEPS.map(step => (
-                <div key={step.n} className="flex gap-5">
-                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center">
+                <div
+                  key={step.n}
+                  className="group flex gap-5 rounded-2xl p-4 -mx-4 transition-all duration-300 hover:bg-white/[0.04] hover:translate-x-1"
+                >
+                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#D46FC8]/30">
                     {step.n}
                   </span>
                   <div>
-                    <h3 className="font-display font-bold text-xl text-white mb-1">{step.title}</h3>
+                    <h3 className="font-display font-bold text-xl text-white mb-1 transition-colors duration-300 group-hover:text-[#D46FC8]">{step.title}</h3>
                     <p className="font-body text-base text-white/70 leading-relaxed max-w-2xl">{step.body}</p>
                   </div>
                 </div>

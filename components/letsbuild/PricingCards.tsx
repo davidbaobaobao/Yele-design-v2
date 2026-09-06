@@ -1,8 +1,10 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { Check, HelpCircle } from 'lucide-react'
+import { useRef } from 'react'
+import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, type Transition } from 'framer-motion'
+import { Check } from 'lucide-react'
 import PlanCTA from '@/components/letsbuild/PlanCTA'
+import { FeatureTooltip } from '@/components/PricingCards'
 
 type Feature = { label: string; info?: string }
 
@@ -23,7 +25,7 @@ const TIERS: Tier[] = [
   {
     name: 'Launch',
     price: '$599',
-    priceNote: '$599 one-time',
+    priceNote: 'One-time',
     planValue: 'Launch — $599',
     blurb: 'Everything most small businesses need to get online professionally.',
     headline: null,
@@ -42,7 +44,7 @@ const TIERS: Tier[] = [
   {
     name: 'Business',
     price: '$1,199',
-    priceNote: '$1,199 one-time',
+    priceNote: 'One-time',
     planValue: 'Business — $1,199',
     blurb: 'For businesses that want more functionality on their website.',
     headline: 'Everything in Launch, plus:',
@@ -61,7 +63,7 @@ const TIERS: Tier[] = [
   {
     name: 'Pro',
     price: 'From $2,799',
-    priceNote: 'From $2,799',
+    priceNote: 'One-time',
     planValue: 'Pro — $2,799',
     blurb: 'For businesses that need advanced functionality.',
     headline: 'Everything in Business, plus:',
@@ -79,117 +81,115 @@ const TIERS: Tier[] = [
   },
 ]
 
-function InfoTip({ info }: { info: string }) {
-  return (
-    <span className="group/tip relative ml-1 inline-flex align-middle">
-      <HelpCircle
-        size={13}
-        className="text-muted/60 transition-colors group-hover/tip:text-[#D46FC8] cursor-help"
-        aria-hidden="true"
-      />
-      <span
-        role="tooltip"
-        className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 w-52 -translate-x-1/2 translate-y-1 rounded-lg bg-ink p-2.5 text-left font-body text-xs leading-snug text-white opacity-0 shadow-xl transition-all duration-200 group-hover/tip:translate-y-0 group-hover/tip:opacity-100"
-      >
-        {info}
-        <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-ink" aria-hidden="true" />
-      </span>
-    </span>
-  )
-}
-
-// Cursor-driven 3D tilt + lift + a soft sheen that follows the pointer, for a
-// tactile, parallax feel on hover. Falls back to a plain card when the pointer
-// leaves (transform resets). Pointer events pass through to the CTA/tooltips.
-function TiltCard({ tier }: { tier: Tier }) {
+// Same spotlight-tilt card treatment as the index pricing (components/
+// PricingCards.tsx): cursor-driven 3D rotate + a soft white radial spotlight,
+// the dark highlighted middle card (#1C1D24) between two light bg-base cards,
+// green check marks, and the shared click-to-open FeatureTooltip. Data + CTAs
+// (plan-select dispatch) stay letsbuild-specific.
+function PricingCard({ tier, index }: { tier: Tier; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [transform, setTransform] = useState('')
-  const [sheen, setSheen] = useState<{ x: number; y: number; on: boolean }>({ x: 50, y: 50, on: false })
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const smoothX = useSpring(mouseX, { stiffness: 150, damping: 20 })
+  const smoothY = useSpring(mouseY, { stiffness: 150, damping: 20 })
+  const rotateX = useTransform(smoothY, [-0.5, 0.5], [4, -4])
+  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-4, 4])
+  const spotX = useTransform(smoothX, [-0.5, 0.5], [0, 100])
+  const spotY = useTransform(smoothY, [-0.5, 0.5], [0, 100])
+  const spotBg = useMotionTemplate`radial-gradient(circle at ${spotX}% ${spotY}%, rgba(255,255,255,0.10) 0%, transparent 55%)`
 
-  function onMove(e: React.MouseEvent<HTMLDivElement>) {
-    const el = ref.current
-    if (!el) return
-    const r = el.getBoundingClientRect()
-    const px = (e.clientX - r.left) / r.width
-    const py = (e.clientY - r.top) / r.height
-    const rx = (0.5 - py) * 6
-    const ry = (px - 0.5) * 6
-    setTransform(`perspective(1000px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-6px) scale(1.015)`)
-    setSheen({ x: px * 100, y: py * 100, on: true })
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = ref.current?.getBoundingClientRect()
+    if (!rect) return
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5)
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5)
   }
-  function onLeave() {
-    setTransform('')
-    setSheen(s => ({ ...s, on: false }))
+  function handleMouseLeave() {
+    mouseX.set(0)
+    mouseY.set(0)
   }
+
+  const hl = tier.popular
 
   return (
-    <div
+    <motion.div
       ref={ref}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      style={{ transform, transformStyle: 'preserve-3d', transition: 'transform .3s cubic-bezier(0.2,0.6,0.2,1), box-shadow .3s ease' }}
-      className={`relative flex flex-col rounded-2xl bg-white p-6 md:p-7 will-change-transform ${
-        tier.popular
-          ? 'border-2 border-[#D46FC8] shadow-lg shadow-[#D46FC8]/10 hover:shadow-2xl hover:shadow-[#D46FC8]/20'
-          : 'border border-hairline hover:shadow-2xl hover:shadow-black/10'
+      style={{ rotateX, rotateY, transformPerspective: 1000 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' } as Transition}
+      viewport={{ once: true, margin: '-80px' }}
+      className={`relative flex flex-col rounded-3xl cursor-default ${
+        hl
+          ? 'px-8 py-12 bg-[#1C1D24] text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] ring-1 ring-[#D46FC8]/30'
+          : 'p-8 bg-base text-ink shadow-[0_16px_56px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07]'
       }`}
     >
-      {/* cursor-follow sheen */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300"
-        style={{
-          opacity: sheen.on ? 1 : 0,
-          background: `radial-gradient(340px circle at ${sheen.x}% ${sheen.y}%, rgba(212,111,200,0.10), transparent 60%)`,
-        }}
-        aria-hidden="true"
-      />
+      <motion.div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ background: spotBg }} aria-hidden="true" />
 
       {tier.popular && (
-        <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-[#D46FC8] px-3 py-1 font-body text-xs font-semibold text-white">
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3 py-1 font-body text-xs font-semibold text-ink">
           Most Popular
         </span>
       )}
 
-      <h3 className="font-display text-2xl font-bold text-ink">{tier.name}</h3>
-      <div className="mb-3 mt-1">
-        <span className="font-display text-3xl font-bold text-ink">{tier.price}</span>
+      <div className="relative mb-6">
+        <p className={`font-body text-sm font-medium mb-2 ${hl ? 'text-white/50' : 'text-muted'}`}>{tier.name}</p>
+        <div className="mb-2 flex items-end gap-2">
+          <span className="font-display text-5xl font-semibold tracking-tight">{tier.price}</span>
+          <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>{tier.priceNote}</span>
+        </div>
+        <span
+          className={`we-pill-orange inline-flex items-center self-start whitespace-nowrap rounded-full font-body font-semibold text-white ${
+            hl ? 'px-4 py-1.5 text-sm' : 'px-3 py-1 text-xs'
+          }`}
+        >
+          Pay 50% to start
+        </span>
       </div>
-      <p className="mb-5 font-body text-sm text-muted">{tier.blurb}</p>
 
-      <ul className="mb-6 flex-1 space-y-2">
-        {tier.headline && <li className="font-body text-sm font-semibold text-ink">{tier.headline}</li>}
+      <ul className="relative mb-8 flex flex-1 flex-col gap-3">
+        {tier.headline && <li className={`font-body text-sm font-bold ${hl ? 'text-white/80' : 'text-ink'}`}>{tier.headline}</li>}
         {tier.features.map(f => (
           <li key={f.label} className="flex items-start gap-2.5">
-            <Check size={16} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
-            <span className="font-body text-sm text-ink/75">
+            <Check size={15} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />
+            <span className={`font-body text-sm ${hl ? 'text-white/80' : 'text-ink'}`}>
               {f.label}
-              {f.info && <InfoTip info={f.info} />}
+              {f.info && (
+                <>
+                  {' '}
+                  <FeatureTooltip text={f.info} dark={hl} />
+                </>
+              )}
             </span>
           </li>
         ))}
       </ul>
 
-      <div className="mb-5 border-t border-hairline pt-4">
-        <p className="font-body text-sm font-medium text-ink">{tier.priceNote}</p>
-        <p className="font-body text-sm text-ink">+ {tier.care}/month Yele Care</p>
+      <div className={`relative mb-6 border-t pt-4 ${hl ? 'border-white/10' : 'border-hairline'}`}>
+        <p className={`font-body text-sm ${hl ? 'text-white/80' : 'text-ink'}`}>+ {tier.care}/month Yele Care</p>
       </div>
 
       <PlanCTA
         plan={tier.planValue}
         label={tier.cta}
-        className={`inline-flex w-full cursor-pointer items-center justify-center rounded-xl px-6 py-3 font-body text-base font-medium transition-colors ${
-          tier.popular ? 'bg-[#D46FC8] text-white hover:bg-[#DE85D2]' : 'bg-ink text-white hover:bg-ink/90'
+        className={`relative inline-flex w-full cursor-pointer items-center justify-center rounded-full px-6 py-3 font-body text-sm font-medium transition-colors ${
+          hl
+            ? 'bg-[#F2F0EB] text-[#16161A] hover:bg-[#F8F7F4]'
+            : 'bg-[#1A1A1F] text-[#F2F0EB] hover:bg-[#26262C]'
         }`}
       />
-    </div>
+    </motion.div>
   )
 }
 
 export default function PricingCards() {
   return (
-    <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-3">
-      {TIERS.map(tier => (
-        <TiltCard key={tier.name} tier={tier} />
+    <div className="grid items-center gap-6 md:grid-cols-3">
+      {TIERS.map((tier, i) => (
+        <PricingCard key={tier.name} tier={tier} index={i} />
       ))}
     </div>
   )
