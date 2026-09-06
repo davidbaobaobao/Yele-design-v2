@@ -33,7 +33,7 @@ function shell({ heading, bodyParagraphs, buttonLabel, buttonHref }: {
     <tr>
       <td align="center" style="padding:32px 16px;">
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <tr><td align="center" style="padding:40px 40px 8px 40px;"><img src="${LOGO_URL}" alt="Yele" width="120" style="display:block; height:auto; width:120px; max-width:120px;" /></td></tr>
+          <tr><td align="center" style="padding:40px 40px 8px 40px;"><img src="${LOGO_URL}" alt="Yele" width="80" style="display:block; height:auto; width:80px; max-width:80px;" /></td></tr>
           <tr><td align="center" style="padding:16px 40px 0 40px;"><div style="width:48px; height:4px; border-radius:4px; background-color:${PINK};"></div></td></tr>
           <tr><td align="center" style="padding:24px 40px 0 40px;"><h1 style="margin:0; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:30px; line-height:1.25; font-weight:700; color:${INK};">${heading}</h1></td></tr>
           <tr><td style="padding:24px 40px 0 40px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${paras}</td></tr>
@@ -153,12 +153,26 @@ export function internalPaymentEmail({
 export function clientConfirmationEmail({
   firstName,
   planLabel,
+  name,
+  email,
+  company,
 }: {
   firstName?: string
   planLabel?: string
+  name?: string
+  email?: string
+  company?: string
 }): { subject: string; html: string; text: string } {
   const hi = firstName ? `Hi ${firstName},` : 'Hi,'
   const forPlan = planLabel ? ` for the ${planLabel} website` : ''
+
+  // Prefill the survey from the email link so the visitor doesn't re-enter
+  // details they already gave.
+  const sp = new URLSearchParams()
+  if (name) sp.set('name', name)
+  if (email) sp.set('email', email)
+  if (company) sp.set('company', company)
+  const surveyHref = sp.toString() ? `https://yele.design/survey?${sp.toString()}` : 'https://yele.design/survey'
 
   const subject = 'We received your payment — Yele'
 
@@ -169,7 +183,7 @@ export function clientConfirmationEmail({
     '',
     "As soon as you fill in your details, we'll get started on your website right away. Either way, we'll also reach out to you briefly.",
     '',
-    'Continue your survey: https://yele.design/survey',
+    `Continue your survey: ${surveyHref}`,
     '',
     'Talk soon,',
     'The Yele team',
@@ -191,7 +205,7 @@ export function clientConfirmationEmail({
           <!-- Logo -->
           <tr>
             <td align="center" style="padding:40px 40px 8px 40px;">
-              <img src="${LOGO_URL}" alt="Yele" width="120" style="display:block; height:auto; width:120px; max-width:120px;" />
+              <img src="${LOGO_URL}" alt="Yele" width="80" style="display:block; height:auto; width:80px; max-width:80px;" />
             </td>
           </tr>
           <!-- Accent bar -->
@@ -223,7 +237,7 @@ export function clientConfirmationEmail({
           <!-- Button -->
           <tr>
             <td align="center" style="padding:28px 40px 8px 40px;">
-              <a href="https://yele.design/survey" style="display:inline-block; background-color:${PINK}; color:#ffffff; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:17px; font-weight:600; text-decoration:none; padding:14px 32px; border-radius:12px;">
+              <a href="${surveyHref}" style="display:inline-block; background-color:${PINK}; color:#ffffff; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:17px; font-weight:600; text-decoration:none; padding:14px 32px; border-radius:12px;">
                 Continue your details
               </a>
             </td>

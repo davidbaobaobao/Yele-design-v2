@@ -39,7 +39,7 @@ async function sendBuildPaymentEmails(session: Stripe.Checkout.Session) {
     try {
       const { subject, html, text } = isFinal
         ? finalConfirmationEmail({ firstName, planLabel })
-        : clientConfirmationEmail({ firstName, planLabel })
+        : clientConfirmationEmail({ firstName, planLabel, name, email, company })
       await resend.emails.send({
         from: 'Yele <noreply@yele.design>',
         to: [email],

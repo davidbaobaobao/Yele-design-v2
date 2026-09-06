@@ -8,31 +8,20 @@ import Link from 'next/link'
 import { Loader2, Sparkles } from 'lucide-react'
 import { trackMetaSurveyComplete } from '@/lib/metaPixel'
 import SelectCard from './_components/SelectCard'
-import StyleImageCard from './_components/StyleImageCard'
-import ColorImageCard from './_components/ColorImageCard'
 import SplitLayout from './_components/SplitLayout'
-import FullLayout from './_components/FullLayout'
-import ImmersiveGridLayout from './_components/ImmersiveGridLayout'
 import PersistentLeftVideo from './_components/PersistentLeftVideo'
 import ArrowNav from './_components/ArrowNav'
 import { FieldLabel, TextInput, Textarea, Checkbox } from './_components/Fields'
 import {
   CHANNEL_OPTIONS,
-  COLOR_OPTIONS,
   EMPTY_ANSWERS,
-  STYLE_OPTIONS,
   TOTAL_STEPS,
   isEmailValid,
-  isImmersiveStep,
   isStepValid,
   isUrlLikelyValid,
   normalizeUrl,
   stepKeyAt,
   stepMode,
-  styleKey,
-  type ColorId,
-  type StyleId,
-  type StyleRound,
   type SurveyAnswers,
 } from './_lib/data'
 
@@ -167,20 +156,23 @@ function SurveyPageInner() {
     setAnswers((prev) => ({ ...prev, links: { ...prev.links, [key]: normalizeUrl(prev.links[key]) } }))
   }, [])
 
-  const toggleStyle = useCallback((id: StyleId, round: StyleRound) => {
-    const key = styleKey(id, round)
+  // Prefill from URL (payment success / email link) so the visitor doesn't
+  // re-enter details they already gave. Only fills empty fields, after
+  // hydration so it never clobbers a restored draft.
+  useEffect(() => {
+    if (!hydrated) return
+    const qpName = searchParams.get('name')?.trim() || ''
+    const qpEmail = searchParams.get('email')?.trim() || ''
+    const qpCompany = searchParams.get('company')?.trim() || ''
+    if (!qpName && !qpEmail && !qpCompany) return
     setAnswers((prev) => ({
       ...prev,
-      styles: prev.styles.includes(key) ? prev.styles.filter((v) => v !== key) : [...prev.styles, key],
+      name: prev.name || qpName,
+      email: prev.email || qpEmail,
+      company: prev.company || qpCompany,
     }))
-  }, [])
-
-  const toggleColor = useCallback((id: ColorId) => {
-    setAnswers((prev) => ({
-      ...prev,
-      colors: prev.colors.includes(id) ? prev.colors.filter((v) => v !== id) : [...prev.colors, id],
-    }))
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated])
 
   const goBack = useCallback(() => {
     setStep((s) => Math.max(1, s - 1))
@@ -272,10 +264,12 @@ function SurveyPageInner() {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-survey-bg-soft px-6 text-center">
         <div className="flex flex-col items-center gap-4">
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink/10">
-            <Sparkles className="h-8 w-8 text-ink" strokeWidth={1.5} />
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink/10 motion-safe:animate-pulse">
+            <Sparkles className="h-8 w-8 text-[#D46FC8] motion-safe:animate-spin [animation-duration:6s]" strokeWidth={1.5} />
           </span>
-          <h1 className="font-display max-w-lg text-3xl font-bold text-ink md:text-4xl">Got it — we&apos;re on it. 🚀</h1>
+          <h1 className="font-display max-w-lg text-3xl font-bold text-ink md:text-4xl">
+            Got it — we&apos;re on it. <span className="inline-block motion-safe:animate-bounce">🚀</span>
+          </h1>
           <p className="max-w-md font-body text-base text-ink/80">
             You&apos;ll hear from us within 24 hours with your design plan.
           </p>
@@ -296,8 +290,8 @@ function SurveyPageInner() {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-survey-bg-soft px-6 text-center">
         <div className="flex flex-col items-center gap-4">
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink/10">
-            <Sparkles className="h-8 w-8 text-ink" strokeWidth={1.5} />
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink/10 motion-safe:animate-pulse">
+            <Sparkles className="h-8 w-8 text-[#D46FC8]" strokeWidth={1.5} />
           </span>
           <h1 className="font-display max-w-xl text-3xl font-bold text-ink md:text-4xl">
             Thank you{introName ? `, ${introName}` : ''}, your website{introCompany ? ` for ${introCompany}` : ''} is on the way.
@@ -318,8 +312,8 @@ function SurveyPageInner() {
   }
 
   const mode = stepMode(step)
-  const immersive = isImmersiveStep(step)
   const key = stepKeyAt(step)
+  const firstName = (answers.name || '').trim().split(/\s+/)[0]
 
   return (
     <div
@@ -344,80 +338,50 @@ function SurveyPageInner() {
         className={
           mode === 'split'
             ? 'flex w-full flex-1'
-            : immersive
-              ? 'mx-auto flex w-full max-w-[1800px] flex-1 flex-col px-3 pb-24 pt-6 md:px-6 md:pb-28 md:pt-8'
-              : 'mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-12 md:px-10 md:pb-28 md:pt-16'
+            : 'mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-12 md:px-10 md:pb-28 md:pt-16'
         }
       >
         {key === 'contact' && (
-          <SplitLayout title="Who are we designing for?">
-            <FieldLabel>Name</FieldLabel>
-            <TextInput autoFocus value={answers.name} onChange={(v) => update('name', v)} onKeyDown={handleEnterAdvance} placeholder="Your name" />
+          <SplitLayout title={firstName ? `${firstName}, what's your preferred communication channel?` : 'How should we reach you?'}>
+            <FieldLabel>Preferred communication channel</FieldLabel>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {CHANNEL_OPTIONS.map((c) => (
+                <SelectCard
+                  key={c.id}
+                  title={c.title}
+                  selected={answers.preferredChannel === c.id}
+                  onClick={() => update('preferredChannel', c.id)}
+                />
+              ))}
+            </div>
+
+            <FieldLabel className="mt-6">Name</FieldLabel>
+            <TextInput value={answers.name} onChange={(v) => update('name', v)} onKeyDown={handleEnterAdvance} placeholder="Your name" />
             <FieldLabel className="mt-4">Company</FieldLabel>
             <TextInput value={answers.company} onChange={(v) => update('company', v)} onKeyDown={handleEnterAdvance} placeholder="Your business name" />
-            <p className="mt-3 text-xs text-ink/60">At least one is required.</p>
 
-            <FieldLabel className="mt-6">Email</FieldLabel>
+            <FieldLabel className="mt-4">Email</FieldLabel>
             <TextInput type="email" value={answers.email} onChange={(v) => update('email', v)} onKeyDown={handleEnterAdvance} placeholder="you@email.com" />
             {answers.email.trim() !== '' && !isEmailValid(answers.email) && (
               <p className="mt-1.5 text-xs text-ink/70">That email doesn&apos;t look quite right.</p>
             )}
             <FieldLabel className="mt-4">Phone</FieldLabel>
             <TextInput type="tel" value={answers.phone} onChange={(v) => update('phone', v)} onKeyDown={handleEnterAdvance} placeholder="(555) 555-5555" />
-            <p className="mt-3 text-xs text-ink/60">At least one is required.</p>
+            <p className="mt-3 text-xs text-ink/60">Name or company, and email or phone, are required.</p>
           </SplitLayout>
-        )}
-
-        {key === 'style1' && (
-          <ImmersiveGridLayout title="Which designs catch your eye?" microcopy="Pick as many as you like.">
-            <div className="flex h-full items-center justify-center">
-              <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-4 md:gap-4">
-                {STYLE_OPTIONS.map((s) => (
-                  <StyleImageCard
-                    key={s.id}
-                    fileKey={s.fileKey}
-                    round={1}
-                    label={s.label}
-                    fallbackBg={s.fallbackBg}
-                    fallbackText={s.fallbackText}
-                    selected={answers.styles.includes(styleKey(s.id, 1))}
-                    onClick={() => toggleStyle(s.id, 1)}
-                  />
-                ))}
-              </div>
-            </div>
-          </ImmersiveGridLayout>
-        )}
-
-        {key === 'colors' && (
-          <ImmersiveGridLayout title="What colours do you like?" microcopy="Choose as many as you like.">
-            <div className="grid h-full grid-cols-2 grid-rows-4 gap-2 sm:grid-cols-4 sm:grid-rows-2 md:gap-3">
-              {COLOR_OPTIONS.map((c) => (
-                <ColorImageCard
-                  key={c.id}
-                  filename={c.filename}
-                  label={c.label}
-                  fallbackBg={c.fallbackBg}
-                  fallbackText={c.fallbackText}
-                  selected={answers.colors.includes(c.id)}
-                  onClick={() => toggleColor(c.id)}
-                />
-              ))}
-            </div>
-          </ImmersiveGridLayout>
         )}
 
         {key === 'about' && (
           <SplitLayout title="Tell us about your business" leftImage="page11">
             <FieldLabel>What does your business do? Be as detailed as possible.</FieldLabel>
             <Textarea autoFocus value={answers.business} onChange={(v) => update('business', v)} placeholder="e.g. We repair and restore vintage bicycles, and build custom frames to order..." />
-            <FieldLabel className="mt-4">What do you sell, and how much does it cost approximately?</FieldLabel>
+            <FieldLabel className="mt-4">What do you sell, and how much does it cost?</FieldLabel>
             <Textarea value={answers.sells} onChange={(v) => update('sells', v)} placeholder="e.g. Custom-built frames from $800, tune-ups from $60..." />
           </SplitLayout>
         )}
 
         {key === 'links' && (
-          <SplitLayout title="Are you already online somewhere?" leftImage="page12">
+          <SplitLayout title="Already online?" leftImage="page12">
             <FieldLabel>Website</FieldLabel>
             <TextInput
               type="url"
@@ -448,21 +412,6 @@ function SurveyPageInner() {
               <Checkbox checked={answers.noWebPresence} onChange={(v) => update('noWebPresence', v)} label="I'm not online yet" />
             </div>
           </SplitLayout>
-        )}
-
-        {key === 'channel' && (
-          <FullLayout title="Which is your preferred communication channel?">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {CHANNEL_OPTIONS.map((c) => (
-                <SelectCard
-                  key={c.id}
-                  title={c.title}
-                  selected={answers.preferredChannel === c.id}
-                  onClick={() => update('preferredChannel', c.id)}
-                />
-              ))}
-            </div>
-          </FullLayout>
         )}
 
         {submitError && <p className="mx-auto mt-4 max-w-md text-center text-sm font-semibold text-ink">{submitError}</p>}

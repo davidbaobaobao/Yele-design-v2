@@ -18,7 +18,8 @@ export default function LivePage({ searchParams }: { searchParams: { name?: stri
         </Link>
 
         <h1 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight leading-tight mb-3">
-          {name ? <>You&apos;re all set, {name}. 🚀</> : <>You&apos;re all set. 🚀</>}
+          {name ? <>You&apos;re all set, {name}. </> : <>You&apos;re all set. </>}
+          <span className="inline-block motion-safe:animate-bounce">🚀</span>
         </h1>
         <p className="font-body text-muted text-lg leading-relaxed mb-2">
           Payment received and Yele Care is active — your first month is free.

@@ -385,13 +385,13 @@ export type StepKey =
   | 'style1'
   | 'colors'
 
+// Simplified 3-step flow: contact + preferred channel (merged), what they
+// sell, and whether they're already online. The design-taste steps (style1,
+// colors) and the standalone channel step were removed.
 export const STEP_ORDER: StepKey[] = [
   'contact',
-  'channel',
   'about',
   'links',
-  'style1',
-  'colors',
 ]
 
 export const TOTAL_STEPS = STEP_ORDER.length
@@ -401,7 +401,7 @@ export function stepKeyAt(step: number): StepKey {
 }
 
 const SPLIT_KEYS = new Set<StepKey>(['contact', 'about', 'links'])
-const IMMERSIVE_KEYS = new Set<StepKey>(['style1', 'colors'])
+const IMMERSIVE_KEYS = new Set<StepKey>([])
 
 export function stepMode(step: number): 'split' | 'full' {
   return SPLIT_KEYS.has(stepKeyAt(step)) ? 'split' : 'full'
