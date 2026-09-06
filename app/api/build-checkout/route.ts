@@ -61,13 +61,20 @@ export async function POST(request: Request) {
     if (company) successParams.set('company', company)
     if (email) successParams.set('email', email)
 
+    // On cancel/failure, send them to the retry page with everything needed to
+    // re-launch checkout for the exact same product.
+    const cancelParams = new URLSearchParams({ plan })
+    if (name) cancelParams.set('name', name)
+    if (email) cancelParams.set('email', email)
+    if (company) cancelParams.set('company', company)
+
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: email || undefined,
       success_url: `${baseUrl}/survey?${successParams.toString()}`,
-      cancel_url: `${baseUrl}/received`,
+      cancel_url: `${baseUrl}/payment-failed?${cancelParams.toString()}`,
       locale: 'auto',
       allow_promotion_codes: true,
       metadata: {

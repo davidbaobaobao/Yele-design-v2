@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import PayButton from '@/components/received/PayButton'
 
 export const metadata = {
   title: 'Thanks — Yele',
@@ -71,13 +72,13 @@ export default function ReceivedPage({
             Don&apos;t want to wait?
           </h2>
 
-          <ol className="space-y-3 mb-10">
+          <ol className="space-y-2 mb-10">
             {NEXT_STEPS.map((step, i) => (
-              <li key={step} className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold text-sm flex items-center justify-center">
+              <li key={step} className="group flex items-start gap-3 rounded-xl p-2 -mx-2 transition-colors hover:bg-black/[0.03]">
+                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold text-sm flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110">
                   {i + 1}
                 </span>
-                <span className="font-body text-base md:text-lg text-ink/80 pt-0.5">{step}</span>
+                <span className="font-body text-base md:text-lg text-ink/80 pt-0.5 transition-colors group-hover:text-ink">{step}</span>
               </li>
             ))}
           </ol>
@@ -86,8 +87,10 @@ export default function ReceivedPage({
             {TIERS.map(tier => (
               <div
                 key={tier.name}
-                className={`relative flex flex-col rounded-2xl bg-white p-6 ${
-                  tier.popular ? 'border-2 border-[#D46FC8] shadow-lg shadow-[#D46FC8]/10' : 'border border-hairline'
+                className={`relative flex flex-col rounded-2xl bg-white p-6 transition-shadow ${
+                  tier.popular
+                    ? 'border-2 border-[#D46FC8] shadow-xl shadow-[#D46FC8]/15'
+                    : 'border border-ink/15 shadow-lg shadow-black/[0.08] hover:shadow-xl hover:shadow-black/[0.12]'
                 }`}
               >
                 {tier.popular && (
@@ -97,20 +100,14 @@ export default function ReceivedPage({
                 )}
                 <h3 className="font-display font-bold text-xl text-ink">{tier.name}</h3>
                 <p className="font-body text-sm text-muted mt-1 mb-5 flex-1">{tier.desc}</p>
-                <form action="/api/build-checkout" method="POST" className="w-full">
-                  <input type="hidden" name="plan" value={tier.plan} />
-                  <input type="hidden" name="name" value={rawName} />
-                  <input type="hidden" name="email" value={email} />
-                  <input type="hidden" name="company" value={company} />
-                  <button
-                    type="submit"
-                    className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-3 font-body text-base font-medium transition-colors cursor-pointer ${
-                      tier.popular ? 'bg-[#D46FC8] text-white hover:bg-[#DE85D2]' : 'bg-ink text-white hover:bg-ink/90'
-                    }`}
-                  >
-                    {tier.pay}
-                  </button>
-                </form>
+                <PayButton
+                  plan={tier.plan}
+                  name={rawName}
+                  email={email}
+                  company={company}
+                  label={tier.pay}
+                  popular={tier.popular}
+                />
               </div>
             ))}
           </div>

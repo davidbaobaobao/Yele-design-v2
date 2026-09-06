@@ -192,7 +192,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
               variant={showBoneText ? 'white' : 'pink'}
               className="text-xs px-5 py-2.5"
             >
-              {t('Empezar gratis', 'Start for free')}
+              {t('Empezar', 'Start now')}
             </CTAButton>
           </div>
 
@@ -264,7 +264,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
                 variant="pink"
                 className="flex-1 text-xs px-4 py-2.5"
               >
-                {t('Empezar gratis', 'Start for free')}
+                {t('Empezar', 'Start now')}
               </CTAButton>
             </div>
           </motion.div>
