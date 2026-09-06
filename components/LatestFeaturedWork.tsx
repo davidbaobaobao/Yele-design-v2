@@ -55,26 +55,13 @@ type FeaturedProject = {
   columns: FeaturedColumn[]
 }
 
-// Display order (activeIndex 0 loads first): Clark Fork, Blackcrest,
+// Display order (activeIndex 0 loads first): Blackcrest, Clark Fork,
 // Clear Cool Water, Reptile Roadshow, Shinsetsu, Restoration Bros, Duna,
 // Marketasa.
 // The counter + nudge arrows cycle activeIndex (next from the last project
 // wraps to the first, and vice versa) and reset scroll position; reorder by
 // moving an entry, add one by inserting an entry.
 const PROJECTS: FeaturedProject[] = [
-  {
-    name: 'Clark Fork',
-    blurb:
-      'Custom log and timber homes, built in Montana since 1993. A quiet, editorial site that lets the craft and the landscape speak.',
-    mediaDir: '/media/clarkfork',
-    columns: [
-      { type: 'tall', image: '1' },
-      { type: 'stack', top: '2', bottom: '3' },
-      { type: 'video', video: '4', poster: '4_poster' },
-      { type: 'tall', image: '5' },
-      { type: 'stack', top: '6', bottom: '7' },
-    ],
-  },
   {
     name: 'Blackcrest',
     blurb:
@@ -86,6 +73,19 @@ const PROJECTS: FeaturedProject[] = [
       { type: 'video', video: '4', poster: '4_poster' },
       { type: 'tall', image: '5' },
       { type: 'tall', image: '2' },
+    ],
+  },
+  {
+    name: 'Clark Fork',
+    blurb:
+      'Custom log and timber homes, built in Montana since 1993. A quiet, editorial site that lets the craft and the landscape speak.',
+    mediaDir: '/media/clarkfork',
+    columns: [
+      { type: 'tall', image: '1' },
+      { type: 'stack', top: '2', bottom: '3' },
+      { type: 'video', video: '4', poster: '4_poster' },
+      { type: 'tall', image: '5' },
+      { type: 'stack', top: '6', bottom: '7' },
     ],
   },
   {

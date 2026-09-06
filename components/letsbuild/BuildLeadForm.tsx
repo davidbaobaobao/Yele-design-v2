@@ -116,11 +116,11 @@ export default function BuildLeadForm({ id, variant = 'dark' }: { id?: string; v
 
   const inputClass = isDark
     ? 'w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 font-body text-base text-white placeholder-white/35 focus:outline-none focus:border-[#D46FC8]/60 transition-colors'
-    : 'w-full bg-white border border-hairline rounded-xl px-4 py-3 font-body text-base text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors'
-  const labelClass = isDark ? 'font-body text-sm text-white/60 mb-1 block' : 'font-body text-sm text-muted mb-1 block'
+    : 'w-full bg-white border border-ink/25 rounded-xl px-4 py-3 font-body text-base text-ink placeholder-ink/40 focus:outline-none focus:border-ink transition-colors'
+  const labelClass = isDark ? 'font-body text-sm text-white/60 mb-1 block' : 'font-body text-sm font-medium text-ink mb-1 block'
   const pillInactive = isDark
     ? 'bg-white/5 border-white/15 text-white/80 hover:border-white/40'
-    : 'bg-white border-hairline text-ink hover:border-ink'
+    : 'bg-white border-ink/25 text-ink hover:border-ink'
 
   return (
     <div id={id} className="space-y-4">
@@ -212,7 +212,7 @@ export default function BuildLeadForm({ id, variant = 'dark' }: { id?: string; v
         {loading ? 'Sending…' : 'Get My Website'}
       </button>
 
-      <p className={`text-center font-body text-xs leading-relaxed ${isDark ? 'text-white/50' : 'text-muted'}`}>
+      <p className={`text-center font-body text-xs leading-relaxed ${isDark ? 'text-white/50' : 'text-ink/60'}`}>
         No obligation. We&apos;ll review your information and contact you about the next step. By
         clicking &quot;Get My Website&quot;, you agree to our{' '}
         <Link href="/privacy-policy" className={`underline transition-colors ${isDark ? 'hover:text-white' : 'hover:text-ink'}`}>

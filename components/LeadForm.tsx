@@ -224,7 +224,7 @@ export default function LeadForm({
       </div>
 
       {planOptions && (
-        <div>
+        <div className="pb-1.5">
           <label className={labelClass}>Which plan are you interested in? (optional)</label>
           <div className="grid grid-cols-3 gap-2">
             {planOptions.map(p => {

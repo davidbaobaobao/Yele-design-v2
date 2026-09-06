@@ -128,7 +128,7 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
       <motion.div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ background: spotBg }} aria-hidden="true" />
 
       {tier.popular && (
-        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3 py-1 font-body text-xs font-semibold text-ink">
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#D46FC8] px-3 py-1 font-body text-xs font-semibold text-white">
           Most Popular
         </span>
       )}

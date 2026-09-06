@@ -6,6 +6,7 @@ import LeadForm from '@/components/LeadForm'
 import ReputationBadge from '@/components/ReputationBadge'
 import PricingCards from '@/components/letsbuild/PricingCards'
 import CareVideo from '@/components/letsbuild/CareVideo'
+import StartNowMarquee from '@/components/letsbuild/StartNowMarquee'
 import { EnLangProvider } from '@/components/LangProvider'
 
 // Below-fold, heavier sections — code-split so the initial hero/form bundle
@@ -245,17 +246,16 @@ export default function LetsBuildPage() {
               ))}
             </div>
 
-            {/* Never outdated — video flanking the message, after the cards */}
-            <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-[1fr_minmax(320px,2fr)_1fr] items-center gap-6 md:gap-10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* Never outdated — one video on the left, text on the right half */}
+            <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-12">
               <video
-                className="hidden md:block w-full aspect-square rounded-2xl object-cover border border-white/10"
+                className="w-full aspect-video rounded-2xl object-cover border border-white/10"
                 autoPlay muted loop playsInline preload="none" poster="/media/conveyor_poster.jpg"
               >
                 <source src="/media/conveyor.mp4" type="video/mp4" />
               </video>
 
-              <div className="text-center">
+              <div>
                 <h3 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-4">
                   Your website will <span className="text-[#D46FC8]">never</span> be outdated.
                 </h3>
@@ -265,16 +265,12 @@ export default function LetsBuildPage() {
                   long as you&apos;re with us.
                 </p>
               </div>
-
-              <video
-                className="hidden md:block w-full aspect-square rounded-2xl object-cover border border-white/10"
-                autoPlay muted loop playsInline preload="none" poster="/media/conveyor_poster.jpg"
-              >
-                <source src="/media/conveyor.mp4" type="video/mp4" />
-              </video>
             </div>
           </div>
         </section>
+
+        {/* ---- START NOW marquee (scrolls up to the hero form) ---- */}
+        <StartNowMarquee />
 
         {/* ---- FAQ ---- */}
         <LetsBuildFAQ />
@@ -292,27 +288,32 @@ export default function LetsBuildPage() {
           </div>
         </section>
 
-        {/* ---- FINAL CTA (white, video left / text right) ---- */}
+        {/* ---- FINAL CTA (white, video left / text right, centered CTA below) ---- */}
         <section className="bg-white px-6 py-20 md:py-28 border-t border-hairline">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
-            <video
-              className="w-full aspect-video rounded-2xl object-cover border border-hairline"
-              autoPlay muted loop playsInline preload="none" poster="/media/boldstats/boldstats_poster.jpg"
-            >
-              <source src="/media/boldstats/boldstats_hq.webm" type="video/webm" />
-              <source src="/media/boldstats/boldstats_hq.mp4" type="video/mp4" />
-            </video>
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
+              <video
+                className="w-full aspect-video rounded-2xl object-cover border border-hairline"
+                autoPlay muted loop playsInline preload="none" poster="/media/boldstats/boldstats_poster.jpg"
+              >
+                <source src="/media/boldstats/boldstats_hq.webm" type="video/webm" />
+                <source src="/media/boldstats/boldstats_hq.mp4" type="video/mp4" />
+              </video>
 
-            <div>
-              <h2 className="font-display font-bold text-3xl md:text-5xl text-ink tracking-tight mb-5">
-                Your business deserves a website that looks professional.
-              </h2>
-              <p className="font-body text-base md:text-lg text-muted leading-relaxed mb-2">
-                Get a custom website without paying traditional agency prices.
-              </p>
-              <p className="font-body text-base text-muted mb-8">
-                Websites from $699. Yele Care from $49/month. 50% to start. 50% when you&apos;re ready to launch.
-              </p>
+              <div>
+                <h2 className="font-display font-bold text-3xl md:text-5xl text-ink tracking-tight mb-5">
+                  Your business deserves a website that looks professional.
+                </h2>
+                <p className="font-body text-base md:text-lg text-muted leading-relaxed mb-2">
+                  Get a custom website without paying traditional agency prices.
+                </p>
+                <p className="font-body text-base text-muted">
+                  Websites from $699. Yele Care from $49/month. 50% to start. 50% when you&apos;re ready to launch.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-12 text-center">
               <a href="#build-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-8 py-4 rounded-xl transition-colors">
                 Start now
               </a>
