@@ -12,21 +12,26 @@ export const dynamic = 'force-dynamic'
 // $99/mo recurring prices in Stripe):
 //   STRIPE_PRICE_CARE_49  — Launch & Business ($49/mo)
 //   STRIPE_PRICE_CARE_99  — Pro ($99/mo)
-const PLANS: Record<string, { label: string; final: string; care?: string }> = {
+// Yele Care recurring prices ($49/mo and $99/mo Yele Care+). Env wins; the
+// literals are the prices created in Stripe for the Yele Care products.
+const CARE_49 = process.env.STRIPE_PRICE_CARE_49 ?? 'price_1UCgr4JUBlsgtyU8eyNZCtAD'
+const CARE_99 = process.env.STRIPE_PRICE_CARE_99 ?? 'price_1UChHwJUBlsgtyU8l1QgioKC'
+
+const PLANS: Record<string, { label: string; final: string; care: string }> = {
   launch: {
     label: 'Launch',
     final: process.env.STRIPE_PRICE_LAUNCH_FINAL ?? 'price_1UCh0MJUBlsgtyU8IAzhXc4u',
-    care: process.env.STRIPE_PRICE_CARE_49,
+    care: CARE_49,
   },
   business: {
     label: 'Business',
     final: process.env.STRIPE_PRICE_BUSINESS_FINAL ?? 'price_1UCh1sJUBlsgtyU8uC6ByW5j',
-    care: process.env.STRIPE_PRICE_CARE_49,
+    care: CARE_49,
   },
   pro: {
     label: 'Pro',
     final: process.env.STRIPE_PRICE_PRO_FINAL ?? 'price_1UCh34JUBlsgtyU813KOHJSe',
-    care: process.env.STRIPE_PRICE_CARE_99,
+    care: CARE_99,
   },
 }
 
