@@ -1,7 +1,83 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
+import { Resend } from 'resend'
 
 export const dynamic = 'force-dynamic'
+
+const INTERNAL_RECIPIENTS = [
+  process.env.STUDIO_EMAIL ?? 'info@yele.design',
+  process.env.OWNER_EMAIL ?? 'davidbaobaobao@gmail.com',
+]
+
+// First-payment (50% deposit) confirmation emails for the /letsbuild build
+// tiers — sent from the webhook so they only fire once Stripe confirms the
+// payment actually succeeded. No-ops cleanly if RESEND_API_KEY isn't set.
+async function sendBuildPaymentEmails(session: Stripe.Checkout.Session) {
+  const resendKey = process.env.RESEND_API_KEY
+  if (!resendKey) {
+    console.log('[stripe-webhook] RESEND_API_KEY unset — build payment emails skipped')
+    return
+  }
+  const resend = new Resend(resendKey)
+
+  const m = session.metadata ?? {}
+  const name = m.name || ''
+  const firstName = name ? name.split(/\s+/)[0] : ''
+  const email = m.email || session.customer_details?.email || session.customer_email || ''
+  const company = m.company || ''
+  const planLabel = m.planLabel || m.plan || ''
+  const amount =
+    typeof session.amount_total === 'number'
+      ? `${(session.amount_total / 100).toFixed(2)} ${(session.currency || '').toUpperCase()}`
+      : ''
+
+  // 1) Client confirmation
+  if (email) {
+    try {
+      await resend.emails.send({
+        from: 'Yele <noreply@yele.design>',
+        to: [email],
+        subject: 'We received your payment — Yele',
+        text: [
+          `Hi${firstName ? ` ${firstName}` : ''},`,
+          '',
+          `Thank you — we've received your payment${planLabel ? ` for the ${planLabel} website` : ''}.`,
+          '',
+          "As soon as you fill in your details, we'll get started on your website right away. Either way, we'll also reach out to you briefly.",
+          '',
+          'Talk soon,',
+          'The Yele team',
+        ].join('\n'),
+      })
+    } catch (err) {
+      console.error('[stripe-webhook] client email failed', err)
+    }
+  }
+
+  // 2) Internal notification
+  try {
+    await resend.emails.send({
+      from: 'Yele Payments <noreply@yele.design>',
+      to: INTERNAL_RECIPIENTS,
+      replyTo: email || undefined,
+      subject: `Payment successful — ${name || email || 'new customer'}${planLabel ? ` (${planLabel})` : ''}`,
+      text: [
+        'A first payment was successfully completed.',
+        '',
+        `Name: ${name || '(not provided)'}`,
+        `Email: ${email || '(not provided)'}`,
+        company ? `Business: ${company}` : null,
+        `Plan: ${planLabel || '(unknown)'}`,
+        amount ? `Amount: ${amount}` : null,
+        `Stripe session: ${session.id}`,
+      ]
+        .filter(line => line !== null)
+        .join('\n'),
+    })
+  } catch (err) {
+    console.error('[stripe-webhook] internal email failed', err)
+  }
+}
 
 export async function POST(request: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
@@ -29,6 +105,13 @@ export async function POST(request: Request) {
     const session = event.data.object as Stripe.Checkout.Session
     const clientId = session.metadata?.clientId
     const planId = session.metadata?.planId
+
+    // New one-time /letsbuild build first-payment flow — send confirmation +
+    // internal notification emails, then done (no subscription/client record).
+    if (session.metadata?.flow === 'build_first_payment') {
+      await sendBuildPaymentEmails(session)
+      return new Response('OK', { status: 200 })
+    }
 
     if (clientId) {
       const { error } = await supabaseAdmin

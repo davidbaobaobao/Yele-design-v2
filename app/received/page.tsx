@@ -19,21 +19,21 @@ const TIERS = [
     name: 'Launch',
     desc: 'Everything to get online professionally.',
     pay: 'Pay $349',
-    href: '/signup?plan=launch',
+    plan: 'launch',
     popular: false,
   },
   {
     name: 'Business',
     desc: 'More functionality for growing businesses.',
     pay: 'Pay $599',
-    href: '/signup?plan=business',
+    plan: 'business',
     popular: true,
   },
   {
     name: 'Pro',
     desc: 'Advanced functionality and e-commerce.',
     pay: 'Pay $1,399',
-    href: '/signup?plan=pro',
+    plan: 'pro',
     popular: false,
   },
 ]
@@ -46,6 +46,8 @@ export default function ReceivedPage({
   searchParams: { name?: string; email?: string; company?: string }
 }) {
   const rawName = searchParams.name?.trim() ?? ''
+  const email = searchParams.email?.trim() ?? ''
+  const company = searchParams.company?.trim() ?? ''
   const firstName = rawName.split(/\s+/)[0]
   const name = firstName.length > 0 && firstName.length <= 40 ? firstName : ''
 
@@ -95,14 +97,20 @@ export default function ReceivedPage({
                 )}
                 <h3 className="font-display font-bold text-xl text-ink">{tier.name}</h3>
                 <p className="font-body text-sm text-muted mt-1 mb-5 flex-1">{tier.desc}</p>
-                <Link
-                  href={tier.href}
-                  className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-3 font-body text-base font-medium transition-colors ${
-                    tier.popular ? 'bg-[#D46FC8] text-white hover:bg-[#DE85D2]' : 'bg-ink text-white hover:bg-ink/90'
-                  }`}
-                >
-                  {tier.pay}
-                </Link>
+                <form action="/api/build-checkout" method="POST" className="w-full">
+                  <input type="hidden" name="plan" value={tier.plan} />
+                  <input type="hidden" name="name" value={rawName} />
+                  <input type="hidden" name="email" value={email} />
+                  <input type="hidden" name="company" value={company} />
+                  <button
+                    type="submit"
+                    className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-3 font-body text-base font-medium transition-colors cursor-pointer ${
+                      tier.popular ? 'bg-[#D46FC8] text-white hover:bg-[#DE85D2]' : 'bg-ink text-white hover:bg-ink/90'
+                    }`}
+                  >
+                    {tier.pay}
+                  </button>
+                </form>
               </div>
             ))}
           </div>

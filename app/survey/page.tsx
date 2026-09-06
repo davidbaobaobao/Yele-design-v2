@@ -59,6 +59,9 @@ function SurveyPageInner() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [hydrated, setHydrated] = useState(false)
+  // Post-payment welcome screen (arrives with ?welcome=1 from Stripe success),
+  // dismissed by clicking "Provide info" to start the survey.
+  const [welcomeDismissed, setWelcomeDismissed] = useState(false)
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
@@ -283,6 +286,33 @@ function SurveyPageInner() {
         >
           Back to site
         </Link>
+      </div>
+    )
+  }
+
+  if (searchParams.get('welcome') === '1' && !welcomeDismissed) {
+    const introName = (searchParams.get('name') || '').trim().split(/\s+/)[0]
+    const introCompany = (searchParams.get('company') || '').trim()
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-survey-bg-soft px-6 text-center">
+        <div className="flex flex-col items-center gap-4">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink/10">
+            <Sparkles className="h-8 w-8 text-ink" strokeWidth={1.5} />
+          </span>
+          <h1 className="font-display max-w-xl text-3xl font-bold text-ink md:text-4xl">
+            Thank you{introName ? `, ${introName}` : ''}, your website{introCompany ? ` for ${introCompany}` : ''} is on the way.
+          </h1>
+          <p className="max-w-md font-body text-base text-ink/80">
+            Tell us a little about your business so we can start designing.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setWelcomeDismissed(true)}
+          className="cursor-pointer rounded-full bg-ink px-7 py-3.5 font-body text-sm font-bold text-white shadow-lg transition-transform duration-300 hover:-translate-y-0.5 motion-reduce:transition-none"
+        >
+          Provide info
+        </button>
       </div>
     )
   }
