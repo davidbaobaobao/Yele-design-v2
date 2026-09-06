@@ -5,14 +5,16 @@ export const dynamic = 'force-dynamic'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Loader2, Sparkles } from 'lucide-react'
+import { Loader2, Sparkles, Check } from 'lucide-react'
 import { trackMetaSurveyComplete } from '@/lib/metaPixel'
 import SelectCard from './_components/SelectCard'
 import SplitLayout from './_components/SplitLayout'
+import FullLayout from './_components/FullLayout'
 import PersistentLeftVideo from './_components/PersistentLeftVideo'
 import ArrowNav from './_components/ArrowNav'
 import { FieldLabel, TextInput, Textarea, Checkbox } from './_components/Fields'
 import {
+  ADDON_OPTIONS,
   CHANNEL_OPTIONS,
   EMPTY_ANSWERS,
   TOTAL_STEPS,
@@ -172,6 +174,13 @@ function SurveyPageInner() {
     }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated])
+
+  const toggleAddon = useCallback((id: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      addons: prev.addons.includes(id) ? prev.addons.filter((v) => v !== id) : [...prev.addons, id],
+    }))
+  }, [])
 
   const goBack = useCallback(() => {
     setStep((s) => Math.max(1, s - 1))
@@ -397,6 +406,43 @@ function SurveyPageInner() {
               <Checkbox checked={answers.noWebPresence} onChange={(v) => update('noWebPresence', v)} label="I'm not online yet" />
             </div>
           </SplitLayout>
+        )}
+
+        {key === 'addons' && (
+          <FullLayout title="Interested in any additional services?" microcopy="Optional — select any you'd like. You can always decide later.">
+            <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-3">
+              {ADDON_OPTIONS.map((a) => {
+                const selected = answers.addons.includes(a.id)
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => toggleAddon(a.id)}
+                    className={`w-full rounded-2xl border p-4 text-left transition-colors ${
+                      selected ? 'border-ink bg-ink/[0.04]' : 'border-ink/15 hover:border-ink/40'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-display text-base font-bold text-ink md:text-lg">{a.title}</p>
+                        <p className="mt-0.5 font-body text-sm text-ink/70">{a.description}</p>
+                      </div>
+                      <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
+                        <span className="whitespace-nowrap font-body text-sm font-semibold text-ink">{a.price}</span>
+                        <span
+                          className={`flex h-5 w-5 items-center justify-center rounded-full border ${
+                            selected ? 'border-ink bg-ink text-white' : 'border-ink/30'
+                          }`}
+                        >
+                          {selected && <Check size={12} strokeWidth={3} />}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </FullLayout>
         )}
 
         {submitError && <p className="mx-auto mt-4 max-w-md text-center text-sm font-semibold text-ink">{submitError}</p>}

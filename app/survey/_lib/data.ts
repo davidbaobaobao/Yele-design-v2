@@ -115,7 +115,45 @@ export interface SurveyAnswers {
   needsBranding: boolean
   usePhotosFromLinks: boolean
   noGoodPhotos: boolean
+  // Optional add-on services picked on the final survey step.
+  addons: string[]
 }
+
+// Final survey step — optional additional services.
+export const ADDON_OPTIONS: { id: string; title: string; price: string; description: string }[] = [
+  {
+    id: 'ads',
+    title: 'Meta & Google Ads',
+    price: '$199 setup + $49/month',
+    description: 'Ad budget separate — typical budget from $50/day.',
+  },
+  {
+    id: 'chatbot',
+    title: 'AI smart chatbot',
+    price: '$99 setup + $29/month',
+    description: 'Tokens separate — approx. 100k tokens ≈ 200 conversations ≈ $10.',
+  },
+  {
+    id: 'phone',
+    title: 'AI phone receptionist',
+    price: '$199 setup + $49/month',
+    description: 'Calling fees separate — typically 15–45 cents per minute.',
+  },
+  {
+    id: 'media',
+    title: 'On-demand image or video creation',
+    price: 'From $89',
+    description:
+      'Images: enhance/retouch 10 images for $89 (one revision). Video: 15–25s for $89 (one revision).',
+  },
+  {
+    id: 'automation',
+    title: 'Business automation',
+    price: 'Consultation',
+    description:
+      'Custom to your business — customer-acquisition flows, automated messages, automated payments, and more.',
+  },
+]
 
 export const DAY_KEYS: DayKey[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 export const DAY_LABELS: Record<DayKey, string> = {
@@ -171,6 +209,7 @@ export const EMPTY_ANSWERS: SurveyAnswers = {
   needsBranding: false,
   usePhotosFromLinks: false,
   noGoodPhotos: false,
+  addons: [],
 }
 
 // ── Step 3 — plan interest ──────────────────────────────────────────────
@@ -382,6 +421,7 @@ export type StepKey =
   | 'channel'
   | 'about'
   | 'links'
+  | 'addons'
   | 'style1'
   | 'colors'
 
@@ -392,6 +432,7 @@ export const STEP_ORDER: StepKey[] = [
   'contact',
   'about',
   'links',
+  'addons',
 ]
 
 export const TOTAL_STEPS = STEP_ORDER.length

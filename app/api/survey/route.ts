@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import {
+  ADDON_OPTIONS,
   channelLabel,
   colorLabels,
   effectLabels,
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
       logoUrl,
       photoUrls,
       needsBranding,
+      addons,
       currentStep,
       completed,
     } = body
@@ -150,6 +152,7 @@ export async function POST(request: Request) {
             logoUrl,
             photoUrls,
             needsBranding,
+            addons,
           }),
         })
       } else {
@@ -189,6 +192,7 @@ interface CompletionEmailData {
   logoUrl?: string
   photoUrls?: string[]
   needsBranding?: boolean
+  addons?: string[]
 }
 
 function buildCompletionEmail(data: CompletionEmailData): string {
@@ -288,6 +292,15 @@ function buildCompletionEmail(data: CompletionEmailData): string {
     ${section(
       'Functionality wanted',
       row('Features', data.functionality?.length ? functionalityLabels(data.functionality).join(', ') : null)
+    )}
+    ${section(
+      'Additional services',
+      row(
+        'Interested in',
+        data.addons?.length
+          ? data.addons.map((id) => ADDON_OPTIONS.find((a) => a.id === id)?.title ?? id).join(', ')
+          : null
+      )
     )}
     ${section(
       'Assets',

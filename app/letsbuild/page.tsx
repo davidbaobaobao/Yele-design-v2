@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { Check, Search, Image as ImageIcon, Megaphone, Bot, PhoneCall, Zap, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
+import { Check, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import ReputationBadge from '@/components/ReputationBadge'
 import PricingCards from '@/components/letsbuild/PricingCards'
@@ -49,15 +49,6 @@ const STEPS = [
   { n: '2', title: 'Tell us about your business', body: 'A quick call or email so we understand your exact needs for the website before we design anything.' },
   { n: '3', title: 'Review', body: 'We show you the finished website and make the agreed revisions before launch.' },
   { n: '4', title: 'Go live', body: 'Approve, pay the remaining 50%, and we launch your website — Yele Care keeps everything running afterwards.' },
-]
-
-const GROW = [
-  { icon: Search, title: 'SEO', body: 'Improve your visibility on Google and attract more organic customers.' },
-  { icon: ImageIcon, title: 'Content & Media', body: 'Images, promotional graphics, website content, and videos for your business.' },
-  { icon: Megaphone, title: 'Google & Meta Ads', body: 'Campaign setup, conversion tracking, optimization, and ongoing advertising management.' },
-  { icon: Bot, title: 'AI Chat', body: 'Add an AI assistant to your website that answers questions, captures leads, and helps customers.' },
-  { icon: PhoneCall, title: 'AI Phone Receptionist', body: 'Answer calls 24/7, qualify leads, book appointments, and handle common customer questions.' },
-  { icon: Zap, title: 'Business Automations', body: 'Automate lead follow-ups, reminders, review requests, CRM workflows, and repetitive tasks.' },
 ]
 
 const WHY = [
@@ -147,7 +138,7 @@ export default function LetsBuildPage() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight">
-                Looked after with <span className="text-[#D46FC8]">Yele Care</span>
+                Looked after with <br className="sm:hidden" /><span className="text-[#D46FC8]">Yele Care</span>
               </h2>
               <p className="font-body text-base text-muted mt-2">
                 Permanent attention that keeps everything working — for $49/month.
@@ -322,31 +313,6 @@ export default function LetsBuildPage() {
           </div>
         </section>
 
-        {/* ---- MORE THAN WEBSITES (last — to be moved to its own page later) ---- */}
-        <section className="px-6 py-16 md:py-24 border-t border-white/10">
-          <div className="max-w-6xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">More than websites</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-3">
-              Grow with Yele when you&apos;re ready.
-            </h2>
-            <p className="font-body text-base text-white/70 mb-10">
-              Your website is only the beginning. As your business grows, Yele can also help with:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {GROW.map(s => {
-                const Icon = s.icon
-                return (
-                  <div key={s.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
-                    <Icon size={24} className="text-[#D46FC8] mb-4" aria-hidden="true" />
-                    <h3 className="font-display font-bold text-lg text-white mb-2">{s.title}</h3>
-                    <p className="font-body text-sm text-white/70 leading-relaxed">{s.body}</p>
-                  </div>
-                )
-              })}
-            </div>
-            <p className="font-body text-base text-white/60 mt-8">Add these services whenever your business needs them.</p>
-          </div>
-        </section>
       </main>
     </EnLangProvider>
   )
