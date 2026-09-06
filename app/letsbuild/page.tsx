@@ -154,7 +154,7 @@ export default function LetsBuildPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="rounded-2xl border border-hairline p-6">
+              <div className="rounded-2xl border border-hairline p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 hover:border-ink/20">
                 <CareVideo webm="/media/beyond/SEO_hq.webm" mp4="/media/beyond/SEO_hq.mp4" poster="/media/beyond/SEO_poster.jpg" />
                 <div className="flex items-center gap-2 mb-1.5">
                   <FilePlus2 size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
@@ -164,7 +164,7 @@ export default function LetsBuildPage() {
                   We help you add new content — new projects, new photos, new menu items, whatever your business needs.
                 </p>
               </div>
-              <div className="rounded-2xl border border-hairline p-6">
+              <div className="rounded-2xl border border-hairline p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 hover:border-ink/20">
                 <CareVideo webm="/media/beyond/ADS_hq.webm" mp4="/media/beyond/ADS_hq.mp4" poster="/media/beyond/ADS_poster.jpg" />
                 <div className="flex items-center gap-2 mb-1.5">
                   <RefreshCw size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
@@ -174,7 +174,7 @@ export default function LetsBuildPage() {
                   A full design refresh every year, so your website is <span className="text-ink font-semibold">never</span> outdated.
                 </p>
               </div>
-              <div className="rounded-2xl border border-hairline p-6">
+              <div className="rounded-2xl border border-hairline p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 hover:border-ink/20">
                 <CareVideo webm="/media/whyyele3/whyyele5.webm" mp4="/media/whyyele3/whyyele5.mp4" poster="/media/whyyele3/whyyele5_poster.jpg" />
                 <div className="flex items-center gap-2 mb-1.5">
                   <Wrench size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
@@ -238,7 +238,7 @@ export default function LetsBuildPage() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {WHY.map(w => (
-                <div key={w.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
+                <div key={w.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6 transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-white/[0.06] hover:shadow-xl hover:shadow-black/40">
                   <CareVideo webm={w.webm} mp4={w.mp4} poster={w.poster} />
                   <h3 className="font-display font-bold text-lg text-white mb-1">{w.title}</h3>
                   <p className="font-body text-sm text-white/70 leading-relaxed">{w.body}</p>
@@ -293,7 +293,7 @@ export default function LetsBuildPage() {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
               <video
-                className="w-full aspect-video rounded-2xl object-cover border border-hairline"
+                className="w-full aspect-video rounded-2xl object-cover border border-hairline transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10"
                 autoPlay muted loop playsInline preload="none" poster="/media/boldstats/boldstats_poster.jpg"
               >
                 <source src="/media/boldstats/boldstats_hq.webm" type="video/webm" />
