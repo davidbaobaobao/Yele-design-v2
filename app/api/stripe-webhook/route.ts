@@ -1,6 +1,7 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import { clientConfirmationEmail } from '@/lib/emails/confirmation'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,20 +35,13 @@ async function sendBuildPaymentEmails(session: Stripe.Checkout.Session) {
   // 1) Client confirmation
   if (email) {
     try {
+      const { subject, html, text } = clientConfirmationEmail({ firstName, planLabel })
       await resend.emails.send({
         from: 'Yele <noreply@yele.design>',
         to: [email],
-        subject: 'We received your payment — Yele',
-        text: [
-          `Hi${firstName ? ` ${firstName}` : ''},`,
-          '',
-          `Thank you — we've received your payment${planLabel ? ` for the ${planLabel} website` : ''}.`,
-          '',
-          "As soon as you fill in your details, we'll get started on your website right away. Either way, we'll also reach out to you briefly.",
-          '',
-          'Talk soon,',
-          'The Yele team',
-        ].join('\n'),
+        subject,
+        html,
+        text,
       })
     } catch (err) {
       console.error('[stripe-webhook] client email failed', err)
