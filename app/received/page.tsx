@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Check } from 'lucide-react'
 
 export const metadata = {
   title: 'Thanks — Yele',
@@ -65,19 +64,21 @@ export default function ReceivedPage({
           We will contact you briefly.
         </p>
 
-        <div className="border-t border-hairline pt-10">
+        <div>
           <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight mb-6">
             Don&apos;t want to wait?
           </h2>
 
-          <ul className="space-y-3 mb-10">
-            {NEXT_STEPS.map(step => (
+          <ol className="space-y-3 mb-10">
+            {NEXT_STEPS.map((step, i) => (
               <li key={step} className="flex items-start gap-3">
-                <Check size={20} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
-                <span className="font-body text-base md:text-lg text-ink/80">{step}</span>
+                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold text-sm flex items-center justify-center">
+                  {i + 1}
+                </span>
+                <span className="font-body text-base md:text-lg text-ink/80 pt-0.5">{step}</span>
               </li>
             ))}
-          </ul>
+          </ol>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {TIERS.map(tier => (
