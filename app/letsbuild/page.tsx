@@ -135,8 +135,9 @@ export default function LetsBuildPage() {
             <PricingCards />
 
             <p className="max-w-2xl mx-auto text-center font-body text-base text-muted mt-10 leading-relaxed">
-              Pay 50% at the beginning of your project, and the remaining 50% at launch. Then Yele Care makes sure
-              everything works and your site stays updated — for $49/month.
+              Pay 50% at the beginning and the remaining 50% at launch.
+              <br />
+              Then Yele Care makes sure everything works and updated — for $49/month.
             </p>
           </div>
         </section>

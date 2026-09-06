@@ -43,6 +43,10 @@ const EDGE_HOVER_SPEED = 10
 const PAN_CURSOR =
   `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='9' fill='%23D46FC8' fill-opacity='.85' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 14 14, pointer`
 
+// Static Tailwind order-* classes (literal strings so the scanner emits them),
+// used for the mobile-only column reorder in the track.
+const MOBILE_ORDER = ['order-1', 'order-2', 'order-3', 'order-4', 'order-5', 'order-6', 'order-7', 'order-8']
+
 type FeaturedColumn =
   | { type: 'stack'; top: string; bottom: string }
   | { type: 'tall'; image: string }
@@ -388,13 +392,23 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
       <div className="relative">
         <div
           ref={trackRef}
-          className="h-[380px] sm:h-[440px] md:h-[500px] overflow-x-auto overflow-y-hidden px-6 md:px-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="h-[380px] sm:h-[440px] md:h-[500px] overflow-x-auto overflow-y-hidden touch-pan-x px-6 md:px-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          <div className="flex h-full w-max gap-4">
+          <div className="flex h-full w-max gap-4 select-none [&_img]:select-none [&_img]:[-webkit-user-drag:none]">
             {project.columns.map((col, i) => {
+              // Mobile-only reorder: the video sits 2nd (right after the first
+              // column) so it's visible without scrolling; the rest keep their
+              // relative order after it. Reset to natural DOM order on md+.
+              // Static class strings (below) so Tailwind's scanner emits them.
+              const mobileOrder =
+                col.type === 'video'
+                  ? 'order-2 md:order-none'
+                  : i === 0
+                    ? 'order-1 md:order-none'
+                    : `${MOBILE_ORDER[i + 1]} md:order-none`
               if (col.type === 'stack') {
                 return (
-                  <div key={i} className="flex h-full flex-col items-start gap-4">
+                  <div key={i} className={`flex h-full flex-col items-start gap-4 ${mobileOrder}`}>
                     <ImageCell
                       mediaDir={project.mediaDir}
                       file={col.top}
@@ -420,14 +434,14 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
                     file={col.image}
                     alt={`${project.name} — project photo`}
                     sizes="260px"
-                    className="h-full aspect-[1/2]"
+                    className={`h-full aspect-[1/2] ${mobileOrder}`}
                   />
                 )
               }
               return (
                 <div
                   key={i}
-                  className="group relative h-full aspect-[3/2] overflow-hidden rounded-[10px] transition-[transform,box-shadow] duration-[450ms] ease-[cubic-bezier(0.2,0.6,0.2,1)] will-change-transform hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/30"
+                  className={`group relative h-full aspect-[3/2] overflow-hidden rounded-[10px] transition-[transform,box-shadow] duration-[450ms] ease-[cubic-bezier(0.2,0.6,0.2,1)] will-change-transform hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-black/30 ${mobileOrder}`}
                   style={{ backgroundColor: CELL_BG }}
                 >
                   <PosterVideo
@@ -483,7 +497,7 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
             {project.name}
           </motion.div>
           <motion.p
-            className="mt-2 max-w-[460px] font-body text-sm md:text-base leading-[1.5] line-clamp-2 [text-wrap:pretty]"
+            className="hidden md:block mt-2 max-w-[460px] font-body text-sm md:text-base leading-[1.5] line-clamp-2 [text-wrap:pretty]"
             animate={{ color: blurbColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
