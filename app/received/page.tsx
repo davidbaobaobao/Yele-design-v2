@@ -1,112 +1,116 @@
 import Link from 'next/link'
+import { Check } from 'lucide-react'
 
 export const metadata = {
   title: 'Thanks — Yele',
   robots: { index: false, follow: false },
 }
 
-const STEPS = [
+const NEXT_STEPS = [
+  'Secure your spot in our calendar.',
+  'Choose your plan, make your initial payment.',
+  'We’ll get started on your website right away.',
+]
+
+// Half of the one-time build price (50% to start). Kept as display strings so
+// the confirmation reads cleanly; the full tiers/prices live on /letsbuild.
+const TIERS = [
   {
-    title: 'Tell us your direction',
-    desc: "A 2-minute design survey (or a quick call if you'd rather talk).",
+    name: 'Launch',
+    desc: 'Everything to get online professionally.',
+    pay: 'Pay $350',
+    href: '/signup?plan=launch',
+    popular: false,
   },
   {
-    title: 'We design',
-    desc: "We design your first draft for your business. Then, from your feedback, we improve it until you're satisfied.",
+    name: 'Business',
+    desc: 'More functionality for growing businesses.',
+    pay: 'Pay $600',
+    href: '/signup?plan=business',
+    popular: true,
   },
   {
-    title: 'You approve',
-    desc: "It goes live — and that's the day of your first payment. Nothing before.",
+    name: 'Pro',
+    desc: 'Advanced functionality and e-commerce.',
+    pay: 'Pay from $1,400',
+    href: '/signup?plan=pro',
+    popular: false,
   },
 ]
 
-// Thank-you landing after a successful /start discovery-form submit — the
-// bridge into the design survey rather than a dead end. name/email/company
-// arrive as query params from /start's redirect (router.push(`/received?
-// name=...&email=...&company=...`)); React escapes `name` automatically as
-// plain JSX text, so no extra sanitizing is needed beyond trimming/capping
-// length for layout's sake. email/company are forwarded as-is to /survey's
-// own query string below, where they go through the same trim/prefill
-// handling as name.
+// Thank-you landing after a successful lead-form submit. `name` arrives as a
+// query param from the form redirect; React escapes it as plain JSX text.
 export default function ReceivedPage({
   searchParams,
 }: {
   searchParams: { name?: string; email?: string; company?: string }
 }) {
   const rawName = searchParams.name?.trim() ?? ''
-  const name = rawName.length > 0 && rawName.length <= 60 ? rawName : ''
-
-  const surveyParams = new URLSearchParams()
-  if (rawName) surveyParams.set('name', rawName)
-  const email = searchParams.email?.trim() ?? ''
-  if (email) surveyParams.set('email', email)
-  const company = searchParams.company?.trim() ?? ''
-  if (company) surveyParams.set('company', company)
-  const surveyHref = surveyParams.toString() ? `/survey?${surveyParams.toString()}` : '/survey'
+  const firstName = rawName.split(/\s+/)[0]
+  const name = firstName.length > 0 && firstName.length <= 40 ? firstName : ''
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6 py-16">
-      <div className="max-w-md w-full">
-        <Link href="/" className="inline-flex items-center mb-8 focus-visible:outline-none" aria-label="yele">
+      <div className="max-w-4xl w-full">
+        <Link href="/" className="inline-flex items-center mb-10 focus-visible:outline-none" aria-label="yele">
           {/* eslint-disable-next-line @next/next/no-img-element -- SVG, Next's image optimizer refuses to serve those */}
           <img src="/media/logomedia/mainlogo.svg" alt="" className="h-8 w-auto" />
         </Link>
 
-        <h1 className="font-display font-semibold text-5xl md:text-6xl text-ink tracking-tight leading-tight mb-3">
-          {name ? (
-            <>You&apos;re in, {name}. Let&apos;s design your website.</>
-          ) : (
-            <>You&apos;re in. Let&apos;s design your website.</>
-          )}
+        <h1 className="font-display font-bold text-5xl md:text-6xl text-ink tracking-tight leading-tight mb-3">
+          {name ? <>You are in, {name}!</> : <>You are in!</>}
         </h1>
-        <p className="font-body text-muted text-xl leading-relaxed mb-8">
-          We&apos;ve got your details. From here it&apos;s simple:
+        <p className="font-body text-muted text-xl leading-relaxed mb-12">
+          We will contact you briefly.
         </p>
 
-        <ol className="mb-10">
-          <li className="flex gap-4">
-            <span className="font-display font-bold text-3xl text-[#D46FC8] w-8 flex-shrink-0" aria-hidden="true">
-              1
-            </span>
-            <div className="pt-1 flex-1">
-              <p className="font-display font-bold text-ink text-xl mb-1">{STEPS[0].title}</p>
-              <p className="font-body font-normal text-ink/80 text-lg leading-relaxed mb-4">{STEPS[0].desc}</p>
-              <Link
-                href={surveyHref}
-                className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-xl bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+        <div className="border-t border-hairline pt-10">
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-6">
+            Don&apos;t want to wait?
+          </h2>
+
+          <ul className="space-y-3 mb-10">
+            {NEXT_STEPS.map(step => (
+              <li key={step} className="flex items-start gap-3">
+                <Check size={20} className="text-[#D46FC8] flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <span className="font-body text-base md:text-lg text-ink/80">{step}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {TIERS.map(tier => (
+              <div
+                key={tier.name}
+                className={`relative flex flex-col rounded-2xl bg-white p-6 ${
+                  tier.popular ? 'border-2 border-[#D46FC8] shadow-lg shadow-[#D46FC8]/10' : 'border border-hairline'
+                }`}
               >
-                Continue
-              </Link>
-            </div>
-          </li>
-
-          {STEPS.slice(1).map((step, i) => (
-            <li key={i} className="flex gap-4 mt-6">
-              <span className="font-display font-bold text-3xl text-[#D46FC8] w-8 flex-shrink-0" aria-hidden="true">
-                {i + 2}
-              </span>
-              <div className="pt-1">
-                <p className="font-display font-bold text-ink text-xl mb-1">{step.title}</p>
-                <p className="font-body font-normal text-ink/80 text-lg leading-relaxed">{step.desc}</p>
+                {tier.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#D46FC8] px-3 py-1 font-body text-xs font-semibold text-white">
+                    Most Popular
+                  </span>
+                )}
+                <h3 className="font-display font-bold text-xl text-ink">{tier.name}</h3>
+                <p className="font-body text-sm text-muted mt-1 mb-5 flex-1">{tier.desc}</p>
+                <Link
+                  href={tier.href}
+                  className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-3 font-body text-base font-medium transition-colors ${
+                    tier.popular ? 'bg-[#D46FC8] text-white hover:bg-[#DE85D2]' : 'bg-ink text-white hover:bg-ink/90'
+                  }`}
+                >
+                  {tier.pay}
+                </Link>
               </div>
-            </li>
-          ))}
-        </ol>
+            ))}
+          </div>
 
-        <div className="text-center mt-4">
-          <Link
-            href="/schedule"
-            className="font-body text-lg text-muted hover:text-ink transition-colors underline underline-offset-4"
-          >
-            Rather talk it through? Book a 15-min call →
-          </Link>
+          <p className="font-body text-sm text-muted mt-6">
+            Pay 50% now to secure your spot — the remaining 50% is due at launch. Then Yele Care from $49/month.
+          </p>
         </div>
 
-        <p className="text-center font-body text-base text-muted mt-8">
-          You&apos;ll hear from a real person within one business day.
-        </p>
-
-        <div className="text-center mt-6">
+        <div className="mt-10">
           <Link href="/" className="font-body text-base text-muted hover:text-ink transition-colors">
             ← Back to home
           </Link>
