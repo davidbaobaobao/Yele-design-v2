@@ -8,6 +8,80 @@ const PINK = '#D46FC8'
 const INK = '#16161A'
 const MUTED = '#6B6B72'
 
+// Shared professional shell so both confirmation emails look identical.
+function shell({ heading, bodyParagraphs, buttonLabel, buttonHref }: {
+  heading: string
+  bodyParagraphs: string[]
+  buttonLabel: string
+  buttonHref: string
+}): string {
+  const paras = bodyParagraphs
+    .map(
+      (p, i) =>
+        `<p style="margin:0 0 ${i === bodyParagraphs.length - 1 ? '8' : '20'}px 0; font-size:18px; line-height:1.6; color:${INK};">${p}</p>`
+    )
+    .join('')
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light only" />
+</head>
+<body style="margin:0; padding:0; background-color:#f4f4f5; -webkit-text-size-adjust:100%;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+          <tr><td align="center" style="padding:40px 40px 8px 40px;"><img src="${LOGO_URL}" alt="Yele" width="120" style="display:block; height:auto; width:120px; max-width:120px;" /></td></tr>
+          <tr><td align="center" style="padding:16px 40px 0 40px;"><div style="width:48px; height:4px; border-radius:4px; background-color:${PINK};"></div></td></tr>
+          <tr><td align="center" style="padding:24px 40px 0 40px;"><h1 style="margin:0; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:30px; line-height:1.25; font-weight:700; color:${INK};">${heading}</h1></td></tr>
+          <tr><td style="padding:24px 40px 0 40px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${paras}</td></tr>
+          <tr><td align="center" style="padding:28px 40px 8px 40px;"><a href="${buttonHref}" style="display:inline-block; background-color:${PINK}; color:#ffffff; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:17px; font-weight:600; text-decoration:none; padding:14px 32px; border-radius:12px;">${buttonLabel}</a></td></tr>
+          <tr><td style="padding:24px 40px 40px 40px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;"><p style="margin:0; font-size:18px; line-height:1.6; color:${INK};">Talk soon,</p><p style="margin:0; font-size:18px; line-height:1.6; color:${INK}; font-weight:600;">The Yele team</p></td></tr>
+          <tr><td align="center" style="padding:24px 40px; border-top:1px solid #ededed; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;"><p style="margin:0; font-size:14px; line-height:1.5; color:${MUTED};">Yele &middot; <a href="https://yele.design" style="color:${MUTED}; text-decoration:underline;">yele.design</a></p></td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}
+
+// Final-payment + Yele Care subscription confirmation.
+export function finalConfirmationEmail({
+  firstName,
+  planLabel,
+}: {
+  firstName?: string
+  planLabel?: string
+}): { subject: string; html: string; text: string } {
+  const hi = firstName ? `Hi ${firstName},` : 'Hi,'
+  const forPlan = planLabel ? ` for your ${planLabel} website` : ''
+  const subject = "You're all set — your website is going live"
+  const text = [
+    hi,
+    '',
+    `Thank you — we've received your final payment${forPlan}, and your Yele Care subscription is active (your first month is free).`,
+    '',
+    "We're setting your website live now and will be in touch shortly with the details.",
+    '',
+    'Talk soon,',
+    'The Yele team',
+  ].join('\n')
+  const html = shell({
+    heading: "You're all set",
+    bodyParagraphs: [
+      hi,
+      `Thank you &mdash; we&rsquo;ve received your final payment${forPlan}, and your Yele Care subscription is active. Your first month is free.`,
+      "We&rsquo;re setting your website live now and will be in touch shortly with the details.",
+    ],
+    buttonLabel: 'Visit yele.design',
+    buttonHref: 'https://yele.design',
+  })
+  return { subject, html, text }
+}
+
 export function clientConfirmationEmail({
   firstName,
   planLabel,

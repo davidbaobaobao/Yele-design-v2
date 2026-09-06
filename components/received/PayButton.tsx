@@ -13,6 +13,7 @@ export default function PayButton({
   company,
   label,
   popular = false,
+  action = '/api/build-checkout',
 }: {
   plan: string
   name: string
@@ -20,10 +21,11 @@ export default function PayButton({
   company: string
   label: string
   popular?: boolean
+  action?: string
 }) {
   const [loading, setLoading] = useState(false)
   return (
-    <form action="/api/build-checkout" method="POST" className="w-full" onSubmit={() => setLoading(true)}>
+    <form action={action} method="POST" className="w-full" onSubmit={() => setLoading(true)}>
       <input type="hidden" name="plan" value={plan} />
       <input type="hidden" name="name" value={name} />
       <input type="hidden" name="email" value={email} />

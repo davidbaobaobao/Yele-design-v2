@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { clientConfirmationEmail } from '@/lib/emails/confirmation'
+import { clientConfirmationEmail, finalConfirmationEmail } from '@/lib/emails/confirmation'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,10 +32,14 @@ async function sendBuildPaymentEmails(session: Stripe.Checkout.Session) {
       ? `${(session.amount_total / 100).toFixed(2)} ${(session.currency || '').toUpperCase()}`
       : ''
 
+  const isFinal = m.flow === 'build_final_payment'
+
   // 1) Client confirmation
   if (email) {
     try {
-      const { subject, html, text } = clientConfirmationEmail({ firstName, planLabel })
+      const { subject, html, text } = isFinal
+        ? finalConfirmationEmail({ firstName, planLabel })
+        : clientConfirmationEmail({ firstName, planLabel })
       await resend.emails.send({
         from: 'Yele <noreply@yele.design>',
         to: [email],
@@ -54,9 +58,11 @@ async function sendBuildPaymentEmails(session: Stripe.Checkout.Session) {
       from: 'Yele Payments <noreply@yele.design>',
       to: INTERNAL_RECIPIENTS,
       replyTo: email || undefined,
-      subject: `Payment successful — ${name || email || 'new customer'}${planLabel ? ` (${planLabel})` : ''}`,
+      subject: `${isFinal ? 'Final payment + Yele Care' : 'First payment'} — ${name || email || 'new customer'}${planLabel ? ` (${planLabel})` : ''}`,
       text: [
-        'A first payment was successfully completed.',
+        isFinal
+          ? 'A final payment was completed and the Yele Care subscription started (first month free).'
+          : 'A first payment was successfully completed.',
         '',
         `Name: ${name || '(not provided)'}`,
         `Email: ${email || '(not provided)'}`,
@@ -102,7 +108,7 @@ export async function POST(request: Request) {
 
     // New one-time /letsbuild build first-payment flow — send confirmation +
     // internal notification emails, then done (no subscription/client record).
-    if (session.metadata?.flow === 'build_first_payment') {
+    if (session.metadata?.flow === 'build_first_payment' || session.metadata?.flow === 'build_final_payment') {
       await sendBuildPaymentEmails(session)
       return new Response('OK', { status: 200 })
     }

@@ -12,23 +12,24 @@ const PLAN_LABEL: Record<string, string> = {
   pro: 'Pro',
 }
 
-const PLAN_PAY: Record<string, string> = {
-  launch: 'Pay $349',
-  business: 'Pay $599',
-  pro: 'Pay $1,399',
-}
+// First-payment (50% deposit) amounts vs final-payment (remaining 50%) amounts.
+const PAY_FIRST: Record<string, string> = { launch: 'Pay $349', business: 'Pay $599', pro: 'Pay $1,399' }
+const PAY_FINAL: Record<string, string> = { launch: 'Pay $349', business: 'Pay $599', pro: 'Pay $1,399' }
 
 export default function PaymentFailedPage({
   searchParams,
 }: {
-  searchParams: { plan?: string; name?: string; email?: string; company?: string }
+  searchParams: { plan?: string; name?: string; email?: string; company?: string; type?: string }
 }) {
   const plan = (searchParams.plan ?? '').trim()
   const name = searchParams.name?.trim() ?? ''
   const email = searchParams.email?.trim() ?? ''
   const company = searchParams.company?.trim() ?? ''
+  const isFinal = searchParams.type === 'final'
   const valid = plan === 'launch' || plan === 'business' || plan === 'pro'
-  const label = valid ? `Try again — ${PLAN_PAY[plan]}` : 'Try again'
+  const action = isFinal ? '/api/final-checkout' : '/api/build-checkout'
+  const payLabel = isFinal ? PAY_FINAL[plan] : PAY_FIRST[plan]
+  const label = valid ? `Try again — ${payLabel}` : 'Try again'
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6 py-16">
@@ -51,7 +52,7 @@ export default function PaymentFailedPage({
 
         {valid ? (
           <div className="max-w-xs mx-auto">
-            <PayButton plan={plan} name={name} email={email} company={company} label={label} popular />
+            <PayButton action={action} plan={plan} name={name} email={email} company={company} label={label} popular />
           </div>
         ) : (
           <Link
