@@ -219,7 +219,7 @@ export default function LetsBuildPage() {
                 </div>
               ))}
             </div>
-            <div className="mt-10">
+            <div className="mt-10 text-center">
               <a href="#lead-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-7 py-3.5 rounded-xl transition-colors">
                 Start now
               </a>
