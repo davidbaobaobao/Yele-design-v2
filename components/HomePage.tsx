@@ -18,7 +18,6 @@ const LatestFeaturedWork   = dynamic(() => import('@/components/LatestFeaturedWo
 const ContentShowcase      = dynamic(() => import('@/components/ContentShowcase'))
 const ConveyorVideoSection = dynamic(() => import('@/components/ConveyorVideoSection'))
 const DealStatement        = dynamic(() => import('@/components/DealStatement'))
-const StatsBold            = dynamic(() => import('@/components/StatsBold'))
 const VideoSnapController  = dynamic(() => import('@/components/VideoSnapController'))
 const Showcase             = dynamic(() => import('@/components/Showcase'))
 const WebsiteWordsVideo    = dynamic(() => import('@/components/WebsiteWordsVideo'))
@@ -27,9 +26,7 @@ const CubeFollowSection    = dynamic(() => import('@/components/CubeFollowSectio
 const KeepImprovingSection = dynamic(() => import('@/components/KeepImprovingSection'))
 const FloatingStartFreeCTA = dynamic(() => import('@/components/FloatingStartFreeCTA'))
 const PreciosIndexSection  = dynamic(() => import('@/components/PreciosIndexSection'))
-const WhySubs              = dynamic(() => import('@/components/WhySubs'))
 const Testimonios          = dynamic(() => import('@/components/Testimonios'))
-const TablaComparativa     = dynamic(() => import('@/components/TablaComparativa'))
 const ContactForm          = dynamic(() => import('@/components/ContactForm'))
 const FAQ                  = dynamic(() => import('@/components/FAQ'))
 const Footer               = dynamic(() => import('@/components/Footer'))
@@ -66,7 +63,6 @@ export default function HomePage({ variant = 'default' }: { variant?: 'default' 
           <BeyondWebsite />
           <LatestFeaturedWork />
           <DealStatement />
-          <StatsBold />
         </DealFadeProvider>
         <TryForFreeSection />
         <CubeFollowSection />
@@ -80,9 +76,7 @@ export default function HomePage({ variant = 'default' }: { variant?: 'default' 
         <div style={{ backgroundColor: '#0D0E12' }} className="h-20 md:h-32" aria-hidden="true" />
         <ContactForm />
         <WhatWeDo />
-        <TablaComparativa />
         <Testimonios noBg />
-        <WhySubs />
         <FAQ dark />
         <VideoSnapController />
       </main>

@@ -16,33 +16,33 @@ type CardData = {
 
 const DEFAULT_CARDS: CardData[] = [
   {
-    title: 'Custom design',
-    description: 'Built from scratch for your business. No templates, no lookalikes.',
+    title: 'Design refresh',
+    description: 'A full redesign every year, so your website never looks dated.',
     videoBase: 'whyyele1',
   },
   {
-    title: 'Yours to control',
-    description: 'Edit prices, photos and content anytime from your dashboard.',
+    title: 'Affordable & transparent',
+    description: 'Professional websites from $699, with clear pricing and no confusing agency quotes.',
     videoBase: 'whyyele3',
   },
   {
-    title: 'One flat price',
-    description: 'Hosting, domain, changes and support — all included in one monthly rate.',
+    title: 'Custom',
+    description: 'Designed around your business, not a generic template with your logo dropped on.',
     videoBase: 'whyyele6',
   },
   {
-    title: 'Cancel anytime',
-    description: 'No lock-in. You stay because it works.',
+    title: 'Fast delivery',
+    description: 'Delivery goal set for under 4 weeks.',
     videoBase: 'whyyele4',
   },
   {
-    title: 'Live in days',
-    description: 'Your site ready in a week, not months. Updated in seconds.',
+    title: 'Support 24/7',
+    description: 'We stay with you after launch — support whenever you need it.',
     videoBase: 'whyyele2',
   },
   {
-    title: 'Always maintained',
-    description: 'Hosting, security and updates handled around the clock. Your site never goes down, and you never lift a finger.',
+    title: 'Built for growth',
+    description: 'Add SEO, advertising, content, AI, and automation as your business grows.',
     videoBase: 'whyyele5',
   },
 ]

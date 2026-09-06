@@ -84,7 +84,7 @@ const TIERS: Tier[] = [
 // the dark highlighted middle card (#1C1D24) between two light bg-base cards,
 // green check marks, and the shared click-to-open FeatureTooltip. Data + CTAs
 // (plan-select dispatch) stay letsbuild-specific.
-function PricingCard({ tier, index }: { tier: Tier; index: number }) {
+function PricingCard({ tier, index, ctaHref }: { tier: Tier; index: number; ctaHref?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -168,24 +168,30 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
         <p className={`font-body text-sm ${hl ? 'text-white/70' : 'text-muted'}`}>+ {tier.care}/month Yele Care</p>
       </div>
 
-      <PlanCTA
-        plan={tier.planValue}
-        label={tier.cta}
-        className={`relative inline-flex w-full cursor-pointer items-center justify-center rounded-full px-6 py-3 font-body text-sm font-medium transition-colors ${
-          hl
-            ? 'bg-[#F2F0EB] text-[#16161A] hover:bg-[#F8F7F4]'
-            : 'bg-[#1A1A1F] text-[#F2F0EB] hover:bg-[#26262C]'
-        }`}
-      />
+      {(() => {
+        const ctaClass = `relative inline-flex w-full cursor-pointer items-center justify-center rounded-full px-6 py-3 font-body text-sm font-medium transition-colors ${
+          hl ? 'bg-[#F2F0EB] text-[#16161A] hover:bg-[#F8F7F4]' : 'bg-[#1A1A1F] text-[#F2F0EB] hover:bg-[#26262C]'
+        }`
+        // When ctaHref is set (index / services), the card CTA is a plain link
+        // to the flow. On /letsbuild (no ctaHref) it stays a PlanCTA that
+        // pre-selects the tier in the hero form via the shared event.
+        return ctaHref ? (
+          <a href={ctaHref} className={ctaClass}>
+            {tier.cta}
+          </a>
+        ) : (
+          <PlanCTA plan={tier.planValue} label={tier.cta} className={ctaClass} />
+        )
+      })()}
     </motion.div>
   )
 }
 
-export default function PricingCards() {
+export default function PricingCards({ ctaHref }: { ctaHref?: string } = {}) {
   return (
     <div className="grid items-center gap-6 md:grid-cols-3">
       {TIERS.map((tier, i) => (
-        <PricingCard key={tier.name} tier={tier} index={i} />
+        <PricingCard key={tier.name} tier={tier} index={i} ctaHref={ctaHref} />
       ))}
     </div>
   )

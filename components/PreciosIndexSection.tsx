@@ -3,7 +3,7 @@
 import { useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
-import { PricingCardsGrid } from '@/components/PricingCards'
+import PricingCards from '@/components/letsbuild/PricingCards'
 import { isNavJumping } from '@/lib/nav-scroll'
 
 export default function PreciosIndexSection() {
@@ -91,18 +91,18 @@ export default function PreciosIndexSection() {
           </h2>
           <p className="font-body text-base text-white/60 mt-3">
             {t(
-              'Elige un plan. Diseñamos tu web. Pagas solo cuando esté online.',
-              "Pick a plan. We design your site. You pay only once it's live."
+              'Elige un plan. Pago único, y Yele Care mantiene todo funcionando.',
+              'Pick a plan. One-time build, then Yele Care keeps everything running.'
             )}
           </p>
         </motion.div>
 
-        <PricingCardsGrid />
+        <PricingCards ctaHref="/start" />
 
         <p className="text-center font-body text-sm font-bold text-bone mt-6">
           {t(
-            'Sin coste inicial. Tu primer pago llega el día que tu web esté online. Sin permanencia — cancela cuando quieras.',
-            'No upfront cost. Your first payment lands the day your site goes live. No contract — cancel anytime.'
+            'Paga 50% al empezar y 50% al lanzar. Después, Yele Care desde 49 $/mes.',
+            'Pay 50% to start and 50% at launch. Then Yele Care from $49/month.'
           )}
         </p>
 

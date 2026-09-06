@@ -101,10 +101,6 @@ const STEPS: StepData[] = [
           'Hosting, security and monitoring handled around the clock. Your site never goes down, you never touch a thing.',
       },
       {
-        lead: 'Changes whenever you need',
-        description: 'Request edits anytime; we make them, no extra invoice.',
-      },
-      {
         lead: 'Growing with you',
         description: 'Ongoing improvements and marketing so your site keeps getting better every month.',
       },

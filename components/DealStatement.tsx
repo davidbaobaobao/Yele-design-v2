@@ -42,7 +42,7 @@ export default function DealStatement() {
           <p className={lineClass}>we become your website team.</p>
           <p className={lineClass}>We design it, fill it with content, keep it fast and secure —</p>
           <p className={lineClass}>
-            <TextGradient as="span">month after month</TextGradient>, for one flat price.
+            <TextGradient as="span">month after month</TextGradient>.
           </p>
           <p className={lineClass}>You run your business. We run the website.</p>
         </div>
@@ -70,7 +70,7 @@ export default function DealStatement() {
           We design it, fill it with content, keep it fast and secure —
         </motion.p>
         <motion.p className={lineClass} variants={LINE_VARIANTS}>
-          <TextGradient as="span">month after month</TextGradient>, for one flat price.
+          <TextGradient as="span">month after month</TextGradient>.
         </motion.p>
         <motion.p className={lineClass} variants={LINE_VARIANTS}>
           You run your business. We run the website.

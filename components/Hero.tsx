@@ -101,7 +101,7 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
   return paintedFired && near && !far && !isLowPower
 }
 
-const REASSURANCES = ['Fast delivery', 'No upfront cost', 'Cancel anytime']
+const REASSURANCES = ['From $699', 'No tasteless templates', 'No DIY']
 
 // ffmpeg -i hero_poster.jpeg -vf "scale=2560:-2,gblur=sigma=1.5" -q:v 3 hero_poster.jpg —
 // source was a 1.3MB 2752x1536 export; higher res + a light blur pass (masks
@@ -196,16 +196,16 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
               </>
             ) : (
               <>
-                Website design, maintenance &amp; content creation
+                Website design, maintenance &amp; content creation.
                 <br />
-                One subscription. From $99/mo.
+                From $699.
               </>
             )}
           </p>
 
           <div className="flex flex-wrap items-center gap-4 mt-8">
             <CTAButton href="/start" variant="white">
-              {variant === 'agency' ? 'Get started — nothing upfront' : 'Start for free'}
+              {variant === 'agency' ? 'Get started — nothing upfront' : 'Start now'}
             </CTAButton>
             <a
               href={variant === 'agency' ? '#precios' : '#contacto'}

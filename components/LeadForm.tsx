@@ -33,6 +33,7 @@ export default function LeadForm({
   id,
   platform = 'google',
   planOptions,
+  trackMeta = true,
 }: {
   variant?: 'light' | 'dark'
   ctaLabel?: string
@@ -42,6 +43,11 @@ export default function LeadForm({
   // for a `letsbuild:selectplan` window event (dispatched by the pricing
   // CTAs) to pre-select a tier and scroll this form into view.
   planOptions?: string[]
+  // When false, the browser Meta Pixel "Lead" event is NOT fired on submit —
+  // used by the organic /start page, which is intentionally not treated as a
+  // Meta-ads landing (unlike /letsbuild). The Google Ads conversion still
+  // fires for platform 'google'.
+  trackMeta?: boolean
   // Which ad platform this submit should count toward. 'google' (default,
   // /start + /websites) fires the existing onboarding_form_submit Google
   // Ads conversion. 'meta' (/newwebsite only) fires the Meta Pixel "Lead"
@@ -139,7 +145,9 @@ export default function LeadForm({
     // /newwebsite must never count toward Google Ads, unchanged from before.
     if (!conversionFiredRef.current) {
       conversionFiredRef.current = true
-      trackMetaLead(metaEventId, { email: formData.email, phone: formData.phone, name: formData.name })
+      if (trackMeta) {
+        trackMetaLead(metaEventId, { email: formData.email, phone: formData.phone, name: formData.name })
+      }
       if (platform === 'google') {
         trackOnboardingFormSubmit(formData.email)
       }

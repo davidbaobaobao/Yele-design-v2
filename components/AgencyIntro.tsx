@@ -23,13 +23,13 @@ export default function AgencyIntro() {
         <h2 className="font-display leading-tight max-w-4xl text-[clamp(1.5rem,2.6vw,2.75rem)]">
           <span style={{ color: '#F2F0EB' }}>
             An entire agency in your hands. All the web design services you need,
-            in one monthly fee.{' '}
+            in one place.{' '}
           </span>
           <motion.span
             animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}
             transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <TextGradient as="span">From $99/mo.</TextGradient>
+            <TextGradient as="span">From $699.</TextGradient>
           </motion.span>
         </h2>
       </div>

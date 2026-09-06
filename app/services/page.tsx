@@ -4,7 +4,7 @@ import { EnLangProvider } from '@/components/LangProvider'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import { CTAButton } from '@/components/ui/cta-button'
-import { PricingCardsGrid } from '@/components/PricingCards'
+import PricingCards from '@/components/letsbuild/PricingCards'
 
 export const metadata: Metadata = {
   // No "| Yele" here — the root layout's title.template ('%s | Yele')
@@ -211,14 +211,14 @@ export default function ServicesPage() {
                 Essential packages
               </h1>
               <p className="font-body text-lg text-white/60 max-w-xl mx-auto">
-                Pick a plan. We design your site. You pay only once it&apos;s live.
+                Pick a plan. One-time build, then Yele Care keeps everything running.
               </p>
             </div>
 
-            <PricingCardsGrid />
+            <PricingCards ctaHref="/start" />
 
             <p className="text-center font-body text-sm font-bold text-bone mt-6">
-              No upfront cost. Your first payment lands the day your site goes live. No contract — cancel anytime.
+              Pay 50% to start and 50% at launch. Then Yele Care from $49/month.
             </p>
 
             <div className="text-center mt-4">
