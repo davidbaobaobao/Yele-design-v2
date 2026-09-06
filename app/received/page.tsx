@@ -9,6 +9,7 @@ export const metadata = {
 const NEXT_STEPS = [
   'Secure your spot in our calendar.',
   'Choose your plan, make your initial payment.',
+  'Tell us about your business.',
   'We’ll get started on your website right away.',
 ]
 
@@ -18,21 +19,21 @@ const TIERS = [
   {
     name: 'Launch',
     desc: 'Everything to get online professionally.',
-    pay: 'Pay $350',
+    pay: 'Pay $349',
     href: '/signup?plan=launch',
     popular: false,
   },
   {
     name: 'Business',
     desc: 'More functionality for growing businesses.',
-    pay: 'Pay $600',
+    pay: 'Pay $599',
     href: '/signup?plan=business',
     popular: true,
   },
   {
     name: 'Pro',
     desc: 'Advanced functionality and e-commerce.',
-    pay: 'Pay from $1,400',
+    pay: 'Pay $1,399',
     href: '/signup?plan=pro',
     popular: false,
   },
@@ -57,15 +58,15 @@ export default function ReceivedPage({
           <img src="/media/logomedia/mainlogo.svg" alt="" className="h-8 w-auto" />
         </Link>
 
-        <h1 className="font-display font-bold text-5xl md:text-6xl text-ink tracking-tight leading-tight mb-3">
+        <h1 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight leading-tight mb-2">
           {name ? <>You are in, {name}!</> : <>You are in!</>}
         </h1>
-        <p className="font-body text-muted text-xl leading-relaxed mb-12">
+        <p className="font-body text-muted text-lg leading-relaxed mb-12">
           We will contact you briefly.
         </p>
 
         <div className="border-t border-hairline pt-10">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-6">
+          <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight mb-6">
             Don&apos;t want to wait?
           </h2>
 
@@ -106,7 +107,7 @@ export default function ReceivedPage({
           </div>
 
           <p className="font-body text-sm text-muted mt-6">
-            Pay 50% now to secure your spot — the remaining 50% is due at launch. Then Yele Care from $49/month.
+            Pay 50% now to secure your spot — the remaining 50% is due at launch. Then Yele Care for $49/month.
           </p>
         </div>
 
