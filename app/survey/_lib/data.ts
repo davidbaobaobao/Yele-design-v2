@@ -500,15 +500,11 @@ export function isUrlLikelyValid(value: string): boolean {
 // values.
 export function isStepValid(step: number, a: SurveyAnswers): boolean {
   switch (stepKeyAt(step)) {
-    case 'contact': {
-      const hasNameOrCompany = a.name.trim().length > 0 || a.company.trim().length > 0
-      const hasPhone = a.phone.trim().length > 0
-      const emailTrim = a.email.trim()
-      const hasValidEmail = emailTrim.length > 0 && isEmailValid(emailTrim)
-      const emailEnteredButInvalid = emailTrim.length > 0 && !hasValidEmail
-      const hasContact = emailEnteredButInvalid && !hasPhone ? false : hasValidEmail || hasPhone
-      return hasNameOrCompany && hasContact
-    }
+    // Name/email/company arrive prefilled from the payment redirect or the
+    // email link, so step 1 only asks the visitor to pick a preferred
+    // communication channel.
+    case 'contact':
+      return a.preferredChannel.trim().length > 0
     default:
       return true
   }

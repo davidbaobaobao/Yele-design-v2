@@ -16,7 +16,6 @@ import {
   CHANNEL_OPTIONS,
   EMPTY_ANSWERS,
   TOTAL_STEPS,
-  isEmailValid,
   isStepValid,
   isUrlLikelyValid,
   normalizeUrl,
@@ -342,8 +341,8 @@ function SurveyPageInner() {
         }
       >
         {key === 'contact' && (
-          <SplitLayout title={firstName ? `${firstName}, what's your preferred communication channel?` : 'How should we reach you?'}>
-            <FieldLabel>Preferred communication channel</FieldLabel>
+          <SplitLayout title={firstName ? `${firstName}, what's your preferred communication channel?` : "What's your preferred communication channel?"}>
+            <FieldLabel>Choose how we should reach you</FieldLabel>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {CHANNEL_OPTIONS.map((c) => (
                 <SelectCard
@@ -354,20 +353,6 @@ function SurveyPageInner() {
                 />
               ))}
             </div>
-
-            <FieldLabel className="mt-6">Name</FieldLabel>
-            <TextInput value={answers.name} onChange={(v) => update('name', v)} onKeyDown={handleEnterAdvance} placeholder="Your name" />
-            <FieldLabel className="mt-4">Company</FieldLabel>
-            <TextInput value={answers.company} onChange={(v) => update('company', v)} onKeyDown={handleEnterAdvance} placeholder="Your business name" />
-
-            <FieldLabel className="mt-4">Email</FieldLabel>
-            <TextInput type="email" value={answers.email} onChange={(v) => update('email', v)} onKeyDown={handleEnterAdvance} placeholder="you@email.com" />
-            {answers.email.trim() !== '' && !isEmailValid(answers.email) && (
-              <p className="mt-1.5 text-xs text-ink/70">That email doesn&apos;t look quite right.</p>
-            )}
-            <FieldLabel className="mt-4">Phone</FieldLabel>
-            <TextInput type="tel" value={answers.phone} onChange={(v) => update('phone', v)} onKeyDown={handleEnterAdvance} placeholder="(555) 555-5555" />
-            <p className="mt-3 text-xs text-ink/60">Name or company, and email or phone, are required.</p>
           </SplitLayout>
         )}
 
