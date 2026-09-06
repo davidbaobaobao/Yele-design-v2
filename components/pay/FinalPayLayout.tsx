@@ -5,10 +5,10 @@ import PayButton from '@/components/received/PayButton'
 const DARK = '#0D0E12'
 
 const CARE_BENEFITS = [
+  'Content updates whenever you need them',
   'A full website redesign every year',
   'Hosting, security, backups & uptime monitoring',
   'Ongoing maintenance, updates & bug fixes',
-  'Content updates whenever you need them',
   'Support whenever you need it',
 ]
 
@@ -44,8 +44,9 @@ export default function FinalPayLayout({
             Your website is ready.
           </h1>
           <p className="font-body text-base md:text-lg text-white/70 leading-relaxed mb-8 max-w-md">
-            Your final version is approved. The next step is to host it and set it live on the internet. From now, with
-            <span className="text-[#D46FC8] font-medium"> Yele Care</span>:
+            Your final version is ready to set it live.
+            <br />
+            From now, with <span className="text-[#D46FC8] font-medium">Yele Care</span>:
           </p>
 
           <ul className="space-y-2.5 mb-8">
@@ -64,7 +65,7 @@ export default function FinalPayLayout({
               name={name}
               email={email}
               company={company}
-              label={`Pay ${payAmount} & subscribe to Yele Care`}
+              label="Pay and subscribe"
               popular
             />
             <p className="mt-3 font-body text-sm text-white/55 leading-relaxed">
@@ -74,10 +75,10 @@ export default function FinalPayLayout({
           </div>
         </div>
 
-        {/* RIGHT — video panel */}
-        <div className="relative min-h-[280px] md:min-h-full">
+        {/* RIGHT — contained 16:9 video card (not cropped) */}
+        <div className="flex items-center justify-center px-6 pb-14 md:px-10 md:py-16">
           <video
-            className="absolute inset-0 h-full w-full object-cover md:rounded-l-[28px]"
+            className="w-full max-w-xl aspect-video rounded-2xl object-cover border border-white/10 shadow-2xl shadow-black/40"
             autoPlay
             muted
             loop
