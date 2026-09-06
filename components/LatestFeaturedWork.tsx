@@ -290,6 +290,43 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
     }
   }, [activeIndex])
 
+  // Warm the NEXT project's still images (posters + photos) during browser
+  // idle time only — so tapping the arrow shows it instantly, without ever
+  // competing with the hero/form or the current project's own video on the
+  // critical load path. The next project's *video* is deliberately NOT
+  // prefetched here; it loads on demand once that project is actually shown
+  // (via useEarlyLoad + the load()/play() above), keeping bandwidth for the
+  // structure and current media first.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const ric: (cb: () => void) => number =
+      (window as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback ??
+      ((cb: () => void) => window.setTimeout(cb, 1200))
+    const cancel: (h: number) => void =
+      (window as unknown as { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback ??
+      ((h: number) => window.clearTimeout(h))
+    const handle = ric(() => {
+      const next = PROJECTS[(activeIndex + 1) % PROJECTS.length]
+      const urls = new Set<string>()
+      next.columns.forEach(col => {
+        if (col.type === 'stack') {
+          urls.add(`${next.mediaDir}/${col.top}.webp`)
+          urls.add(`${next.mediaDir}/${col.bottom}.webp`)
+        } else if (col.type === 'tall') {
+          urls.add(`${next.mediaDir}/${col.image}.webp`)
+        } else {
+          urls.add(`${next.mediaDir}/${col.poster}.webp`)
+        }
+      })
+      urls.forEach(u => {
+        const img = new window.Image()
+        img.decoding = 'async'
+        img.src = u
+      })
+    })
+    return () => cancel(handle)
+  }, [activeIndex])
+
   // Owns the shared flip. Anchored on this section's own top (re-measured
   // on resize/load/body mutation since content above can still be
   // reflowing the page after mount) — same measurement pattern
