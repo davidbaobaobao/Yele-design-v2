@@ -121,7 +121,7 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
       viewport={{ once: true, margin: '-80px' }}
       className={`relative flex flex-col rounded-3xl cursor-default ${
         hl
-          ? 'px-8 py-12 bg-[#1C1D24] text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] ring-1 ring-[#D46FC8]/30'
+          ? 'px-8 py-12 bg-[#1C1D24] text-white shadow-[0_24px_64px_rgba(0,0,0,0.5)] border-2 border-[#D46FC8]'
           : 'p-8 bg-base text-ink shadow-[0_16px_56px_rgba(0,0,0,0.35)] ring-1 ring-black/[0.07]'
       }`}
     >
@@ -164,7 +164,8 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
       </ul>
 
       <div className={`relative mb-6 border-t pt-4 ${hl ? 'border-white/10' : 'border-hairline'}`}>
-        <p className={`font-body text-sm ${hl ? 'text-white/80' : 'text-ink'}`}>+ {tier.care}/month Yele Care</p>
+        <p className={`font-body text-sm font-medium ${hl ? 'text-white' : 'text-ink'}`}>One-time payment</p>
+        <p className={`font-body text-sm ${hl ? 'text-white/70' : 'text-muted'}`}>+ {tier.care}/month Yele Care</p>
       </div>
 
       <PlanCTA

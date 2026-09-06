@@ -226,7 +226,7 @@ export default function LeadForm({
       {planOptions && (
         <div>
           <label className={labelClass}>Which plan are you interested in? (optional)</label>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {planOptions.map(p => {
               const active = selectedPlan === p
               return (
@@ -234,7 +234,7 @@ export default function LeadForm({
                   key={p}
                   type="button"
                   onClick={() => setSelectedPlan(active ? '' : p)}
-                  className={`font-body text-sm px-3.5 py-2 rounded-full border transition-colors cursor-pointer ${
+                  className={`w-full text-center font-body text-xs sm:text-[13px] px-2 py-2 rounded-full border transition-colors cursor-pointer whitespace-nowrap ${
                     active
                       ? 'bg-[#D46FC8] border-[#D46FC8] text-white'
                       : isDark

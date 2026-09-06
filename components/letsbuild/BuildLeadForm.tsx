@@ -30,9 +30,9 @@ const NEEDS = [
 ]
 
 const PACKAGES = [
-  'Launch — $599',
-  'Business — $1,299',
-  'Pro — From $2,299',
+  'Launch — $699',
+  'Business — $1,199',
+  'Pro — From $2,799',
   'Not sure — recommend one',
 ]
 
@@ -40,8 +40,9 @@ const PACKAGES = [
 // redirect + conversion tracking as the shared LeadForm, plus the extra
 // business-name / current-website / needs / package fields the API now emails
 // (all optional, backward-compatible with the other pages' forms).
-export default function BuildLeadForm({ id }: { id?: string }) {
+export default function BuildLeadForm({ id, variant = 'dark' }: { id?: string; variant?: 'light' | 'dark' }) {
   const router = useRouter()
+  const isDark = variant === 'dark'
 
   const [name, setName] = useState('')
   const [businessName, setBusinessName] = useState('')
@@ -113,9 +114,13 @@ export default function BuildLeadForm({ id }: { id?: string }) {
     router.push(`/received?${params.toString()}`)
   }
 
-  const inputClass =
-    'w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 font-body text-base text-white placeholder-white/35 focus:outline-none focus:border-[#D46FC8]/60 transition-colors'
-  const labelClass = 'font-body text-sm text-white/60 mb-1 block'
+  const inputClass = isDark
+    ? 'w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 font-body text-base text-white placeholder-white/35 focus:outline-none focus:border-[#D46FC8]/60 transition-colors'
+    : 'w-full bg-white border border-hairline rounded-xl px-4 py-3 font-body text-base text-ink placeholder-muted focus:outline-none focus:border-ink transition-colors'
+  const labelClass = isDark ? 'font-body text-sm text-white/60 mb-1 block' : 'font-body text-sm text-muted mb-1 block'
+  const pillInactive = isDark
+    ? 'bg-white/5 border-white/15 text-white/80 hover:border-white/40'
+    : 'bg-white border-hairline text-ink hover:border-ink'
 
   return (
     <div id={id} className="space-y-4">
@@ -165,9 +170,7 @@ export default function BuildLeadForm({ id }: { id?: string }) {
                 type="button"
                 onClick={() => toggle(needs, n, setNeeds)}
                 className={`font-body text-sm px-3.5 py-2 rounded-full border transition-colors cursor-pointer ${
-                  active
-                    ? 'bg-[#D46FC8] border-[#D46FC8] text-white'
-                    : 'bg-white/5 border-white/15 text-white/80 hover:border-white/40'
+                  active ? 'bg-[#D46FC8] border-[#D46FC8] text-white' : pillInactive
                 }`}
               >
                 {n}
@@ -188,9 +191,7 @@ export default function BuildLeadForm({ id }: { id?: string }) {
                 type="button"
                 onClick={() => toggle(packageInterest, p, setPackageInterest)}
                 className={`font-body text-sm px-3.5 py-2 rounded-full border transition-colors cursor-pointer ${
-                  active
-                    ? 'bg-[#D46FC8] border-[#D46FC8] text-white'
-                    : 'bg-white/5 border-white/15 text-white/80 hover:border-white/40'
+                  active ? 'bg-[#D46FC8] border-[#D46FC8] text-white' : pillInactive
                 }`}
               >
                 {p}
@@ -206,15 +207,15 @@ export default function BuildLeadForm({ id }: { id?: string }) {
         type="button"
         onClick={handleSubmit}
         disabled={loading}
-        className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        className={`w-full inline-flex items-center justify-center gap-2 font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 ${isDark ? 'focus-visible:outline-white' : 'focus-visible:outline-ink'}`}
       >
         {loading ? 'Sending…' : 'Get My Website'}
       </button>
 
-      <p className="text-center font-body text-xs text-white/50 leading-relaxed">
+      <p className={`text-center font-body text-xs leading-relaxed ${isDark ? 'text-white/50' : 'text-muted'}`}>
         No obligation. We&apos;ll review your information and contact you about the next step. By
         clicking &quot;Get My Website&quot;, you agree to our{' '}
-        <Link href="/privacy-policy" className="underline hover:text-white transition-colors">
+        <Link href="/privacy-policy" className={`underline transition-colors ${isDark ? 'hover:text-white' : 'hover:text-ink'}`}>
           Privacy Policy
         </Link>
         .

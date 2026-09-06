@@ -133,7 +133,7 @@ export default function LetsBuildPage() {
             </h2>
             <PricingCards />
 
-            <p className="max-w-3xl mx-auto text-center font-body text-base md:text-lg font-medium text-ink mt-10 leading-relaxed">
+            <p className="max-w-2xl mx-auto text-center font-body text-base text-muted mt-10 leading-relaxed">
               Pay 50% at the beginning of your project, and the remaining 50% at launch. Then Yele Care makes sure
               everything works and your site stays updated — for $49/month.
             </p>
@@ -220,24 +220,9 @@ export default function LetsBuildPage() {
             </div>
             <div className="mt-10">
               <a href="#lead-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-7 py-3.5 rounded-xl transition-colors">
-                Start My Website
+                Start now
               </a>
             </div>
-          </div>
-        </section>
-
-        {/* ---- NEVER OUTDATED ---- */}
-        <section className="px-6 py-16 md:py-24 border-t border-white/10">
-          <div className="max-w-3xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">Always fresh</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-4">
-              Your website will <span className="text-[#D46FC8]">never</span> be outdated.
-            </h2>
-            <p className="font-body text-base md:text-lg text-white/70 leading-relaxed">
-              Every year, Yele Care includes a full redesign — we refresh the look, update the content, and keep your
-              website modern as design trends move on. No rebuilds, no extra quotes. Your site stays current for as long
-              as you&apos;re with us.
-            </p>
           </div>
         </section>
 
@@ -259,6 +244,35 @@ export default function LetsBuildPage() {
                 </div>
               ))}
             </div>
+
+            {/* Never outdated — video flanking the message, after the cards */}
+            <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-[1fr_minmax(320px,2fr)_1fr] items-center gap-6 md:gap-10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <video
+                className="hidden md:block w-full aspect-square rounded-2xl object-cover border border-white/10"
+                autoPlay muted loop playsInline preload="none" poster="/media/conveyor_poster.jpg"
+              >
+                <source src="/media/conveyor.mp4" type="video/mp4" />
+              </video>
+
+              <div className="text-center">
+                <h3 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-4">
+                  Your website will <span className="text-[#D46FC8]">never</span> be outdated.
+                </h3>
+                <p className="font-body text-base md:text-lg text-white/70 leading-relaxed">
+                  Every year, Yele Care includes a full redesign — we refresh the look, update the content, and keep your
+                  website modern as design trends move on. No rebuilds, no extra quotes. Your site stays current for as
+                  long as you&apos;re with us.
+                </p>
+              </div>
+
+              <video
+                className="hidden md:block w-full aspect-square rounded-2xl object-cover border border-white/10"
+                autoPlay muted loop playsInline preload="none" poster="/media/conveyor_poster.jpg"
+              >
+                <source src="/media/conveyor.mp4" type="video/mp4" />
+              </video>
+            </div>
           </div>
         </section>
 
@@ -266,36 +280,43 @@ export default function LetsBuildPage() {
         <LetsBuildFAQ />
 
         {/* ---- LEAD FORM (detailed) ---- */}
-        <section id="build-form" className="px-6 py-16 md:py-24" style={{ backgroundColor: DARK }}>
+        <section id="build-form" className="bg-white px-6 py-16 md:py-24">
           <div className="max-w-2xl mx-auto">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-2">
               Ready for a better website?
             </h2>
-            <p className="font-body text-base text-white/70 mb-8">
+            <p className="font-body text-base text-muted mb-8">
               Tell us a little about your business and we&apos;ll recommend the right website package.
             </p>
-            <BuildLeadForm />
+            <BuildLeadForm variant="light" />
           </div>
         </section>
 
-        {/* ---- FINAL CTA ---- */}
-        <section className="px-6 py-20 md:py-28 border-t border-white/10">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="font-display font-bold text-3xl md:text-5xl text-white tracking-tight mb-5">
-              Your business deserves a website that looks professional.
-            </h2>
-            <p className="font-body text-base md:text-lg text-white/70 leading-relaxed mb-2">
-              Get a custom website without paying traditional agency prices.
-            </p>
-            <p className="font-body text-base text-white/60 mb-8">
-              Websites from $699. Yele Care from $49/month. 50% to start. 50% when you&apos;re ready to launch.
-            </p>
-            <a href="#build-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-8 py-4 rounded-xl transition-colors">
-              Start My Website
-            </a>
-            <p className="font-body text-sm text-white/45 mt-8">
-              Professional websites. Affordable pricing. Ongoing support.
-            </p>
+        {/* ---- FINAL CTA (white, video left / text right) ---- */}
+        <section className="bg-white px-6 py-20 md:py-28 border-t border-hairline">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
+            <video
+              className="w-full aspect-video rounded-2xl object-cover border border-hairline"
+              autoPlay muted loop playsInline preload="none" poster="/media/boldstats/boldstats_poster.jpg"
+            >
+              <source src="/media/boldstats/boldstats_hq.webm" type="video/webm" />
+              <source src="/media/boldstats/boldstats_hq.mp4" type="video/mp4" />
+            </video>
+
+            <div>
+              <h2 className="font-display font-bold text-3xl md:text-5xl text-ink tracking-tight mb-5">
+                Your business deserves a website that looks professional.
+              </h2>
+              <p className="font-body text-base md:text-lg text-muted leading-relaxed mb-2">
+                Get a custom website without paying traditional agency prices.
+              </p>
+              <p className="font-body text-base text-muted mb-8">
+                Websites from $699. Yele Care from $49/month. 50% to start. 50% when you&apos;re ready to launch.
+              </p>
+              <a href="#build-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-8 py-4 rounded-xl transition-colors">
+                Start now
+              </a>
+            </div>
           </div>
         </section>
 

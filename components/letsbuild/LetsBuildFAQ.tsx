@@ -17,8 +17,16 @@ const FAQS: { q: string; a: string; link?: { label: string; href: string } }[] =
     a: 'No — but we highly recommend it. Yele Care includes a full design refresh every year, so you get a renewed website annually and everything keeps working — hosted, secure, backed up, monitored and up to date. You can host and manage the site yourself, but with Yele Care you never have to worry about the technical side.',
   },
   {
+    q: 'Can you update my website later with my content?',
+    a: 'Yes — anytime. You can upload your content directly yourself, or we can do it for you. It’s included with Yele Care.',
+  },
+  {
     q: 'Do I need to pay everything upfront?',
     a: 'No. You pay 50% when we begin. The remaining 50% is paid when the website is finished and approved for launch.',
+  },
+  {
+    q: 'Do I own the design?',
+    a: 'Yes. You own the design files and hold the copyright to all the content we create for you.',
   },
   {
     q: 'Is hosting included?',
@@ -26,7 +34,7 @@ const FAQS: { q: string; a: string; link?: { label: string; href: string } }[] =
   },
   {
     q: 'Is my domain included?',
-    a: 'We can provide and manage a standard domain for your website when required. Premium or unusually expensive domains may cost extra.',
+    a: 'We can provide and manage a standard domain for your website when required, and you can also bring your current domain. Premium or unusually expensive domains may cost extra.',
   },
   {
     q: 'Can customers book appointments through my website?',
@@ -35,10 +43,6 @@ const FAQS: { q: string; a: string; link?: { label: string; href: string } }[] =
   {
     q: 'Is SEO included?',
     a: 'Every website includes an SEO foundation. This includes technical setup, page titles, descriptions, sitemap, indexing, mobile optimization, and analytics.',
-  },
-  {
-    q: 'Can you update my website later with my content?',
-    a: 'Yes — anytime. You can upload your content directly yourself, or we can do it for you. It’s included with Yele Care.',
   },
   {
     q: 'Can you create images and videos?',
