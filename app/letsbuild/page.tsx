@@ -16,22 +16,22 @@ const LetsBuildFAQ = dynamic(() => import('@/components/letsbuild/LetsBuildFAQ')
 const BuildLeadForm = dynamic(() => import('@/components/letsbuild/BuildLeadForm'))
 
 export const metadata: Metadata = {
-  title: 'Get a custom website from $599 | Yele',
+  title: 'Get a custom website from $699 | Yele',
   description:
-    'Custom design and imagery, delivery under 4 weeks, our agency takes care of everything. Websites from $599 + Yele Care from $49/month. Pay 50% to start, 50% at launch.',
+    'Custom design and imagery, delivery under 4 weeks, our agency takes care of everything. Websites from $699 + Yele Care from $49/month. Pay 50% to start, 50% at launch.',
   alternates: { canonical: 'https://yele.design/letsbuild' },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://yele.design/letsbuild',
     siteName: 'Yele',
-    title: 'Get a custom website from $599 | Yele',
-    description: 'Custom design. Delivery under 4 weeks. From $599 + $49/mo Yele Care. 50% to start.',
+    title: 'Get a custom website from $699 | Yele',
+    description: 'Custom design. Delivery under 4 weeks. From $699 + $49/mo Yele Care. 50% to start.',
   },
 }
 
 const KEY_POINTS = [
-  'From $599',
+  'From $699',
   'No tasteless templates',
   'No DIY — we build everything for you',
   'Delivery under 4 weeks',
@@ -39,7 +39,7 @@ const KEY_POINTS = [
 
 // Plan-interest pills shown in the hero form; the pricing CTAs dispatch these
 // exact values to pre-select the matching pill.
-const PLAN_OPTIONS = ['Launch — $599', 'Business — $1,199', 'Pro — $2,799']
+const PLAN_OPTIONS = ['Launch — $699', 'Business — $1,199', 'Pro — $2,799']
 
 const CARE_INCLUDES = ['Hosting', 'SSL & security', 'Backups', 'Uptime monitoring']
 
@@ -48,28 +48,6 @@ const STEPS = [
   { n: '2', title: 'Tell us about your business', body: 'A quick call or email so we understand your exact needs for the website before we design anything.' },
   { n: '3', title: 'Review', body: 'We show you the finished website and make the agreed revisions before launch.' },
   { n: '4', title: 'Go live', body: 'Approve, pay the remaining 50%, and we launch your website — Yele Care keeps everything running afterwards.' },
-]
-
-const ACTIONS = [
-  'Call your business',
-  'Request a quote',
-  'Book an appointment',
-  'Send an enquiry',
-  'Visit your location',
-  'Buy a product',
-  'Contact you on WhatsApp',
-]
-
-const SEO_ITEMS = [
-  'SEO-friendly structure',
-  'Page titles and descriptions',
-  'Heading structure',
-  'Image optimization',
-  'Sitemap',
-  'Google indexing setup',
-  'Mobile optimization',
-  'Performance optimization',
-  'Google Analytics setup',
 ]
 
 const GROW = [
@@ -82,11 +60,12 @@ const GROW = [
 ]
 
 const WHY = [
-  { title: 'Affordable', body: 'Professional websites starting from $599.' },
-  { title: 'Transparent', body: 'Clear pricing with no confusing agency quotes.' },
-  { title: 'Custom', body: 'Designed around your business rather than simply changing a logo on a generic template.' },
-  { title: 'Supported', body: 'We stay with you after launch through Yele Care.' },
-  { title: 'Built for growth', body: 'Add SEO, advertising, content, AI, and automation as your business grows.' },
+  { title: 'Design refresh', body: 'A full redesign every year, so your website never looks dated.', webm: '/media/whyyele3/whyyele1.webm', mp4: '/media/whyyele3/whyyele1.mp4', poster: '/media/whyyele3/whyyele1_poster.jpg' },
+  { title: 'Affordable & transparent', body: 'Professional websites from $699, with clear pricing and no confusing agency quotes.', webm: '/media/whyyele3/whyyele6.webm', mp4: '/media/whyyele3/whyyele6.mp4', poster: '/media/whyyele3/whyyele6_poster.jpg' },
+  { title: 'Custom', body: 'Designed around your business, not a generic template with your logo dropped on.', webm: '/media/whyyele3/whyyele2.webm', mp4: '/media/whyyele3/whyyele2.mp4', poster: '/media/whyyele3/whyyele2_poster.jpg' },
+  { title: 'Fast delivery', body: 'Delivery goal set for under 4 weeks.', webm: '/media/whyyele3/whyyele3.webm', mp4: '/media/whyyele3/whyyele3.mp4', poster: '/media/whyyele3/whyyele3_poster.jpg' },
+  { title: 'Support 24/7', body: 'We stay with you after launch — support whenever you need it.', webm: '/media/beyond/AIcall_hq.webm', mp4: '/media/beyond/AIcall_hq.mp4', poster: '/media/beyond/AIcall_poster.jpg' },
+  { title: 'Built for growth', body: 'Add SEO, advertising, content, AI, and automation as your business grows.', webm: '/media/beyond/Marketing_hq.webm', mp4: '/media/beyond/Marketing_hq.mp4', poster: '/media/beyond/Marketing_poster.jpg' },
 ]
 
 const DARK = '#0D0E12'
@@ -146,27 +125,21 @@ export default function LetsBuildPage() {
         {/* ---- LATEST FEATURED WORK (index gallery, always dark, one screen) ---- */}
         <LatestFeaturedWork forceDark />
 
-        {/* ---- PRICING (dark, index-style cards + ambient pink glow) ---- */}
-        <section id="pricing" className="relative overflow-hidden px-6 py-20 md:py-28" style={{ backgroundColor: DARK }}>
-          <div
-            className="pointer-events-none absolute inset-0 z-0"
-            aria-hidden="true"
-            style={{
-              background:
-                'radial-gradient(ellipse 480px 420px at 15% 55%, rgba(212,111,200,0.20), transparent 70%), ' +
-                'radial-gradient(ellipse 560px 480px at 50% 52%, rgba(212,111,200,0.26), transparent 70%), ' +
-                'radial-gradient(ellipse 480px 420px at 85% 55%, rgba(212,111,200,0.20), transparent 70%)',
-              filter: 'blur(70px)',
-            }}
-          />
-          <div className="relative z-10 max-w-6xl mx-auto">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-bone tracking-tight text-center mb-3">
+        {/* ---- PRICING (white, index-style cards) ---- */}
+        <section id="pricing" className="bg-white px-6 py-20 md:py-28">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-3">
               Pricing
             </h2>
-            <p className="font-body text-base text-white/60 text-center mb-10 md:mb-14">
+            <p className="font-body text-base text-muted text-center mb-10 md:mb-14">
               One-time build. Then Yele Care keeps everything running — from $49/month.
             </p>
             <PricingCards />
+
+            <p className="max-w-2xl mx-auto text-center font-body text-sm md:text-base text-muted mt-10 leading-relaxed">
+              Pay 50% at the beginning of your project, and the remaining 50% at launch. Then Yele Care makes sure
+              everything works and your site stays updated — for <span className="text-ink font-medium">$49/month</span>.
+            </p>
           </div>
         </section>
 
@@ -225,25 +198,25 @@ export default function LetsBuildPage() {
           </div>
         </section>
 
-        {/* ---- HOW IT WORKS (dark) ---- */}
-        <section className="px-6 py-16 md:py-24 border-t border-white/10" style={{ backgroundColor: DARK }}>
+        {/* ---- HOW IT WORKS (white) ---- */}
+        <section className="bg-white px-6 py-16 md:py-24">
           <div className="max-w-4xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">How it works</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-10">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">How it works</p>
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-10">
               From idea to live website in four simple steps.
             </h2>
             <div className="space-y-4">
               {STEPS.map(step => (
                 <div
                   key={step.n}
-                  className="group flex gap-5 rounded-2xl p-4 -mx-4 transition-all duration-300 hover:bg-white/[0.04] hover:translate-x-1"
+                  className="group flex gap-5 rounded-2xl p-4 -mx-4 transition-all duration-300 hover:bg-black/[0.03] hover:translate-x-1"
                 >
                   <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#D46FC8]/30">
                     {step.n}
                   </span>
                   <div>
-                    <h3 className="font-display font-bold text-xl text-white mb-1 transition-colors duration-300 group-hover:text-[#D46FC8]">{step.title}</h3>
-                    <p className="font-body text-base text-white/70 leading-relaxed max-w-2xl">{step.body}</p>
+                    <h3 className="font-display font-bold text-xl text-ink mb-1 transition-colors duration-300 group-hover:text-[#D46FC8]">{step.title}</h3>
+                    <p className="font-body text-base text-muted leading-relaxed max-w-2xl">{step.body}</p>
                   </div>
                 </div>
               ))}
@@ -256,109 +229,38 @@ export default function LetsBuildPage() {
           </div>
         </section>
 
-        {/* ---- BUILT TO GENERATE BUSINESS ---- */}
+        {/* ---- NEVER OUTDATED ---- */}
         <section className="px-6 py-16 md:py-24 border-t border-white/10">
           <div className="max-w-3xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">Built to generate business</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-3">
-              Your website should do more than look good.
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">Always fresh</p>
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-4">
+              Your website will <span className="text-[#D46FC8]">never</span> be outdated.
             </h2>
-            <p className="font-body text-base text-white/70 mb-8">
-              Every Yele website is built around helping visitors take action.
+            <p className="font-body text-base md:text-lg text-white/70 leading-relaxed">
+              Every year, Yele Care includes a full redesign — we refresh the look, update the content, and keep your
+              website modern as design trends move on. No rebuilds, no extra quotes. Your site stays current for as long
+              as you&apos;re with us.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
-              {ACTIONS.map(a => (
-                <div key={a} className="flex items-start gap-2.5">
-                  <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
-                  <span className="font-body text-base text-white/80">{a}</span>
-                </div>
-              ))}
-            </div>
-            <p className="font-body text-base text-white/60 mt-8">Your website should make the next step obvious.</p>
-          </div>
-        </section>
-
-        {/* ---- INCLUDED SEO ---- */}
-        <section className="px-6 py-16 md:py-24 border-t border-white/10">
-          <div className="max-w-3xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">Included SEO</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-3">
-              SEO-ready from day one.
-            </h2>
-            <p className="font-body text-base text-white/70 mb-8">
-              Every website includes the technical SEO foundations needed to give search engines a clear understanding of your website.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
-              {SEO_ITEMS.map(a => (
-                <div key={a} className="flex items-start gap-2.5">
-                  <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
-                  <span className="font-body text-base text-white/80">{a}</span>
-                </div>
-              ))}
-            </div>
-            <p className="font-body text-sm text-white/45 mt-8">
-              Ongoing SEO campaigns, content creation, local SEO, and ranking work are available separately.
-            </p>
-          </div>
-        </section>
-
-        {/* ---- MORE THAN WEBSITES ---- */}
-        <section className="px-6 py-16 md:py-24 border-t border-white/10">
-          <div className="max-w-6xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">More than websites</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-3">
-              Grow with Yele when you&apos;re ready.
-            </h2>
-            <p className="font-body text-base text-white/70 mb-10">
-              Your website is only the beginning. As your business grows, Yele can also help with:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {GROW.map(s => {
-                const Icon = s.icon
-                return (
-                  <div key={s.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
-                    <Icon size={24} className="text-[#D46FC8] mb-4" aria-hidden="true" />
-                    <h3 className="font-display font-bold text-lg text-white mb-2">{s.title}</h3>
-                    <p className="font-body text-sm text-white/70 leading-relaxed">{s.body}</p>
-                  </div>
-                )
-              })}
-            </div>
-            <p className="font-body text-base text-white/60 mt-8">Add these services whenever your business needs them.</p>
           </div>
         </section>
 
         {/* ---- WHY BUSINESSES CHOOSE YELE ---- */}
         <section className="px-6 py-16 md:py-24 border-t border-white/10">
-          <div className="max-w-5xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">Why businesses choose Yele</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-10">
-              Professional without the traditional agency price.
+          <div className="max-w-6xl mx-auto">
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
+              Why businesses choose Yele
             </h2>
+            <p className="font-body text-base text-white/70 mb-10">
+              Professional without the traditional agency price.
+            </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {WHY.map(w => (
-                <div key={w.title}>
-                  <h3 className="font-display font-bold text-xl text-white mb-1">{w.title}</h3>
-                  <p className="font-body text-base text-white/70 leading-relaxed">{w.body}</p>
+                <div key={w.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
+                  <CareVideo webm={w.webm} mp4={w.mp4} poster={w.poster} />
+                  <h3 className="font-display font-bold text-lg text-white mb-1">{w.title}</h3>
+                  <p className="font-body text-sm text-white/70 leading-relaxed">{w.body}</p>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ---- PAYMENT ---- */}
-        <section className="px-6 py-16 md:py-24 border-t border-white/10">
-          <div className="max-w-2xl mx-auto text-center">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">Payment</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-6">
-              You don&apos;t pay everything upfront.
-            </h2>
-            <div className="font-body text-base md:text-lg text-white/80 space-y-2">
-              <p>Pay 50% to begin your project.</p>
-              <p>Review your completed website.</p>
-              <p>Pay the remaining 50% when you approve it for launch.</p>
-              <p>Then Yele Care begins at $49/month.</p>
-              <p className="text-[#D46FC8] font-semibold pt-2">Simple.</p>
             </div>
           </div>
         </section>
@@ -389,7 +291,7 @@ export default function LetsBuildPage() {
               Get a custom website without paying traditional agency prices.
             </p>
             <p className="font-body text-base text-white/60 mb-8">
-              Websites from $599. Yele Care from $49/month. 50% to start. 50% when you&apos;re ready to launch.
+              Websites from $699. Yele Care from $49/month. 50% to start. 50% when you&apos;re ready to launch.
             </p>
             <a href="#build-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-8 py-4 rounded-xl transition-colors">
               Start My Website
@@ -397,6 +299,32 @@ export default function LetsBuildPage() {
             <p className="font-body text-sm text-white/45 mt-8">
               Professional websites. Affordable pricing. Ongoing support.
             </p>
+          </div>
+        </section>
+
+        {/* ---- MORE THAN WEBSITES (last — to be moved to its own page later) ---- */}
+        <section className="px-6 py-16 md:py-24 border-t border-white/10">
+          <div className="max-w-6xl mx-auto">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-white/50 mb-3">More than websites</p>
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-3">
+              Grow with Yele when you&apos;re ready.
+            </h2>
+            <p className="font-body text-base text-white/70 mb-10">
+              Your website is only the beginning. As your business grows, Yele can also help with:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {GROW.map(s => {
+                const Icon = s.icon
+                return (
+                  <div key={s.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6">
+                    <Icon size={24} className="text-[#D46FC8] mb-4" aria-hidden="true" />
+                    <h3 className="font-display font-bold text-lg text-white mb-2">{s.title}</h3>
+                    <p className="font-body text-sm text-white/70 leading-relaxed">{s.body}</p>
+                  </div>
+                )
+              })}
+            </div>
+            <p className="font-body text-base text-white/60 mt-8">Add these services whenever your business needs them.</p>
           </div>
         </section>
       </main>

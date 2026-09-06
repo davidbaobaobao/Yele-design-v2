@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { Plus, Minus } from 'lucide-react'
 
-const FAQS: { q: string; a: string }[] = [
+const FAQS: { q: string; a: string; link?: { label: string; href: string } }[] = [
   {
     q: 'How much does a website cost?',
-    a: 'Yele websites start at $599. Most small businesses will choose either our $599 Launch package or our $1,299 Business package. More advanced websites start from $2,299.',
+    a: 'Yele websites start at $699. Most small businesses will choose either our $699 Launch package or our $1,199 Business package. More advanced websites start from $2,799.',
   },
   {
     q: 'Is there a monthly fee?',
@@ -14,7 +14,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'Is Yele Care compulsory?',
-    a: 'No. You are free to host and manage the website yourself. We strongly recommend Yele Care because it keeps your site hosted, secure, backed up, monitored, and up to date — with our team handling the technical side and small changes, so you never have to worry about it.',
+    a: 'No — but we highly recommend it. Yele Care includes a full design refresh every year, so you get a renewed website annually and everything keeps working — hosted, secure, backed up, monitored and up to date. You can host and manage the site yourself, but with Yele Care you never have to worry about the technical side.',
   },
   {
     q: 'Do I need to pay everything upfront?',
@@ -30,27 +30,30 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'Can customers book appointments through my website?',
-    a: 'Yes. Basic calendar and booking integrations are included in the Launch package. More advanced scheduling, payments, reminders, or multi-staff booking systems are available with Business or Pro.',
+    a: 'Yes. With Business, customers can automatically choose and confirm a time in a synchronized calendar. With Launch, your site has direct automatic action buttons to call you or fill in a form. More advanced scheduling, payments, reminders, or multi-staff booking is available with Business or Pro.',
   },
   {
     q: 'Is SEO included?',
-    a: 'Every website includes an SEO foundation. This includes technical setup, page titles, descriptions, sitemap, indexing, mobile optimization, and analytics. Ongoing SEO campaigns are available separately.',
+    a: 'Every website includes an SEO foundation. This includes technical setup, page titles, descriptions, sitemap, indexing, mobile optimization, and analytics.',
   },
   {
-    q: 'Can you update my website later?',
-    a: 'Yes. Small text and image changes are included with Yele Care. Larger changes, new functionality, new sections requiring significant design work, or complete redesigns are quoted separately.',
+    q: 'Can you update my website later with my content?',
+    a: 'Yes — anytime. You can upload your content directly yourself, or we can do it for you. It’s included with Yele Care.',
   },
   {
     q: 'Can you create images and videos?',
-    a: 'We can create the visual assets needed for your website. Ongoing image, video, social, and advertising content can also be added as a monthly service.',
+    a: 'We create the visual assets needed for your website as part of the build. Ongoing image and video content in the future isn’t included and is an added cost.',
+    link: { label: 'See more in our services', href: 'https://yele.design/services' },
   },
   {
     q: 'Can you manage my advertising?',
     a: 'Yes. Yele can set up and manage Google Ads and Meta advertising campaigns. Advertising management and ad spend are separate from your website package.',
+    link: { label: 'See more in our services', href: 'https://yele.design/services' },
   },
   {
     q: 'Can you add AI to my website?',
     a: 'Yes. We can add AI chat, AI phone receptionists, lead automation, customer follow-up, and other AI-powered business tools.',
+    link: { label: 'See more in our services', href: 'https://yele.design/services' },
   },
 ]
 
@@ -84,9 +87,17 @@ export default function LetsBuildFAQ() {
                   )}
                 </button>
                 {isOpen && (
-                  <p className="font-body text-base text-muted leading-relaxed pb-5 -mt-1 max-w-2xl">
-                    {item.a}
-                  </p>
+                  <div className="pb-5 -mt-1 max-w-2xl">
+                    <p className="font-body text-base text-muted leading-relaxed">{item.a}</p>
+                    {item.link && (
+                      <a
+                        href={item.link.href}
+                        className="inline-flex items-center gap-1 mt-2 font-body text-sm font-medium text-[#D46FC8] underline underline-offset-4 hover:text-[#DE85D2] transition-colors"
+                      >
+                        {item.link.label} →
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
             )

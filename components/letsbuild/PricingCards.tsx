@@ -24,8 +24,8 @@ type Tier = {
 const TIERS: Tier[] = [
   {
     name: 'Launch',
-    amount: '599',
-    planValue: 'Launch — $599',
+    amount: '699',
+    planValue: 'Launch — $699',
     blurb: 'Everything most small businesses need to get online professionally.',
     headline: null,
     features: [
