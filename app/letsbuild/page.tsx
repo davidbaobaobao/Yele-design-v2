@@ -277,24 +277,24 @@ export default function LetsBuildPage() {
         <LetsBuildFAQ />
 
         {/* ---- LEAD FORM (detailed) ---- */}
-        <section id="build-form" className="bg-white px-6 py-16 md:py-24">
+        <section id="build-form" className="px-6 py-16 md:py-24" style={{ backgroundColor: DARK }}>
           <div className="max-w-2xl mx-auto">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-2">
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
               Ready for a better website?
             </h2>
-            <p className="font-body text-base text-muted mb-8">
+            <p className="font-body text-base text-white/70 mb-8">
               Tell us a little about your business and we&apos;ll recommend the right website package.
             </p>
-            <BuildLeadForm variant="light" />
+            <BuildLeadForm variant="dark" />
           </div>
         </section>
 
-        {/* ---- FINAL CTA (white, video left / text right, centered CTA below) ---- */}
-        <section className="bg-white px-6 py-20 md:py-28 border-t border-hairline">
+        {/* ---- FINAL CTA (dark, video left / text right, centered CTA below) ---- */}
+        <section className="px-6 py-20 md:py-28 border-t border-white/10" style={{ backgroundColor: DARK }}>
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
               <video
-                className="w-full aspect-video rounded-2xl object-cover border border-hairline transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10"
+                className="w-full aspect-video rounded-2xl object-cover border border-white/10 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40"
                 autoPlay muted loop playsInline preload="none" poster="/media/boldstats/boldstats_poster.jpg"
               >
                 <source src="/media/boldstats/boldstats_hq.webm" type="video/webm" />
@@ -302,13 +302,13 @@ export default function LetsBuildPage() {
               </video>
 
               <div>
-                <h2 className="font-display font-bold text-3xl md:text-5xl text-ink tracking-tight mb-5">
+                <h2 className="font-display font-bold text-3xl md:text-5xl text-white tracking-tight mb-5">
                   Your business deserves a website that looks professional.
                 </h2>
-                <p className="font-body text-base md:text-lg text-muted leading-relaxed mb-2">
+                <p className="font-body text-base md:text-lg text-white/70 leading-relaxed mb-2">
                   Get a custom website without paying traditional agency prices.
                 </p>
-                <p className="font-body text-base text-muted">
+                <p className="font-body text-base text-white/60">
                   Websites from $699. Yele Care from $49/month. 50% to start. 50% when you&apos;re ready to launch.
                 </p>
               </div>
