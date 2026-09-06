@@ -82,6 +82,74 @@ export function finalConfirmationEmail({
   return { subject, html, text }
 }
 
+// Internal payment notification (to the studio + owner) — clean HTML with a
+// details table, matching the client emails' look.
+export function internalPaymentEmail({
+  isFinal,
+  name,
+  email,
+  company,
+  planLabel,
+  amount,
+  sessionId,
+}: {
+  isFinal: boolean
+  name?: string
+  email?: string
+  company?: string
+  planLabel?: string
+  amount?: string
+  sessionId?: string
+}): { subject: string; html: string; text: string } {
+  const who = name || email || 'new customer'
+  const subject = `${isFinal ? 'Final payment + Yele Care' : 'First payment'} — ${who}${planLabel ? ` (${planLabel})` : ''}`
+  const intro = isFinal
+    ? 'A final payment was completed and the Yele Care subscription started (first month free).'
+    : 'A first payment was successfully completed.'
+
+  const rows: [string, string][] = [
+    ['Name', name || '(not provided)'],
+    ['Email', email || '(not provided)'],
+    ...(company ? [['Business', company] as [string, string]] : []),
+    ['Plan', planLabel || '(unknown)'],
+    ...(amount ? [['Amount', amount] as [string, string]] : []),
+    ...(sessionId ? [['Stripe session', sessionId] as [string, string]] : []),
+  ]
+
+  const text = [intro, '', ...rows.map(([k, v]) => `${k}: ${v}`)].join('\n')
+
+  const rowsHtml = rows
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:8px 0; font-size:15px; color:${MUTED}; width:130px; vertical-align:top;">${k}</td><td style="padding:8px 0; font-size:15px; color:${INK}; font-weight:500; word-break:break-all;">${v}</td></tr>`
+    )
+    .join('')
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="color-scheme" content="light only" /></head>
+<body style="margin:0; padding:0; background-color:#f4f4f5;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <tr><td style="padding:32px 40px 0 40px;"><img src="${LOGO_URL}" alt="Yele" width="96" style="display:block; height:auto; width:96px;" /></td></tr>
+        <tr><td style="padding:20px 40px 0 40px;"><div style="width:40px; height:4px; border-radius:4px; background-color:${isFinal ? '#34C759' : PINK};"></div></td></tr>
+        <tr><td style="padding:16px 40px 0 40px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+          <h1 style="margin:0 0 8px 0; font-size:24px; font-weight:700; color:${INK};">${isFinal ? 'Final payment + Yele Care' : 'New payment received'}</h1>
+          <p style="margin:0; font-size:16px; line-height:1.5; color:${INK};">${intro}</p>
+        </td></tr>
+        <tr><td style="padding:16px 40px 40px 40px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #ededed; margin-top:8px;">${rowsHtml}</table>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  return { subject, html, text }
+}
+
 export function clientConfirmationEmail({
   firstName,
   planLabel,

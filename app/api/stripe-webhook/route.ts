@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { clientConfirmationEmail, finalConfirmationEmail } from '@/lib/emails/confirmation'
+import { clientConfirmationEmail, finalConfirmationEmail, internalPaymentEmail } from '@/lib/emails/confirmation'
 
 export const dynamic = 'force-dynamic'
 
@@ -54,25 +54,22 @@ async function sendBuildPaymentEmails(session: Stripe.Checkout.Session) {
 
   // 2) Internal notification
   try {
+    const { subject, html, text } = internalPaymentEmail({
+      isFinal,
+      name,
+      email,
+      company,
+      planLabel,
+      amount,
+      sessionId: session.id,
+    })
     await resend.emails.send({
       from: 'Yele Payments <noreply@yele.design>',
       to: INTERNAL_RECIPIENTS,
       replyTo: email || undefined,
-      subject: `${isFinal ? 'Final payment + Yele Care' : 'First payment'} — ${name || email || 'new customer'}${planLabel ? ` (${planLabel})` : ''}`,
-      text: [
-        isFinal
-          ? 'A final payment was completed and the Yele Care subscription started (first month free).'
-          : 'A first payment was successfully completed.',
-        '',
-        `Name: ${name || '(not provided)'}`,
-        `Email: ${email || '(not provided)'}`,
-        company ? `Business: ${company}` : null,
-        `Plan: ${planLabel || '(unknown)'}`,
-        amount ? `Amount: ${amount}` : null,
-        `Stripe session: ${session.id}`,
-      ]
-        .filter(line => line !== null)
-        .join('\n'),
+      subject,
+      html,
+      text,
     })
   } catch (err) {
     console.error('[stripe-webhook] internal email failed', err)
