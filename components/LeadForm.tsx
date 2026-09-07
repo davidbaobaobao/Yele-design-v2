@@ -34,6 +34,7 @@ export default function LeadForm({
   platform = 'google',
   planOptions,
   trackMeta = true,
+  leadSource,
 }: {
   variant?: 'light' | 'dark'
   ctaLabel?: string
@@ -48,6 +49,9 @@ export default function LeadForm({
   // Meta-ads landing (unlike /letsbuild). The Google Ads conversion still
   // fires for platform 'google'.
   trackMeta?: boolean
+  // Human-readable origin stamped onto the lead email (e.g. "Google Ads")
+  // so the team can see where each lead came from.
+  leadSource?: string
   // Which ad platform this submit should count toward. 'google' (default,
   // /start + /websites) fires the existing onboarding_form_submit Google
   // Ads conversion. 'meta' (/newwebsite only) fires the Meta Pixel "Lead"
@@ -127,6 +131,7 @@ export default function LeadForm({
         packageInterest: selectedPlan ? [selectedPlan] : undefined,
         eventId: metaEventId,
         source: platform,
+        leadSource,
         fbc: metaCookies.fbc,
         fbp: metaCookies.fbp,
       }),

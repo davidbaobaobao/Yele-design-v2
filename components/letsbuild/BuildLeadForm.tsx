@@ -40,7 +40,15 @@ const PACKAGES = [
 // redirect + conversion tracking as the shared LeadForm, plus the extra
 // business-name / current-website / needs / package fields the API now emails
 // (all optional, backward-compatible with the other pages' forms).
-export default function BuildLeadForm({ id, variant = 'dark' }: { id?: string; variant?: 'light' | 'dark' }) {
+export default function BuildLeadForm({
+  id,
+  variant = 'dark',
+  leadSource,
+}: {
+  id?: string
+  variant?: 'light' | 'dark'
+  leadSource?: string
+}) {
   const router = useRouter()
   const isDark = variant === 'dark'
 
@@ -93,6 +101,7 @@ export default function BuildLeadForm({ id, variant = 'dark' }: { id?: string; v
         packageInterest,
         eventId: metaEventId,
         source: 'google',
+        leadSource,
         fbc: metaCookies.fbc,
         fbp: metaCookies.fbp,
       }),

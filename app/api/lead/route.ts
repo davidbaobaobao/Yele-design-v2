@@ -35,11 +35,12 @@ export async function POST(request: Request) {
     // backward-compatible: the shared LeadForm (/start, /websites,
     // /newwebsite) never sends these, so they simply render as "(not
     // provided)" / are omitted from the email for those pages.
-    const { businessName, currentWebsite, needs, packageInterest } = body as {
+    const { businessName, currentWebsite, needs, packageInterest, leadSource } = body as {
       businessName?: string
       currentWebsite?: string
       needs?: string[]
       packageInterest?: string[]
+      leadSource?: string
     }
 
     if (!name || !email) {
@@ -73,8 +74,10 @@ export async function POST(request: Request) {
         from: 'Yele Leads <noreply@yele.design>',
         to: RECIPIENTS,
         replyTo: email,
-        subject: `New lead — ${name}${businessName ? ` (${businessName})` : ''}`,
+        subject: `New lead${leadSource ? ` [${leadSource}]` : ''} — ${name}${businessName ? ` (${businessName})` : ''}`,
         text: [
+          leadSource ? `Source: ${leadSource}` : null,
+          leadSource ? '' : null,
           `Name: ${name}`,
           businessName ? `Business name: ${businessName}` : null,
           `Email: ${email}`,
