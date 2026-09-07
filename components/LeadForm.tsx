@@ -158,6 +158,15 @@ export default function LeadForm({
       email: formData.email,
       company: formData.company,
     })
+    // Forward the chosen plan (if any) so /received can show just that tier.
+    const planId = /^Launch/.test(selectedPlan)
+      ? 'launch'
+      : /^Business/.test(selectedPlan)
+        ? 'business'
+        : /^Pro/.test(selectedPlan)
+          ? 'pro'
+          : ''
+    if (planId) params.set('plan', planId)
     router.push(`/received?${params.toString()}`)
   }
 

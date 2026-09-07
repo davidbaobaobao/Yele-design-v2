@@ -2,49 +2,102 @@ import Link from 'next/link'
 import PayButton from '@/components/received/PayButton'
 
 export const metadata = {
-  title: 'Thanks — Yele',
+  title: 'Welcome — Yele',
   robots: { index: false, follow: false },
 }
 
-const NEXT_STEPS = [
-  'Secure your spot in our calendar.',
-  'Choose your plan, make your initial payment.',
-  'Tell us about your business.',
-  'We’ll get started on your website right away.',
-]
+type Tier = {
+  plan: 'launch' | 'business' | 'pro'
+  name: string
+  price: string
+  care: string
+  pay: string
+  desc: string
+  dark: boolean
+}
 
-// Half of the one-time build price (50% to start). Kept as display strings so
-// the confirmation reads cleanly; the full tiers/prices live on /letsbuild.
-const TIERS = [
+const TIERS: Tier[] = [
   {
-    name: 'Launch',
-    desc: 'Everything to get online professionally.',
-    pay: 'Pay $349',
     plan: 'launch',
-    popular: false,
+    name: 'Launch',
+    price: '$699',
+    care: '$49',
+    pay: '$349',
+    desc: 'Everything a small business needs to get online professionally — a custom design, mobile-optimized, with your own domain, contact forms and SEO indexing.',
+    dark: false,
   },
   {
-    name: 'Business',
-    desc: 'More functionality for growing businesses.',
-    pay: 'Pay $599',
     plan: 'business',
-    popular: true,
+    name: 'Business',
+    price: '$1,199',
+    care: '$49',
+    pay: '$599',
+    desc: 'More power for growing businesses — calendar booking, secure payments, small e-commerce, conversion optimization, a blog and detailed analytics.',
+    dark: false,
   },
   {
-    name: 'Pro',
-    desc: 'Advanced functionality and e-commerce.',
-    pay: 'Pay $1,399',
     plan: 'pro',
-    popular: false,
+    name: 'Pro',
+    price: 'From $2,799',
+    care: '$99',
+    pay: '$1,399',
+    desc: 'Advanced functionality and high-performance e-commerce — custom dashboards, third-party integrations, multiple locations and complex workflows.',
+    dark: true,
   },
 ]
 
-// Thank-you landing after a successful lead-form submit. `name` arrives as a
-// query param from the form redirect; React escapes it as plain JSX text.
+const STEPS = [
+  {
+    n: 1,
+    title: 'Pay and secure your spot',
+    body: "Start now by paying 50%. This locks in your project and reserves your place in our schedule — we'll start working on it right away.",
+    cards: true,
+  },
+  {
+    n: 2,
+    title: 'Tell us about your business',
+    body: 'A short survey so we understand your exact needs for the website before we design anything.',
+    cards: false,
+  },
+  {
+    n: 3,
+    title: 'First proposal under 72h',
+    body: "We'll build a functional demo of your website as a starting point, then review all the changes needed together.",
+    cards: false,
+  },
+  {
+    n: 4,
+    title: 'Go live',
+    body: 'Approve, pay the remaining 50%, and we launch your website — Yele Care keeps everything running smoothly afterwards.',
+    cards: false,
+  },
+]
+
+function TierCard({ tier, name, email, company }: { tier: Tier; name: string; email: string; company: string }) {
+  return (
+    <div
+      className={`flex flex-col rounded-2xl p-6 shadow-lg ${
+        tier.dark ? 'bg-[#0D0E12] text-white shadow-black/30' : 'bg-white text-ink border border-ink/15 shadow-black/[0.08]'
+      }`}
+    >
+      <h4 className={`font-display text-xl font-bold ${tier.dark ? 'text-white' : 'text-ink'}`}>{tier.name}</h4>
+      <div className="mt-1 flex items-end gap-1.5">
+        <span className={`font-display text-3xl font-bold ${tier.dark ? 'text-white' : 'text-ink'}`}>{tier.price}</span>
+        <span className={`mb-1 font-body text-sm ${tier.dark ? 'text-white/55' : 'text-muted'}`}>one-time</span>
+      </div>
+      <p className={`mt-1 font-body text-sm ${tier.dark ? 'text-white/70' : 'text-muted'}`}>+ {tier.care}/mo Yele Care</p>
+      <p className={`mt-4 mb-6 flex-1 font-body text-sm leading-relaxed ${tier.dark ? 'text-white/75' : 'text-ink/75'}`}>
+        {tier.desc}
+      </p>
+      <PayButton plan={tier.plan} name={name} email={email} company={company} label={`Pay ${tier.pay}`} popular={tier.dark} />
+    </div>
+  )
+}
+
 export default function ReceivedPage({
   searchParams,
 }: {
-  searchParams: { name?: string; email?: string; company?: string }
+  searchParams: { name?: string; email?: string; company?: string; plan?: string }
 }) {
   const rawName = searchParams.name?.trim() ?? ''
   const email = searchParams.email?.trim() ?? ''
@@ -52,72 +105,51 @@ export default function ReceivedPage({
   const firstName = rawName.split(/\s+/)[0]
   const name = firstName.length > 0 && firstName.length <= 40 ? firstName : ''
 
+  const plan = (searchParams.plan ?? '').trim()
+  const selected = TIERS.filter(t => t.plan === plan)
+  const shownTiers = selected.length > 0 ? selected : TIERS
+  const single = shownTiers.length === 1
+
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-6 py-16">
+    <div className="min-h-screen bg-white flex justify-center px-6 py-16">
       <div className="max-w-4xl w-full">
         <Link href="/" className="inline-flex items-center mb-10 focus-visible:outline-none" aria-label="yele">
           {/* eslint-disable-next-line @next/next/no-img-element -- SVG, Next's image optimizer refuses to serve those */}
           <img src="/media/logomedia/mainlogo.svg" alt="" className="h-8 w-auto" />
         </Link>
 
-        <h1 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight leading-tight mb-2">
-          {name ? <>You are in, {name}!</> : <>You are in!</>}
+        <h1 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight leading-tight mb-3">
+          {name ? <>Welcome {name}, let&apos;s start with your website.</> : <>Welcome, let&apos;s start with your website.</>}
         </h1>
-        <p className="font-body text-muted text-lg leading-relaxed mb-12">
-          We will contact you briefly.
+        <p className="font-body text-muted text-lg mb-10">Next steps:</p>
+
+        <ol className="space-y-8">
+          {STEPS.map(step => (
+            <li key={step.n} className="flex gap-4">
+              <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center">
+                {step.n}
+              </span>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-display font-bold text-xl text-ink mb-1">{step.title}</h3>
+                <p className="font-body text-base text-ink/75 leading-relaxed max-w-2xl">{step.body}</p>
+
+                {step.cards && (
+                  <div className={`mt-5 grid gap-4 ${single ? 'max-w-sm' : 'grid-cols-1 md:grid-cols-3'}`}>
+                    {shownTiers.map(tier => (
+                      <TierCard key={tier.plan} tier={tier} name={rawName} email={email} company={company} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <p className="font-body text-sm text-muted mt-10">
+          You pay 50% now to secure your spot — the remaining 50% is due at launch. Then Yele Care from $49/month.
         </p>
 
-        <div>
-          <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight mb-6">
-            Don&apos;t want to wait?
-          </h2>
-
-          <ol className="space-y-2 mb-10">
-            {NEXT_STEPS.map((step, i) => (
-              <li key={step} className="group flex items-start gap-3 rounded-xl p-2 -mx-2 transition-colors hover:bg-black/[0.03]">
-                <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold text-sm flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110">
-                  {i + 1}
-                </span>
-                <span className="font-body text-base md:text-lg text-ink/80 pt-0.5 transition-colors group-hover:text-ink">{step}</span>
-              </li>
-            ))}
-          </ol>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {TIERS.map(tier => (
-              <div
-                key={tier.name}
-                className={`relative flex flex-col rounded-2xl bg-white p-6 transition-shadow ${
-                  tier.popular
-                    ? 'border-2 border-[#D46FC8] shadow-xl shadow-[#D46FC8]/15'
-                    : 'border border-ink/15 shadow-lg shadow-black/[0.08] hover:shadow-xl hover:shadow-black/[0.12]'
-                }`}
-              >
-                {tier.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#D46FC8] px-3 py-1 font-body text-xs font-semibold text-white">
-                    Most Popular
-                  </span>
-                )}
-                <h3 className="font-display font-bold text-xl text-ink">{tier.name}</h3>
-                <p className="font-body text-sm text-muted mt-1 mb-5 flex-1">{tier.desc}</p>
-                <PayButton
-                  plan={tier.plan}
-                  name={rawName}
-                  email={email}
-                  company={company}
-                  label={tier.pay}
-                  popular={tier.popular}
-                />
-              </div>
-            ))}
-          </div>
-
-          <p className="font-body text-sm text-muted mt-6">
-            Pay 50% now to secure your spot — the remaining 50% is due at launch. Then Yele Care for $49/month.
-          </p>
-        </div>
-
-        <div className="mt-10">
+        <div className="mt-8">
           <Link href="/" className="font-body text-base text-muted hover:text-ink transition-colors">
             ← Back to home
           </Link>

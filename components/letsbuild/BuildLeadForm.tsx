@@ -111,6 +111,13 @@ export default function BuildLeadForm({ id, variant = 'dark' }: { id?: string; v
     }
 
     const params = new URLSearchParams({ name, email, company: businessName || company })
+    // If exactly one package is selected, forward it so /received shows just
+    // that tier.
+    if (packageInterest.length === 1) {
+      const p = packageInterest[0]
+      const planId = /^Launch/.test(p) ? 'launch' : /^Business/.test(p) ? 'business' : /^Pro/.test(p) ? 'pro' : ''
+      if (planId) params.set('plan', planId)
+    }
     router.push(`/received?${params.toString()}`)
   }
 
