@@ -89,7 +89,9 @@ export default function ReceivedPage({
         </Link>
 
         <h1 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight leading-tight mb-3">
-          {name ? <>Welcome {name}, let&apos;s start with your website.</> : <>Welcome, let&apos;s start with your website.</>}
+          {name ? <>Welcome {name}!</> : <>Welcome!</>}
+          <br />
+          Let&apos;s get started with your website
         </h1>
         <p className="font-body text-muted text-lg mb-10">Next steps:</p>
 
