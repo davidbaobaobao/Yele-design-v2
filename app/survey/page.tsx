@@ -410,12 +410,12 @@ function SurveyPageInner() {
 
         {key === 'addons' && (
           <FullLayout title="Interested in any additional services?" microcopy="Optional — tap any you'd like. You can decide later.">
-            <div className="mx-auto grid w-full max-w-3xl grid-cols-2 gap-3 md:grid-cols-3">
+            <div className="mx-auto grid w-full max-w-5xl grid-cols-2 gap-3 md:grid-cols-3">
               {ADDON_OPTIONS.map((a) => {
                 const selected = answers.addons.includes(a.id)
                 const sizeClass = a.tall
                   ? 'col-span-2 aspect-[2/1] md:col-span-1 md:col-start-3 md:row-start-1 md:row-span-2 md:aspect-auto'
-                  : 'aspect-square'
+                  : 'aspect-[3/2]'
                 return (
                   <button
                     key={a.id}
