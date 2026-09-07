@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   // already appends it; the old Spanish page had this same redundant suffix
   // baked in, which rendered as "... — Yele | Yele".
   title: 'Terms and Conditions',
-  description: 'General terms of Yele\'s subscription-based website design service.',
+  description: 'General terms of Yele\'s custom website design service — one-time build from $699 plus optional Yele Care maintenance from $49/month.',
 }
 
 export default function TermsAndConditions() {
@@ -26,60 +26,66 @@ export default function TermsAndConditions() {
           <div className="font-body text-ink space-y-10 leading-relaxed">
 
             <p className="text-muted">
-              These Terms govern your use of the subscription website-design service provided by Yele through yele.design. By contracting the service, you accept these Terms in full.
+              These Terms govern your use of the website design and maintenance service provided by Yele through yele.design. By contracting the service, you accept these Terms in full.
             </p>
 
             <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">1. Purpose</h2>
               <p className="text-muted">
-                These Terms govern the contracting and use of Yele&rsquo;s subscription-based website design, development and maintenance service.
+                These Terms govern the contracting and use of Yele&rsquo;s website design, development and maintenance service.
               </p>
             </section>
 
             <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">2. Service Description</h2>
               <p className="text-muted">
-                Yele provides website design, development and maintenance on a monthly subscription. Depending on your plan, the service includes: custom website design and development; delivery within one week of brief approval; hosting and domain for the duration of the subscription; technical maintenance and content updates; and support by email and WhatsApp. The specific services and monthly deliverables included in your plan are set out in Section 3 below.
+                Yele designs and builds a custom website for a one-time price, and then keeps it running through Yele Care, an optional monthly maintenance subscription. Depending on your package, the one-time build includes custom website design and development, a delivery goal of under four weeks from brief approval, and the features listed in Section 3. Yele Care includes hosting, security, backups, technical maintenance, support, small content updates and a full website redesign every year. Support is provided by email and WhatsApp.
               </p>
             </section>
 
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">3. What&rsquo;s Included in Your Plan</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">3. What&rsquo;s Included</h2>
               <p className="text-muted mb-3">
-                The features and monthly deliverables of each plan are as follows and form part of these Terms:
+                The website build is a one-time price. The packages are as follows and form part of these Terms:
               </p>
               <p className="text-muted mb-3">
-                <strong className="text-ink font-medium">Starter ($99/mo):</strong> functional website with no page limit, custom domain, content control panel, on-page SEO, custom email and 24/7 support.
+                <strong className="text-ink font-medium">Launch ($699 one-time):</strong> custom website design, mobile optimization, custom domain, contact and forms, SEO and Google indexing, and professional image and video content for the site.
               </p>
               <p className="text-muted mb-3">
-                <strong className="text-ink font-medium">Pro ($169/mo):</strong> everything in Starter, plus branding, online payments, calendar &amp; reservations, periodic redesigns, an AI chat assistant, advanced SEO (monthly technical and on-page optimization), and advanced media creation of up to 1 video and 20 images per month (video: up to 10 seconds, up to 3 revisions; images: unlimited revisions).
+                <strong className="text-ink font-medium">Business ($1,199 one-time):</strong> everything in Launch, plus calendar booking, payment acceptance, small e-commerce, conversion optimization, a blog and analytics.
               </p>
               <p className="text-muted mb-3">
-                <strong className="text-ink font-medium">Frontier ($699/mo):</strong> everything in Pro, plus premium media creation of up to 4 videos and 80 images per month (videos: up to 10 seconds each, up to 3 revisions; images: unlimited revisions), one monthly marketing campaign, advanced SEO backlinks, one article per month, Google Ads management (ad spend billed separately), and the AI phone receptionist.
+                <strong className="text-ink font-medium">Pro (from $2,799 one-time):</strong> everything in Business, plus high-performance e-commerce, custom functionality and dashboards, advanced integrations, multiple locations and complex workflows.
+              </p>
+              <p className="text-muted mb-3">
+                <strong className="text-ink font-medium">Yele Care ($49/month; $99/month for Pro):</strong> hosting, domain support, security, backups, technical maintenance, support, small content updates, and a full website redesign every year.
               </p>
               <p className="text-muted">
-                Where a plan references a monthly quantity (e.g. images, videos, articles or campaigns), unused monthly allowances do not roll over unless stated.
+                Add-on services (ongoing content creation, advertising, AI tools and automations) are quoted separately and are not part of the website build or Yele Care unless expressly stated.
               </p>
             </section>
 
             <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">4. Price and Payment</h2>
               <p className="text-muted mb-3">
-                Prices are those shown on our pricing page at the time of contracting, in U.S. dollars (USD). Prices do not include any applicable local taxes, which may be added where required. Payment is charged monthly and automatically to your card through Stripe, a PCI-DSS Level 1 certified processor. The subscription renews automatically each month until you cancel.
+                The website build is a one-time price shown on our pricing page at the time of contracting, in U.S. dollars (USD), exclusive of any applicable local taxes. You pay 50% to begin the project and the remaining 50% when the website is finished and approved for launch. Payments are processed by Stripe, a PCI-DSS Level 1 certified processor.
               </p>
               <p className="text-muted">
-                Yele may change prices with at least 30 days&rsquo; notice by email; you may cancel before the new price takes effect.
+                Yele Care, if taken, is billed monthly and automatically to your card and renews each month until you cancel. Yele may change Yele Care pricing with at least 30 days&rsquo; notice by email; you may cancel before the new price takes effect.
               </p>
             </section>
 
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">5. Cancellation and Refunds</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">5. Yele Care, Cancellation and Refunds</h2>
               <p className="text-muted mb-3">
-                There is no minimum commitment. You may cancel anytime from your dashboard or by emailing{' '}
+                Yele Care is optional and not compulsory, though we highly recommend it so your website stays hosted, secure, up to date and redesigned every year. There is no minimum commitment; you may cancel Yele Care anytime by emailing{' '}
                 <a href="mailto:info@yele.design" className="text-[#0066CC] hover:underline">info@yele.design</a>.
               </p>
+              <p className="text-muted mb-3">
+                If you stop paying for Yele Care, your website hosting remains active for a migration period of 30 days so you can migrate and back up your website and content. After that period, hosting is discontinued and the site may go offline. You are responsible for arranging alternative hosting before the migration period ends.
+              </p>
               <p className="text-muted">
-                Cancellation takes effect at the end of the current billing period (no separate notice period); the service remains active until then. We do not issue refunds for periods already billed. After cancellation your website is deactivated, and you may request your data as described in Section 8.
+                We do not issue refunds for the one-time build once work has begun, nor for Yele Care periods already billed.
               </p>
             </section>
 
@@ -94,19 +100,19 @@ export default function TermsAndConditions() {
             </section>
 
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">7. Intellectual Property</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">7. Intellectual Property &amp; Ownership</h2>
               <p className="text-muted mb-3">
-                Content you provide (text, images, logos, etc.) remains yours, and you confirm you hold the rights to use it. The custom media and branding that Yele creates for you — including images, videos and brand assets produced under your plan — become your property once delivered and paid for; you may keep and use them freely, including after cancellation. The underlying website source code, framework, templates and technical systems developed by Yele remain Yele&rsquo;s property and are not transferred.
+                Content you provide (text, images, logos, etc.) remains yours, and you confirm you hold the rights to use it. Once the one-time build is paid in full, you own the completed website design and all custom images and videos Yele produces for you, and you hold the copyright to that content — you may keep and use it freely, including if you later cancel Yele Care. Generic third-party frameworks, libraries, fonts and tooling used to build the site remain under their own respective licenses.
               </p>
               <p className="text-muted">
-                <strong className="text-ink font-medium">Domain:</strong> If Yele registers and manages your domain as part of the service, Yele retains it for the duration of the subscription and it is not automatically transferred on cancellation. To keep the domain, you must request it before cancelling, which may be subject to the applicable transfer fee. A domain you provide yourself remains yours at all times.
+                <strong className="text-ink font-medium">Domain:</strong> A domain you provide yourself remains yours at all times. A standard domain that Yele registers for you can be transferred to you on request, subject to any applicable transfer fee.
               </p>
             </section>
 
             <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">8. Your Content and Media When You Leave</h2>
               <p className="text-muted">
-                For 30 days after cancellation, you may request an export of: (a) the content you provided, and (b) the custom media and branding Yele created for you, delivered in standard, commonly used file formats. This export does not include Yele&rsquo;s proprietary source code, framework or templates, nor e-commerce customer, order or product data, which are not included in the export.
+                If you stop Yele Care, you may — within the 30-day migration period described in Section 5 — request an export of the website, the content you provided, and the custom design, images and videos Yele created for you, delivered in standard, commonly used file formats. E-commerce customer, order and product data are not included in this export.
               </p>
             </section>
 

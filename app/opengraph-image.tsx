@@ -53,7 +53,7 @@ export default async function Image() {
             lineHeight: 1.4,
           }}
         >
-          Professional web design for US small businesses. From $99/mo.
+          Custom website design from $699 one-time. Then Yele Care from $49/month.
         </div>
         <div
           style={{

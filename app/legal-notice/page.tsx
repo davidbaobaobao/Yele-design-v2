@@ -32,7 +32,7 @@ export default function LegalNotice() {
               </p>
               <ul className="mt-4 space-y-2 text-muted">
                 <li><span className="text-ink font-medium">Name:</span> Yele Design</li>
-                <li><span className="text-ink font-medium">Activity:</span> Subscription-based website design, development and maintenance</li>
+                <li><span className="text-ink font-medium">Activity:</span> Custom website design, development and maintenance (one-time build plus optional Yele Care maintenance)</li>
                 <li><span className="text-ink font-medium">Contact email:</span>{' '}
                   <a href="mailto:info@yele.design" className="text-[#0066CC] hover:underline">
                     info@yele.design

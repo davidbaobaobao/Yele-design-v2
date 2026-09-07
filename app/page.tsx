@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import HomePage from '@/components/HomePage'
 
 export const metadata: Metadata = {
-  title: 'Professional website design from $99/mo | Yele',
+  title: 'Custom website design from $699 | Yele',
   description:
-    'Professional website design for SMBs and freelancers. Live in 1 week, maintenance included, from $99/mo. No setup fee, no commitment.',
+    'Custom website design for small businesses — no templates, delivery under 4 weeks, from $699 one-time. Then Yele Care from $49/month keeps it hosted, updated and redesigned every year. Pay 50% to start, 50% at launch.',
   alternates: {
     canonical: 'https://yele.design',
     languages: { 'x-default': 'https://yele.design' },
@@ -14,9 +14,9 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://yele.design',
     siteName: 'Yele',
-    title: 'Professional website design from $99/mo | Yele',
+    title: 'Custom website design from $699 | Yele',
     description:
-      'Professional website design for SMBs and freelancers. Live in 1 week, from $99/mo. No setup fee.',
+      'Custom website design from $699 one-time. Delivery under 4 weeks, then Yele Care from $49/month. No templates, no agency prices.',
   },
 }
 

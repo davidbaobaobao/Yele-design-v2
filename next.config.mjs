@@ -33,11 +33,16 @@ const nextConfig = {
       { source: '/es',            destination: '/',                permanent: true },
       // Phase 5 — ejemplos → portfolio
       { source: '/ejemplos',      destination: '/portfolio',       permanent: true },
-      // Phase 6 — trade verticals
-      { source: '/diseno-web-fontaneros',    destination: '/web-design-plumbers',     permanent: true },
-      { source: '/diseno-web-electricistas', destination: '/web-design-electricians', permanent: true },
-      { source: '/diseno-web-reformas',      destination: '/web-design-contractors',  permanent: true },
-      { source: '/diseno-web-mudanzas',      destination: '/web-design-movers',       permanent: true },
+      // Retired trade/vertical landings — consolidated into /letsbuild.
+      { source: '/diseno-web-fontaneros',    destination: '/letsbuild', permanent: false },
+      { source: '/diseno-web-electricistas', destination: '/letsbuild', permanent: false },
+      { source: '/diseno-web-reformas',      destination: '/letsbuild', permanent: false },
+      { source: '/diseno-web-mudanzas',      destination: '/letsbuild', permanent: false },
+      { source: '/web-design-plumbers',      destination: '/letsbuild', permanent: false },
+      { source: '/web-design-electricians',  destination: '/letsbuild', permanent: false },
+      { source: '/web-design-contractors',   destination: '/letsbuild', permanent: false },
+      { source: '/web-design-movers',        destination: '/letsbuild', permanent: false },
+      { source: '/quote',                    destination: '/letsbuild', permanent: false },
       // Phase 7 — legal pages translated to English, Spanish slugs retired
       { source: '/aviso-legal',         destination: '/legal-notice',   permanent: true },
       { source: '/politica-privacidad', destination: '/privacy-policy', permanent: true },

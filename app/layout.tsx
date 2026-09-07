@@ -34,12 +34,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://yele.design'),
 
   title: {
-    default: 'Professional website design from $99/mo | Yele',
+    default: 'Custom website design from $699 | Yele',
     template: '%s | Yele',
   },
 
   description:
-    'Professional website design for US small businesses and freelancers. Live in 1 week, maintenance included, from $99/mo. No setup fee, no commitment.',
+    'Custom website design for small businesses — bespoke design and imagery, delivery under 4 weeks, from $699 one-time. Then Yele Care from $49/month keeps it hosted, updated and redesigned every year. Pay 50% to start, 50% at launch.',
 
   authors: [{ name: 'Yele', url: 'https://yele.design' }],
   creator: 'Yele',
@@ -50,24 +50,24 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://yele.design',
     siteName: 'Yele',
-    title: 'Professional website design from $99/mo | Yele',
+    title: 'Custom website design from $699 | Yele',
     description:
-      'Professional website design for US small businesses and freelancers. From $99/mo. No setup fee.',
+      'Custom website design from $699 one-time. Delivery under 4 weeks, then Yele Care from $49/month. No agency prices.',
     images: [
       {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Yele — Professional website design for US small businesses',
+        alt: 'Yele — Custom website design from $699',
       },
     ],
   },
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Professional website design from $99/mo | Yele',
+    title: 'Custom website design from $699 | Yele',
     description:
-      'Professional website design for US small businesses and freelancers. From $99/mo.',
+      'Custom website design from $699 one-time. Delivery under 4 weeks, then Yele Care from $49/month.',
     images: ['/opengraph-image'],
   },
 
@@ -125,63 +125,60 @@ const schemaOrg = {
       '@id': 'https://yele.design/#website',
       url: 'https://yele.design',
       name: 'Yele',
-      description: 'Subscription-based professional website design for US small businesses and freelancers',
+      description: 'Custom website design and maintenance for small businesses — from $699 one-time, then Yele Care from $49/month',
       publisher: { '@id': 'https://yele.design/#organization' },
       inLanguage: ['en'],
     },
     {
       '@type': 'Service',
       '@id': 'https://yele.design/#service',
-      name: 'Subscription website design',
+      serviceType: 'Custom website design',
+      name: 'Custom website design',
       provider: { '@id': 'https://yele.design/#organization' },
       description:
-        'Professional website design and maintenance for US small businesses and freelancers. Live in 1 week, from $99/mo.',
+        'Custom website design for small businesses — bespoke design and imagery, delivery under 4 weeks, from $699 one-time. Then Yele Care from $49/month keeps the site hosted, secure, updated and redesigned every year.',
       areaServed: { '@type': 'Country', name: 'United States' },
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
-        name: 'Yele Plans',
+        name: 'Yele website packages',
         itemListElement: [
           {
             '@type': 'Offer',
-            name: 'Starter',
-            price: '99',
+            name: 'Launch',
+            price: '699',
             priceCurrency: 'USD',
-            priceSpecification: {
-              '@type': 'UnitPriceSpecification',
-              price: '99',
-              priceCurrency: 'USD',
-              unitText: 'MONTH',
-            },
             description:
-              'Functional website, custom domain, control panel, on-page SEO, custom email, 24/7 support',
+              'One-time custom website — custom design, mobile optimization, own domain, contact forms, and SEO indexing. Then Yele Care from $49/month.',
+          },
+          {
+            '@type': 'Offer',
+            name: 'Business',
+            price: '1199',
+            priceCurrency: 'USD',
+            description:
+              'One-time custom website with calendar booking, payments, small e-commerce, conversion optimization, advanced SEO and analytics. Then Yele Care from $49/month.',
           },
           {
             '@type': 'Offer',
             name: 'Pro',
-            price: '169',
+            price: '2799',
             priceCurrency: 'USD',
-            priceSpecification: {
-              '@type': 'UnitPriceSpecification',
-              price: '169',
-              priceCurrency: 'USD',
-              unitText: 'MONTH',
-            },
             description:
-              'Branding, payment system, booking calendar, Google Business Profile, AI chat assistant',
+              'One-time custom website with high-performance e-commerce, custom dashboards, integrations, multiple locations and complex workflows. Then Yele Care from $99/month.',
           },
           {
             '@type': 'Offer',
-            name: 'Frontier',
-            price: '699',
+            name: 'Yele Care',
+            price: '49',
             priceCurrency: 'USD',
             priceSpecification: {
               '@type': 'UnitPriceSpecification',
-              price: '699',
+              price: '49',
               priceCurrency: 'USD',
               unitText: 'MONTH',
             },
             description:
-              'Active monthly marketing, advanced SEO & backlinks, weekly content, Google Ads management, press releases',
+              'Monthly maintenance: hosting, security, backups, updates, support, and a full website redesign every year.',
           },
         ],
       },
@@ -191,34 +188,42 @@ const schemaOrg = {
       mainEntity: [
         {
           '@type': 'Question',
-          name: 'Do I need to be tech-savvy?',
+          name: 'How much does a website cost?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Not at all. You tell us what you want and we build it. For updating content, you get a simple dashboard — no code needed.',
+            text: 'Yele websites are a one-time build starting at $699 (Launch). Business is $1,199 and Pro from $2,799. Then Yele Care keeps everything running from $49/month.',
           },
         },
         {
           '@type': 'Question',
-          name: 'How long until my website is live?',
+          name: 'How long until my website is ready?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Less than 1 week from the time you complete your onboarding form. No waiting around.',
+            text: 'Our delivery goal is under 4 weeks from when you complete your onboarding form.',
           },
         },
         {
           '@type': 'Question',
-          name: 'Can I cancel anytime?',
+          name: 'Do I pay everything upfront?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. No contracts, no cancellation fees. If you ever decide you don\'t need it, just cancel.',
+            text: 'No. You pay 50% to start and the remaining 50% when your website is approved for launch.',
           },
         },
         {
           '@type': 'Question',
-          name: 'What if I want to make changes to my site?',
+          name: 'What is Yele Care and is it compulsory?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Just message us and we\'ll handle it. Depending on your plan, updates are done within 12, 24, or 48 hours. No extra quotes.',
+            text: 'Yele Care is $49/month and includes hosting, security, backups, updates, support and a full website redesign every year. It is not compulsory — you can host the site yourself — but we recommend it so your website stays fast, secure and never looks dated.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Do I own the design?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. You own the design files and hold the copyright to all the content we create for you.',
           },
         },
         {
@@ -226,15 +231,7 @@ const schemaOrg = {
           name: 'Are domain and hosting included?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Hosting is included. For your domain, we can manage it for you or you can bring your own.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Can I see examples of websites you\'ve built?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Yes — check out the Portfolio section on this page for real client projects.',
+            text: 'Hosting is included with Yele Care. For your domain, we can manage a standard domain for you, or you can bring your own.',
           },
         },
       ],

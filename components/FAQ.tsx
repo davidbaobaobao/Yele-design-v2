@@ -1,27 +1,49 @@
-import { supabase } from '@/lib/supabase'
 import FAQClient from './FAQClient'
 
-export const revalidate = 60
-
-const FALLBACK = [
-  { question: 'How much does a website cost?',              answer: 'Websites are a one-time build starting at $699 (Launch). Business is $1,199 and Pro from $2,799. Then Yele Care keeps everything running from $49/month.' },
-  { question: 'Do I need any technical knowledge?',          answer: 'No. You tell us what you want and we build it. To update content you have a simple panel — no code required.' },
-  { question: 'How long until my website is ready?',         answer: 'Our delivery goal is under 4 weeks from when you complete your onboarding form.' },
-  { question: 'Is Yele Care compulsory?',                    answer: 'No, but we recommend it. Yele Care includes a full design refresh every year plus hosting, security, backups, updates and support — from $49/month.' },
-  { question: 'Do I pay everything upfront?',                answer: 'No. You pay 50% to start and the remaining 50% when your website is approved for launch.' },
-  { question: 'Are the domain and hosting included?',        answer: 'Hosting is included with Yele Care. The domain can be managed with us, or you can bring your own.' },
-  { question: 'Can I see examples of websites you\'ve made?', answer: 'Yes — check out the Portfolio section on this page to see real projects.' },
+// Fixed FAQ — the same set shown on /letsbuild, so the homepage, the schema.org
+// FAQPage (app/layout.tsx) and the landing page all tell one consistent story.
+// No longer Supabase-driven, so it can never drift back to the old model.
+const FAQS = [
+  {
+    question: 'How much does a website cost?',
+    answer:
+      'Yele websites start at $699. Most small businesses choose either our $699 Launch package or our $1,199 Business package. More advanced websites start from $2,799 — a one-time build.',
+  },
+  {
+    question: 'Is there a monthly fee?',
+    answer:
+      'Yes. Yele Care is $49/month and covers hosting, domain support, security, backups, maintenance, support, and small website updates.',
+  },
+  {
+    question: 'Is Yele Care compulsory?',
+    answer:
+      'No — but we highly recommend it. Yele Care includes a full design refresh every year, so you get a renewed website annually and everything keeps working — hosted, secure, backed up, monitored and up to date. You can host and manage the site yourself, but with Yele Care you never have to worry about the technical side.',
+  },
+  {
+    question: 'Do I need to pay everything upfront?',
+    answer:
+      'No. You pay 50% when we begin. The remaining 50% is paid when the website is finished and approved for launch.',
+  },
+  {
+    question: 'Do I own the design?',
+    answer: 'Yes. You own the design files and hold the copyright to all the content we create for you.',
+  },
+  {
+    question: 'How long until my website is ready?',
+    answer: 'Our delivery goal is under 4 weeks from when you complete your onboarding form.',
+  },
+  {
+    question: 'Are the domain and hosting included?',
+    answer:
+      'Hosting is included with Yele Care. We can provide and manage a standard domain, or you can bring your current one. Premium domains may cost extra.',
+  },
+  {
+    question: 'Is SEO included?',
+    answer:
+      'Every website includes an SEO foundation — technical setup, page titles, descriptions, sitemap, indexing, mobile optimization, and analytics.',
+  },
 ]
 
-export default async function FAQ({ noBg, dark }: { noBg?: boolean; dark?: boolean } = {}) {
-  const { data } = await supabase
-    .from('faqs')
-    .select('question, answer')
-    .eq('client_id', process.env.NEXT_PUBLIC_CLIENT_ID)
-    .eq('visible', true)
-    .order('sort_order', { ascending: true })
-
-  const faqs = (data && data.length > 0) ? data : FALLBACK
-
-  return <FAQClient faqs={faqs} noBg={noBg} dark={dark} />
+export default function FAQ({ noBg, dark }: { noBg?: boolean; dark?: boolean } = {}) {
+  return <FAQClient faqs={FAQS} noBg={noBg} dark={dark} />
 }

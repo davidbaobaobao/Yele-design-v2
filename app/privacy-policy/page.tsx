@@ -72,7 +72,7 @@ export default function PrivacyPolicy() {
               </p>
               <ul className="list-disc list-inside space-y-2 text-muted ml-2">
                 <li>
-                  <span className="text-ink font-medium">Stripe, Inc.</span> — payment and subscription processing (PCI-DSS Level 1 certified; card data is handled by Stripe and never stored by Yele).
+                  <span className="text-ink font-medium">Stripe, Inc.</span> — payment processing for one-time website payments and Yele Care subscriptions (PCI-DSS Level 1 certified; card data is handled by Stripe and never stored by Yele).
                 </li>
                 <li>
                   <span className="text-ink font-medium">Supabase, Inc.</span> — database, storage and authentication.
