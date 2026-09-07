@@ -19,8 +19,6 @@ import {
   EMPTY_ANSWERS,
   TOTAL_STEPS,
   isStepValid,
-  isUrlLikelyValid,
-  normalizeUrl,
   stepKeyAt,
   stepMode,
   type SurveyAnswers,
@@ -151,10 +149,6 @@ function SurveyPageInner() {
 
   const updateLink = useCallback((key: keyof SurveyAnswers['links'], value: string) => {
     setAnswers((prev) => ({ ...prev, links: { ...prev.links, [key]: value } }))
-  }, [])
-
-  const blurNormalizeLink = useCallback((key: keyof SurveyAnswers['links']) => {
-    setAnswers((prev) => ({ ...prev, links: { ...prev.links, [key]: normalizeUrl(prev.links[key]) } }))
   }, [])
 
   // Prefill from URL (payment success / email link) so the visitor doesn't
@@ -378,30 +372,22 @@ function SurveyPageInner() {
           <SplitLayout title="Already online?" leftImage="page12">
             <FieldLabel>Website</FieldLabel>
             <TextInput
-              type="url"
+              type="text"
               value={answers.links.website}
               onChange={(v) => updateLink('website', v)}
-              onBlur={() => blurNormalizeLink('website')}
               onKeyDown={handleEnterAdvance}
               placeholder="yoursite.com"
               disabled={answers.noWebPresence}
             />
-            {!answers.noWebPresence && answers.links.website.trim() !== '' && !isUrlLikelyValid(answers.links.website) && (
-              <p className="mt-1 text-xs text-ink/70">That link doesn&apos;t look quite right.</p>
-            )}
             <FieldLabel className="mt-4">Social media</FieldLabel>
             <TextInput
-              type="url"
+              type="text"
               value={answers.links.other}
               onChange={(v) => updateLink('other', v)}
-              onBlur={() => blurNormalizeLink('other')}
               onKeyDown={handleEnterAdvance}
               placeholder="instagram.com/yourbusiness"
               disabled={answers.noWebPresence}
             />
-            {!answers.noWebPresence && answers.links.other.trim() !== '' && !isUrlLikelyValid(answers.links.other) && (
-              <p className="mt-1 text-xs text-ink/70">That link doesn&apos;t look quite right.</p>
-            )}
             <div className="mt-3">
               <Checkbox checked={answers.noWebPresence} onChange={(v) => update('noWebPresence', v)} label="I'm not online yet" />
             </div>
