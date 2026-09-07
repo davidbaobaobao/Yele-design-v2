@@ -409,35 +409,39 @@ function SurveyPageInner() {
         )}
 
         {key === 'addons' && (
-          <FullLayout title="Interested in any additional services?" microcopy="Optional — select any you'd like. You can always decide later.">
-            <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-3">
+          <FullLayout title="Interested in any additional services?" microcopy="Optional — tap any you'd like. You can decide later.">
+            <div className="mx-auto grid w-full max-w-3xl grid-cols-2 gap-3 md:grid-cols-3">
               {ADDON_OPTIONS.map((a) => {
                 const selected = answers.addons.includes(a.id)
+                const sizeClass = a.tall
+                  ? 'col-span-2 aspect-[2/1] md:col-span-1 md:col-start-3 md:row-start-1 md:row-span-2 md:aspect-auto'
+                  : 'aspect-square'
                 return (
                   <button
                     key={a.id}
                     type="button"
                     onClick={() => toggleAddon(a.id)}
-                    className={`w-full rounded-2xl border p-4 text-left transition-colors ${
-                      selected ? 'border-ink bg-ink/[0.04]' : 'border-ink/15 hover:border-ink/40'
+                    className={`group relative overflow-hidden rounded-2xl text-left transition-shadow ${sizeClass} ${
+                      selected ? 'ring-2 ring-[#D46FC8]' : 'ring-1 ring-black/10 hover:ring-black/25'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-display text-base font-bold text-ink md:text-lg">{a.title}</p>
-                        <p className="mt-0.5 font-body text-sm text-ink/70">{a.description}</p>
-                      </div>
-                      <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
-                        <span className="whitespace-nowrap font-body text-sm font-semibold text-ink">{a.price}</span>
-                        <span
-                          className={`flex h-5 w-5 items-center justify-center rounded-full border ${
-                            selected ? 'border-ink bg-ink text-white' : 'border-ink/30'
-                          }`}
-                        >
-                          {selected && <Check size={12} strokeWidth={3} />}
-                        </span>
-                      </div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={a.image}
+                      alt=""
+                      className="absolute inset-0 h-full w-full bg-[#0D0E12] object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" aria-hidden="true" />
+                    <div className="absolute inset-0 flex flex-col justify-end p-3 md:p-4 text-white">
+                      <p className="font-display text-sm font-bold leading-tight md:text-base">{a.title}</p>
+                      <p className="mt-1 font-body text-[11px] leading-snug text-white/80 md:text-xs">{a.blurb}</p>
+                      <p className="mt-1.5 font-body text-[11px] font-semibold text-white md:text-xs">{a.price}</p>
                     </div>
+                    {selected && (
+                      <span className="absolute right-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#D46FC8] text-white shadow">
+                        <Check size={14} strokeWidth={3} />
+                      </span>
+                    )}
                   </button>
                 )
               })}

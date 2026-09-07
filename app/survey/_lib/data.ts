@@ -119,39 +119,50 @@ export interface SurveyAnswers {
   addons: string[]
 }
 
-// Final survey step — optional additional services.
-export const ADDON_OPTIONS: { id: string; title: string; price: string; description: string }[] = [
+// Final survey step — optional additional services (image tiles).
+export const ADDON_OPTIONS: {
+  id: string
+  title: string
+  price: string
+  blurb: string
+  image: string
+  tall?: boolean
+}[] = [
   {
     id: 'ads',
     title: 'Meta & Google Ads',
-    price: '$199 setup + $49/month',
-    description: 'Ad budget separate — typical budget from $50/day.',
+    price: '$199 setup + $49/mo',
+    blurb: 'Advertise your products on popular platforms like Instagram.',
+    image: '/media/services/marketingcampaign.jpeg',
   },
   {
     id: 'chatbot',
     title: 'AI smart chatbot',
-    price: '$99 setup + $29/month',
-    description: 'Tokens separate — approx. 100k tokens ≈ 200 conversations ≈ $10.',
+    price: '$99 setup + $29/mo',
+    blurb: 'Ultra-intelligent AI chat that answers any question about your business, books appointments, and automates more.',
+    image: '/media/services/aichatassistant.jpeg',
   },
   {
     id: 'phone',
     title: 'AI phone receptionist',
-    price: '$199 setup + $49/month',
-    description: 'Calling fees separate — typically 15–45 cents per minute.',
+    price: '$199 setup + $49/mo',
+    blurb: 'Ultra-realistic voice that answers any question about your business, books appointments, and automates calls.',
+    image: '/media/services/aiphonereceptionist.jpeg',
   },
   {
     id: 'media',
-    title: 'On-demand image or video creation',
+    title: 'On-demand image & video',
     price: 'From $89',
-    description:
-      'Images: enhance/retouch 10 images for $89 (one revision). Video: 15–25s for $89 (one revision).',
+    blurb: 'Professional retouching plus high-quality image and video creation using the latest AI models.',
+    image: '/media/services/mediacreationplus.jpeg',
   },
   {
     id: 'automation',
     title: 'Business automation',
     price: 'Consultation',
-    description:
-      'Custom to your business — customer-acquisition flows, automated messages, automated payments, and more.',
+    blurb: 'Custom to your business — acquisition flows, automated messages, automated payments, and more.',
+    image: '/media/services/businessautomation.jpeg',
+    tall: true,
   },
 ]
 
