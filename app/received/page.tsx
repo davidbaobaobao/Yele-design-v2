@@ -10,6 +10,7 @@ type Tier = {
   plan: 'launch' | 'business' | 'pro'
   name: string
   price: string
+  from?: boolean
   care: string
   pay: string
   desc: string
@@ -23,7 +24,7 @@ const TIERS: Tier[] = [
     price: '$699',
     care: '$49',
     pay: '$349',
-    desc: 'Everything a small business needs to get online professionally — a custom design, mobile-optimized, with your own domain, contact forms and SEO indexing.',
+    desc: 'A functional, modern website — mobile-optimized, with your own domain, contact forms and SEO.',
     dark: false,
   },
   {
@@ -32,16 +33,17 @@ const TIERS: Tier[] = [
     price: '$1,199',
     care: '$49',
     pay: '$599',
-    desc: 'More power for growing businesses — calendar booking, secure payments, small e-commerce, conversion optimization, a blog and detailed analytics.',
+    desc: 'A functional, modern website with advanced payments and scheduling capabilities.',
     dark: false,
   },
   {
     plan: 'pro',
     name: 'Pro',
-    price: 'From $2,799',
+    price: '$2,799',
+    from: true,
     care: '$99',
     pay: '$1,399',
-    desc: 'Advanced functionality and high-performance e-commerce — custom dashboards, third-party integrations, multiple locations and complex workflows.',
+    desc: 'A functional, modern website with advanced functionality and high-performance applications.',
     dark: true,
   },
 ]
@@ -81,7 +83,10 @@ function TierCard({ tier, name, email, company }: { tier: Tier; name: string; em
       }`}
     >
       <h4 className={`font-display text-xl font-bold ${tier.dark ? 'text-white' : 'text-ink'}`}>{tier.name}</h4>
-      <div className="mt-1 flex items-end gap-1.5">
+      <div className="mt-1 flex items-end gap-1 whitespace-nowrap">
+        {tier.from && (
+          <span className={`mb-1.5 font-body text-xs ${tier.dark ? 'text-white/50' : 'text-muted'}`}>From</span>
+        )}
         <span className={`font-display text-3xl font-bold ${tier.dark ? 'text-white' : 'text-ink'}`}>{tier.price}</span>
         <span className={`mb-1 font-body text-sm ${tier.dark ? 'text-white/55' : 'text-muted'}`}>one-time</span>
       </div>
@@ -123,14 +128,14 @@ export default function ReceivedPage({
         </h1>
         <p className="font-body text-muted text-lg mb-10">Next steps:</p>
 
-        <ol className="space-y-8">
+        <ol className="space-y-4">
           {STEPS.map(step => (
-            <li key={step.n} className="flex gap-4">
-              <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center">
+            <li key={step.n} className="group flex gap-4 rounded-2xl p-3 -mx-3 transition-all duration-300 hover:bg-black/[0.03] hover:translate-x-1">
+              <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#D46FC8]/30">
                 {step.n}
               </span>
               <div className="flex-1 min-w-0">
-                <h3 className="font-display font-bold text-xl text-ink mb-1">{step.title}</h3>
+                <h3 className="font-display font-bold text-xl text-ink mb-1 transition-colors duration-300 group-hover:text-[#D46FC8]">{step.title}</h3>
                 <p className="font-body text-base text-ink/75 leading-relaxed max-w-2xl">{step.body}</p>
 
                 {step.cards && (
