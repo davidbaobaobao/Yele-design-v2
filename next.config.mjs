@@ -46,6 +46,12 @@ const nextConfig = {
       // /signup (private paid flow, was /registro); query params (?plan=,
       // ?lang=) are passed through automatically.
       { source: '/registro',            destination: '/signup',         permanent: true },
+      // Consolidated landing pages — everything points to /letsbuild for now.
+      // Temporary (307) so it can be reverted without cached permanent redirects.
+      { source: '/presupuesto',  destination: '/letsbuild', permanent: false },
+      { source: '/agency',       destination: '/letsbuild', permanent: false },
+      { source: '/websites',     destination: '/letsbuild', permanent: false },
+      { source: '/newwebsite',   destination: '/letsbuild', permanent: false },
     ]
   },
   images: {
