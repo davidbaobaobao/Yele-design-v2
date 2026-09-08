@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { clientConfirmationEmail } from '@/lib/emails/confirmation'
+import { welcomeCheckoutEmail } from '@/lib/emails/welcome'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,6 +19,7 @@ export async function GET(request: Request) {
   const to = (url.searchParams.get('to') || 'yeletester@gmail.com').trim().toLowerCase()
   const firstName = (url.searchParams.get('name') || 'Final').trim()
   const planLabel = (url.searchParams.get('plan') || 'Launch').trim()
+  const type = (url.searchParams.get('type') || 'confirmation').trim()
 
   if (!ALLOWED.has(to)) {
     return Response.json({ error: 'Recipient not allowed for testing' }, { status: 400 })
@@ -30,7 +32,11 @@ export async function GET(request: Request) {
 
   try {
     const resend = new Resend(resendKey)
-    const { subject, html, text } = clientConfirmationEmail({ firstName, planLabel })
+    // ?type=welcome sends the /received-style welcome + checkout email.
+    const { subject, html, text } =
+      type === 'welcome'
+        ? welcomeCheckoutEmail({ name: firstName, email: to, plan: planLabel.toLowerCase() })
+        : clientConfirmationEmail({ firstName, planLabel })
     const result = await resend.emails.send({
       from: 'Yele <noreply@yele.design>',
       to: [to],

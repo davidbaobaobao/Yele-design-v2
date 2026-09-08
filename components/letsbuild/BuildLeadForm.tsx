@@ -44,10 +44,12 @@ export default function BuildLeadForm({
   id,
   variant = 'dark',
   leadSource,
+  sendWelcome,
 }: {
   id?: string
   variant?: 'light' | 'dark'
   leadSource?: string
+  sendWelcome?: boolean
 }) {
   const router = useRouter()
   const isDark = variant === 'dark'
@@ -102,6 +104,7 @@ export default function BuildLeadForm({
         eventId: metaEventId,
         source: 'google',
         leadSource,
+        welcome: sendWelcome,
         fbc: metaCookies.fbc,
         fbp: metaCookies.fbp,
       }),

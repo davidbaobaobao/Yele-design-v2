@@ -80,7 +80,7 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
               </div>
 
               <div className="md:ml-auto md:w-full md:max-w-md">
-                <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" planOptions={PLAN_OPTIONS} leadSource={leadSource} />
+                <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" planOptions={PLAN_OPTIONS} leadSource={leadSource} sendWelcome />
 
                 <div className="text-center mt-2.5">
                   <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
@@ -252,7 +252,7 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
             <p className="font-body text-base text-white/70 mb-8">
               Tell us a little about your business and we&apos;ll recommend the right website package.
             </p>
-            <BuildLeadForm variant="dark" leadSource={leadSource} />
+            <BuildLeadForm variant="dark" leadSource={leadSource} sendWelcome />
           </div>
         </section>
 

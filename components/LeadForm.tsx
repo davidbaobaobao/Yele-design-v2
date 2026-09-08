@@ -35,6 +35,7 @@ export default function LeadForm({
   planOptions,
   trackMeta = true,
   leadSource,
+  sendWelcome,
 }: {
   variant?: 'light' | 'dark'
   ctaLabel?: string
@@ -52,6 +53,9 @@ export default function LeadForm({
   // Human-readable origin stamped onto the lead email (e.g. "Google Ads")
   // so the team can see where each lead came from.
   leadSource?: string
+  // When true, /api/lead sends the client the /received-style welcome +
+  // checkout email. Set on the /letsbuild landings.
+  sendWelcome?: boolean
   // Which ad platform this submit should count toward. 'google' (default,
   // /start + /websites) fires the existing onboarding_form_submit Google
   // Ads conversion. 'meta' (/newwebsite only) fires the Meta Pixel "Lead"
@@ -132,6 +136,7 @@ export default function LeadForm({
         eventId: metaEventId,
         source: platform,
         leadSource,
+        welcome: sendWelcome,
         fbc: metaCookies.fbc,
         fbp: metaCookies.fbp,
       }),

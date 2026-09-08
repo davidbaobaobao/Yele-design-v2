@@ -103,6 +103,7 @@ export async function POST(request: Request) {
 
     if (resendKey) {
       const resend = new Resend(resendKey)
+      try {
       await resend.emails.send({
         from: 'Yele Leads <noreply@yele.design>',
         to: RECIPIENTS,
@@ -127,6 +128,9 @@ export async function POST(request: Request) {
           .filter(line => line !== null)
           .join('\n'),
       })
+      } catch (err) {
+        console.error('[lead] internal notification email failed', err)
+      }
 
       // Client confirmation ("Welcome … pay and secure your spot") — only for
       // the /letsbuild landings (leadSource set), mirroring the /received page.
