@@ -45,7 +45,8 @@ create table if not exists public.ai_callbacks (
   call_summary text,
   transcript text,
   recording_url text,
-  call_duration_ms int
+  call_duration_ms int,
+  disconnection_reason text
 );
 create index if not exists ai_callbacks_status_idx on public.ai_callbacks (status, scheduled_for);
 create index if not exists ai_callbacks_phone_idx on public.ai_callbacks (phone_e164, created_at desc);

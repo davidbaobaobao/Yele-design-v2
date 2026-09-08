@@ -27,6 +27,7 @@ type RetellWebhookPayload = {
   call: {
     metadata?: { lead_id?: string }
     duration_ms?: number
+    disconnection_reason?: string
     recording_url?: string
     transcript?: string
     call_analysis?: {
@@ -101,6 +102,7 @@ export async function POST(request: Request) {
     transcript: call.transcript ? String(call.transcript).slice(0, 20000) : null,
     recording_url: call.recording_url ?? null,
     call_duration_ms: call.duration_ms ?? null,
+    disconnection_reason: call.disconnection_reason ?? null,
   }
   await sb.from('ai_callbacks').update(update).eq('id', lead_id)
 
@@ -116,9 +118,15 @@ export async function POST(request: Request) {
   const planPrice = lead.plan ? PLAN_PRICE[lead.plan] : ''
   const to = lead.confirmed_email || lead.email
 
+  // A call that never connected (invalid/unreachable number) tells us nothing
+  // about the lead and the number is bad — don't send the "we just spoke"
+  // follow-up, just flag it for David.
+  const unreachable = ['invalid_destination', 'no_such_number', 'dial_failed', 'dial_busy']
+    .includes(String(call.disconnection_reason ?? '').toLowerCase())
+
   // 1) The email Ava promised — sent whether they picked up or not, unless
-  //    they opted out / wrong number / already paid.
-  if (!doNotCall && !wrongNumber && !lead.paid) {
+  //    they opted out / wrong number / already paid / number unreachable.
+  if (!doNotCall && !wrongNumber && !lead.paid && !unreachable) {
     const payUrl = `${baseUrl}/received?${new URLSearchParams({
       name: lead.name ?? '', email: to, company: lead.business ?? '', ...(lead.plan ? { plan: lead.plan } : {}),
     }).toString()}`
@@ -158,8 +166,8 @@ export async function POST(request: Request) {
   }
 
   // 2) Brief for David.
-  const flag = doNotCall ? 'DNC' : wrongNumber ? 'Wrong number' : inVoicemail ? 'Voicemail' : reached ? 'Reached' : 'No answer'
-  const urgent = lead.wants_human || lead.payment_issue || lead.paying_now
+  const flag = doNotCall ? 'DNC' : wrongNumber ? 'Wrong number' : unreachable ? 'BAD NUMBER' : inVoicemail ? 'Voicemail' : reached ? 'Reached' : 'No answer'
+  const urgent = lead.wants_human || lead.payment_issue || lead.paying_now || unreachable
   try {
     await resend.emails.send({
       from: 'Yele AI Callback <noreply@yele.design>',
@@ -168,6 +176,7 @@ export async function POST(request: Request) {
       subject: `${urgent ? '[URGENT] ' : ''}${flag} — ${lead.name}${lead.business ? ` (${lead.business})` : ''} · ${planLabel || 'no plan'} · call ${lead.callback_window ?? 'any time'}`,
       text: [
         `Phone: ${lead.phone_e164}   Email: ${to}   State: ${lead.state}`,
+        call.disconnection_reason ? `Call ended: ${call.disconnection_reason}` : null,
         `Goal: ${lead.website_goal ?? '-'}`,
         `Existing site: ${lead.has_existing_site ?? '-'}   Plan interest: ${lead.plan_interest ?? '-'}`,
         lead.paying_now ? 'Said they are PAYING NOW — check Stripe in 30 min.' : null,
