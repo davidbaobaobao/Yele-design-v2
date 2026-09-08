@@ -19,6 +19,24 @@ const INTERNAL_RECIPIENTS = [
 const PLAN_LABEL: Record<string, string> = { launch: 'Launch', business: 'Business', pro: 'Pro' }
 const PLAN_PRICE: Record<string, string> = { launch: '$699', business: '$1,199', pro: 'from $2,799' }
 
+// Shape of the Retell webhook body we read. Anything else in the payload is
+// ignored; custom_analysis_data keys are whatever the agent's post-call
+// analysis fields are named.
+type RetellWebhookPayload = {
+  event: string
+  call: {
+    metadata?: { lead_id?: string }
+    duration_ms?: number
+    recording_url?: string
+    transcript?: string
+    call_analysis?: {
+      in_voicemail?: boolean
+      call_summary?: string
+      custom_analysis_data?: Record<string, unknown>
+    }
+  }
+}
+
 function bool(v: unknown): boolean | null {
   if (typeof v === 'boolean') return v
   if (typeof v === 'string') return /^(true|yes)$/i.test(v)
@@ -38,7 +56,7 @@ export async function POST(request: Request) {
     return new NextResponse('bad signature', { status: 401 })
   }
 
-  const payload = JSON.parse(raw) as { event: string; call: any }
+  const payload = JSON.parse(raw) as RetellWebhookPayload
   const { event, call } = payload
   const lead_id: string | undefined = call?.metadata?.lead_id
   if (!lead_id) return NextResponse.json({ ignored: 'no lead_id in metadata' })
