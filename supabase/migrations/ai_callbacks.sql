@@ -24,6 +24,7 @@ create table if not exists public.ai_callbacks (
   paid boolean not null default false,
   paid_at timestamptz,
   retell_call_id text,
+  qstash_message_id text,
   last_error text,
   -- post-call analysis (from Retell call_analyzed)
   reached boolean,

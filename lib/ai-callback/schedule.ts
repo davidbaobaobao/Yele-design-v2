@@ -112,17 +112,34 @@ export async function scheduleAiCallback(input: ScheduleInput): Promise<{ schedu
       .single()
     if (error || !row) return { scheduled: false, reason: `db: ${error?.message}` }
 
-    const qstash = new QStash({ token: qstashToken })
-    await qstash.publishJSON({
-      url: `${baseUrl}/api/ai-callback/fire`,
-      body: { lead_id: row.id },
-      delay: DEFAULT_DELAY_SECONDS,
-      retries: 3,
-      deduplicationId: `ai-callback-${row.id}`,
-    })
-    return { scheduled: true, id: row.id }
+    // Publish the delayed job. If this fails the row must NOT stay 'scheduled'
+    // — an orphan row with no QStash message looks like a pending call that
+    // will never fire. Mark it 'error' with the reason so it is visible in the
+    // table (and in /api/ai-callback/debug).
+    try {
+      const qstash = new QStash({ token: qstashToken })
+      const published = await qstash.publishJSON({
+        url: `${baseUrl}/api/ai-callback/fire`,
+        body: { lead_id: row.id },
+        delay: DEFAULT_DELAY_SECONDS,
+        retries: 3,
+        deduplicationId: `ai-callback-${row.id}`,
+      })
+      const messageId = Array.isArray(published) ? published[0]?.messageId : published?.messageId
+      await supabaseAdmin.from('ai_callbacks').update({ qstash_message_id: messageId ?? null }).eq('id', row.id)
+      return { scheduled: true, id: row.id }
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : String(err)
+      console.error('[ai-callback] qstash publish failed', reason)
+      await supabaseAdmin
+        .from('ai_callbacks')
+        .update({ status: 'error', last_error: `qstash publish: ${reason}`.slice(0, 500) })
+        .eq('id', row.id)
+      return { scheduled: false, reason: `qstash publish: ${reason}` }
+    }
   } catch (err) {
-    console.error('[ai-callback] schedule error', err)
-    return { scheduled: false, reason: 'exception' }
+    const reason = err instanceof Error ? err.message : String(err)
+    console.error('[ai-callback] schedule error', reason)
+    return { scheduled: false, reason: `exception: ${reason}` }
   }
 }
