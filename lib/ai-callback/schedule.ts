@@ -91,7 +91,9 @@ export async function scheduleAiCallback(input: ScheduleInput): Promise<{ schedu
         .from('ai_callbacks')
         .select('id, status, created_at')
         .eq('phone_e164', phone_e164)
-        .in('status', ['scheduled', 'calling', 'called', 'dry_run', 'dnc'])
+        // 'dry_run' is deliberately NOT here: a dry run never dialled anyone,
+        // so it must not block a real call to the same number.
+        .in('status', ['scheduled', 'calling', 'called', 'dnc'])
         .gte('created_at', since)
         .limit(1)
       if (dup && dup.length) {

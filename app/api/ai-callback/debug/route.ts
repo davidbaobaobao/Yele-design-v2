@@ -85,7 +85,7 @@ export async function GET(request: Request) {
   // Which numbers are currently blocked by the dedupe guard?
   const dedupeHours = Number(process.env.AI_CALLBACK_DEDUPE_HOURS ?? 24)
   const blocking = (rows ?? [])
-    .filter(r => ['scheduled', 'calling', 'called', 'dry_run', 'dnc'].includes(r.status)
+    .filter(r => ['scheduled', 'calling', 'called', 'dnc'].includes(r.status)
       && Date.now() - new Date(r.created_at).getTime() < dedupeHours * 3600 * 1000)
     .map(r => `${r.phone_e164} (row ${r.id}, status ${r.status})`)
 
