@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { createHash } from 'crypto'
 import { scheduleAiCallback, planFromPackageInterest } from '@/lib/ai-callback/schedule'
 import { welcomeCheckoutEmail } from '@/lib/emails/welcome'
+import { contactAckEmail, unsubscribeUrl } from '@/lib/emails/contactAck'
 
 const RECIPIENTS = [
   process.env.STUDIO_EMAIL ?? 'info@yele.design',
@@ -132,18 +133,26 @@ export async function POST(request: Request) {
         console.error('[lead] internal notification email failed', err)
       }
 
-      // Client confirmation ("Welcome … pay and secure your spot") — only for
-      // the /letsbuild landings (leadSource set), mirroring the /received page.
-      // Shows just the selected plan if one was chosen, otherwise all three.
+      // Client emails — only for the /letsbuild landings. Two emails:
+      //   1) a plain acknowledgement (Primary-inbox friendly), sent first;
+      //   2) the /received-style welcome + checkout email.
+      // Both carry a List-Unsubscribe header (RFC 8058 one-click) for
+      // deliverability; the visible footer link points at /api/unsubscribe.
       if ((welcome || isLetsBuild) && email) {
+        const firstName = (name || '').trim().split(/\s+/)[0]
+        const unsubHeaders = {
+          'List-Unsubscribe': `<mailto:info@yele.design?subject=unsubscribe>, <${unsubscribeUrl(email)}>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        }
         try {
-          const { subject, html, text } = welcomeCheckoutEmail({
-            name,
-            email,
-            company,
-            plan: planFromPackageInterest(packageInterest) ?? undefined,
-          })
-          await resend.emails.send({ from: 'Yele <noreply@yele.design>', to: [email], subject, html, text })
+          const ack = contactAckEmail({ firstName, email })
+          await resend.emails.send({ from: 'Yele <noreply@yele.design>', to: [email], subject: ack.subject, html: ack.html, text: ack.text, headers: unsubHeaders })
+        } catch (err) {
+          console.error('[lead] ack email failed', err)
+        }
+        try {
+          const w = welcomeCheckoutEmail({ name, email, company, plan: planFromPackageInterest(packageInterest) ?? undefined })
+          await resend.emails.send({ from: 'Yele <noreply@yele.design>', to: [email], subject: w.subject, html: w.html, text: w.text, headers: unsubHeaders })
         } catch (err) {
           console.error('[lead] welcome email failed', err)
         }

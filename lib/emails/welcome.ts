@@ -4,6 +4,8 @@
 // plain links to /api/build-checkout (GET), which creates the Stripe session
 // and redirects to checkout — because emails can't submit forms.
 
+import { unsubscribeFooterHtml } from '@/lib/emails/contactAck'
+
 const LOGO_URL = 'https://wdnwacdkoowrrnyaskjl.supabase.co/storage/v1/object/public/emailimages/yele-logo.png'
 const BASE = 'https://yele.design'
 const PINK = '#D46FC8'
@@ -99,7 +101,7 @@ export function welcomeCheckoutEmail({
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;">
     <tr><td align="center" style="padding:32px 16px;">
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-        <tr><td style="padding:36px 36px 0 36px;"><img src="${LOGO_URL}" alt="Yele" width="64" style="display:block; width:64px; height:auto; max-width:64px;" /></td></tr>
+        <tr><td style="padding:36px 36px 0 36px;"><img src="${LOGO_URL}" alt="Yele" width="56" height="56" style="display:block; width:56px; height:56px; max-width:56px; border:0; outline:none;" /></td></tr>
         <tr><td style="padding:18px 36px 0 36px;"><div style="width:44px; height:4px; border-radius:4px; background-color:${PINK};"></div></td></tr>
         <tr><td style="padding:20px 36px 0 36px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
           <h1 style="margin:0 0 6px 0; font-size:30px; line-height:1.2; font-weight:700; color:${INK};">Welcome${firstName ? ` ${firstName}` : ''}!</h1>
@@ -130,9 +132,7 @@ export function welcomeCheckoutEmail({
           </tr></table>
         </td></tr>
 
-        <tr><td align="center" style="padding:18px 36px 30px 36px; border-top:1px solid #ededed; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-          <p style="margin:0; font-size:13px; color:${MUTED};">Yele &middot; <a href="${BASE}" style="color:${MUTED}; text-decoration:underline;">yele.design</a></p>
-        </td></tr>
+        ${unsubscribeFooterHtml(em)}
       </table>
     </td></tr>
   </table>
