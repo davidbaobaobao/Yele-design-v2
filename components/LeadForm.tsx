@@ -291,9 +291,8 @@ export default function LeadForm({
       </button>
 
       <p className={fineprintClass}>
-        By clicking &quot;{ctaLabel}&quot;, you agree that Yele may contact you at the phone number you provide —
-        including by automated technology, AI-generated or prerecorded calls, and text messages (SMS) — about your
-        enquiry. Consent is not a condition of any purchase, and message and data rates may apply. See our{' '}
+        By clicking, you agree that Yele may contact you at the phone number you provide — including by automated
+        technology. See our{' '}
         <Link href="/privacy-policy" className={linkClass}>
           Privacy Policy
         </Link>
