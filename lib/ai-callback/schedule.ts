@@ -80,15 +80,24 @@ export async function scheduleAiCallback(input: ScheduleInput): Promise<{ schedu
 
     const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
-    // Dedupe: same phone submitted twice within 24h → don't dial twice.
-    const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString()
-    const { data: dup } = await supabaseAdmin
-      .from('ai_callbacks')
-      .select('id')
-      .eq('phone_e164', phone_e164)
-      .gte('created_at', since)
-      .limit(1)
-    if (dup && dup.length) return { scheduled: false, reason: 'duplicate within 24h' }
+    // Dedupe: don't dial the same number twice in a short window. Only rows
+    // that are actually live or completed count — an 'error' / 'skipped' row
+    // (e.g. a publish that failed) must not block a retry forever.
+    // AI_CALLBACK_DEDUPE_HOURS=0 disables it entirely (testing).
+    const dedupeHours = Number(process.env.AI_CALLBACK_DEDUPE_HOURS ?? 24)
+    if (dedupeHours > 0) {
+      const since = new Date(Date.now() - dedupeHours * 3600 * 1000).toISOString()
+      const { data: dup } = await supabaseAdmin
+        .from('ai_callbacks')
+        .select('id, status, created_at')
+        .eq('phone_e164', phone_e164)
+        .in('status', ['scheduled', 'calling', 'called', 'dry_run', 'dnc'])
+        .gte('created_at', since)
+        .limit(1)
+      if (dup && dup.length) {
+        return { scheduled: false, reason: `duplicate within ${dedupeHours}h (row ${dup[0].id}, status ${dup[0].status})` }
+      }
+    }
 
     const { data: row, error } = await supabaseAdmin
       .from('ai_callbacks')

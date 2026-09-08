@@ -38,6 +38,7 @@ export async function GET(request: Request) {
     AI_CALLBACK_DRY_RUN: process.env.AI_CALLBACK_DRY_RUN ?? 'MISSING (treated as false)',
     AI_CALLBACK_DELAY_SECONDS: process.env.AI_CALLBACK_DELAY_SECONDS ?? 'MISSING (default 300)',
     AI_CALLBACK_TEST_NUMBERS: process.env.AI_CALLBACK_TEST_NUMBERS ?? '(empty)',
+    AI_CALLBACK_DEDUPE_HOURS: process.env.AI_CALLBACK_DEDUPE_HOURS ?? 'MISSING (default 24)',
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'MISSING (default https://yele.design)',
     QSTASH_URL: process.env.QSTASH_URL ?? 'MISSING (SDK defaults to EU https://qstash.upstash.io)',
     QSTASH_TOKEN: present('QSTASH_TOKEN'),
@@ -81,9 +82,18 @@ export async function GET(request: Request) {
     }).opener,
   }))
 
+  // Which numbers are currently blocked by the dedupe guard?
+  const dedupeHours = Number(process.env.AI_CALLBACK_DEDUPE_HOURS ?? 24)
+  const blocking = (rows ?? [])
+    .filter(r => ['scheduled', 'calling', 'called', 'dry_run', 'dnc'].includes(r.status)
+      && Date.now() - new Date(r.created_at).getTime() < dedupeHours * 3600 * 1000)
+    .map(r => `${r.phone_e164} (row ${r.id}, status ${r.status})`)
+
   return NextResponse.json({
     now_utc: now.toISOString(),
     env,
+    dedupe_hours: dedupeHours,
+    numbers_currently_blocked_from_rescheduling: blocking,
     qstash_base_url: QSTASH_BASE_URL,
     qstash_token_check: qstashReachable,
     supabase_error: error?.message ?? null,
