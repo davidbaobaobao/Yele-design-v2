@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { Client as QStash } from '@upstash/qstash'
+import { qstashClient, QSTASH_BASE_URL } from '@/lib/ai-callback/qstash'
 import { isInsideCallingWindow, secondsUntilCallable } from '@/lib/ai-callback/calling-window'
 import { buildDynamicVariables } from '@/lib/ai-callback/retell'
 
@@ -39,6 +39,7 @@ export async function GET(request: Request) {
     AI_CALLBACK_DELAY_SECONDS: process.env.AI_CALLBACK_DELAY_SECONDS ?? 'MISSING (default 300)',
     AI_CALLBACK_TEST_NUMBERS: process.env.AI_CALLBACK_TEST_NUMBERS ?? '(empty)',
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'MISSING (default https://yele.design)',
+    QSTASH_URL: process.env.QSTASH_URL ?? 'MISSING (SDK defaults to EU https://qstash.upstash.io)',
     QSTASH_TOKEN: present('QSTASH_TOKEN'),
     QSTASH_CURRENT_SIGNING_KEY: present('QSTASH_CURRENT_SIGNING_KEY'),
     QSTASH_NEXT_SIGNING_KEY: present('QSTASH_NEXT_SIGNING_KEY'),
@@ -53,7 +54,7 @@ export async function GET(request: Request) {
   let qstashReachable = 'not tested (no token)'
   if (process.env.QSTASH_TOKEN) {
     try {
-      const res = await fetch('https://qstash.upstash.io/v2/topics', {
+      const res = await fetch(`${QSTASH_BASE_URL}/v2/topics`, {
         headers: { Authorization: `Bearer ${process.env.QSTASH_TOKEN}` },
       })
       qstashReachable = res.ok ? `ok (${res.status})` : `FAILED ${res.status}: ${(await res.text()).slice(0, 200)}`
@@ -83,6 +84,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     now_utc: now.toISOString(),
     env,
+    qstash_base_url: QSTASH_BASE_URL,
     qstash_token_check: qstashReachable,
     supabase_error: error?.message ?? null,
     recent: annotated,
@@ -101,7 +103,7 @@ export async function POST(request: Request) {
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
   try {
-    const qstash = new QStash({ token: process.env.QSTASH_TOKEN })
+    const qstash = qstashClient()
     const published = await qstash.publishJSON({
       url: `${baseUrl}/api/ai-callback/fire`,
       body: { lead_id: leadId },

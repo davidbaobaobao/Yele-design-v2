@@ -5,7 +5,7 @@
 // Never throws — a scheduling failure must not turn the form submit into an error.
 
 import { createClient } from '@supabase/supabase-js'
-import { Client as QStash } from '@upstash/qstash'
+import { qstashClient, QSTASH_BASE_URL } from './qstash'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { lookupArea } from './areacodes'
 
@@ -117,7 +117,7 @@ export async function scheduleAiCallback(input: ScheduleInput): Promise<{ schedu
     // will never fire. Mark it 'error' with the reason so it is visible in the
     // table (and in /api/ai-callback/debug).
     try {
-      const qstash = new QStash({ token: qstashToken })
+      const qstash = qstashClient()
       const published = await qstash.publishJSON({
         url: `${baseUrl}/api/ai-callback/fire`,
         body: { lead_id: row.id },
@@ -130,10 +130,10 @@ export async function scheduleAiCallback(input: ScheduleInput): Promise<{ schedu
       return { scheduled: true, id: row.id }
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err)
-      console.error('[ai-callback] qstash publish failed', reason)
+      console.error('[ai-callback] qstash publish failed', reason, 'baseUrl', QSTASH_BASE_URL)
       await supabaseAdmin
         .from('ai_callbacks')
-        .update({ status: 'error', last_error: `qstash publish: ${reason}`.slice(0, 500) })
+        .update({ status: 'error', last_error: `qstash publish (${QSTASH_BASE_URL}): ${reason}`.slice(0, 500) })
         .eq('id', row.id)
       return { scheduled: false, reason: `qstash publish: ${reason}` }
     }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { Client as QStash, Receiver } from '@upstash/qstash'
+import { Receiver } from '@upstash/qstash'
+import { qstashClient } from '@/lib/ai-callback/qstash'
 import { isInsideCallingWindow, secondsUntilCallable } from '@/lib/ai-callback/calling-window'
 import { createRetellCall, buildDynamicVariables } from '@/lib/ai-callback/retell'
 import { Resend } from 'resend'
@@ -50,7 +51,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ skipped: 'max reschedules' })
     }
     const delay = secondsUntilCallable(lead.tz)
-    const qstash = new QStash({ token: process.env.QSTASH_TOKEN! })
+    const qstash = qstashClient()
     await qstash.publishJSON({
       url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://yele.design'}/api/ai-callback/fire`,
       body: { lead_id },
