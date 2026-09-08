@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { createHash } from 'crypto'
 import { scheduleAiCallback, planFromPackageInterest } from '@/lib/ai-callback/schedule'
+import { welcomeCheckoutEmail } from '@/lib/emails/welcome'
 
 const RECIPIENTS = [
   process.env.STUDIO_EMAIL ?? 'info@yele.design',
@@ -42,12 +43,13 @@ export async function POST(request: Request) {
     // backward-compatible: the shared LeadForm (/start, /websites,
     // /newwebsite) never sends these, so they simply render as "(not
     // provided)" / are omitted from the email for those pages.
-    const { businessName, currentWebsite, needs, packageInterest, leadSource } = body as {
+    const { businessName, currentWebsite, needs, packageInterest, leadSource, welcome } = body as {
       businessName?: string
       currentWebsite?: string
       needs?: string[]
       packageInterest?: string[]
       leadSource?: string
+      welcome?: boolean
     }
 
     if (!name || !email) {
@@ -125,6 +127,23 @@ export async function POST(request: Request) {
           .filter(line => line !== null)
           .join('\n'),
       })
+
+      // Client confirmation ("Welcome … pay and secure your spot") — only for
+      // the /letsbuild landings (leadSource set), mirroring the /received page.
+      // Shows just the selected plan if one was chosen, otherwise all three.
+      if ((welcome || isLetsBuild) && email) {
+        try {
+          const { subject, html, text } = welcomeCheckoutEmail({
+            name,
+            email,
+            company,
+            plan: planFromPackageInterest(packageInterest) ?? undefined,
+          })
+          await resend.emails.send({ from: 'Yele <noreply@yele.design>', to: [email], subject, html, text })
+        } catch (err) {
+          console.error('[lead] welcome email failed', err)
+        }
+      }
     } else {
       console.log('[lead] RESEND_API_KEY not set — email skipped', { name, email, phone, company })
     }

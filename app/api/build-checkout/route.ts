@@ -17,23 +17,68 @@ const PLAN_LABEL: Record<string, string> = {
   pro: 'Pro',
 }
 
-function str(v: FormDataEntryValue | null): string {
-  return typeof v === 'string' ? v.trim() : ''
-}
+async function createSession({ plan, name, email, company }: { plan: string; name: string; email: string; company: string }) {
+  const priceId = PRICE_IDS[plan]
+  if (!priceId) return { error: 'Unknown plan', status: 400 as const }
 
-export async function POST(request: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yele.design'
 
+  const successParams = new URLSearchParams({ welcome: '1' })
+  if (name) successParams.set('name', name)
+  if (company) successParams.set('company', company)
+  if (email) successParams.set('email', email)
+
+  const cancelParams = new URLSearchParams({ plan })
+  if (name) cancelParams.set('name', name)
+  if (email) cancelParams.set('email', email)
+  if (company) cancelParams.set('company', company)
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card'],
+    line_items: [{ price: priceId, quantity: 1 }],
+    customer_email: email || undefined,
+    success_url: `${baseUrl}/survey?${successParams.toString()}`,
+    cancel_url: `${baseUrl}/payment-failed?${cancelParams.toString()}`,
+    locale: 'auto',
+    allow_promotion_codes: true,
+    metadata: { flow: 'build_first_payment', plan, planLabel: PLAN_LABEL[plan] ?? plan, name, email, company },
+    payment_intent_data: { metadata: { flow: 'build_first_payment', plan, name, email, company } },
+  })
+
+  if (!session.url) return { error: 'Could not create checkout session', status: 500 as const }
+  return { url: session.url }
+}
+
+// GET — used by the "Pay $X" buttons in the confirmation email (a plain link).
+// e.g. /api/build-checkout?plan=launch&name=..&email=..&company=..
+export async function GET(request: Request) {
   try {
-    // The /received card CTAs post a normal HTML form (so the browser follows
-    // the 303 redirect straight to Stripe Checkout). Fall back to JSON for
-    // programmatic callers.
+    const url = new URL(request.url)
+    const res = await createSession({
+      plan: (url.searchParams.get('plan') ?? '').trim(),
+      name: (url.searchParams.get('name') ?? '').trim(),
+      email: (url.searchParams.get('email') ?? '').trim(),
+      company: (url.searchParams.get('company') ?? '').trim(),
+    })
+    if ('error' in res) {
+      // Fall back to the pricing section rather than showing a raw error.
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yele.design'
+      return Response.redirect(`${baseUrl}/letsbuild#pricing`, 303)
+    }
+    return Response.redirect(res.url, 303)
+  } catch (error) {
+    console.error('[build-checkout GET] error', error)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yele.design'
+    return Response.redirect(`${baseUrl}/letsbuild#pricing`, 303)
+  }
+}
+
+export async function POST(request: Request) {
+  try {
     const contentType = request.headers.get('content-type') || ''
-    let plan = ''
-    let name = ''
-    let email = ''
-    let company = ''
+    let plan = '', name = '', email = '', company = ''
     if (contentType.includes('application/json')) {
       const body = await request.json()
       plan = String(body.plan ?? '').trim()
@@ -42,60 +87,12 @@ export async function POST(request: Request) {
       company = String(body.company ?? '').trim()
     } else {
       const form = await request.formData()
-      plan = str(form.get('plan'))
-      name = str(form.get('name'))
-      email = str(form.get('email'))
-      company = str(form.get('company'))
+      const g = (k: string) => { const v = form.get(k); return typeof v === 'string' ? v.trim() : '' }
+      plan = g('plan'); name = g('name'); email = g('email'); company = g('company')
     }
-
-    const priceId = PRICE_IDS[plan]
-    if (!priceId) {
-      return Response.json({ error: 'Unknown plan' }, { status: 400 })
-    }
-
-    // Forward name/company (and welcome flag) into the survey the customer
-    // lands on after paying. Stripe can only pre-fill the email field of its
-    // own checkout — name/company ride along as metadata + success_url params.
-    const successParams = new URLSearchParams({ welcome: '1' })
-    if (name) successParams.set('name', name)
-    if (company) successParams.set('company', company)
-    if (email) successParams.set('email', email)
-
-    // On cancel/failure, send them to the retry page with everything needed to
-    // re-launch checkout for the exact same product.
-    const cancelParams = new URLSearchParams({ plan })
-    if (name) cancelParams.set('name', name)
-    if (email) cancelParams.set('email', email)
-    if (company) cancelParams.set('company', company)
-
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: [{ price: priceId, quantity: 1 }],
-      customer_email: email || undefined,
-      success_url: `${baseUrl}/survey?${successParams.toString()}`,
-      cancel_url: `${baseUrl}/payment-failed?${cancelParams.toString()}`,
-      locale: 'auto',
-      allow_promotion_codes: true,
-      metadata: {
-        flow: 'build_first_payment',
-        plan,
-        planLabel: PLAN_LABEL[plan] ?? plan,
-        name,
-        email,
-        company,
-      },
-      payment_intent_data: {
-        metadata: { flow: 'build_first_payment', plan, name, email, company },
-      },
-    })
-
-    if (!session.url) {
-      return Response.json({ error: 'Could not create checkout session' }, { status: 500 })
-    }
-
-    // 303 so the browser re-issues a GET to Stripe's hosted checkout.
-    return Response.redirect(session.url, 303)
+    const res = await createSession({ plan, name, email, company })
+    if ('error' in res) return Response.json({ error: res.error }, { status: res.status })
+    return Response.redirect(res.url, 303)
   } catch (error) {
     console.error('[build-checkout] error', error)
     return Response.json({ error: 'Error creating checkout session' }, { status: 500 })
