@@ -107,6 +107,26 @@ export async function POST(request: Request) {
     // internal notification emails, then done (no subscription/client record).
     if (session.metadata?.flow === 'build_first_payment' || session.metadata?.flow === 'build_final_payment') {
       await sendBuildPaymentEmails(session)
+      // Deposit paid → cancel any pending AI callback for this lead (matched
+      // by email; the /received cards carry the same email the form sent).
+      if (session.metadata?.flow === 'build_first_payment') {
+        const paidEmail = (session.metadata?.email || session.customer_details?.email || session.customer_email || '').trim().toLowerCase()
+        if (paidEmail) {
+          const { error } = await supabaseAdmin
+            .from('ai_callbacks')
+            .update({ paid: true, paid_at: new Date().toISOString(), status: 'skipped_paid' })
+            .ilike('email', paidEmail)
+            .eq('status', 'scheduled')
+          if (error) console.error('[stripe-webhook] ai_callbacks paid update error', error.message)
+          // Already dialled/called → just record the payment.
+          await supabaseAdmin
+            .from('ai_callbacks')
+            .update({ paid: true, paid_at: new Date().toISOString() })
+            .ilike('email', paidEmail)
+            .in('status', ['calling', 'called'])
+            .eq('paid', false)
+        }
+      }
       return new Response('OK', { status: 200 })
     }
 

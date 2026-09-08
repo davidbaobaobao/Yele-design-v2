@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { createHash } from 'crypto'
+import { scheduleAiCallback, planFromPackageInterest } from '@/lib/ai-callback/schedule'
 
 const RECIPIENTS = [
   process.env.STUDIO_EMAIL ?? 'info@yele.design',
@@ -9,6 +10,12 @@ const RECIPIENTS = [
 ]
 
 const META_GRAPH_VERSION = 'v21.0'
+
+// Must stay identical to the consent sentence rendered under the /letsbuild
+// submit button (components/letsbuild/BuildLeadForm.tsx) — stored per lead as
+// TCPA evidence.
+const LETSBUILD_CONSENT_TEXT =
+  'No obligation. By clicking "Get My Website", you agree that Yele may contact you at the phone number you provide — including by automated technology, AI-generated or prerecorded calls, and text messages (SMS) — about your enquiry. Consent is not a condition of any purchase, and message and data rates may apply.'
 const FALLBACK_SOURCE_URL = 'https://yele.design/'
 
 function sha256(value: string): string {
@@ -52,7 +59,7 @@ export async function POST(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    const { error: dbError } = await supabaseAdmin
+    const { data: inserted, error: dbError } = await supabaseAdmin
       .from('discovery_leads')
       .insert({
         name,
@@ -61,9 +68,33 @@ export async function POST(request: Request) {
         company_description: company || null,
         source: 'start_form',
       })
+      .select('id')
+      .single()
 
     if (dbError) {
       console.error('[lead] supabase error', dbError.message)
+    }
+
+    // AI callback (Retell "Ava") — only for the /letsbuild landings, which are
+    // the only pages that stamp `leadSource` ("Let's Build (direct)", "Google
+    // Ads") and whose forms show the TCPA consent sentence. Schedules a QStash
+    // job that dials ~5 min after submit, inside the lead's legal calling
+    // window, unless they pay first. No-op unless AI_CALLBACK_ENABLED=true.
+    // Never throws.
+    const isLetsBuild = typeof leadSource === 'string' && leadSource.trim().length > 0
+    if (isLetsBuild && phone) {
+      const scheduled = await scheduleAiCallback({
+        name,
+        email,
+        phone,
+        business: businessName || null,
+        plan: planFromPackageInterest(packageInterest),
+        leadSource: leadSource ?? null,
+        discoveryLeadId: inserted?.id ?? null,
+        consentIp: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
+        consentText: LETSBUILD_CONSENT_TEXT,
+      })
+      if (!scheduled.scheduled) console.log('[lead] ai-callback not scheduled:', scheduled.reason)
     }
 
     const resendKey = process.env.RESEND_API_KEY
