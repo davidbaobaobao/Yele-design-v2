@@ -229,8 +229,9 @@ export default function BuildLeadForm({
       </button>
 
       <p className={`text-center font-body text-xs leading-relaxed ${isDark ? 'text-white/50' : 'text-ink/60'}`}>
-        No obligation. We&apos;ll review your information and contact you about the next step. By
-        clicking &quot;Get My Website&quot;, you agree to our{' '}
+        No obligation. By clicking &quot;Get My Website&quot;, you agree that Yele may contact you at the phone number
+        you provide — including by automated technology, AI-generated or prerecorded calls, and text messages (SMS) —
+        about your enquiry. Consent is not a condition of any purchase, and message and data rates may apply. See our{' '}
         <Link href="/privacy-policy" className={`underline transition-colors ${isDark ? 'hover:text-white' : 'hover:text-ink'}`}>
           Privacy Policy
         </Link>

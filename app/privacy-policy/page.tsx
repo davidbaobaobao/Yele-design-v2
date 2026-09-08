@@ -52,6 +52,20 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">Communications, Phone Calls &amp; Text Messages</h2>
+              <p className="text-muted mb-3">
+                When you submit a form and provide a phone number, you expressly agree that Yele may contact you at that number about your enquiry and the service — including by <span className="text-ink font-medium">automated technology, artificial intelligence (AI)-generated or prerecorded voice calls, and text messages (SMS)</span>, as well as by email and messaging apps such as WhatsApp. This may include an outbound AI voice assistant that calls you to follow up on your request, answer questions, and help schedule your project.
+              </p>
+              <p className="text-muted mb-3">
+                Your consent to receive automated or AI calls and texts is <span className="text-ink font-medium">not a condition of purchasing any product or service</span>. Message frequency varies, and message and data rates may apply. You can opt out of calls at any time by telling us during a call or emailing{' '}
+                <a href="mailto:info@yele.design" className="text-[#0066CC] hover:underline">info@yele.design</a>, and you can opt out of texts by replying <span className="text-ink font-medium">STOP</span> to any message (reply HELP for help). We will honor opt-out requests promptly.
+              </p>
+              <p className="text-muted">
+                We do not sell or share your phone number with third parties for their own marketing. Calls may be recorded for quality and training where permitted by law.
+              </p>
+            </section>
+
+            <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">Legal Basis (GDPR)</h2>
               <p className="text-muted">
                 We process personal data based on your consent (Art. 6.1.a GDPR), the performance of our service agreement with you (Art. 6.1.b GDPR), and our legitimate interest in operating and improving our service (Art. 6.1.f GDPR).
