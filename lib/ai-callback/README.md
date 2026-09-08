@@ -29,6 +29,13 @@ Stripe `checkout.session.completed` (flow build_first_payment) → marks matchin
   transferred, do_not_call, wrong_number, open_questions, sentiment.
 - QStash: create a token + copy both signing keys (console.upstash.com → QStash).
 
+## Testing without a US number
+- `AI_CALLBACK_DRY_RUN=true` → the fire route runs every guard, then emails David the exact
+  variables it would have sent to Retell and marks the row `dry_run`. No call is placed.
+- `AI_CALLBACK_TEST_NUMBERS=+34655517760` → that number bypasses the US-only rule (window is
+  checked in Europe/Madrid). Retell must allow international outbound for it to connect;
+  otherwise use a US number that rings your phone (Quo/OpenPhone) and no allowlist is needed.
+
 ## Testing
 - Set `AI_CALLBACK_DELAY_SECONDS=60` in Preview, submit the /letsbuild form with your own US test number.
 - Watch the row: scheduled → calling → called. Check QStash console for the delivery + response body.

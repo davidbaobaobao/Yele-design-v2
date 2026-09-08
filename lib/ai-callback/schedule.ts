@@ -11,9 +11,28 @@ import { lookupArea } from './areacodes'
 
 export const DEFAULT_DELAY_SECONDS = Number(process.env.AI_CALLBACK_DELAY_SECONDS ?? 300) // 5 min
 
+// AI_CALLBACK_TEST_NUMBERS: comma-separated E.164 numbers (e.g. "+34655517760")
+// that may be dialled even though they are not US — for testing only. Retell
+// must have international calling enabled for a non-US test number to connect.
+export function testNumbers(): Set<string> {
+  return new Set((process.env.AI_CALLBACK_TEST_NUMBERS ?? '').split(',').map(s => s.trim()).filter(Boolean))
+}
+
+export function isTestNumber(e164: string): boolean {
+  return testNumbers().has(e164)
+}
+
+// Returns E.164 only for a VALID US (or Puerto Rico) number — anything else
+// (Spanish numbers, typos, too few digits, invalid area codes) → null → no call.
+// Test numbers from AI_CALLBACK_TEST_NUMBERS are the one exception.
 export function normaliseUsPhone(raw: string | null | undefined): string | null {
   if (!raw) return null
-  const pn = parsePhoneNumberFromString(String(raw), 'US')
+  const str = String(raw).trim()
+  // Test allowlist: accept any valid number that is explicitly listed.
+  const asIntl = parsePhoneNumberFromString(str)
+  if (asIntl?.isValid() && isTestNumber(asIntl.number)) return asIntl.number
+
+  const pn = parsePhoneNumberFromString(str, 'US')
   if (!pn || !pn.isValid()) return null
   if (pn.country !== 'US' && pn.country !== 'PR') return null
   return pn.number // E.164
@@ -47,7 +66,12 @@ export async function scheduleAiCallback(input: ScheduleInput): Promise<{ schedu
     const phone_e164 = normaliseUsPhone(input.phone)
     if (!phone_e164) return { scheduled: false, reason: 'no valid US phone' }
 
-    const area = lookupArea(phone_e164)
+    const isTest = isTestNumber(phone_e164)
+    // Test numbers: no area-code lookup; treat as Spain so the window check
+    // runs against Europe/Madrid and the CA disclosure branch is off.
+    const area = isTest
+      ? { state: 'TEST', tz: 'Europe/Madrid', dialable: true }
+      : lookupArea(phone_e164)
     if (!area.dialable) return { scheduled: false, reason: 'non-geographic number' }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yele.design'

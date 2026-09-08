@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Client as QStash, Receiver } from '@upstash/qstash'
 import { isInsideCallingWindow, secondsUntilCallable } from '@/lib/ai-callback/calling-window'
-import { createRetellCall } from '@/lib/ai-callback/retell'
+import { createRetellCall, buildDynamicVariables } from '@/lib/ai-callback/retell'
+import { Resend } from 'resend'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,7 +65,40 @@ export async function POST(request: Request) {
     return NextResponse.json({ rescheduled_seconds: delay })
   }
 
-  // 5. Dial.
+  // 5. Dry run: everything above passed — log what WOULD be sent, email David
+  //    the variables, and stop. Lets the whole pipeline be tested without a
+  //    phone. AI_CALLBACK_DRY_RUN=true
+  if ((process.env.AI_CALLBACK_DRY_RUN ?? 'false') === 'true') {
+    const vars = buildDynamicVariables({
+      id: lead.id, name: lead.name, email: lead.email, phone_e164: lead.phone_e164,
+      business: lead.business, plan: lead.plan, state: lead.state ?? 'UNKNOWN',
+    })
+    console.log('[ai-callback] DRY RUN — would call', lead.phone_e164, vars)
+    await sb.from('ai_callbacks').update({
+      status: 'dry_run', call_attempts: lead.call_attempts + 1,
+      call_summary: `DRY RUN ${new Date().toISOString()} — variables: ${JSON.stringify(vars)}`,
+    }).eq('id', lead_id)
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      await resend.emails.send({
+        from: 'Yele AI Callback <noreply@yele.design>',
+        to: [process.env.OWNER_EMAIL ?? 'davidbaobaobao@gmail.com'],
+        subject: `[DRY RUN] AI callback would dial ${lead.phone_e164} — ${lead.name}`,
+        text: [
+          'All guards passed (enabled, not paid, inside legal window). No call was placed.',
+          '',
+          `To: ${lead.phone_e164}   State: ${lead.state}   TZ: ${lead.tz}`,
+          `Scheduled at: ${lead.created_at}   Fired at: ${new Date().toISOString()}   Reschedules: ${lead.reschedules}`,
+          '',
+          'Dynamic variables that would be sent to Retell:',
+          ...Object.entries(vars).map(([k, v]) => `  ${k}: ${v}`),
+        ].join('\n'),
+      }).catch(err => console.error('[ai-callback] dry-run email failed', err))
+    }
+    return NextResponse.json({ dry_run: true, vars })
+  }
+
+  // 6. Dial.
   const result = await createRetellCall({
     id: lead.id, name: lead.name, email: lead.email, phone_e164: lead.phone_e164,
     business: lead.business, plan: lead.plan, state: lead.state ?? 'UNKNOWN',
