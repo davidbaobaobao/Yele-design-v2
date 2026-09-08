@@ -45,7 +45,46 @@ export async function POST(request: Request) {
   }
 
   // 4. Legal calling window in the lead's local time.
+  //
+  // AI_CALLBACK_OUTSIDE_WINDOW controls what happens when the lead's local
+  // time is outside 9–20 (or it's a Sunday / US federal holiday):
+  //   'skip'       (default) — no AI call at all; David is emailed to call
+  //                 them himself. A call the next morning is stale anyway:
+  //                 the whole point is speed-to-lead.
+  //   'reschedule' — re-publish the job for 9:05 the next allowed day.
+  const outsideWindowMode = process.env.AI_CALLBACK_OUTSIDE_WINDOW ?? 'skip'
   if (!isInsideCallingWindow(lead.tz)) {
+    const localTime = new Intl.DateTimeFormat('en-US', {
+      timeZone: lead.tz || 'America/New_York', dateStyle: 'medium', timeStyle: 'short',
+    }).format(new Date())
+
+    if (outsideWindowMode !== 'reschedule') {
+      await sb.from('ai_callbacks').update({
+        status: 'skipped_outside_window',
+        last_error: `outside calling window (${localTime} local, tz ${lead.tz}) — no AI call, David to call manually`,
+      }).eq('id', lead_id)
+
+      if (process.env.RESEND_API_KEY) {
+        const opensIn = Math.round(secondsUntilCallable(lead.tz) / 60)
+        await new Resend(process.env.RESEND_API_KEY).emails.send({
+          from: 'Yele AI Callback <noreply@yele.design>',
+          to: [process.env.OWNER_EMAIL ?? 'davidbaobaobao@gmail.com'],
+          replyTo: lead.email,
+          subject: `[CALL THEM YOURSELF] ${lead.name}${lead.business ? ` (${lead.business})` : ''} — outside calling hours`,
+          text: [
+            'A lead came in outside their local calling window, so no AI call was placed.',
+            '',
+            `Name: ${lead.name}`,
+            `Phone: ${lead.phone_e164}   Email: ${lead.email}`,
+            `Business: ${lead.business ?? '-'}   Plan: ${lead.plan ?? '-'}`,
+            `Their local time: ${localTime} (${lead.tz}, ${lead.state})`,
+            `Window opens in about ${opensIn} minutes.`,
+          ].join('\n'),
+        }).catch(err => console.error('[ai-callback] outside-window email failed', err))
+      }
+      return NextResponse.json({ skipped: 'outside calling window', local_time: localTime })
+    }
+
     if (lead.reschedules >= MAX_RESCHEDULES) {
       await sb.from('ai_callbacks').update({ status: 'skipped', last_error: 'outside window, max reschedules' }).eq('id', lead_id)
       return NextResponse.json({ skipped: 'max reschedules' })

@@ -10,7 +10,9 @@ T+5 min → `POST /api/ai-callback/fire` (QStash-signed)
   - `AI_CALLBACK_ENABLED !== 'true'` → skipped
   - `paid` (Stripe webhook set it) or `do_not_call` → skipped_paid / dnc
   - outside legal window (calling-window.ts: 9–20 lead-local, no Sun, no US federal holidays;
-    UNKNOWN tz = must be inside in both ET and PT) → re-publish at next 9:05 local, max 3 reschedules
+    UNKNOWN tz = must be inside in both ET and PT) → AI_CALLBACK_OUTSIDE_WINDOW decides:
+    'skip' (default) marks `skipped_outside_window` and emails David to call manually;
+    'reschedule' re-publishes for 9:05 local, max 3 reschedules
   - else → Retell `create-phone-call` with dynamic variables (retell.ts) → status `calling`
 
 Retell `call_analyzed` → `POST /api/ai-callback/retell-webhook` (Retell-signed)
