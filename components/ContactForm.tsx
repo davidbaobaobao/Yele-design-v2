@@ -147,11 +147,11 @@ export default function ContactForm() {
               info@yele.design
             </a>
             <a
-              href="tel:+12138458604"
+              href="tel:+18882648656"
               onClick={() => trackContactCall()}
               className="font-display text-2xl md:text-3xl text-white/90 hover:text-white transition-colors"
             >
-              +1 (213) 845-8604
+              +1 (888) 264-8656
             </a>
           </div>
 

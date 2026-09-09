@@ -54,7 +54,7 @@ const CONTACT_CALL_SEND_TO = 'AW-18281072925/s7u4CKaRjN8cEJ2SjI1E'
 // button" case client-side.
 let lastFiredAt = 0
 
-// Fires on click of any tel:+12138458604 CTA, before/at the tel: launch —
+// Fires on click of any tel:+18882648656 CTA, before/at the tel: launch —
 // never blocks the navigation (gtag's own beacon uses sendBeacon/keepalive,
 // so it survives the tab handing off to the dialer). No email: a phone
 // call carries no address to match on.

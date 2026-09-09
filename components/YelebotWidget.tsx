@@ -20,7 +20,7 @@ const CONTACT_SECTION_ID = 'contacto'
 const HOW_IT_WORKS_SECTION_ID = 'how-it-works'
 const FAQ_SECTION_ID = 'faq'
 // Same number as the Contact section's own tel: link (ContactForm.tsx).
-const PHONE_TEL = 'tel:+12138458604'
+const PHONE_TEL = 'tel:+18882648656'
 
 function scrollPageToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })

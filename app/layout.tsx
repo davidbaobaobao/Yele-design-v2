@@ -112,6 +112,7 @@ const schemaOrg = {
       contactPoint: {
         '@type': 'ContactPoint',
         email: 'info@yele.design',
+        telephone: '+1-888-264-8656',
         contactType: 'customer service',
         availableLanguage: ['English'],
       },
