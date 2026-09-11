@@ -76,7 +76,7 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
         </section>
 
         {/* ---- YELE CARE ---- */}
-        <section className="bg-white px-6 pt-6 md:pt-8 pb-16 md:pb-24">
+        <section className="bg-white px-6 pt-6 md:pt-8 pb-8 md:pb-10">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight">
@@ -131,7 +131,7 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
         </section>
 
         {/* ---- HOW IT WORKS ---- */}
-        <section className="bg-white px-6 py-16 md:py-24">
+        <section className="bg-white px-6 pt-8 md:pt-10 pb-16 md:pb-24">
           <div className="max-w-4xl mx-auto">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">How it works</p>
             <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-10">
@@ -162,28 +162,28 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
           <div className="mx-auto w-full max-w-md md:max-w-5xl">
             <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
               <div className="mb-10 md:mb-0">
-                <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-white tracking-tight leading-[1.05] mb-2">
+                <h2
+                  className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
+                  style={{ fontSize: 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
+                >
                   Let&apos;s build your website
                 </h2>
-                <p className="font-body text-base text-white/70 mb-6 md:mb-8">
-                  Start now and get your new website this month.
-                </p>
 
-                <p className="font-body text-sm font-semibold uppercase tracking-[0.12em] text-white/50 mb-3">
+                <p className="font-body text-base md:text-lg font-semibold uppercase tracking-[0.12em] text-white/50 mb-4">
                   Our core values
                 </p>
-                <ul className="space-y-3.5 mb-7 md:mb-8">
+                <ul className="space-y-3.5 mb-8 md:mb-9">
                   {CORE_VALUES.map(v => (
-                    <li key={v.title} className="flex items-start gap-2.5">
-                      <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
-                      <span className="font-body text-sm md:text-base text-white/80 leading-relaxed">
+                    <li key={v.title} className="flex items-start gap-3">
+                      <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
+                      <span className="font-body text-base md:text-xl text-white/80 leading-relaxed">
                         <span className="font-semibold text-white">{v.title}.</span> {v.body}
                       </span>
                     </li>
                   ))}
                 </ul>
 
-                <ReputationBadge />
+                <ReputationBadge className="scale-110 origin-left" />
               </div>
 
               <div className="md:ml-auto md:w-full md:max-w-md">
