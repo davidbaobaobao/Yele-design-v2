@@ -405,10 +405,19 @@ function SurveyPageInner() {
                     key={c.id}
                     type="button"
                     onClick={() => update('carePlan', selected ? '' : c.id)}
-                    className={`group flex flex-col overflow-hidden rounded-2xl border bg-white text-left transition-colors ${
-                      selected ? 'border-[#D46FC8] ring-2 ring-[#D46FC8]' : 'border-ink/15 hover:border-ink/40'
+                    className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-white text-left transition-colors ${
+                      selected
+                        ? 'border-[#D46FC8] ring-2 ring-[#D46FC8]'
+                        : c.popular
+                          ? 'border-[#D46FC8]/50 hover:border-[#D46FC8]'
+                          : 'border-ink/15 hover:border-ink/40'
                     }`}
                   >
+                    {c.popular && (
+                      <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-[#D46FC8] px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-wide text-white shadow">
+                        Most chosen
+                      </span>
+                    )}
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#0D0E12]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={c.image} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />

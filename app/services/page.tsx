@@ -9,8 +9,8 @@ import PricingCards from '@/components/letsbuild/PricingCards'
 
 const CARE_TIERS = [
   { name: 'Yele Care Lite', price: '$29', image: '/media/services/care_lite.webp', features: ['Hosting', 'Security', 'Backups'], popular: false },
-  { name: 'Yele Care', price: '$49', image: '/media/services/care.webp', features: ['A full redesign every year', 'We update your content', 'Monitoring'], popular: true },
-  { name: 'Yele Care+', price: '$99', image: '/media/services/care_plus.webp', features: ['Advanced security', 'Backups', 'Monitoring', 'Priority services'], popular: false },
+  { name: 'Yele Care', price: '$49', image: '/media/services/care.webp', features: ['Everything in Lite', 'We update your content', 'A full redesign every year', 'Monitoring', '24/7 support'], popular: true },
+  { name: 'Yele Care+', price: '$99', image: '/media/services/care_plus.webp', features: ['Everything in Yele Care', 'Advanced security', 'Priority services'], popular: false },
 ]
 
 export const metadata: Metadata = {

@@ -122,10 +122,10 @@ export interface SurveyAnswers {
 }
 
 // Yele Care maintenance tiers — the survey "which plan do you prefer?" step.
-export const CARE_PLAN_OPTIONS: { id: string; name: string; price: string; blurb: string; image: string }[] = [
+export const CARE_PLAN_OPTIONS: { id: string; name: string; price: string; blurb: string; image: string; popular?: boolean }[] = [
   { id: 'lite', name: 'Yele Care Lite', price: '$29/mo', blurb: 'Hosting, security and backups.', image: '/media/services/care_lite.webp' },
-  { id: 'care', name: 'Yele Care', price: '$49/mo', blurb: 'A yearly redesign, we update your content, plus monitoring.', image: '/media/services/care.webp' },
-  { id: 'plus', name: 'Yele Care+', price: '$99/mo', blurb: 'Advanced security, backups, monitoring and services.', image: '/media/services/care_plus.webp' },
+  { id: 'care', name: 'Yele Care', price: '$49/mo', blurb: 'Everything in Lite, plus a yearly redesign, content updates, monitoring and 24/7 support.', image: '/media/services/care.webp', popular: true },
+  { id: 'plus', name: 'Yele Care+', price: '$99/mo', blurb: 'Everything in Yele Care, plus advanced security and priority services.', image: '/media/services/care_plus.webp' },
 ]
 
 // Final survey step — optional additional services (image tiles).
