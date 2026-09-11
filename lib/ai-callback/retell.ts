@@ -46,6 +46,9 @@ export function buildDynamicVariables(lead: CallbackLead): Record<string, string
     ? `Hi, is this ${first}? This is Ava, the AI assistant at Yele website design. You just sent a request for a new website — do you have one minute?`
     : `Hi, is this ${first}? This is Ava, I'm calling from Yele website design. You just sent a request for a new website — do you have one minute?`
   return {
+    // Same first name under both keys so the agent works whether its
+    // placeholder is {first_name} or {lead_name}.
+    first_name: first,
     lead_name: first,
     business,
     plan,
