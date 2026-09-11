@@ -112,7 +112,7 @@ export default function LetsBuildHero() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 min-h-[calc(100svh-132px)] flex items-center px-6 md:px-16 lg:pl-44 xl:pl-60 2xl:pl-72 pt-16 pb-10">
+      <div className="relative z-10 min-h-[calc(100svh-132px)] flex items-center px-6 md:px-16 lg:pl-44 xl:pl-60 2xl:pl-72 pt-16 pb-28 md:pb-10">
         <div className="w-full max-w-2xl">
           <Link href="/" className="inline-flex items-center mb-6 md:mb-8 focus-visible:outline-none" aria-label="yele">
             {/* eslint-disable-next-line @next/next/no-img-element */}
