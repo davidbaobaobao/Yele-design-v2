@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Check, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import LetsBuildHero from '@/components/letsbuild/LetsBuildHero'
+import ReputationBadge from '@/components/ReputationBadge'
 import PricingCards from '@/components/letsbuild/PricingCards'
 import CareVideo from '@/components/letsbuild/CareVideo'
 import StartNowMarquee from '@/components/letsbuild/StartNowMarquee'
@@ -20,6 +21,12 @@ const BuildLeadForm = dynamic(() => import('@/components/letsbuild/BuildLeadForm
 const PLAN_OPTIONS = ['Launch — $699', 'Business — $1,199', 'Pro — $2,799']
 
 const CARE_INCLUDES = ['Hosting', 'SSL & security', 'Backups', 'Uptime monitoring']
+
+const CORE_VALUES = [
+  { title: 'Design', body: 'No generic look, no cheap AI, no dull templates.' },
+  { title: 'Structure', body: "One clear message: what you do, why you're trustworthy, what it costs, and how to become your customer." },
+  { title: 'Functionality', body: 'Adapted to your business: calendars, ecommerce, payments, AI chat, AI phone, automations and much more.' },
+]
 
 const STEPS = [
   { n: '1', title: 'Start now', body: 'Secure your spot by paying 50% — this locks in your project and reserves your place in our schedule.' },
@@ -149,22 +156,45 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
           </div>
         </section>
 
-        {/* ---- QUICK LEAD FORM (moved out of the hero) ---- */}
-        <section id="lead-form" className="px-6 py-16 md:py-24 border-t border-white/10 scroll-mt-8" style={{ backgroundColor: DARK }}>
-          <div className="mx-auto w-full max-w-md md:max-w-xl text-center">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
-              Let&apos;s build your website
-            </h2>
-            <p className="font-body text-base text-white/70 mb-8">
-              From $699 · delivery under 4 weeks · we build everything for you.
-            </p>
-            <div className="text-left">
-              <LeadForm variant="dark" ctaLabel="Let's start" planOptions={PLAN_OPTIONS} leadSource={leadSource} sendWelcome />
-            </div>
-            <div className="text-center mt-3">
-              <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
-                Prefer to talk? Book a free 10-min intro call
-              </Link>
+        {/* ---- QUICK LEAD FORM (moved out of the hero) — left values +
+             testimonial pills, right form. Mirrors the hero layout. ---- */}
+        <section className="px-6 py-16 md:py-24 border-t border-white/10 scroll-mt-8" style={{ backgroundColor: DARK }}>
+          <div className="mx-auto w-full max-w-md md:max-w-5xl">
+            <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
+              <div className="mb-10 md:mb-0">
+                <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl text-white tracking-tight leading-[1.05] mb-2">
+                  Let&apos;s build your website
+                </h2>
+                <p className="font-body text-base text-white/70 mb-6 md:mb-8">
+                  Start now and get your new website this month.
+                </p>
+
+                <p className="font-body text-sm font-semibold uppercase tracking-[0.12em] text-white/50 mb-3">
+                  Our core values
+                </p>
+                <ul className="space-y-3.5 mb-7 md:mb-8">
+                  {CORE_VALUES.map(v => (
+                    <li key={v.title} className="flex items-start gap-2.5">
+                      <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
+                      <span className="font-body text-sm md:text-base text-white/80 leading-relaxed">
+                        <span className="font-semibold text-white">{v.title}.</span> {v.body}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <ReputationBadge />
+              </div>
+
+              <div className="md:ml-auto md:w-full md:max-w-md">
+                <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" planOptions={PLAN_OPTIONS} leadSource={leadSource} sendWelcome />
+
+                <div className="text-center mt-2.5">
+                  <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
+                    Prefer to talk? Book a free 10-min intro call
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </section>

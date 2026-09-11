@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { Check } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import ReputationBadge from '@/components/ReputationBadge'
 
@@ -112,7 +112,7 @@ export default function LetsBuildHero() {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 min-h-[calc(100svh-132px)] flex items-center px-6 md:px-12 lg:pl-28 xl:pl-40 pt-16 pb-10">
+      <div className="relative z-10 min-h-[calc(100svh-132px)] flex items-center px-6 md:px-16 lg:pl-44 xl:pl-60 2xl:pl-72 pt-16 pb-10">
         <div className="w-full max-w-xl">
           <Link href="/" className="inline-flex items-center mb-5 md:mb-7 focus-visible:outline-none" aria-label="yele">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -138,22 +138,33 @@ export default function LetsBuildHero() {
           <div className="flex flex-wrap items-center gap-4 mb-7 md:mb-8">
             <a
               href="#lead-form"
-              className="inline-flex items-center justify-center font-body font-medium text-base bg-[#F2F0EB] hover:bg-white text-[#16161A] px-7 py-3.5 rounded-full transition-colors active:scale-95"
+              className="inline-flex items-center justify-center font-body font-medium text-base bg-[#F2F0EB] hover:bg-white px-7 py-3.5 rounded-full transition-colors active:scale-95"
               style={{ color: '#16161A' }}
             >
               Start now
             </a>
-            <Link
-              href="/schedule"
+            <a
+              href="#pricing"
               className="inline-flex items-center justify-center font-body text-sm font-medium text-white px-6 py-3 rounded-full border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
             >
-              Book a free intro call
-            </Link>
+              Pricing
+            </a>
           </div>
 
           <ReputationBadge />
         </div>
       </div>
+
+      {/* Animated scroll-down indicator — centered on the full hero width,
+          bounces to invite scrolling to the logo marquee below. */}
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+        className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/70 hover:text-white transition-colors cursor-pointer focus-visible:outline-none motion-safe:animate-[heroScrollBounce_1.5s_ease-in-out_infinite]"
+        aria-label="Scroll down"
+      >
+        <ChevronDown size={28} aria-hidden="true" />
+      </button>
     </section>
   )
 }
