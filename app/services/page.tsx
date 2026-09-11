@@ -1,10 +1,17 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { Check } from 'lucide-react'
 import { EnLangProvider } from '@/components/LangProvider'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import { CTAButton } from '@/components/ui/cta-button'
 import PricingCards from '@/components/letsbuild/PricingCards'
+
+const CARE_TIERS = [
+  { name: 'Yele Care Lite', price: '$29', features: ['Hosting', 'Security', 'Backups'], popular: false },
+  { name: 'Yele Care', price: '$49', features: ['A full redesign every year', 'We update your content', 'Monitoring'], popular: true },
+  { name: 'Yele Care+', price: '$99', features: ['Advanced security', 'Backups', 'Monitoring', 'Priority services'], popular: false },
+]
 
 export const metadata: Metadata = {
   // No "| Yele" here — the root layout's title.template ('%s | Yele')
@@ -218,7 +225,7 @@ export default function ServicesPage() {
             <PricingCards ctaHref="/start" />
 
             <p className="text-center font-body text-sm font-bold text-bone mt-6">
-              Pay 50% to start and 50% at launch. Then Yele Care from $49/month.
+              Pay 50% to start and 50% at launch.
             </p>
 
             <div className="text-center mt-4">
@@ -228,6 +235,50 @@ export default function ServicesPage() {
               >
                 Help me decide
               </a>
+            </div>
+
+            {/* Yele Care — 3 maintenance tiers */}
+            <div className="mt-20">
+              <div className="text-center mb-10">
+                <h2 className="font-display font-semibold text-bone tracking-tight mb-3" style={{ fontSize: 'clamp(28px, 4vw, 44px)' }}>
+                  Yele Care
+                </h2>
+                <p className="font-body text-lg text-white/60 max-w-xl mx-auto">
+                  Optional maintenance that keeps your website fast, secure and always up to date — from $29/month.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+                {CARE_TIERS.map(tier => (
+                  <div
+                    key={tier.name}
+                    className={`relative flex flex-col rounded-2xl p-6 transition-shadow ${
+                      tier.popular
+                        ? 'bg-[#1C1D24] border-2 border-[#D46FC8] shadow-xl shadow-[#D46FC8]/15'
+                        : 'bg-white/[0.03] border border-white/10 hover:border-white/25'
+                    }`}
+                  >
+                    {tier.popular && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#D46FC8] px-3 py-1 font-body text-xs font-semibold text-white">
+                        Most Popular
+                      </span>
+                    )}
+                    <h3 className="font-display font-bold text-lg text-bone">{tier.name}</h3>
+                    <div className="mt-1 mb-4 flex items-end gap-1">
+                      <span className="font-display text-3xl font-bold text-bone">{tier.price}</span>
+                      <span className="mb-1 font-body text-sm text-white/50">/month</span>
+                    </div>
+                    <ul className="space-y-2">
+                      {tier.features.map(f => (
+                        <li key={f} className="flex items-start gap-2.5">
+                          <Check size={16} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
+                          <span className="font-body text-sm text-white/80">{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

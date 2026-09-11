@@ -101,8 +101,8 @@ export default function PreciosIndexSection() {
 
         <p className="text-center font-body text-sm font-bold text-bone mt-6">
           {t(
-            'Paga 50% al empezar y 50% al lanzar. Después, Yele Care desde 49 $/mes.',
-            'Pay 50% to start and 50% at launch. Then Yele Care from $49/month.'
+            'Paga 50% al empezar y 50% al lanzar.',
+            'Pay 50% to start and 50% at launch.'
           )}
         </p>
 

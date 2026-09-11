@@ -216,7 +216,7 @@ const schemaOrg = {
           name: 'What is Yele Care and is it compulsory?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yele Care is our maintenance plan, from $29/month, in three tiers: Yele Care Lite ($29/mo) covers hosting, security, backups, monitoring and support; Yele Care ($49/mo) adds content updates and a full website redesign every year; and Yele Care+ ($99/mo) adds priority support and more for larger or e-commerce sites. It is not compulsory — you can host the site yourself — but we recommend it so your website stays fast, secure and never looks dated.',
+            text: 'Yele Care is our maintenance plan, from $29/month, in three tiers: Yele Care Lite ($29/mo) — hosting, security and backups; Yele Care ($49/mo) — a yearly redesign, we update your content, plus monitoring; and Yele Care+ ($99/mo) — advanced security, backups, monitoring and services. It is not compulsory — you can host the site yourself — but we recommend it so your website stays fast, secure and never looks dated.',
           },
         },
         {

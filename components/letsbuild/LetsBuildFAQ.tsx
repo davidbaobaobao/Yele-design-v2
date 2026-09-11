@@ -10,15 +10,15 @@ const FAQS: { q: string; a: string; link?: { label: string; href: string } }[] =
   },
   {
     q: 'Is there a monthly fee?',
-    a: 'Yes — Yele Care, our maintenance plan, from $29/month. It comes in three tiers: Yele Care Lite ($29/mo) covers hosting, security, backups, monitoring and support; Yele Care ($49/mo) adds small content updates and a full website redesign every year; and Yele Care+ ($99/mo) adds priority support and more, ideal for larger or e-commerce sites.',
+    a: 'Yes — Yele Care, our maintenance plan, from $29/month, in three tiers: Yele Care Lite ($29/mo) — hosting, security and backups; Yele Care ($49/mo) — a yearly redesign, we update your content, plus monitoring; and Yele Care+ ($99/mo) — advanced security, backups, monitoring and services.',
   },
   {
     q: 'Is Yele Care compulsory?',
     a: 'No — but we highly recommend it. Yele Care includes a full design refresh every year, so you get a renewed website annually and everything keeps working — hosted, secure, backed up, monitored and up to date. You can host and manage the site yourself, but with Yele Care you never have to worry about the technical side.',
   },
   {
-    q: 'Can you update my website later with my content?',
-    a: 'Yes — anytime. You can upload your content directly yourself, or we can do it for you. It’s included with Yele Care.',
+    q: 'Can I update my website later with my content?',
+    a: 'Yes — anytime. With Yele Care Lite you can upload and update your content yourself, easily. With Yele Care and Yele Care+, we help you upload it or do it for you.',
   },
   {
     q: 'Do I need to pay everything upfront?',
