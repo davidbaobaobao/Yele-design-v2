@@ -53,7 +53,7 @@ export default async function Image() {
             lineHeight: 1.4,
           }}
         >
-          Custom website design from $699 one-time. Then Yele Care from $49/month.
+          Custom website design from $699. Then Yele Care from $49/month.
         </div>
         <div
           style={{

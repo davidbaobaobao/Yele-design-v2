@@ -7,7 +7,7 @@ const FAQS = [
   {
     question: 'How much does a website cost?',
     answer:
-      'Yele websites start at $699. Most small businesses choose either our $699 Launch package or our $1,199 Business package. More advanced websites start from $2,799 — a one-time build.',
+      'Yele websites start at $699. Most small businesses choose either our $699 Launch package or our $1,199 Business package. More advanced websites start from $2,799.',
   },
   {
     question: 'Is there a monthly fee?',

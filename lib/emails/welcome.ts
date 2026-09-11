@@ -50,7 +50,6 @@ function cardHtml(tier: Tier, name: string, email: string, company: string): str
       <p style="margin:0 0 4px 0; font-size:18px; font-weight:700; color:${title};">${tier.name}</p>
       <p style="margin:0 0 4px 0; color:${title};">
         ${tier.from ? `<span style="font-size:13px; color:${sub};">From </span>` : ''}<span style="font-size:26px; font-weight:700;">${tier.price}</span>
-        <span style="font-size:13px; color:${sub};"> one-time</span>
       </p>
       <p style="margin:0 0 16px 0; font-size:14px; line-height:1.5; color:${body};">${tier.desc}</p>
       <a href="${checkoutHref(tier.plan, name, email, company)}" style="display:block; text-align:center; background-color:${btnBg}; color:#ffffff; font-size:15px; font-weight:600; text-decoration:none; padding:12px 20px; border-radius:12px;">Pay ${tier.pay}</a>

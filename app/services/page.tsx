@@ -218,7 +218,7 @@ export default function ServicesPage() {
                 Essential packages
               </h1>
               <p className="font-body text-lg text-white/60 max-w-xl mx-auto">
-                Pick a plan. One-time build, then Yele Care keeps everything running.
+                Pick a plan. Yele Care keeps everything running.
               </p>
             </div>
 

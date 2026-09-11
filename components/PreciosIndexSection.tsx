@@ -91,8 +91,8 @@ export default function PreciosIndexSection() {
           </h2>
           <p className="font-body text-base text-white/60 mt-3">
             {t(
-              'Elige un plan. Pago único, y Yele Care mantiene todo funcionando.',
-              'Pick a plan. One-time build, then Yele Care keeps everything running.'
+              'Elige un plan. Yele Care mantiene todo funcionando.',
+              'Pick a plan. Yele Care keeps everything running.'
             )}
           </p>
         </motion.div>

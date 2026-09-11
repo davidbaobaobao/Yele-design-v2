@@ -141,7 +141,6 @@ function PricingCard({ tier, index, ctaHref }: { tier: Tier; index: number; ctaH
           )}
           <span className={`mb-1 font-body text-2xl font-semibold ${hl ? 'text-white/60' : 'text-muted'}`}>$</span>
           <span className="font-display text-5xl font-semibold tracking-tight">{tier.amount}</span>
-          <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>one-time</span>
         </div>
       </div>
 
@@ -162,10 +161,6 @@ function PricingCard({ tier, index, ctaHref }: { tier: Tier; index: number; ctaH
           </li>
         ))}
       </ul>
-
-      <div className={`relative mb-6 border-t pt-4 ${hl ? 'border-white/10' : 'border-hairline'}`}>
-        <p className={`font-body text-sm font-medium ${hl ? 'text-white' : 'text-ink'}`}>One-time payment</p>
-      </div>
 
       {(() => {
         const ctaClass = `relative inline-flex w-full cursor-pointer items-center justify-center rounded-full px-6 py-3 font-body text-sm font-medium transition-colors ${

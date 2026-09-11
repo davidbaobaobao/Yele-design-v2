@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    'Custom website design for small businesses — bespoke design and imagery, delivery under 4 weeks, from $699 one-time. Then Yele Care from $49/month keeps it hosted, updated and redesigned every year. Pay 50% to start, 50% at launch.',
+    'Custom website design for small businesses — bespoke design and imagery, delivery under 4 weeks, from $699. Then Yele Care from $49/month keeps it hosted, updated and redesigned every year. Pay 50% to start, 50% at launch.',
 
   authors: [{ name: 'Yele', url: 'https://yele.design' }],
   creator: 'Yele',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     siteName: 'Yele',
     title: 'Custom website design from $699 | Yele',
     description:
-      'Custom website design from $699 one-time. Delivery under 4 weeks, then Yele Care from $49/month. No agency prices.',
+      'Custom website design from $699. Delivery under 4 weeks, then Yele Care from $49/month. No agency prices.',
     images: [
       {
         url: '/opengraph-image',
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Custom website design from $699 | Yele',
     description:
-      'Custom website design from $699 one-time. Delivery under 4 weeks, then Yele Care from $49/month.',
+      'Custom website design from $699. Delivery under 4 weeks, then Yele Care from $49/month.',
     images: ['/opengraph-image'],
   },
 
@@ -126,7 +126,7 @@ const schemaOrg = {
       '@id': 'https://yele.design/#website',
       url: 'https://yele.design',
       name: 'Yele',
-      description: 'Custom website design and maintenance for small businesses — from $699 one-time, then Yele Care from $49/month',
+      description: 'Custom website design and maintenance for small businesses — from $699, then Yele Care from $49/month',
       publisher: { '@id': 'https://yele.design/#organization' },
       inLanguage: ['en'],
     },
@@ -137,7 +137,7 @@ const schemaOrg = {
       name: 'Custom website design',
       provider: { '@id': 'https://yele.design/#organization' },
       description:
-        'Custom website design for small businesses — bespoke design and imagery, delivery under 4 weeks, from $699 one-time. Then Yele Care from $49/month keeps the site hosted, secure, updated and redesigned every year.',
+        'Custom website design for small businesses — bespoke design and imagery, delivery under 4 weeks, from $699. Then Yele Care from $49/month keeps the site hosted, secure, updated and redesigned every year.',
       areaServed: { '@type': 'Country', name: 'United States' },
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
@@ -149,7 +149,7 @@ const schemaOrg = {
             price: '699',
             priceCurrency: 'USD',
             description:
-              'One-time custom website — custom design, mobile optimization, own domain, contact forms, and SEO indexing. Then Yele Care from $49/month.',
+              'Custom website — custom design, mobile optimization, own domain, contact forms, and SEO indexing. Then Yele Care from $49/month.',
           },
           {
             '@type': 'Offer',
@@ -157,7 +157,7 @@ const schemaOrg = {
             price: '1199',
             priceCurrency: 'USD',
             description:
-              'One-time custom website with calendar booking, payments, small e-commerce, conversion optimization, advanced SEO and analytics. Then Yele Care from $49/month.',
+              'Custom website with calendar booking, payments, small e-commerce, conversion optimization, advanced SEO and analytics. Then Yele Care from $49/month.',
           },
           {
             '@type': 'Offer',
@@ -165,7 +165,7 @@ const schemaOrg = {
             price: '2799',
             priceCurrency: 'USD',
             description:
-              'One-time custom website with high-performance e-commerce, custom dashboards, integrations, multiple locations and complex workflows. Then Yele Care from $99/month.',
+              'Custom website with high-performance e-commerce, custom dashboards, integrations, multiple locations and complex workflows. Then Yele Care from $99/month.',
           },
           {
             '@type': 'Offer',
@@ -192,7 +192,7 @@ const schemaOrg = {
           name: 'How much does a website cost?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yele websites are a one-time build starting at $699 (Launch). Business is $1,199 and Pro from $2,799. Then Yele Care keeps everything running from $49/month.',
+            text: 'Yele websites start at $699 (Launch). Business is $1,199 and Pro from $2,799. Then Yele Care keeps everything running from $49/month.',
           },
         },
         {
