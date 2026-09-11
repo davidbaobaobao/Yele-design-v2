@@ -8,9 +8,9 @@ import { CTAButton } from '@/components/ui/cta-button'
 import PricingCards from '@/components/letsbuild/PricingCards'
 
 const CARE_TIERS = [
-  { name: 'Yele Care Lite', price: '$29', features: ['Hosting', 'Security', 'Backups'], popular: false },
-  { name: 'Yele Care', price: '$49', features: ['A full redesign every year', 'We update your content', 'Monitoring'], popular: true },
-  { name: 'Yele Care+', price: '$99', features: ['Advanced security', 'Backups', 'Monitoring', 'Priority services'], popular: false },
+  { name: 'Yele Care Lite', price: '$29', image: '/media/services/care_lite.webp', features: ['Hosting', 'Security', 'Backups'], popular: false },
+  { name: 'Yele Care', price: '$49', image: '/media/services/care.webp', features: ['A full redesign every year', 'We update your content', 'Monitoring'], popular: true },
+  { name: 'Yele Care+', price: '$99', image: '/media/services/care_plus.webp', features: ['Advanced security', 'Backups', 'Monitoring', 'Priority services'], popular: false },
 ]
 
 export const metadata: Metadata = {
@@ -244,7 +244,7 @@ export default function ServicesPage() {
                   Yele Care
                 </h2>
                 <p className="font-body text-lg text-white/60 max-w-xl mx-auto">
-                  Optional maintenance that keeps your website fast, secure and always up to date — from $29/month.
+                  Maintenance that keeps your website fast, secure and always up to date — from $29/month.
                 </p>
               </div>
 
@@ -263,6 +263,9 @@ export default function ServicesPage() {
                         Most Popular
                       </span>
                     )}
+                    <div className="relative mb-4 w-full aspect-[16/9] overflow-hidden rounded-xl" style={{ backgroundColor: '#0D0E12' }}>
+                      <Image src={tier.image} alt={tier.name} fill sizes="360px" className="object-cover" />
+                    </div>
                     <h3 className="font-display font-bold text-lg text-bone">{tier.name}</h3>
                     <div className="mt-1 mb-4 flex items-end gap-1">
                       <span className="font-display text-3xl font-bold text-bone">{tier.price}</span>
