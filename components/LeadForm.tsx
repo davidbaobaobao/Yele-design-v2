@@ -85,6 +85,7 @@ export default function LeadForm({
   const conversionFiredRef = useRef(false)
   const [selectedPlan, setSelectedPlan] = useState('')
   const [selectedTimeline, setSelectedTimeline] = useState('')
+  const [timelineError, setTimelineError] = useState('')
 
   // Pricing CTAs on /letsbuild dispatch this to pre-select a tier + scroll
   // the form up into view. Only wired when planOptions is provided.
@@ -110,7 +111,15 @@ export default function LeadForm({
     if (!formData.email.trim()) e.email = 'Email is required'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'Invalid email'
     setErrors(e)
-    return Object.keys(e).length === 0
+    // Timeline is required, but only on the forms that show it (planOptions).
+    let timelineOk = true
+    if (planOptions && !selectedTimeline) {
+      setTimelineError('Please pick a timeline')
+      timelineOk = false
+    } else {
+      setTimelineError('')
+    }
+    return Object.keys(e).length === 0 && timelineOk
   }
 
   async function handleSubmit() {
@@ -254,7 +263,9 @@ export default function LeadForm({
 
       {planOptions && (
         <div className="pb-1.5">
-          <label className={labelClass}>When do you need your website?</label>
+          <label className={labelClass}>
+            When do you need your website? <span className="text-[#D46FC8]">*</span>
+          </label>
           <div className="flex flex-wrap gap-2">
             {['ASAP', '1–3 months', 'Not sure, just exploring'].map(t => {
               const active = selectedTimeline === t
@@ -262,7 +273,10 @@ export default function LeadForm({
                 <button
                   key={t}
                   type="button"
-                  onClick={() => setSelectedTimeline(active ? '' : t)}
+                  onClick={() => {
+                    setSelectedTimeline(active ? '' : t)
+                    if (timelineError) setTimelineError('')
+                  }}
                   className={`font-body text-xs sm:text-[13px] px-3.5 py-2 rounded-full border transition-colors cursor-pointer whitespace-nowrap ${
                     active
                       ? 'bg-[#D46FC8] border-[#D46FC8] text-white'
@@ -276,6 +290,7 @@ export default function LeadForm({
               )
             })}
           </div>
+          {timelineError && <p className={errorClass}>{timelineError}</p>}
         </div>
       )}
 
