@@ -117,7 +117,16 @@ export interface SurveyAnswers {
   noGoodPhotos: boolean
   // Optional add-on services picked on the final survey step.
   addons: string[]
+  // Preferred Yele Care maintenance tier.
+  carePlan: string
 }
+
+// Yele Care maintenance tiers — the survey "which plan do you prefer?" step.
+export const CARE_PLAN_OPTIONS: { id: string; name: string; price: string; blurb: string; image: string }[] = [
+  { id: 'lite', name: 'Yele Care Lite', price: '$29/mo', blurb: 'Hosting, security and backups.', image: '/media/services/care_lite.webp' },
+  { id: 'care', name: 'Yele Care', price: '$49/mo', blurb: 'A yearly redesign, we update your content, plus monitoring.', image: '/media/services/care.webp' },
+  { id: 'plus', name: 'Yele Care+', price: '$99/mo', blurb: 'Advanced security, backups, monitoring and services.', image: '/media/services/care_plus.webp' },
+]
 
 // Final survey step — optional additional services (image tiles).
 export const ADDON_OPTIONS: {
@@ -221,6 +230,7 @@ export const EMPTY_ANSWERS: SurveyAnswers = {
   usePhotosFromLinks: false,
   noGoodPhotos: false,
   addons: [],
+  carePlan: '',
 }
 
 // ── Step 3 — plan interest ──────────────────────────────────────────────
@@ -432,6 +442,7 @@ export type StepKey =
   | 'channel'
   | 'about'
   | 'links'
+  | 'careplan'
   | 'addons'
   | 'style1'
   | 'colors'
@@ -443,6 +454,7 @@ export const STEP_ORDER: StepKey[] = [
   'contact',
   'about',
   'links',
+  'careplan',
   'addons',
 ]
 

@@ -15,6 +15,7 @@ import ArrowNav from './_components/ArrowNav'
 import { FieldLabel, TextInput, Textarea, Checkbox } from './_components/Fields'
 import {
   ADDON_OPTIONS,
+  CARE_PLAN_OPTIONS,
   CHANNEL_OPTIONS,
   EMPTY_ANSWERS,
   TOTAL_STEPS,
@@ -392,6 +393,43 @@ function SurveyPageInner() {
               <Checkbox checked={answers.noWebPresence} onChange={(v) => update('noWebPresence', v)} label="I'm not online yet" />
             </div>
           </SplitLayout>
+        )}
+
+        {key === 'careplan' && (
+          <FullLayout title="Which maintenance plan do you prefer?" microcopy="Yele Care keeps your website running. You can change this later.">
+            <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
+              {CARE_PLAN_OPTIONS.map((c) => {
+                const selected = answers.carePlan === c.id
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => update('carePlan', selected ? '' : c.id)}
+                    className={`group flex flex-col overflow-hidden rounded-2xl border bg-white text-left transition-colors ${
+                      selected ? 'border-[#D46FC8] ring-2 ring-[#D46FC8]' : 'border-ink/15 hover:border-ink/40'
+                    }`}
+                  >
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#0D0E12]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={c.image} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      {selected && (
+                        <span className="absolute right-2.5 top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#D46FC8] text-white shadow">
+                          <Check size={14} strokeWidth={3} />
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-col p-4">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="font-display text-base font-bold text-ink">{c.name}</p>
+                        <span className="font-body text-sm font-semibold text-ink">{c.price}</span>
+                      </div>
+                      <p className="mt-1 font-body text-xs leading-snug text-ink/70">{c.blurb}</p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </FullLayout>
         )}
 
         {key === 'addons' && (

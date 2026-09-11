@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import {
   ADDON_OPTIONS,
+  CARE_PLAN_OPTIONS,
   channelLabel,
   colorLabels,
   effectLabels,
@@ -55,6 +56,7 @@ export async function POST(request: Request) {
       photoUrls,
       needsBranding,
       addons,
+      carePlan,
       currentStep,
       completed,
     } = body
@@ -153,6 +155,7 @@ export async function POST(request: Request) {
             photoUrls,
             needsBranding,
             addons,
+            carePlan,
           }),
         })
       } else {
@@ -193,6 +196,7 @@ interface CompletionEmailData {
   photoUrls?: string[]
   needsBranding?: boolean
   addons?: string[]
+  carePlan?: string
 }
 
 function buildCompletionEmail(data: CompletionEmailData): string {
@@ -292,6 +296,18 @@ function buildCompletionEmail(data: CompletionEmailData): string {
     ${section(
       'Functionality wanted',
       row('Features', data.functionality?.length ? functionalityLabels(data.functionality).join(', ') : null)
+    )}
+    ${section(
+      'Maintenance plan',
+      row(
+        'Prefers',
+        data.carePlan
+          ? (() => {
+              const c = CARE_PLAN_OPTIONS.find((o) => o.id === data.carePlan)
+              return c ? `${c.name} — ${c.price}` : data.carePlan
+            })()
+          : null
+      )
     )}
     ${section(
       'Additional services',
