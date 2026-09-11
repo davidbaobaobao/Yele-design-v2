@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { Check, FilePlus2, RefreshCw, Wrench } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
-import ReputationBadge from '@/components/ReputationBadge'
+import LetsBuildHero from '@/components/letsbuild/LetsBuildHero'
 import PricingCards from '@/components/letsbuild/PricingCards'
 import CareVideo from '@/components/letsbuild/CareVideo'
 import StartNowMarquee from '@/components/letsbuild/StartNowMarquee'
@@ -14,13 +14,6 @@ const LogoMarquee = dynamic(() => import('@/components/LogoMarquee'))
 const LatestFeaturedWork = dynamic(() => import('@/components/LatestFeaturedWork'))
 const LetsBuildFAQ = dynamic(() => import('@/components/letsbuild/LetsBuildFAQ'))
 const BuildLeadForm = dynamic(() => import('@/components/letsbuild/BuildLeadForm'))
-
-const KEY_POINTS = [
-  'From $699',
-  'No tasteless templates',
-  'No DIY — we build everything for you',
-  'Delivery under 4 weeks',
-]
 
 // Plan-interest pills shown in the hero form; the pricing CTAs dispatch these
 // exact values to pre-select the matching pill.
@@ -53,44 +46,9 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
   return (
     <EnLangProvider>
       <main style={{ backgroundColor: DARK }}>
-        {/* ---- HERO + quick lead form ---- */}
-        <section className="min-h-[calc(100svh-132px)] flex flex-col justify-center px-6 md:px-12 pt-16 pb-8 md:pt-16 md:pb-10">
-          <div className="mx-auto w-full max-w-md md:max-w-5xl">
-            <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
-              <div>
-                <Link href="/" className="inline-flex items-center mb-3 md:mb-6 focus-visible:outline-none" aria-label="yele">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/media/logomedia/mainlogo.svg" alt="" width={102} height={32} className="h-6 md:h-8 w-auto" />
-                </Link>
-
-                <h1 className="font-display font-bold text-[26px] md:text-4xl lg:text-5xl text-white tracking-tight leading-[1.05] mb-2.5 md:mb-5">
-                  Let&apos;s build your website
-                </h1>
-
-                <ul className="space-y-1 md:space-y-2.5 mb-3.5 md:mb-7">
-                  {KEY_POINTS.map(point => (
-                    <li key={point} className="flex items-start gap-2.5">
-                      <Check size={16} className="text-[#D46FC8] flex-shrink-0 mt-0.5 md:mt-1" aria-hidden="true" />
-                      <span className="font-body text-sm md:text-base font-semibold text-white/90">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <ReputationBadge className="mb-3.5 md:mb-0" />
-              </div>
-
-              <div className="md:ml-auto md:w-full md:max-w-md">
-                <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" planOptions={PLAN_OPTIONS} leadSource={leadSource} sendWelcome />
-
-                <div className="text-center mt-2.5">
-                  <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
-                    Prefer to talk? Book a free 10-min intro call
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg.
+             The quick lead form now lives under "How it works" below. ---- */}
+        <LetsBuildHero />
 
         <LogoMarquee />
 
@@ -188,10 +146,25 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
                 </div>
               ))}
             </div>
-            <div className="mt-10 text-center">
-              <a href="#lead-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-7 py-3.5 rounded-xl transition-colors">
-                Start now
-              </a>
+          </div>
+        </section>
+
+        {/* ---- QUICK LEAD FORM (moved out of the hero) ---- */}
+        <section id="lead-form" className="px-6 py-16 md:py-24 border-t border-white/10 scroll-mt-8" style={{ backgroundColor: DARK }}>
+          <div className="mx-auto w-full max-w-md md:max-w-xl text-center">
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
+              Let&apos;s build your website
+            </h2>
+            <p className="font-body text-base text-white/70 mb-8">
+              From $699 · delivery under 4 weeks · we build everything for you.
+            </p>
+            <div className="text-left">
+              <LeadForm variant="dark" ctaLabel="Let's start" planOptions={PLAN_OPTIONS} leadSource={leadSource} sendWelcome />
+            </div>
+            <div className="text-center mt-3">
+              <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
+                Prefer to talk? Book a free 10-min intro call
+              </Link>
             </div>
           </div>
         </section>
