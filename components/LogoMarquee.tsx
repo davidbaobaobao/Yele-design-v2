@@ -49,7 +49,7 @@ export default function LogoMarquee() {
 
   if (reduceMotion) {
     return (
-      <section data-nav-dark className="px-6 py-12" style={{ backgroundColor: '#0D0E12' }}>
+      <section data-nav-dark className="px-6 py-6" style={{ backgroundColor: '#0D0E12' }}>
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-12 gap-y-6">
           {LOGOS.map(n => (
             <LogoImg key={n} n={n} />
@@ -62,7 +62,7 @@ export default function LogoMarquee() {
   return (
     <section
       data-nav-dark
-      className="logo-marquee-wrap relative overflow-hidden py-12"
+      className="logo-marquee-wrap relative overflow-hidden py-6"
       style={{ backgroundColor: '#0D0E12' }}
     >
       {/* Two identical copies back-to-back so translateX(-50%) — exactly

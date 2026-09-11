@@ -44,11 +44,12 @@ export async function POST(request: Request) {
     // backward-compatible: the shared LeadForm (/start, /websites,
     // /newwebsite) never sends these, so they simply render as "(not
     // provided)" / are omitted from the email for those pages.
-    const { businessName, currentWebsite, needs, packageInterest, leadSource, welcome } = body as {
+    const { businessName, currentWebsite, needs, packageInterest, timeline, leadSource, welcome } = body as {
       businessName?: string
       currentWebsite?: string
       needs?: string[]
       packageInterest?: string[]
+      timeline?: string
       leadSource?: string
       welcome?: boolean
     }
@@ -122,6 +123,7 @@ export async function POST(request: Request) {
           'What the business does:',
           company || '(not provided)',
           Array.isArray(needs) && needs.length ? `\nWhat they need: ${needs.join(', ')}` : null,
+          timeline ? `Timeline: ${timeline}` : null,
           Array.isArray(packageInterest) && packageInterest.length
             ? `Package interest: ${packageInterest.join(', ')}`
             : null,

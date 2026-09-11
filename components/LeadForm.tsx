@@ -84,6 +84,7 @@ export default function LeadForm({
   // (e.g. a double-click landing before the disabled state has committed).
   const conversionFiredRef = useRef(false)
   const [selectedPlan, setSelectedPlan] = useState('')
+  const [selectedTimeline, setSelectedTimeline] = useState('')
 
   // Pricing CTAs on /letsbuild dispatch this to pre-select a tier + scroll
   // the form up into view. Only wired when planOptions is provided.
@@ -132,6 +133,7 @@ export default function LeadForm({
         email: formData.email,
         phone: formData.phone,
         company: formData.company,
+        timeline: selectedTimeline || undefined,
         packageInterest: selectedPlan ? [selectedPlan] : undefined,
         eventId: metaEventId,
         source: platform,
@@ -249,6 +251,33 @@ export default function LeadForm({
           onChange={e => set('company', e.target.value)}
         />
       </div>
+
+      {planOptions && (
+        <div className="pb-1.5">
+          <label className={labelClass}>When do you need your website?</label>
+          <div className="flex flex-wrap gap-2">
+            {['ASAP', '1–3 months', 'Not sure, just exploring'].map(t => {
+              const active = selectedTimeline === t
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setSelectedTimeline(active ? '' : t)}
+                  className={`font-body text-xs sm:text-[13px] px-3.5 py-2 rounded-full border transition-colors cursor-pointer whitespace-nowrap ${
+                    active
+                      ? 'bg-[#D46FC8] border-[#D46FC8] text-white'
+                      : isDark
+                        ? 'bg-white/5 border-white/15 text-white/80 hover:border-white/40'
+                        : 'bg-white border-hairline text-ink hover:border-ink'
+                  }`}
+                >
+                  {t}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {planOptions && (
         <div className="pb-1.5">
