@@ -165,7 +165,6 @@ function PricingCard({ tier, index, ctaHref }: { tier: Tier; index: number; ctaH
 
       <div className={`relative mb-6 border-t pt-4 ${hl ? 'border-white/10' : 'border-hairline'}`}>
         <p className={`font-body text-sm font-medium ${hl ? 'text-white' : 'text-ink'}`}>One-time payment</p>
-        <p className={`font-body text-sm ${hl ? 'text-white/70' : 'text-muted'}`}>+ {tier.care}/month Yele Care</p>
       </div>
 
       {(() => {

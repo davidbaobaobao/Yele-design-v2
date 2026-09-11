@@ -106,8 +106,6 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
 
             <p className="max-w-2xl mx-auto text-center font-body text-base text-muted mt-10 leading-relaxed">
               Pay 50% at the beginning and the remaining 50% at launch.
-              <br />
-              Then Yele Care makes sure everything works and updated — for $49/month.
             </p>
           </div>
         </section>
@@ -120,7 +118,7 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
                 Looked after with <br className="sm:hidden" /><span className="text-[#D46FC8]">Yele Care</span>
               </h2>
               <p className="font-body text-base text-muted mt-2">
-                Permanent attention that keeps everything working — for $49/month.
+                Permanent attention that keeps everything working — from $29/month.
               </p>
             </div>
 

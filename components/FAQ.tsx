@@ -12,7 +12,7 @@ const FAQS = [
   {
     question: 'Is there a monthly fee?',
     answer:
-      'Yes. Yele Care is $49/month and covers hosting, domain support, security, backups, maintenance, support, and small website updates.',
+      'Yes — Yele Care, our maintenance plan, from $29/month, in three tiers: Yele Care Lite ($29/mo) covers hosting, security, backups, monitoring and support; Yele Care ($49/mo) adds small content updates and a yearly redesign; and Yele Care+ ($99/mo) adds priority support and more for larger or e-commerce sites.',
   },
   {
     question: 'Is Yele Care compulsory?',

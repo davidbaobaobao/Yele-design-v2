@@ -75,7 +75,6 @@ export default function TierCard({
         <span className={`font-display text-3xl font-bold ${tier.dark ? 'text-white' : 'text-ink'}`}>{tier.price}</span>
         <span className={`mb-1 font-body text-sm ${tier.dark ? 'text-white/55' : 'text-muted'}`}>one-time</span>
       </div>
-      <p className={`relative mt-1 font-body text-sm ${tier.dark ? 'text-white/70' : 'text-muted'}`}>+ {tier.care}/mo Yele Care</p>
       <p className={`relative mt-4 mb-6 flex-1 font-body text-sm leading-relaxed ${tier.dark ? 'text-white/75' : 'text-ink/75'}`}>
         {tier.desc}
       </p>
