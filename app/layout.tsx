@@ -284,9 +284,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             enough that gtag is reliably ready by the time a real user
             submits a form (always at least several seconds into the visit),
             so onboarding_form_submit + enhanced conversions keep firing. */}
+        {/* The heavy gtag library is deferred to browser idle (lazyOnload) to
+            keep it off the critical path / out of TBT. The tiny inline stub
+            below stays afterInteractive so window.gtag + dataLayer exist
+            early — any conversion fired before the library loads is queued in
+            dataLayer and sent once gtag/js finishes loading. */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18281072925"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <Script id="google-ads" strategy="afterInteractive">
           {`
@@ -308,7 +313,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             that same implied-consent model. CookieBanner.tsx re-fires this
             with the user's actual analytics/marketing choice once they
             interact with the banner. */}
-        <Script id="ms-clarity" strategy="afterInteractive">
+        <Script id="ms-clarity" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

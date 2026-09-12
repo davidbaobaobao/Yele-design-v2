@@ -11,13 +11,17 @@ const nextConfig = {
       // browsers were re-validating them on every visit. Not `immutable` —
       // this project's own workflow re-exports some assets in place under
       // the same filename (e.g. hero_poster.jpg), so a byte-for-byte-never-
-      // changes policy would risk serving stale content after that; a week
-      // fresh + up to 30 days stale-while-revalidate is a real win without
-      // that risk.
+      // changes policy would risk serving stale content after that. Instead:
+      // 30 days fresh + a full year of stale-while-revalidate — this is what
+      // PageSpeed's "efficient cache lifetimes" audit wants for the big
+      // rarely-changing media (the multi-MB videos especially), while SWR
+      // still lets an in-place re-export propagate on the next visit (stale
+      // served instantly, revalidated in the background) rather than going
+      // stale for good.
       {
         source: '/media/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=2592000' },
+          { key: 'Cache-Control', value: 'public, max-age=2592000, stale-while-revalidate=31536000' },
         ],
       },
     ]
