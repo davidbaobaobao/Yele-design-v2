@@ -132,6 +132,24 @@ export default function ReceivedPage({
             ← Back to home
           </Link>
         </div>
+
+        {/* ---- Footer (static, no animation) ---- */}
+        <footer className="mt-16 border-t border-hairline pt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-body text-sm text-muted">
+            © {new Date().getFullYear()} Yele. All rights reserved.
+          </p>
+          <nav className="flex flex-wrap gap-x-6 gap-y-2">
+            <Link href="/terms" className="font-body text-sm text-muted hover:text-ink transition-colors">
+              Terms
+            </Link>
+            <Link href="/privacy-policy" className="font-body text-sm text-muted hover:text-ink transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/legal-notice" className="font-body text-sm text-muted hover:text-ink transition-colors">
+              Legal Notice
+            </Link>
+          </nav>
+        </footer>
       </div>
     </div>
   )
