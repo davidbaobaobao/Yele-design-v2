@@ -137,17 +137,17 @@ export default function LetsBuildHero() {
 
           <div className="flex flex-wrap items-center gap-4 mb-8 md:mb-10">
             <a
-              href="#lead-form"
+              href="#pricing"
               className="inline-flex items-center justify-center font-body font-semibold text-base md:text-lg bg-[#F2F0EB] hover:bg-white px-8 py-4 rounded-full transition-colors active:scale-95"
               style={{ color: '#16161A' }}
             >
-              Start now
+              Pricing
             </a>
             <a
-              href="#pricing"
+              href="#lead-form"
               className="inline-flex items-center justify-center font-body text-base md:text-lg font-medium text-white px-7 py-4 rounded-full border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
             >
-              Pricing
+              Start now
             </a>
           </div>
 

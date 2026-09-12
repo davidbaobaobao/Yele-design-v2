@@ -87,8 +87,9 @@ export default function ReceivedPage({
           Let&apos;s book a 10-min call to get started with your website.
         </p>
 
-        {/* ---- Booking calendar ---- */}
-        <div className="h-[430px] w-full overflow-hidden rounded-2xl border border-hairline mb-10">
+        {/* ---- Booking calendar ---- Mobile: full-bleed, auto height (the
+             page scrolls, not the widget). Desktop: boxed, fixed height. */}
+        <div className="-mx-6 mb-10 md:mx-0 md:h-[430px] md:w-full md:overflow-hidden md:rounded-2xl md:border md:border-hairline">
           <ReceivedCalEmbed name={rawName} email={email} />
         </div>
 
