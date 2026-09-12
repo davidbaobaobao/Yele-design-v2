@@ -31,9 +31,8 @@ const TIERS: Tier[] = [
     features: [
       { label: 'Custom website design', info: 'No AI or cheap templates — a bespoke design tailored to your business.' },
       { label: 'Mobile optimization', info: 'Fast and responsive on phones, where almost half of your customers are.' },
-      { label: 'Custom domain and email', info: 'A professional address like yourbusiness.com and an email such as info@yourbusiness.com.' },
-      { label: 'Contact and forms' },
       { label: 'Calendar booking', info: 'Customers book their own appointments online, with automatic confirmations.' },
+      { label: 'Custom domain and email', info: 'A professional address like yourbusiness.com and an email such as info@yourbusiness.com.' },
       { label: 'SEO and Google indexing', info: 'Helps customers find your business on Google and Google Maps.' },
       { label: 'Professional image and video content', info: 'Our studio creates and edits professional, high-budget media content for your website.' },
     ],
