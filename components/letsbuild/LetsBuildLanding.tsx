@@ -295,6 +295,26 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
             </div>
           </div>
         </section>
+
+        {/* ---- Footer (static, no animation) ---- */}
+        <footer className="px-6 py-10 border-t border-white/10" style={{ backgroundColor: DARK }}>
+          <div className="max-w-6xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-body text-sm text-white/50">
+              © {new Date().getFullYear()} Yele. All rights reserved.
+            </p>
+            <nav className="flex flex-wrap gap-x-6 gap-y-2">
+              <Link href="/terms" className="font-body text-sm text-white/60 hover:text-white transition-colors">
+                Terms
+              </Link>
+              <Link href="/privacy-policy" className="font-body text-sm text-white/60 hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/legal-notice" className="font-body text-sm text-white/60 hover:text-white transition-colors">
+                Legal Notice
+              </Link>
+            </nav>
+          </div>
+        </footer>
       </main>
     </EnLangProvider>
   )
