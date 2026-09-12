@@ -110,6 +110,8 @@ export default function LeadForm({
     if (!formData.name.trim()) e.name = 'Your name is required'
     if (!formData.email.trim()) e.email = 'Email is required'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'Invalid email'
+    if (!formData.phone.trim()) e.phone = 'Phone is required'
+    if (!formData.company.trim()) e.company = 'Please tell us a bit about your company'
     setErrors(e)
     // Timeline is required, but only on the forms that show it (planOptions).
     let timelineOk = true
@@ -239,7 +241,9 @@ export default function LeadForm({
       </div>
 
       <div>
-        <label className={labelClass}>Phone</label>
+        <label className={labelClass}>
+          Phone <span className="text-[#D46FC8]">*</span>
+        </label>
         <input
           type="tel"
           className={inputClass}
@@ -248,10 +252,13 @@ export default function LeadForm({
           onChange={e => set('phone', e.target.value)}
           autoComplete="tel"
         />
+        {errors.phone && <p className={errorClass}>{errors.phone}</p>}
       </div>
 
       <div>
-        <label className={labelClass}>Describe your company</label>
+        <label className={labelClass}>
+          Describe your company <span className="text-[#D46FC8]">*</span>
+        </label>
         <textarea
           className={`${inputClass} resize-none`}
           rows={1}
@@ -259,6 +266,7 @@ export default function LeadForm({
           value={formData.company}
           onChange={e => set('company', e.target.value)}
         />
+        {errors.company && <p className={errorClass}>{errors.company}</p>}
       </div>
 
       {planOptions && (

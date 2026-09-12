@@ -88,18 +88,18 @@ export default function ReceivedPage({
         </p>
 
         {/* ---- Booking calendar ---- */}
-        <div className="h-[480px] md:h-[500px] w-full overflow-hidden rounded-2xl border border-hairline mb-10">
+        <div className="h-[430px] w-full overflow-hidden rounded-2xl border border-hairline mb-10">
           <ReceivedCalEmbed name={rawName} email={email} />
         </div>
 
         {/* ---- Don't want to wait? Pay 50% now ---- */}
         <div className="border-t border-hairline pt-12">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-2">
+          <h2 className="font-display font-bold text-3xl md:text-5xl text-ink tracking-tight mb-3">
             Don&apos;t want to wait?
           </h2>
-          <p className="font-body text-base text-ink/75 leading-relaxed max-w-2xl mb-6">
-            Start right now. Pay 50% and secure your spot. This locks in your project and reserves your place in our
-            schedule — we&apos;ll start working on it right away.
+          <p className="font-body text-base md:text-lg text-ink/75 leading-relaxed max-w-2xl mb-6">
+            Start right now. Make the first 50% payment and secure your spot. This locks in your project and reserves
+            your place in our schedule — we&apos;ll start working on it right away.
           </p>
           <div className={`grid items-start gap-4 [perspective:1200px] ${single ? 'max-w-sm' : 'grid-cols-1 md:grid-cols-3'}`}>
             {shownTiers.map(tier => (

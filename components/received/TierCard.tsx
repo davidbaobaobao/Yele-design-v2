@@ -68,16 +68,10 @@ export default function TierCard({
       <motion.div className="pointer-events-none absolute inset-0 rounded-2xl" style={{ background: spot }} aria-hidden="true" />
 
       <h4 className={`relative font-display text-xl font-bold ${tier.dark ? 'text-white' : 'text-ink'}`}>{tier.name}</h4>
-      <p className={`relative mt-1 font-body text-xs font-semibold uppercase tracking-[0.1em] ${tier.dark ? 'text-[#D46FC8]' : 'text-[#D46FC8]'}`}>
+      <p className="relative mt-1 font-body text-xs font-semibold uppercase tracking-[0.1em] text-[#D46FC8]">
         Pay 50% today
       </p>
-      <div className="relative mt-0.5 flex items-end gap-1 whitespace-nowrap">
-        {tier.from && (
-          <span className={`mb-1.5 font-body text-xs ${tier.dark ? 'text-white/50' : 'text-muted'}`}>From</span>
-        )}
-        <span className={`font-display text-3xl font-bold ${tier.dark ? 'text-white' : 'text-ink'}`}>{tier.pay}</span>
-      </div>
-      <p className={`relative mt-4 mb-6 flex-1 font-body text-sm leading-relaxed ${tier.dark ? 'text-white/75' : 'text-ink/75'}`}>
+      <p className={`relative mt-3 mb-6 flex-1 font-body text-sm leading-relaxed ${tier.dark ? 'text-white/75' : 'text-ink/75'}`}>
         {tier.desc}
       </p>
       <div className="relative">
