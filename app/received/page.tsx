@@ -41,27 +41,18 @@ const TIERS: Tier[] = [
 const STEPS = [
   {
     n: 1,
-    title: 'Pay and secure your spot',
-    body: "Start now by paying 50%. This locks in your project and reserves your place in our schedule — we'll start working on it right away.",
-    cards: true,
+    title: 'Tell us about your business',
+    body: 'A short survey so we understand your exact needs for the website before we design anything.',
   },
   {
     n: 2,
-    title: 'Tell us about your business',
-    body: 'A short survey so we understand your exact needs for the website before we design anything.',
-    cards: false,
+    title: 'First proposal under 72h',
+    body: "We'll build a functional demo of your website as a starting point, then review all the changes needed together.",
   },
   {
     n: 3,
-    title: 'First proposal under 72h',
-    body: "We'll build a functional demo of your website as a starting point, then review all the changes needed together.",
-    cards: false,
-  },
-  {
-    n: 4,
     title: 'Go live',
     body: 'Approve, pay the remaining 50%, and we launch your website — Yele Care keeps everything running smoothly afterwards.',
-    cards: false,
   },
 ]
 
@@ -91,44 +82,48 @@ export default function ReceivedPage({
 
         <h1 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight leading-tight mb-3">
           {name ? <>Welcome {name}!</> : <>Welcome!</>}
-          <br />
-          Let&apos;s get started with your website
         </h1>
-        <p className="font-body text-muted text-lg mb-10">Next steps:</p>
+        <p className="font-body text-ink/75 text-lg md:text-xl mb-8">
+          Let&apos;s book a 10-min call to get started with your website.
+        </p>
 
-        <ol className="space-y-4">
-          {STEPS.map(step => (
-            <li key={step.n} className="group flex gap-4 rounded-2xl p-3 -mx-3 transition-all duration-300 hover:bg-black/[0.03] hover:translate-x-1">
-              <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#D46FC8]/30">
-                {step.n}
-              </span>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-display font-bold text-xl text-ink mb-1 transition-colors duration-300 group-hover:text-[#D46FC8]">{step.title}</h3>
-                <p className="font-body text-base text-ink/75 leading-relaxed max-w-2xl">{step.body}</p>
+        {/* ---- Booking calendar ---- */}
+        <div className="h-[680px] w-full overflow-hidden rounded-2xl border border-hairline mb-16">
+          <ReceivedCalEmbed name={rawName} email={email} />
+        </div>
 
-                {step.cards && (
-                  <div className={`mt-5 grid items-start gap-4 [perspective:1200px] ${single ? 'max-w-sm' : 'grid-cols-1 md:grid-cols-3'}`}>
-                    {shownTiers.map(tier => (
-                      <TierCard key={tier.plan} tier={tier} name={rawName} email={email} company={company} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        {/* ---- Prefer to talk first? Inline booking ---- */}
-        <div className="mt-16 border-t border-hairline pt-12">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-1">
-            Prefer to talk first?
+        {/* ---- Don't want to wait? Pay 50% now ---- */}
+        <div className="border-t border-hairline pt-12">
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-2">
+            Don&apos;t want to wait?
           </h2>
-          <p className="font-body text-base text-muted mb-6">
-            Book a free 30-minute call — pick any time that works for you.
+          <p className="font-body text-base text-ink/75 leading-relaxed max-w-2xl mb-6">
+            Start right now. Pay 50% and secure your spot. This locks in your project and reserves your place in our
+            schedule — we&apos;ll start working on it right away.
           </p>
-          <div className="h-[680px] w-full overflow-hidden rounded-2xl border border-hairline">
-            <ReceivedCalEmbed name={rawName} email={email} />
+          <div className={`grid items-start gap-4 [perspective:1200px] ${single ? 'max-w-sm' : 'grid-cols-1 md:grid-cols-3'}`}>
+            {shownTiers.map(tier => (
+              <TierCard key={tier.plan} tier={tier} name={rawName} email={email} company={company} />
+            ))}
           </div>
+        </div>
+
+        {/* ---- Next steps ---- */}
+        <div className="mt-16">
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-6">Next steps</h2>
+          <ol className="space-y-4">
+            {STEPS.map(step => (
+              <li key={step.n} className="group flex gap-4 rounded-2xl p-3 -mx-3 transition-all duration-300 hover:bg-black/[0.03] hover:translate-x-1">
+                <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#D46FC8]/30">
+                  {step.n}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-display font-bold text-xl text-ink mb-1 transition-colors duration-300 group-hover:text-[#D46FC8]">{step.title}</h3>
+                  <p className="font-body text-base text-ink/75 leading-relaxed max-w-2xl">{step.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
 
         <div className="mt-10">

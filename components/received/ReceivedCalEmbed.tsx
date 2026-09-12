@@ -34,7 +34,7 @@ export default function ReceivedCalEmbed({ name = '', email = '' }: { name?: str
   return (
     <Cal
       calLink={CAL_LINK}
-      style={{ width: '100%', height: '100%', overflow: 'scroll' }}
+      style={{ width: '100%', height: '100%', minHeight: '640px', overflow: 'scroll' }}
       config={{
         theme: 'light',
         // Prefill so the booker skips re-entering their details.
