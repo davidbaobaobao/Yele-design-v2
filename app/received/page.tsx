@@ -88,7 +88,7 @@ export default function ReceivedPage({
         </p>
 
         {/* ---- Booking calendar ---- */}
-        <div className="h-[680px] w-full overflow-hidden rounded-2xl border border-hairline mb-16">
+        <div className="h-[480px] md:h-[500px] w-full overflow-hidden rounded-2xl border border-hairline mb-10">
           <ReceivedCalEmbed name={rawName} email={email} />
         </div>
 
