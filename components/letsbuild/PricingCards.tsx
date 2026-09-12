@@ -33,6 +33,7 @@ const TIERS: Tier[] = [
       { label: 'Mobile optimization', info: 'Fast and responsive on phones, where almost half of your customers are.' },
       { label: 'Custom domain and email', info: 'A professional address like yourbusiness.com and an email such as info@yourbusiness.com.' },
       { label: 'Contact and forms' },
+      { label: 'Calendar booking', info: 'Customers book their own appointments online, with automatic confirmations.' },
       { label: 'SEO and Google indexing', info: 'Helps customers find your business on Google and Google Maps.' },
       { label: 'Professional image and video content', info: 'Our studio creates and edits professional, high-budget media content for your website.' },
     ],
@@ -47,7 +48,7 @@ const TIERS: Tier[] = [
     blurb: 'For businesses that want more functionality on their website.',
     headline: 'Everything in Launch, plus:',
     features: [
-      { label: 'Calendar booking', info: 'Customers book their own appointments online, with automatic confirmations.' },
+      { label: 'Smart AI chatbot', info: 'A 24/7 assistant that answers visitor questions, captures leads and books calls right on your site.' },
       { label: 'Payment acceptance', info: 'Accept secure credit-card payments directly on your website.' },
       { label: 'Small e-commerce', info: 'Ideal for smaller catalogs — up to around 30 products.' },
       { label: 'Conversion optimization', info: 'Improved layout and clear calls-to-action to turn more visitors into customers.' },

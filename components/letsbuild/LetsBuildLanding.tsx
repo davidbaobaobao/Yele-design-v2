@@ -15,6 +15,9 @@ const LogoMarquee = dynamic(() => import('@/components/LogoMarquee'))
 const LatestFeaturedWork = dynamic(() => import('@/components/LatestFeaturedWork'))
 const LetsBuildFAQ = dynamic(() => import('@/components/letsbuild/LetsBuildFAQ'))
 const BuildLeadForm = dynamic(() => import('@/components/letsbuild/BuildLeadForm'))
+// Async server component (fetches testimonials) — same section as the
+// homepage, always dark so it drops straight into the dark landing.
+const Testimonios = dynamic(() => import('@/components/Testimonios'))
 
 // Plan-interest pills shown in the hero form; the pricing CTAs dispatch these
 // exact values to pre-select the matching pill.
@@ -239,6 +242,9 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
             </div>
           </div>
         </section>
+
+        {/* ---- TESTIMONIALS (same section as the homepage) ---- */}
+        <Testimonios />
 
         <StartNowMarquee />
 

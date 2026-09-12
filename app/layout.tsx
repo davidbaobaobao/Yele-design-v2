@@ -149,7 +149,7 @@ const schemaOrg = {
             price: '699',
             priceCurrency: 'USD',
             description:
-              'Custom website — custom design, mobile optimization, own domain, contact forms, and SEO indexing. Then Yele Care from $49/month.',
+              'Custom website — custom design, mobile optimization, own domain, contact forms, calendar booking, and SEO indexing. Then Yele Care from $49/month.',
           },
           {
             '@type': 'Offer',
@@ -157,7 +157,7 @@ const schemaOrg = {
             price: '1199',
             priceCurrency: 'USD',
             description:
-              'Custom website with calendar booking, payments, small e-commerce, conversion optimization, advanced SEO and analytics. Then Yele Care from $49/month.',
+              'Custom website with a smart AI chatbot, payments, small e-commerce, conversion optimization, advanced SEO and analytics. Then Yele Care from $49/month.',
           },
           {
             '@type': 'Offer',

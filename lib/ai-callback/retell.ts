@@ -63,10 +63,17 @@ export function buildDynamicVariables(lead: CallbackLead): Record<string, string
 
 export type RetellCallResult = { ok: true; call_id: string } | { ok: false; status: number; error: string }
 
+// Outbound caller ID and the agent to run. Hardcoded (not env) so these are
+// the single source of truth regardless of any older RETELL_FROM_NUMBER /
+// RETELL_AGENT_ID values still set in the hosting env. An env value, if
+// present, still overrides — so the old vars should be removed in Vercel.
+const FROM_NUMBER = '+12673884416'
+const AGENT_ID = 'agent_d1a90a8f861111b821a87d6acc'
+
 export async function createRetellCall(lead: CallbackLead): Promise<RetellCallResult> {
   const apiKey = process.env.RETELL_API_KEY
-  const from = process.env.RETELL_FROM_NUMBER
-  if (!apiKey || !from) return { ok: false, status: 0, error: 'RETELL_API_KEY / RETELL_FROM_NUMBER not set' }
+  const from = process.env.RETELL_FROM_NUMBER || FROM_NUMBER
+  if (!apiKey || !from) return { ok: false, status: 0, error: 'RETELL_API_KEY not set' }
 
   const body: Record<string, unknown> = {
     from_number: from,
@@ -74,7 +81,7 @@ export async function createRetellCall(lead: CallbackLead): Promise<RetellCallRe
     retell_llm_dynamic_variables: buildDynamicVariables(lead),
     metadata: { lead_id: lead.id, source: 'letsbuild_ai_callback' },
   }
-  if (process.env.RETELL_AGENT_ID) body.override_agent_id = process.env.RETELL_AGENT_ID
+  body.override_agent_id = process.env.RETELL_AGENT_ID || AGENT_ID
 
   const res = await fetch('https://api.retellai.com/v2/create-phone-call', {
     method: 'POST',
