@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import TierCard, { type Tier } from '@/components/received/TierCard'
+import ReceivedCalEmbed from '@/components/received/ReceivedCalEmbed'
 
 export const metadata = {
   title: 'Welcome — Yele',
@@ -116,6 +117,19 @@ export default function ReceivedPage({
             </li>
           ))}
         </ol>
+
+        {/* ---- Prefer to talk first? Inline booking ---- */}
+        <div className="mt-16 border-t border-hairline pt-12">
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-1">
+            Prefer to talk first?
+          </h2>
+          <p className="font-body text-base text-muted mb-6">
+            Book a free 30-minute call — pick any time that works for you.
+          </p>
+          <div className="h-[680px] w-full overflow-hidden rounded-2xl border border-hairline">
+            <ReceivedCalEmbed name={rawName} email={email} />
+          </div>
+        </div>
 
         <div className="mt-10">
           <Link href="/" className="font-body text-base text-muted hover:text-ink transition-colors">
