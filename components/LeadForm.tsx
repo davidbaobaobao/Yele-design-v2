@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
@@ -93,6 +93,75 @@ export default function LeadForm({
   const [selectedTimeline, setSelectedTimeline] = useState('')
   const [timelineError, setTimelineError] = useState('')
 
+  // ---- Abandoned-lead capture (funnel forms only) ----
+  // How many times they clicked submit with an invalid form; whether they
+  // eventually completed; whether we've already sent the partial; and a live
+  // snapshot the unload handler can read without stale closures.
+  const attemptsRef = useRef(0)
+  const submittedRef = useRef(false)
+  const sentPartialRef = useRef(false)
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const snapshotRef = useRef({ formData, selectedTimeline, selectedPlan })
+  useEffect(() => {
+    snapshotRef.current = { formData, selectedTimeline, selectedPlan }
+  })
+
+  // Fire-and-forget the partial to /api/lead/partial. Only for funnel forms,
+  // only after a real submit attempt, only if they never completed, only once,
+  // and only when there's a contactable field (email or phone).
+  const sendPartial = useCallback(() => {
+    if (!planOptions || submittedRef.current || sentPartialRef.current) return
+    if (attemptsRef.current < 1) return
+    const { formData: fd, selectedTimeline: tl, selectedPlan: pl } = snapshotRef.current
+    if (!fd.email.trim() && !fd.phone.trim()) return
+    sentPartialRef.current = true
+    const payload = JSON.stringify({
+      name: fd.name,
+      email: fd.email,
+      phone: fd.phone,
+      company: fd.company,
+      timeline: tl,
+      plan: pl,
+      attempts: attemptsRef.current,
+      leadSource: leadSource ?? '',
+      url: typeof location !== 'undefined' ? location.href : '',
+    })
+    try {
+      const blob = new Blob([payload], { type: 'application/json' })
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        navigator.sendBeacon('/api/lead/partial', blob)
+      } else {
+        fetch('/api/lead/partial', { method: 'POST', body: payload, keepalive: true, headers: { 'Content-Type': 'application/json' } })
+      }
+    } catch {
+      /* best-effort only */
+    }
+  }, [planOptions, leadSource])
+
+  // Send on leaving the page (tab hidden / navigation / close), and after a
+  // few minutes idle once they've attempted a submit.
+  useEffect(() => {
+    if (!planOptions) return
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') sendPartial()
+    }
+    window.addEventListener('pagehide', sendPartial)
+    document.addEventListener('visibilitychange', onHide)
+    return () => {
+      window.removeEventListener('pagehide', sendPartial)
+      document.removeEventListener('visibilitychange', onHide)
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+    }
+  }, [planOptions, sendPartial])
+
+  // (Re)arm a 3-minute inactivity timer — only meaningful once they've clicked
+  // submit at least once. Called on every field edit.
+  function armIdleTimer() {
+    if (!planOptions || attemptsRef.current < 1) return
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+    idleTimerRef.current = setTimeout(sendPartial, 3 * 60 * 1000)
+  }
+
   // Pricing CTAs on /letsbuild dispatch this to pre-select a tier + scroll
   // the form up into view. Only wired when planOptions is provided.
   useEffect(() => {
@@ -109,6 +178,7 @@ export default function LeadForm({
   function set(key: keyof FormData, value: string) {
     setFormData(prev => ({ ...prev, [key]: value }))
     if (errors[key]) setErrors(prev => ({ ...prev, [key]: '' }))
+    armIdleTimer()
   }
 
   function validate(): boolean {
@@ -131,7 +201,16 @@ export default function LeadForm({
   }
 
   async function handleSubmit() {
-    if (!validate()) return
+    if (!validate()) {
+      // Count the failed CTA click; arm the idle timer so an abandoned but
+      // partially-filled form still gets captured.
+      attemptsRef.current += 1
+      armIdleTimer()
+      return
+    }
+    // Valid submit under way — they completed intent, so never send a partial.
+    submittedRef.current = true
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
     setLoading(true)
     setSubmitError('')
 
@@ -164,6 +243,8 @@ export default function LeadForm({
     if (!response.ok) {
       setSubmitError(f.submitError)
       setLoading(false)
+      // Submit failed server-side — allow a later abandoned-capture again.
+      submittedRef.current = false
       return
     }
 
