@@ -5,6 +5,14 @@ import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, typ
 import { Check } from 'lucide-react'
 import PlanCTA from '@/components/letsbuild/PlanCTA'
 import { FeatureTooltip } from '@/components/PricingCards'
+import { getFunnelDict, currencySymbol, type Locale } from '@/lib/i18n/funnel'
+
+// Micro-strings not worth a full dict entry.
+const MICRO: Record<Locale, { most: string; from: string }> = {
+  en: { most: 'Most Popular', from: 'from' },
+  es: { most: 'Más popular', from: 'desde' },
+  zh: { most: '最受欢迎', from: '' },
+}
 
 type Feature = { label: string; info?: string }
 
@@ -21,70 +29,15 @@ type Tier = {
   popular: boolean
 }
 
-const TIERS: Tier[] = [
-  {
-    name: 'Launch',
-    amount: '699',
-    planValue: 'Launch — $699',
-    blurb: 'Everything most small businesses need to get online professionally.',
-    headline: null,
-    features: [
-      { label: 'Custom website design', info: 'No AI or cheap templates — a bespoke design tailored to your business.' },
-      { label: 'Mobile optimization', info: 'Fast and responsive on phones, where almost half of your customers are.' },
-      { label: 'Calendar booking', info: 'Customers book their own appointments online, with automatic confirmations.' },
-      { label: 'Custom domain and email', info: 'A professional address like yourbusiness.com and an email such as info@yourbusiness.com.' },
-      { label: 'SEO and Google indexing', info: 'Helps customers find your business on Google and Google Maps.' },
-      { label: 'Professional image and video content', info: 'Our studio creates and edits professional, high-budget media content for your website.' },
-    ],
-    care: '$49',
-    cta: 'Choose Launch',
-    popular: false,
-  },
-  {
-    name: 'Business',
-    amount: '1,199',
-    planValue: 'Business — $1,199',
-    blurb: 'For businesses that want more functionality on their website.',
-    headline: 'Everything in Launch, plus:',
-    features: [
-      { label: 'Smart AI chatbot', info: 'A 24/7 assistant that answers visitor questions, captures leads and books calls right on your site.' },
-      { label: 'Payment acceptance', info: 'Accept secure credit-card payments directly on your website.' },
-      { label: 'Small e-commerce', info: 'Ideal for smaller catalogs — up to around 30 products.' },
-      { label: 'Conversion optimization', info: 'Improved layout and clear calls-to-action to turn more visitors into customers.' },
-      { label: 'Advanced SEO', info: 'Deeper, more advanced SEO implementation for stronger rankings.' },
-      { label: 'Detailed analytics' },
-    ],
-    care: '$49',
-    cta: 'Choose Business',
-    popular: true,
-  },
-  {
-    name: 'Pro',
-    amount: '2,799',
-    from: true,
-    planValue: 'Pro — $2,799',
-    blurb: 'For businesses that need advanced functionality.',
-    headline: 'Everything in Business, plus:',
-    features: [
-      { label: 'High-performance e-commerce', info: 'A fast, high-volume online store built around layout and conversion optimization.' },
-      { label: 'Custom functionality and dashboard', info: 'A custom SaaS-style dashboard to track the specific parameters that matter to your business.' },
-      { label: 'Advanced integrations', info: 'Connect third-party tools and services to your website.' },
-      { label: 'Multiple locations' },
-      { label: 'Custom workflows', info: 'Automated, business-specific processes built around how you actually operate.' },
-      { label: 'Complex payment flows', info: 'Subscriptions, deposits, and multi-step or conditional checkout.' },
-    ],
-    care: '$99',
-    cta: 'Talk to Us',
-    popular: false,
-  },
-]
+// Tier data now comes from the funnel i18n dictionary (lib/i18n/funnel.ts),
+// keyed by locale — English is identical to the original hardcoded set.
 
 // Same spotlight-tilt card treatment as the index pricing (components/
 // PricingCards.tsx): cursor-driven 3D rotate + a soft white radial spotlight,
 // the dark highlighted middle card (#1C1D24) between two light bg-base cards,
 // green check marks, and the shared click-to-open FeatureTooltip. Data + CTAs
 // (plan-select dispatch) stay letsbuild-specific.
-function PricingCard({ tier, index, ctaHref }: { tier: Tier; index: number; ctaHref?: string }) {
+function PricingCard({ tier, index, ctaHref, sym, micro }: { tier: Tier; index: number; ctaHref?: string; sym: string; micro: { most: string; from: string } }) {
   const ref = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -129,17 +82,17 @@ function PricingCard({ tier, index, ctaHref }: { tier: Tier; index: number; ctaH
 
       {tier.popular && (
         <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#D46FC8] px-3 py-1 font-body text-xs font-semibold text-white">
-          Most Popular
+          {micro.most}
         </span>
       )}
 
       <div className="relative mb-6">
         <p className={`font-body text-sm font-medium mb-2 ${hl ? 'text-white/50' : 'text-muted'}`}>{tier.name}</p>
         <div className="mb-2 flex items-end gap-1">
-          {tier.from && (
-            <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>from</span>
+          {tier.from && micro.from && (
+            <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>{micro.from}</span>
           )}
-          <span className={`mb-1 font-body text-2xl font-semibold ${hl ? 'text-white/60' : 'text-muted'}`}>$</span>
+          <span className={`mb-1 font-body text-2xl font-semibold ${hl ? 'text-white/60' : 'text-muted'}`}>{sym}</span>
           <span className="font-display text-5xl font-semibold tracking-tight">{tier.amount}</span>
         </div>
       </div>
@@ -181,11 +134,14 @@ function PricingCard({ tier, index, ctaHref }: { tier: Tier; index: number; ctaH
   )
 }
 
-export default function PricingCards({ ctaHref }: { ctaHref?: string } = {}) {
+export default function PricingCards({ ctaHref, locale = 'en' }: { ctaHref?: string; locale?: Locale } = {}) {
+  const tiers = getFunnelDict(locale).pricing.tiers as Tier[]
+  const sym = currencySymbol(locale)
+  const micro = MICRO[locale]
   return (
     <div className="grid items-center gap-6 md:grid-cols-3">
-      {TIERS.map((tier, i) => (
-        <PricingCard key={tier.name} tier={tier} index={i} ctaHref={ctaHref} />
+      {tiers.map((tier, i) => (
+        <PricingCard key={tier.name} tier={tier} index={i} ctaHref={ctaHref} sym={sym} micro={micro} />
       ))}
     </div>
   )

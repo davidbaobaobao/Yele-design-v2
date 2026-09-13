@@ -21,11 +21,15 @@ export default function TierCard({
   name,
   email,
   company,
+  payLabel = 'Pay 50% today',
+  payVerb = 'Pay',
 }: {
   tier: Tier
   name: string
   email: string
   company: string
+  payLabel?: string
+  payVerb?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const mx = useMotionValue(0)
@@ -69,13 +73,13 @@ export default function TierCard({
 
       <h4 className={`relative font-display text-xl font-bold ${tier.dark ? 'text-white' : 'text-ink'}`}>{tier.name}</h4>
       <p className="relative mt-1 font-body text-xs font-semibold uppercase tracking-[0.1em] text-[#D46FC8]">
-        Pay 50% today
+        {payLabel}
       </p>
       <p className={`relative mt-3 mb-6 flex-1 font-body text-sm leading-relaxed ${tier.dark ? 'text-white/75' : 'text-ink/75'}`}>
         {tier.desc}
       </p>
       <div className="relative">
-        <PayButton plan={tier.plan} name={name} email={email} company={company} label={`Pay ${tier.pay}`} popular={tier.dark} />
+        <PayButton plan={tier.plan} name={name} email={email} company={company} label={`${payVerb} ${tier.pay}`} popular={tier.dark} />
       </div>
     </motion.div>
   )

@@ -40,7 +40,12 @@ export default function CookieBanner() {
   const firstPathnameRef = useRef(pathname)
 
   useEffect(() => {
-    if (!localStorage.getItem(CONSENT_KEY)) setVisible(true)
+    if (localStorage.getItem(CONSENT_KEY)) return
+    // Show the privacy/cookie banner for EU/EEA/UK visitors. The middleware
+    // sets `yele_eu` from geo — '0' means detected non-EU (e.g. US), where we
+    // suppress it; anything else (including unknown/no cookie yet) shows it.
+    const isKnownNonEu = document.cookie.split('; ').some(c => c === 'yele_eu=0')
+    if (!isKnownNonEu) setVisible(true)
   }, [])
 
   function commit(p: Prefs) {

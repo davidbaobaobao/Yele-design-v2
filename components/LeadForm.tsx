@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
 import { trackMetaLead, getMetaCookies } from '@/lib/metaPixel'
+import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
 
 type FormData = {
   name: string
@@ -36,10 +37,14 @@ export default function LeadForm({
   trackMeta = true,
   leadSource,
   sendWelcome,
+  locale = 'en',
 }: {
   variant?: 'light' | 'dark'
   ctaLabel?: string
   id?: string
+  // Funnel locale for all labels/copy in this form. Defaults to 'en' so every
+  // existing caller renders exactly as before.
+  locale?: Locale
   // Optional plan-interest pills, only used on /letsbuild. When set, renders
   // "Which plan are you interested in?" after the company field and listens
   // for a `letsbuild:selectplan` window event (dispatched by the pricing
@@ -68,6 +73,7 @@ export default function LeadForm({
 }) {
   const router = useRouter()
   const isDark = variant === 'dark'
+  const f = getFunnelDict(locale).form
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -107,16 +113,16 @@ export default function LeadForm({
 
   function validate(): boolean {
     const e: Partial<Record<keyof FormData, string>> = {}
-    if (!formData.name.trim()) e.name = 'Your name is required'
-    if (!formData.email.trim()) e.email = 'Email is required'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'Invalid email'
-    if (!formData.phone.trim()) e.phone = 'Phone is required'
-    if (!formData.company.trim()) e.company = 'Please tell us a bit about your company'
+    if (!formData.name.trim()) e.name = f.errName
+    if (!formData.email.trim()) e.email = f.errEmail
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = f.errEmailInvalid
+    if (!formData.phone.trim()) e.phone = f.errPhone
+    if (!formData.company.trim()) e.company = f.errCompany
     setErrors(e)
     // Timeline is required, but only on the forms that show it (planOptions).
     let timelineOk = true
     if (planOptions && !selectedTimeline) {
-      setTimelineError('Please pick a timeline')
+      setTimelineError(f.timelineError)
       timelineOk = false
     } else {
       setTimelineError('')
@@ -156,7 +162,7 @@ export default function LeadForm({
     })
 
     if (!response.ok) {
-      setSubmitError('Something went wrong. Please try again or email us at info@yele.design')
+      setSubmitError(f.submitError)
       setLoading(false)
       return
     }
@@ -190,7 +196,8 @@ export default function LeadForm({
           ? 'pro'
           : ''
     if (planId) params.set('plan', planId)
-    router.push(`/received?${params.toString()}`)
+    const receivedBase = locale === 'en' ? '/received' : `/${locale}/received`
+    router.push(`${receivedBase}?${params.toString()}`)
   }
 
   const inputClass = isDark
@@ -212,12 +219,12 @@ export default function LeadForm({
     <div id={id} className="space-y-2.5">
       <div>
         <label className={labelClass}>
-          Name <span className="text-[#D46FC8]">*</span>
+          {f.name} <span className="text-[#D46FC8]">*</span>
         </label>
         <input
           type="text"
           className={inputClass}
-          placeholder="Your full name"
+          placeholder={f.namePlaceholder}
           value={formData.name}
           onChange={e => set('name', e.target.value)}
           autoComplete="name"
@@ -227,12 +234,12 @@ export default function LeadForm({
 
       <div>
         <label className={labelClass}>
-          Email <span className="text-[#D46FC8]">*</span>
+          {f.email} <span className="text-[#D46FC8]">*</span>
         </label>
         <input
           type="email"
           className={inputClass}
-          placeholder="you@email.com"
+          placeholder={f.emailPlaceholder}
           value={formData.email}
           onChange={e => set('email', e.target.value)}
           autoComplete="email"
@@ -242,12 +249,12 @@ export default function LeadForm({
 
       <div>
         <label className={labelClass}>
-          Phone <span className="text-[#D46FC8]">*</span>
+          {f.phone} <span className="text-[#D46FC8]">*</span>
         </label>
         <input
           type="tel"
           className={inputClass}
-          placeholder="+1 (213) 555-0123"
+          placeholder={f.phonePlaceholder}
           value={formData.phone}
           onChange={e => set('phone', e.target.value)}
           autoComplete="tel"
@@ -257,12 +264,12 @@ export default function LeadForm({
 
       <div>
         <label className={labelClass}>
-          Describe your company <span className="text-[#D46FC8]">*</span>
+          {f.company} <span className="text-[#D46FC8]">*</span>
         </label>
         <textarea
           className={`${inputClass} resize-none`}
           rows={1}
-          placeholder="What do you do, and who do you do it for?"
+          placeholder={f.companyPlaceholder}
           value={formData.company}
           onChange={e => set('company', e.target.value)}
         />
@@ -272,10 +279,10 @@ export default function LeadForm({
       {planOptions && (
         <div className="pb-1.5">
           <label className={labelClass}>
-            When do you need your website? <span className="text-[#D46FC8]">*</span>
+            {f.timelineQ} <span className="text-[#D46FC8]">*</span>
           </label>
           <div className="flex flex-wrap gap-2">
-            {['ASAP', '1–3 months', 'Not sure, just exploring'].map(t => {
+            {f.timeline.map(t => {
               const active = selectedTimeline === t
               return (
                 <button
@@ -304,7 +311,7 @@ export default function LeadForm({
 
       {planOptions && (
         <div className="pb-1.5">
-          <label className={labelClass}>Which plan are you interested in? (optional)</label>
+          <label className={labelClass}>{f.planQ}</label>
           <div className="grid grid-cols-3 gap-2">
             {planOptions.map(p => {
               const active = selectedPlan === p
@@ -339,14 +346,13 @@ export default function LeadForm({
         disabled={loading}
         className={`w-full inline-flex items-center justify-center gap-2 font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-6 py-3.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 ${outlineClass}`}
       >
-        {loading ? 'Sending…' : ctaLabel}
+        {loading ? f.sending : ctaLabel}
       </button>
 
       <p className={fineprintClass}>
-        By clicking, you agree that Yele may contact you at the phone number you provide — including by automated
-        technology. See our{' '}
+        {f.consentPre}
         <Link href="/privacy-policy" className={linkClass}>
-          Privacy Policy
+          {f.privacy}
         </Link>
         .
       </p>

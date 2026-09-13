@@ -1,14 +1,14 @@
 import ReceivedContent from '@/components/received/ReceivedContent'
 
 export const metadata = {
-  title: 'Welcome — Yele',
+  title: 'Bienvenido — Yele',
   robots: { index: false, follow: false },
 }
 
-export default function ReceivedPage({
+export default function ReceivedEsPage({
   searchParams,
 }: {
   searchParams: { name?: string; email?: string; company?: string; plan?: string }
 }) {
-  return <ReceivedContent locale="en" searchParams={searchParams} />
+  return <ReceivedContent locale="es" searchParams={searchParams} />
 }

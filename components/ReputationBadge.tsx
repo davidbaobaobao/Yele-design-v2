@@ -1,12 +1,14 @@
 import Image from 'next/image'
 import { Star } from 'lucide-react'
+import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
 
 const AVATARS = ['/media/miniavatar/1.webp', '/media/miniavatar/2.webp', '/media/miniavatar/3.webp', '/media/miniavatar/4.webp']
 
 // Shared across the homepage hero (components/Hero.tsx), /websites and
 // /newwebsite — same overlapping pink-tinted avatars + white stars + copy
 // everywhere so the trust signal stays consistent across landing pages.
-export default function ReputationBadge({ className = '' }: { className?: string }) {
+// `locale` translates the rating line on the funnel; defaults to English.
+export default function ReputationBadge({ className = '', locale = 'en' }: { className?: string; locale?: Locale }) {
   return (
     <div className={`flex flex-wrap items-center gap-3 justify-center sm:justify-start ${className}`}>
       <div className="flex items-center" aria-hidden="true">
@@ -32,7 +34,7 @@ export default function ReputationBadge({ className = '' }: { className?: string
             <Star key={i} size={14} fill="#FFFFFF" strokeWidth={0} />
           ))}
         </span>
-        <span className="font-body text-sm text-white/80">Delivered over 1000+ projects</span>
+        <span className="font-body text-sm text-white/80">{getFunnelDict(locale).rating}</span>
       </div>
     </div>
   )

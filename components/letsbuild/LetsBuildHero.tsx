@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Check, ChevronDown } from 'lucide-react'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import ReputationBadge from '@/components/ReputationBadge'
+import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
 
 // WebGL, canvas-drawn textures — client/browser only, no useful SSR output.
 const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false })
@@ -14,13 +15,6 @@ const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false
 // Same poster the homepage hero uses — a tiny (~32KB) blurred gradient that
 // paints instantly as the LCP background while the cubes boot behind it.
 const POSTER = '/media/hero_new2/hero_poster.jpg'
-
-const KEY_POINTS = [
-  'From $699',
-  'No tasteless templates',
-  'No DIY — we build everything for you',
-  'Delivery under 4 weeks',
-]
 
 // Mirrors components/Hero.tsx: the poster + text + pills (the LCP/conversion
 // path) paint immediately, and the 3 cubes are deferred — mounted only after
@@ -74,9 +68,10 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
   return paintedFired && near && !far && !isLowPower
 }
 
-export default function LetsBuildHero() {
+export default function LetsBuildHero({ locale = 'en' }: { locale?: Locale }) {
   const sectionRef = useRef<HTMLElement>(null)
   const showCubes = useDeferredCubes(sectionRef)
+  const h = getFunnelDict(locale).hero
 
   return (
     <section
@@ -123,11 +118,11 @@ export default function LetsBuildHero() {
             className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
             style={{ fontSize: 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
           >
-            Let&apos;s build your website
+            {getFunnelDict(locale).form.heading}
           </h1>
 
           <ul className="space-y-3 md:space-y-3.5 mb-8 md:mb-9">
-            {KEY_POINTS.map(point => (
+            {h.points.map(point => (
               <li key={point} className="flex items-start gap-3">
                 <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-0.5 md:mt-1" aria-hidden="true" />
                 <span className="font-body text-base md:text-xl font-semibold text-white/90">{point}</span>
@@ -141,17 +136,17 @@ export default function LetsBuildHero() {
               className="inline-flex items-center justify-center font-body font-semibold text-base md:text-lg bg-[#F2F0EB] hover:bg-white px-8 py-4 rounded-full transition-colors active:scale-95"
               style={{ color: '#16161A' }}
             >
-              Pricing
+              {h.pricing}
             </a>
             <a
               href="#lead-form"
               className="inline-flex items-center justify-center font-body text-base md:text-lg font-medium text-white px-7 py-4 rounded-full border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
             >
-              Start now
+              {h.startNow}
             </a>
           </div>
 
-          <ReputationBadge className="scale-110 origin-left" />
+          <ReputationBadge className="scale-110 origin-left" locale={locale} />
         </div>
       </div>
 
@@ -162,7 +157,7 @@ export default function LetsBuildHero() {
         type="button"
         onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         className="absolute bottom-5 md:bottom-7 left-1/2 -translate-x-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-[#D46FC8]/60 bg-black/30 text-white backdrop-blur-sm transition-colors hover:bg-[#D46FC8]/20 hover:border-[#D46FC8] cursor-pointer focus-visible:outline-none motion-safe:animate-[heroScrollBounce_1.5s_ease-in-out_infinite]"
-        aria-label="Scroll down"
+        aria-label={h.scrollDown}
       >
         <ChevronDown size={26} strokeWidth={2.5} aria-hidden="true" />
       </button>

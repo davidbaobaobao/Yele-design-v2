@@ -7,7 +7,9 @@ import ReputationBadge from '@/components/ReputationBadge'
 import PricingCards from '@/components/letsbuild/PricingCards'
 import CareVideo from '@/components/letsbuild/CareVideo'
 import StartNowMarquee from '@/components/letsbuild/StartNowMarquee'
+import LocaleSwitcher from '@/components/letsbuild/LocaleSwitcher'
 import { EnLangProvider } from '@/components/LangProvider'
+import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
 
 // Below-fold, heavier sections — code-split so the initial hero/form bundle
 // (the LCP + conversion path) stays light.
@@ -19,46 +21,34 @@ const BuildLeadForm = dynamic(() => import('@/components/letsbuild/BuildLeadForm
 // homepage, always dark so it drops straight into the dark landing.
 const Testimonios = dynamic(() => import('@/components/Testimonios'))
 
-// Plan-interest pills shown in the hero form; the pricing CTAs dispatch these
-// exact values to pre-select the matching pill.
-const PLAN_OPTIONS = ['Launch — $699', 'Business — $1,199', 'Pro — $2,799']
-
-const CARE_INCLUDES = ['Hosting', 'SSL & security', 'Backups', 'Uptime monitoring']
-
-const CORE_VALUES = [
-  { title: 'Design', body: 'No generic look, no cheap AI, no dull templates.' },
-  { title: 'Structure', body: "One clear message: what you do, why you're trustworthy, what it costs, and how to become your customer." },
-  { title: 'Functionality', body: 'Adapted to your business: calendars, ecommerce, payments, AI chat, AI phone, automations and much more.' },
-]
-
-const STEPS = [
-  { n: '1', title: 'Start now', body: 'Secure your spot by paying 50% — this locks in your project and reserves your place in our schedule.' },
-  { n: '2', title: 'Tell us about your business', body: 'A quick call or email so we understand your exact needs for the website before we design anything.' },
-  { n: '3', title: 'Review', body: 'We show you the finished website and make the agreed revisions before launch.' },
-  { n: '4', title: 'Go live', body: 'Approve, pay the remaining 50%, and we launch your website — Yele Care keeps everything running afterwards.' },
-]
-
-const WHY = [
-  { title: 'Design refresh', body: 'A full redesign every year, so your website never looks dated.', webm: '/media/whyyele3/whyyele1.webm', mp4: '/media/whyyele3/whyyele1.mp4', poster: '/media/whyyele3/whyyele1_poster.jpg' },
-  { title: 'Affordable & transparent', body: 'Professional websites from $699, with clear pricing and no confusing agency quotes.', webm: '/media/whyyele3/whyyele6.webm', mp4: '/media/whyyele3/whyyele6.mp4', poster: '/media/whyyele3/whyyele6_poster.jpg' },
-  { title: 'Custom', body: 'Designed around your business, not a generic template with your logo dropped on.', webm: '/media/whyyele3/whyyele3.webm', mp4: '/media/whyyele3/whyyele3.mp4', poster: '/media/whyyele3/whyyele3_poster.jpg' },
-  { title: 'Fast delivery', body: 'Delivery goal set for under 4 weeks.', webm: '/media/whyyele3/whyyele2.webm', mp4: '/media/whyyele3/whyyele2.mp4', poster: '/media/whyyele3/whyyele2_poster.jpg' },
-  { title: 'Support 24/7', body: 'We stay with you after launch — support whenever you need it.', webm: '/media/beyond/AIcall_hq.webm', mp4: '/media/beyond/AIcall_hq.mp4', poster: '/media/beyond/AIcall_poster.jpg' },
-  { title: 'Built for growth', body: 'Add SEO, advertising, content, AI, and automation as your business grows.', webm: '/media/beyond/Marketing_hq.webm', mp4: '/media/beyond/Marketing_hq.mp4', poster: '/media/beyond/Marketing_poster.jpg' },
+// Media for the "Why businesses choose Yele" cards — text comes from the
+// locale dictionary (getFunnelDict().why.items), zipped by index with these.
+const WHY_MEDIA = [
+  { webm: '/media/whyyele3/whyyele1.webm', mp4: '/media/whyyele3/whyyele1.mp4', poster: '/media/whyyele3/whyyele1_poster.jpg' },
+  { webm: '/media/whyyele3/whyyele6.webm', mp4: '/media/whyyele3/whyyele6.mp4', poster: '/media/whyyele3/whyyele6_poster.jpg' },
+  { webm: '/media/whyyele3/whyyele3.webm', mp4: '/media/whyyele3/whyyele3.mp4', poster: '/media/whyyele3/whyyele3_poster.jpg' },
+  { webm: '/media/whyyele3/whyyele2.webm', mp4: '/media/whyyele3/whyyele2.mp4', poster: '/media/whyyele3/whyyele2_poster.jpg' },
+  { webm: '/media/beyond/AIcall_hq.webm', mp4: '/media/beyond/AIcall_hq.mp4', poster: '/media/beyond/AIcall_poster.jpg' },
+  { webm: '/media/beyond/Marketing_hq.webm', mp4: '/media/beyond/Marketing_hq.mp4', poster: '/media/beyond/Marketing_poster.jpg' },
 ]
 
 const DARK = '#0D0E12'
 
-// Shared landing body for /letsbuild and /letsbuildga. `leadSource` is stamped
-// onto both forms so the lead email says where the lead came from (e.g. the
-// Google Ads landing sends "Google Ads").
-export default function LetsBuildLanding({ leadSource }: { leadSource?: string }) {
+// Shared landing body for /letsbuild and /letsbuildga (+ /es, /zh variants).
+// `leadSource` is stamped onto both forms so the lead email says where the
+// lead came from. `locale` drives all funnel copy + the $/€ currency; it
+// defaults to 'en' so the existing English pages render exactly as before.
+export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSource?: string; locale?: Locale }) {
+  const d = getFunnelDict(locale)
+  const planOptions = d.pricing.tiers.map(t => t.planValue)
+
   return (
     <EnLangProvider>
       <main style={{ backgroundColor: DARK }}>
-        {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg.
-             The quick lead form now lives under "How it works" below. ---- */}
-        <LetsBuildHero />
+        <LocaleSwitcher current={locale} />
+
+        {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg. ---- */}
+        <LetsBuildHero locale={locale} />
 
         <LogoMarquee />
 
@@ -68,12 +58,12 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
         <section id="pricing" className="bg-white px-6 pt-20 md:pt-28 pb-10 md:pb-12">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
-              Pricing
+              {d.pricing.title}
             </h2>
-            <PricingCards />
+            <PricingCards locale={locale} />
 
             <p className="max-w-2xl mx-auto text-center font-body text-base text-muted mt-10 leading-relaxed">
-              Pay 50% at the beginning and the remaining 50% at launch.
+              {d.pricing.payNote}
             </p>
           </div>
         </section>
@@ -83,10 +73,10 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight">
-                Looked after with <br className="sm:hidden" /><span className="text-[#D46FC8]">Yele Care</span>
+                {d.care.title1}<br className="sm:hidden" /><span className="text-[#D46FC8]">{d.care.title2}</span>
               </h2>
               <p className="font-body text-base text-muted mt-2">
-                Permanent attention that keeps everything working — from $29/month.
+                {d.care.subtitle}
               </p>
             </div>
 
@@ -95,33 +85,33 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
                 <CareVideo webm="/media/beyond/SEO_hq.webm" mp4="/media/beyond/SEO_hq.mp4" poster="/media/beyond/SEO_poster.jpg" />
                 <div className="flex items-center gap-2 mb-1.5">
                   <FilePlus2 size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
-                  <h4 className="font-display font-bold text-lg text-ink">Content updates</h4>
+                  <h4 className="font-display font-bold text-lg text-ink">{d.care.contentTitle}</h4>
                 </div>
                 <p className="font-body text-sm text-muted leading-relaxed">
-                  We help you add new content — new projects, new photos, new menu items, whatever your business needs.
+                  {d.care.contentBody}
                 </p>
               </div>
               <div className="rounded-2xl border border-hairline p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 hover:border-ink/20">
                 <CareVideo webm="/media/beyond/ADS_hq.webm" mp4="/media/beyond/ADS_hq.mp4" poster="/media/beyond/ADS_poster.jpg" />
                 <div className="flex items-center gap-2 mb-1.5">
                   <RefreshCw size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
-                  <h4 className="font-display font-bold text-lg text-ink">Yearly website redesign</h4>
+                  <h4 className="font-display font-bold text-lg text-ink">{d.care.redesignTitle}</h4>
                 </div>
                 <p className="font-body text-sm text-muted leading-relaxed">
-                  A full design refresh every year, so your website is <span className="text-ink font-semibold">never</span> outdated.
+                  {d.care.redesignBodyPre}<span className="text-ink font-semibold">{d.care.redesignNever}</span>{d.care.redesignBodyPost}
                 </p>
               </div>
               <div className="rounded-2xl border border-hairline p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10 hover:border-ink/20">
                 <CareVideo webm="/media/whyyele3/whyyele5.webm" mp4="/media/whyyele3/whyyele5.mp4" poster="/media/whyyele3/whyyele5_poster.jpg" />
                 <div className="flex items-center gap-2 mb-1.5">
                   <Wrench size={18} className="text-[#D46FC8] flex-shrink-0" aria-hidden="true" />
-                  <h4 className="font-display font-bold text-lg text-ink">Maintenance &amp; management</h4>
+                  <h4 className="font-display font-bold text-lg text-ink">{d.care.maintTitle}</h4>
                 </div>
                 <p className="font-body text-sm text-muted leading-relaxed mb-3">
-                  All the technical work handled so your site stays online, secure and running correctly.
+                  {d.care.maintBody}
                 </p>
                 <ul className="flex flex-wrap gap-x-3 gap-y-1">
-                  {CARE_INCLUDES.map(item => (
+                  {d.care.includes.map(item => (
                     <li key={item} className="font-body text-xs text-muted flex items-center gap-1">
                       <Check size={12} className="text-[#D46FC8]" aria-hidden="true" />
                       {item}
@@ -136,18 +126,18 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
         {/* ---- HOW IT WORKS ---- */}
         <section className="bg-white px-6 pt-8 md:pt-10 pb-16 md:pb-24">
           <div className="max-w-4xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">How it works</p>
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">{d.how.kicker}</p>
             <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-10">
-              From idea to live website in four simple steps.
+              {d.how.title}
             </h2>
             <div className="space-y-4">
-              {STEPS.map(step => (
+              {d.how.steps.map((step, i) => (
                 <div
-                  key={step.n}
+                  key={step.title}
                   className="group flex gap-5 rounded-2xl p-4 -mx-4 transition-all duration-300 hover:bg-black/[0.03] hover:translate-x-1"
                 >
                   <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#D46FC8]/30">
-                    {step.n}
+                    {i + 1}
                   </span>
                   <div>
                     <h3 className="font-display font-bold text-xl text-ink mb-1 transition-colors duration-300 group-hover:text-[#D46FC8]">{step.title}</h3>
@@ -159,8 +149,7 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
           </div>
         </section>
 
-        {/* ---- QUICK LEAD FORM (moved out of the hero) — left values +
-             testimonial pills, right form. Mirrors the hero layout. ---- */}
+        {/* ---- QUICK LEAD FORM — left values + testimonial pills, right form. ---- */}
         <section className="px-6 py-16 md:py-24 border-t border-white/10 scroll-mt-8" style={{ backgroundColor: DARK }}>
           <div className="mx-auto w-full max-w-md md:max-w-5xl">
             <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
@@ -169,14 +158,14 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
                   className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
                   style={{ fontSize: 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
                 >
-                  Let&apos;s build your website
+                  {d.form.heading}
                 </h2>
 
                 <p className="font-body text-base md:text-lg font-semibold uppercase tracking-[0.12em] text-white/50 mb-4">
-                  Our core values
+                  {d.form.coreValues}
                 </p>
                 <ul className="space-y-3.5 mb-8 md:mb-9">
-                  {CORE_VALUES.map(v => (
+                  {d.form.values.map(v => (
                     <li key={v.title} className="flex items-start gap-3">
                       <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
                       <span className="font-body text-base md:text-xl text-white/80 leading-relaxed">
@@ -186,15 +175,15 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
                   ))}
                 </ul>
 
-                <ReputationBadge className="scale-110 origin-left" />
+                <ReputationBadge className="scale-110 origin-left" locale={locale} />
               </div>
 
               <div className="md:ml-auto md:w-full md:max-w-md">
-                <LeadForm variant="dark" ctaLabel="Let's start" id="lead-form" planOptions={PLAN_OPTIONS} leadSource={leadSource} sendWelcome />
+                <LeadForm variant="dark" ctaLabel={d.form.cta} id="lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} />
 
                 <div className="text-center mt-2.5">
                   <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
-                    Prefer to talk? Book a free 10-min intro call
+                    {d.form.bookCall}
                   </Link>
                 </div>
               </div>
@@ -206,15 +195,15 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
         <section className="px-6 py-16 md:py-24 border-t border-white/10">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
-              Why businesses choose Yele
+              {d.why.title}
             </h2>
             <p className="font-body text-base text-white/70 mb-10">
-              Professional without the traditional agency price.
+              {d.why.subtitle}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {WHY.map(w => (
+              {d.why.items.map((w, i) => (
                 <div key={w.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6 transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-white/[0.06] hover:shadow-xl hover:shadow-black/40">
-                  <CareVideo webm={w.webm} mp4={w.mp4} poster={w.poster} />
+                  <CareVideo webm={WHY_MEDIA[i].webm} mp4={WHY_MEDIA[i].mp4} poster={WHY_MEDIA[i].poster} />
                   <h3 className="font-display font-bold text-lg text-white mb-1">{w.title}</h3>
                   <p className="font-body text-sm text-white/70 leading-relaxed">{w.body}</p>
                 </div>
@@ -231,12 +220,10 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
 
               <div>
                 <h3 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-4">
-                  Your website will <span className="text-[#D46FC8]">never</span> be outdated.
+                  {d.why.neverTitlePre}<span className="text-[#D46FC8]">{d.why.neverWord}</span>{d.why.neverTitlePost}
                 </h3>
                 <p className="font-body text-base md:text-lg text-white/70 leading-relaxed">
-                  Every year, Yele Care includes a full redesign — we refresh the look, update the content, and keep your
-                  website modern as design trends move on. No rebuilds, no extra quotes. Your site stays current for as
-                  long as you&apos;re with us.
+                  {d.why.neverBody}
                 </p>
               </div>
             </div>
@@ -254,10 +241,10 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
         <section id="build-form" className="px-6 py-16 md:py-24" style={{ backgroundColor: DARK }}>
           <div className="max-w-2xl mx-auto">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
-              Ready for a better website?
+              {d.buildForm.title}
             </h2>
             <p className="font-body text-base text-white/70 mb-8">
-              Tell us a little about your business and we&apos;ll recommend the right website package.
+              {d.buildForm.subtitle}
             </p>
             <BuildLeadForm variant="dark" leadSource={leadSource} sendWelcome />
           </div>
@@ -277,20 +264,20 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
 
               <div>
                 <h2 className="font-display font-bold text-3xl md:text-5xl text-white tracking-tight mb-5">
-                  Your business deserves a website that looks professional.
+                  {d.finalCta.title}
                 </h2>
                 <p className="font-body text-base md:text-lg text-white/70 leading-relaxed mb-2">
-                  Get a custom website without paying traditional agency prices.
+                  {d.finalCta.line1}
                 </p>
                 <p className="font-body text-base text-white/60">
-                  Websites from $699. Yele Care from $49/month. 50% to start. 50% when you&apos;re ready to launch.
+                  {d.finalCta.line2}
                 </p>
               </div>
             </div>
 
             <div className="mt-12 text-center">
               <a href="#build-form" className="inline-flex items-center justify-center font-body font-medium text-base bg-[#D46FC8] hover:bg-[#DE85D2] text-white px-8 py-4 rounded-xl transition-colors">
-                Start now
+                {d.finalCta.startNow}
               </a>
             </div>
           </div>
@@ -300,17 +287,17 @@ export default function LetsBuildLanding({ leadSource }: { leadSource?: string }
         <footer className="px-6 py-10 border-t border-white/10" style={{ backgroundColor: DARK }}>
           <div className="max-w-6xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-body text-sm text-white/50">
-              © {new Date().getFullYear()} Yele. All rights reserved.
+              © {new Date().getFullYear()} Yele. {d.footer.rights}
             </p>
             <nav className="flex flex-wrap gap-x-6 gap-y-2">
               <Link href="/terms" className="font-body text-sm text-white/60 hover:text-white transition-colors">
-                Terms
+                {d.footer.terms}
               </Link>
               <Link href="/privacy-policy" className="font-body text-sm text-white/60 hover:text-white transition-colors">
-                Privacy Policy
+                {d.footer.privacy}
               </Link>
               <Link href="/legal-notice" className="font-body text-sm text-white/60 hover:text-white transition-colors">
-                Legal Notice
+                {d.footer.legal}
               </Link>
             </nav>
           </div>
