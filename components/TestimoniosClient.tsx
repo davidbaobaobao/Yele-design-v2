@@ -10,45 +10,6 @@ export type Testimonial = {
   rating: number
 }
 
-// Default pool, cycled positionally for anyone not named below — this is
-// what's actually shown when testimonials come from Supabase rather than
-// the FALLBACK array, so their order can't be relied on to line up with a
-// fixed position.
-const AVATAR_POOL = [
-  '/media/avatarreview/saraM.jpeg',
-  '/media/avatarreview/carlos.jpeg',
-  '/media/avatarreview/miguel.jpeg',
-  '/media/avatarreview/davidB.jpeg',
-  '/media/avatarreview/ruben.jpeg',
-  '/media/avatarreview/Elaine.jpeg',
-  '/media/avatarreview/Eustaquio.jpeg',
-  '/media/avatarreview/Jorge.jpeg',
-  '/media/avatarreview/saraL.jpeg',
-]
-
-// Eustaquio<->Sara L. and Elaine<->Miguel are swapped from their "correct"
-// avatar on purpose, per request. Matched by NAME (normalized: lowercased,
-// periods stripped) rather than array position — testimonials can come
-// from Supabase in whatever order the table returns them, which won't
-// generally match FALLBACK's order, so a positional swap could silently
-// swap the wrong two people's avatars instead. "sara l" (not just "sara")
-// disambiguates from "Sara M.", the other Sara in the set.
-const NAME_AVATAR_OVERRIDE: Record<string, string> = {
-  eustaquio: '/media/avatarreview/saraL.jpeg',
-  'sara l': '/media/avatarreview/Eustaquio.jpeg',
-  elaine: '/media/avatarreview/miguel.jpeg',
-  miguel: '/media/avatarreview/Elaine.jpeg',
-}
-
-function avatarFor(authorName: string, index: number) {
-  // Strips both periods AND commas — live data has been seen as both
-  // "Sara L." and "Sara, L", and only stripping periods left the comma
-  // form ("sara, l") not matching the "sara l" key at all.
-  const normalized = authorName.toLowerCase().replace(/[.,]/g, '').replace(/\s+/g, ' ').trim()
-  const override = Object.keys(NAME_AVATAR_OVERRIDE).find(key => normalized.startsWith(key))
-  return override ? NAME_AVATAR_OVERRIDE[override] : AVATAR_POOL[index % AVATAR_POOL.length]
-}
-
 const MAX_CHARS = 280
 
 function StarIcon() {
@@ -59,46 +20,14 @@ function StarIcon() {
   )
 }
 
-// Grey initials-circle — shown instead of a broken-image icon whenever an
-// avatar file is missing/404s (onError below) or never had a photo to begin
-// with. Sits inside the same grayscale(1)-filtered card as the real photos,
-// so no separate desaturation is needed here.
-function AvatarFallback({ name }: { name: string }) {
-  const initial = name.trim().charAt(0).toUpperCase() || '?'
-  return (
-    <div
-      aria-hidden="true"
-      style={{
-        width: 44,
-        height: 44,
-        borderRadius: '50%',
-        flexShrink: 0,
-        backgroundColor: '#3A3A3A',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'var(--font-display), sans-serif',
-        fontWeight: 500,
-        fontSize: 16,
-        color: '#DDD',
-      }}
-    >
-      {initial}
-    </div>
-  )
-}
-
 function ReviewCard({
   item,
-  avatarSrc,
   t,
 }: {
   item: Testimonial
-  avatarSrc: string
   t: (es: string, en: string) => string
 }) {
   const [expanded, setExpanded] = useState(false)
-  const [avatarFailed, setAvatarFailed] = useState(false)
   const isLong   = item.body.length > MAX_CHARS
   const bodyText = isLong && !expanded ? item.body.slice(0, MAX_CHARS).trimEnd() + '…' : item.body
 
@@ -130,21 +59,6 @@ function ReviewCard({
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
-          {avatarFailed ? (
-            <AvatarFallback name={item.author_name} />
-          ) : (
-            // Plain img — bypasses Next.js optimizer, loads directly from /public
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={avatarSrc}
-              alt={item.author_name}
-              width={44}
-              height={44}
-              loading="lazy"
-              style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-              onError={() => setAvatarFailed(true)}
-            />
-          )}
           <div style={{ minWidth: 0 }}>
             <p style={{ fontFamily: 'var(--font-display), sans-serif', fontWeight: 500, color: '#fff', fontSize: 14, lineHeight: 1.2, margin: 0 }}>
               {item.author_name}
@@ -247,7 +161,6 @@ export default function TestimoniosClient({
           <ReviewCard
             key={i}
             item={item}
-            avatarSrc={avatarFor(item.author_name, i)}
             t={t}
           />
         ))}
