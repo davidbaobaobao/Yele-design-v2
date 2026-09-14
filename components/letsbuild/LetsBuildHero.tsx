@@ -130,7 +130,7 @@ export default function LetsBuildHero({ locale = 'en' }: { locale?: Locale }) {
             {h.points.map(point => (
               <li key={point} className="flex items-start gap-3">
                 <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-0.5 md:mt-1" aria-hidden="true" />
-                <span className="font-body text-base md:text-xl font-semibold text-white/90">{point}</span>
+                <span className="font-body text-lg md:text-xl font-semibold text-white/90">{point}</span>
               </li>
             ))}
           </ul>

@@ -200,6 +200,7 @@ const en: FunnelDict = {
         blurb: 'Everything most small businesses need to get online professionally.',
         headline: null,
         features: [
+          { label: 'No page limit — functional website' },
           { label: 'Custom website design', info: 'No AI or cheap templates — a bespoke design tailored to your business.' },
           { label: 'Mobile optimization', info: 'Fast and responsive on phones, where almost half of your customers are.' },
           { label: 'Calendar booking', info: 'Customers book their own appointments online, with automatic confirmations.' },
@@ -380,6 +381,7 @@ const es: FunnelDict = {
         blurb: 'Todo lo que la mayoría de pequeños negocios necesita para estar online de forma profesional.',
         headline: null,
         features: [
+          { label: 'Sin límite de páginas — web funcional' },
           { label: 'Diseño web a medida', info: 'Sin IA ni plantillas baratas — un diseño hecho a medida para tu negocio.' },
           { label: 'Optimización móvil', info: 'Rápida y adaptable en el móvil, donde está casi la mitad de tus clientes.' },
           { label: 'Reserva por calendario', info: 'Tus clientes reservan cita online, con confirmaciones automáticas.' },
@@ -560,6 +562,7 @@ const zh: FunnelDict = {
         blurb: '大多数小企业专业上线所需的一切。',
         headline: null,
         features: [
+          { label: '不限页数 — 功能完善的网站' },
           { label: '定制网站设计', info: '不用 AI 或廉价模板 — 为你的业务量身打造的设计。' },
           { label: '移动端优化', info: '在手机上快速且自适应，近一半的客户都在手机端。' },
           { label: '日历预约', info: '客户可在线自助预约，并自动确认。' },

@@ -88,7 +88,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
                   {d.form.values.map(v => (
                     <li key={v.title} className="flex items-start gap-3">
                       <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
-                      <span className="font-body text-base md:text-xl text-white/80 leading-relaxed">
+                      <span className="font-body text-lg md:text-xl text-white/80 leading-relaxed">
                         <span className="font-semibold text-white">{v.title}.</span> {v.body}
                       </span>
                     </li>
