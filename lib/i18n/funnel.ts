@@ -156,7 +156,7 @@ const en: FunnelDict = {
   },
   rating: 'Delivered over 1000+ projects',
   form: {
-    heading: "Let's build your website",
+    heading: "Let's start",
     coreValues: 'Our core values',
     values: [
       { title: 'Design', body: 'No generic look, no cheap AI, no dull templates.' },
@@ -516,7 +516,7 @@ const zh: FunnelDict = {
   },
   rating: '已交付 1000+ 个项目',
   form: {
-    heading: '一起打造你的网站',
+    heading: '现在开始',
     coreValues: '我们的核心价值',
     values: [
       { title: '设计', body: '不套用通用模板，不用廉价 AI，不做乏味设计。' },

@@ -68,6 +68,49 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
           </div>
         </section>
 
+        {/* ---- QUICK LEAD FORM — left values + testimonial pills, right form.
+             Sits between Pricing and Yele Care. ---- */}
+        <section className="px-6 py-16 md:py-24 border-t border-white/10 scroll-mt-8" style={{ backgroundColor: DARK }}>
+          <div className="mx-auto w-full max-w-md md:max-w-5xl">
+            <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
+              <div className="mb-10 md:mb-0">
+                <h2
+                  className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
+                  style={{ fontSize: 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
+                >
+                  {d.form.heading}
+                </h2>
+
+                <p className="font-body text-base md:text-lg font-semibold uppercase tracking-[0.12em] text-white/50 mb-4">
+                  {d.form.coreValues}
+                </p>
+                <ul className="space-y-3.5 mb-8 md:mb-9">
+                  {d.form.values.map(v => (
+                    <li key={v.title} className="flex items-start gap-3">
+                      <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
+                      <span className="font-body text-base md:text-xl text-white/80 leading-relaxed">
+                        <span className="font-semibold text-white">{v.title}.</span> {v.body}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <ReputationBadge className="scale-110 origin-left" locale={locale} />
+              </div>
+
+              <div className="md:ml-auto md:w-full md:max-w-md">
+                <LeadForm variant="dark" ctaLabel={d.form.cta} id="lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} />
+
+                <div className="text-center mt-2.5">
+                  <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
+                    {d.form.bookCall}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ---- YELE CARE ---- */}
         <section className="bg-white px-6 pt-6 md:pt-8 pb-8 md:pb-10">
           <div className="max-w-6xl mx-auto">
@@ -145,48 +188,6 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ---- QUICK LEAD FORM — left values + testimonial pills, right form. ---- */}
-        <section className="px-6 py-16 md:py-24 border-t border-white/10 scroll-mt-8" style={{ backgroundColor: DARK }}>
-          <div className="mx-auto w-full max-w-md md:max-w-5xl">
-            <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
-              <div className="mb-10 md:mb-0">
-                <h2
-                  className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
-                  style={{ fontSize: 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
-                >
-                  {d.form.heading}
-                </h2>
-
-                <p className="font-body text-base md:text-lg font-semibold uppercase tracking-[0.12em] text-white/50 mb-4">
-                  {d.form.coreValues}
-                </p>
-                <ul className="space-y-3.5 mb-8 md:mb-9">
-                  {d.form.values.map(v => (
-                    <li key={v.title} className="flex items-start gap-3">
-                      <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
-                      <span className="font-body text-base md:text-xl text-white/80 leading-relaxed">
-                        <span className="font-semibold text-white">{v.title}.</span> {v.body}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <ReputationBadge className="scale-110 origin-left" locale={locale} />
-              </div>
-
-              <div className="md:ml-auto md:w-full md:max-w-md">
-                <LeadForm variant="dark" ctaLabel={d.form.cta} id="lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} />
-
-                <div className="text-center mt-2.5">
-                  <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
-                    {d.form.bookCall}
-                  </Link>
-                </div>
-              </div>
             </div>
           </div>
         </section>
