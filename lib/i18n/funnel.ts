@@ -48,6 +48,7 @@ export type FunnelDict = {
     startNow: string
     pricing: string
     scrollDown: string
+    reviews: string
   }
   rating: string
   form: {
@@ -153,6 +154,7 @@ const en: FunnelDict = {
     startNow: 'Start now',
     pricing: 'Pricing',
     scrollDown: 'Scroll down',
+    reviews: '4.9',
   },
   rating: 'Delivered over 1000+ projects',
   form: {
@@ -334,6 +336,7 @@ const es: FunnelDict = {
     startNow: 'Empezar ahora',
     pricing: 'Precios',
     scrollDown: 'Desplázate',
+    reviews: '4.9',
   },
   rating: 'Más de 1000+ proyectos entregados',
   form: {
@@ -515,6 +518,7 @@ const zh: FunnelDict = {
     startNow: '立即开始',
     pricing: '价格',
     scrollDown: '向下滚动',
+    reviews: '4.9',
   },
   rating: '已交付 1000+ 个项目',
   form: {
