@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { Check, ChevronDown, Star } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import ReputationBadge from '@/components/ReputationBadge'
 import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
@@ -109,26 +109,10 @@ export default function LetsBuildHero({ locale = 'en' }: { locale?: Locale }) {
 
       <div className="relative z-10 min-h-[calc(100svh-132px)] flex items-center px-6 md:px-16 lg:pl-44 xl:pl-60 2xl:pl-72 pt-16 pb-28 md:pb-10">
         <div className="w-full max-w-2xl">
-          <Link href="/" className="block mb-8 md:mb-12 focus-visible:outline-none" aria-label="yele">
+          <Link href="/" className="block mb-6 md:mb-8 focus-visible:outline-none" aria-label="yele">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/media/logomedia/mainlogo.svg" alt="" width={120} height={38} className="h-8 md:h-10 w-auto" />
           </Link>
-
-          {/* Google reviews — monochrome, transparent background */}
-          <div className="mb-2.5 md:mb-3 inline-flex items-center gap-2">
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" className="flex-shrink-0">
-              <path fill="#FFFFFF" d="M23.52 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.54 5.54 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.57-5.17 3.57-8.87z" />
-              <path fill="#FFFFFF" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3c-1.08.72-2.45 1.16-4.05 1.16-3.11 0-5.75-2.1-6.69-4.93H1.3v3.09A12 12 0 0 0 12 24z" />
-              <path fill="#FFFFFF" d="M5.31 14.32a7.2 7.2 0 0 1 0-4.63V6.6H1.3a12 12 0 0 0 0 10.81l4.01-3.09z" />
-              <path fill="#FFFFFF" d="M12 4.75c1.76 0 3.34.6 4.58 1.79l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.3 6.6l4.01 3.09C6.25 6.85 8.89 4.75 12 4.75z" />
-            </svg>
-            <span className="flex items-center gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={14} fill="#FFFFFF" strokeWidth={0} aria-hidden="true" />
-              ))}
-            </span>
-            <span className="font-body text-xs md:text-sm font-semibold text-white/90">{h.reviews}</span>
-          </div>
 
           <h1
             className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
