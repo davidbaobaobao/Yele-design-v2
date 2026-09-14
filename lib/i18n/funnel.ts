@@ -41,6 +41,8 @@ type Tier = {
 }
 
 export type FunnelDict = {
+  heroTitle: string
+  featuredTitle: string
   hero: {
     points: string[]
     startNow: string
@@ -144,6 +146,8 @@ export type FunnelDict = {
 
 // ---- English (verbatim from the original components) ----
 const en: FunnelDict = {
+  heroTitle: "Let's build your website",
+  featuredTitle: 'Latest featured work',
   hero: {
     points: ['From $699', 'No tasteless templates', 'No DIY — we build everything for you', 'Delivery under 4 weeks'],
     startNow: 'Start now',
@@ -322,15 +326,17 @@ const en: FunnelDict = {
 
 // ---- Spanish ----
 const es: FunnelDict = {
+  heroTitle: 'Empecemos\ncon tu web',
+  featuredTitle: 'Últimos proyectos',
   hero: {
-    points: ['Desde 699€', 'Sin plantillas sin gusto', 'Sin hacerlo tú — lo construimos todo por ti', 'Entrega en menos de 4 semanas'],
+    points: ['Desde 699€', 'Sin plantillas genéricas feas', 'Lo construimos todo por ti', 'Entrega en menos de 4 semanas'],
     startNow: 'Empezar ahora',
     pricing: 'Precios',
     scrollDown: 'Desplázate',
   },
   rating: 'Más de 1000+ proyectos entregados',
   form: {
-    heading: 'Construyamos tu web',
+    heading: 'Empezar ahora',
     coreValues: 'Nuestros valores',
     values: [
       { title: 'Diseño', body: 'Nada genérico, sin IA barata, sin plantillas aburridas.' },
@@ -425,7 +431,7 @@ const es: FunnelDict = {
     ],
   },
   care: {
-    title1: 'Cuidada con ',
+    title1: 'Mantenimiento con ',
     title2: 'Yele Care',
     subtitle: 'Atención permanente que mantiene todo funcionando — desde 29€/mes.',
     contentTitle: 'Actualización de contenido',
@@ -442,7 +448,7 @@ const es: FunnelDict = {
     kicker: 'Cómo funciona',
     title: 'De la idea a la web publicada en cuatro pasos.',
     steps: [
-      { title: 'Empieza ahora', body: 'Asegura tu plaza pagando el 50% — así bloqueas tu proyecto y reservas tu lugar en nuestra agenda.' },
+      { title: 'Empieza ahora', body: 'Asegura tu plaza pagando el 50% — así aseguras tu proyecto y reservas tu lugar en nuestra agenda.' },
       { title: 'Cuéntanos sobre tu negocio', body: 'Una llamada o correo rápido para entender exactamente qué necesitas antes de diseñar nada.' },
       { title: 'Revisión', body: 'Te enseñamos la web terminada y hacemos las revisiones acordadas antes del lanzamiento.' },
       { title: 'Publicación', body: 'Apruebas, pagas el 50% restante y lanzamos tu web — Yele Care mantiene todo funcionando después.' },
@@ -500,6 +506,8 @@ const es: FunnelDict = {
 
 // ---- Chinese (Simplified). Brand/plan names kept in Latin script. ----
 const zh: FunnelDict = {
+  heroTitle: '一起打造你的网站',
+  featuredTitle: '精选案例',
   hero: {
     points: ['€699 起', '拒绝没有品味的模板', '无需自己动手 — 一切由我们打造', '4 周内交付'],
     startNow: '立即开始',

@@ -256,7 +256,7 @@ function NudgeButton({
   )
 }
 
-export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: boolean } = {}) {
+export default function LatestFeaturedWork({ forceDark = false, title = 'Latest featured work' }: { forceDark?: boolean; title?: string } = {}) {
   const reduceMotion = !!useHydratedReducedMotion()
   // Homepage: reads the shared DealFadeProvider group (BeyondWebsite +
   // StatsBold flip in sync). Standalone (/letsbuild, forceDark): no provider,
@@ -421,7 +421,7 @@ export default function LatestFeaturedWork({ forceDark = false }: { forceDark?: 
         animate={{ color: titleColor }}
         transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
       >
-        Latest featured work
+        {title}
       </motion.h2>
 
       {/* Track wrapper — holds the scroll strip and its edge-hover pan zones.

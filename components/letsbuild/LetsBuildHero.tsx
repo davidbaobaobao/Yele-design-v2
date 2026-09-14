@@ -118,7 +118,12 @@ export default function LetsBuildHero({ locale = 'en' }: { locale?: Locale }) {
             className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
             style={{ fontSize: 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
           >
-            {getFunnelDict(locale).form.heading}
+            {getFunnelDict(locale).heroTitle.split('\n').map((line, i) => (
+              <span key={i}>
+                {i > 0 && <br />}
+                {line}
+              </span>
+            ))}
           </h1>
 
           <ul className="space-y-3 md:space-y-3.5 mb-8 md:mb-9">

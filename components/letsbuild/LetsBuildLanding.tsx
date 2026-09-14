@@ -52,7 +52,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
 
         <LogoMarquee />
 
-        <LatestFeaturedWork forceDark />
+        <LatestFeaturedWork forceDark title={d.featuredTitle} />
 
         {/* ---- PRICING ---- */}
         <section id="pricing" className="bg-white px-6 pt-20 md:pt-28 pb-10 md:pb-12">
@@ -235,7 +235,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
 
         <StartNowMarquee />
 
-        <LetsBuildFAQ />
+        <LetsBuildFAQ locale={locale} />
 
         {/* ---- LEAD FORM (detailed) ---- */}
         <section id="build-form" className="px-6 py-16 md:py-24" style={{ backgroundColor: DARK }}>
