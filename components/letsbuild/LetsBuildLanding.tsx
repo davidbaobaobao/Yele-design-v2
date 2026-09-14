@@ -44,7 +44,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
 
   return (
     <EnLangProvider>
-      <main style={{ backgroundColor: DARK }}>
+      <main className="overflow-x-hidden" style={{ backgroundColor: DARK }}>
         <LocaleSwitcher current={locale} />
 
         {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg. ---- */}
@@ -85,9 +85,11 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
                   {d.form.coreValues}
                 </p>
                 <ul className="space-y-3.5 mb-8 md:mb-9">
-                  {d.form.values.map(v => (
+                  {d.form.values.map((v, i) => (
                     <li key={v.title} className="flex items-start gap-3">
-                      <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-1" aria-hidden="true" />
+                      <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold text-sm flex items-center justify-center mt-0.5">
+                        {i + 1}
+                      </span>
                       <span className="font-body text-lg md:text-xl text-white/80 leading-relaxed">
                         <span className="font-semibold text-white">{v.title}.</span> {v.body}
                       </span>
