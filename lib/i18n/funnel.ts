@@ -163,7 +163,7 @@ const en: FunnelDict = {
     values: [
       { title: 'Design', body: 'No generic look, no cheap AI, no dull templates.' },
       { title: 'Structure', body: "One clear message: what you do, why you're trustworthy, what it costs, and how to become your customer." },
-      { title: 'Functionality', body: 'Adapted to your business: calendars, ecommerce, payments, AI chat, AI phone, automations and much more.' },
+      { title: 'Performance', body: 'Optimized to get you more customers, more leads and more sales.' },
     ],
     bookCall: 'Prefer to talk? Book a free 10-min intro call',
     name: 'Name',
@@ -345,7 +345,7 @@ const es: FunnelDict = {
     values: [
       { title: 'Diseño', body: 'Nada genérico, sin IA barata, sin plantillas aburridas.' },
       { title: 'Estructura', body: 'Un mensaje claro: qué haces, por qué eres de fiar, cuánto cuesta y cómo convertirse en tu cliente.' },
-      { title: 'Funcionalidad', body: 'Adaptada a tu negocio: calendarios, ecommerce, pagos, chat con IA, teléfono con IA, automatizaciones y mucho más.' },
+      { title: 'Rendimiento', body: 'Optimizada para conseguirte más clientes, más contactos y más ventas.' },
     ],
     bookCall: '¿Prefieres hablar? Reserva una llamada gratis de 10 min',
     name: 'Nombre',
@@ -527,7 +527,7 @@ const zh: FunnelDict = {
     values: [
       { title: '设计', body: '不套用通用模板，不用廉价 AI，不做乏味设计。' },
       { title: '结构', body: '清晰传达一个信息：你做什么、为何值得信赖、价格是多少、以及如何成为你的客户。' },
-      { title: '功能', body: '为你的业务量身定制：日历预约、电商、支付、AI 聊天、AI 电话、自动化等等。' },
+      { title: '性能', body: '经过优化，为你带来更多客户、更多潜在客户和更多销售。' },
     ],
     bookCall: '更想聊聊？预约一个免费的 10 分钟通话',
     name: '姓名',
