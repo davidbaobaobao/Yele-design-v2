@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 type Severity = 'critical' | 'major' | 'minor' | 'good'
 type Charge = { code: string; severity: Severity; title: string; detail: string }
@@ -21,9 +21,14 @@ const LOADING_LINES = [
   'Dusting for template fingerprints…',
   'Running the fonts through the database…',
   'Checking speed on the radar gun…',
-  'Interrogating the hero section…',
+  'Consulting the gorilla…',
   'Cross-checking against known AI slop…',
 ]
+
+// Pink sampled from the gorilla clip so the video edges melt into the page.
+const PINK_TOP = '#edb9ca'
+const PINK_BOTTOM = '#d4a6b2'
+const VIDEO_MASK = 'radial-gradient(62% 60% at 50% 48%, #000 46%, transparent 100%)'
 
 const VERDICT_STYLE: Record<string, { ring: string; text: string; blurb: string }> = {
   guilty: { ring: 'border-red-500 text-red-400', text: 'text-red-400', blurb: 'Caught red-handed. This site did minimal time in the design studio.' },
@@ -40,16 +45,32 @@ const SEV: Record<Severity, { tag: string; cls: string; icon: string }> = {
 
 export default function WebPoliceClient() {
   const [url, setUrl] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [phase, setPhase] = useState<'idle' | 'loading' | 'done'>('idle')
   const [line, setLine] = useState(0)
   const [error, setError] = useState('')
   const [result, setResult] = useState<Result | null>(null)
+  const leftVid = useRef<HTMLVideoElement>(null)
+  const rightVid = useRef<HTMLVideoElement>(null)
+
+  const moved = phase !== 'idle'
+
+  function speedUpGorillas() {
+    for (const v of [leftVid.current, rightVid.current]) {
+      if (v) v.playbackRate = 2
+    }
+  }
+  function resetGorillas() {
+    for (const v of [leftVid.current, rightVid.current]) {
+      if (v) v.playbackRate = 1
+    }
+  }
 
   async function run() {
-    if (!url.trim() || loading) return
-    setLoading(true)
+    if (!url.trim() || phase === 'loading') return
     setError('')
     setResult(null)
+    setPhase('loading')
+    speedUpGorillas()
     const timer = setInterval(() => setLine(l => (l + 1) % LOADING_LINES.length), 1400)
     try {
       const res = await fetch('/api/webpolice/analyze', {
@@ -58,43 +79,78 @@ export default function WebPoliceClient() {
         body: JSON.stringify({ url }),
       })
       const data = await res.json()
-      if (!res.ok) setError(data.error || 'The investigation hit a wall. Try another URL.')
-      else setResult(data)
+      if (!res.ok) {
+        setError(data.error || 'The investigation hit a wall. Try another URL.')
+        setPhase('idle')
+        resetGorillas()
+      } else {
+        setResult(data)
+        setPhase('done')
+      }
     } catch {
       setError('The investigation hit a wall. Try another URL.')
+      setPhase('idle')
+      resetGorillas()
     } finally {
       clearInterval(timer)
-      setLoading(false)
     }
   }
 
-  return (
-    <main className="min-h-screen overflow-x-hidden" style={{ backgroundColor: '#0D0E12' }}>
-      <div className="mx-auto max-w-3xl px-6 py-16 md:py-24">
-        {/* Header */}
-        <div className="text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#D46FC8]/15 text-4xl select-none">
-            🚨
-          </div>
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#D46FC8] mb-3">Web Police · Design Crimes Unit</p>
-          <h1 className="font-display font-bold text-white tracking-tight leading-[1.05]" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
-            Did a robot build your website in 10 minutes?
-          </h1>
-          <p className="font-body text-base md:text-lg text-white/70 mt-4 max-w-xl mx-auto">
-            Paste any website below. We&apos;ll run a background check for AI slop, cheap templates, ugly generic fonts,
-            and whether it even survives on a phone. Strictly for laughs.
-          </p>
-        </div>
+  const Gorilla = ({ side, vref }: { side: 'left' | 'right'; vref: React.RefObject<HTMLVideoElement> }) => (
+    <video
+      ref={vref}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      className={`pointer-events-none absolute top-1/2 z-0 w-[46vw] max-w-[300px] md:w-[26vw] md:max-w-[380px] ${
+        side === 'left' ? 'left-[-9%] md:left-[-2%]' : 'right-[-9%] md:right-[-2%]'
+      }`}
+      style={{
+        transform: `translateY(-50%) ${side === 'right' ? 'scaleX(-1)' : ''}`,
+        maskImage: VIDEO_MASK,
+        WebkitMaskImage: VIDEO_MASK,
+        opacity: 0.96,
+      }}
+    >
+      <source src="/media/webpolice/gorilla.mp4" type="video/mp4" />
+    </video>
+  )
 
-        {/* Input */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+  return (
+    <main
+      className="relative min-h-screen overflow-hidden"
+      style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}
+    >
+      <Gorilla side="left" vref={leftVid} />
+      <Gorilla side="right" vref={rightVid} />
+
+      {/* Hero — slides up when an analysis starts */}
+      <div
+        className={`relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center transition-transform duration-700 ease-out ${
+          moved ? '-translate-y-[26vh] md:-translate-y-[24vh]' : 'translate-y-0'
+        }`}
+      >
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#16161A]/50 mb-4">Web Police · Design Crimes Unit</p>
+        <h1
+          className="font-display font-bold text-[#16161A] tracking-tight leading-[1.08]"
+          style={{ fontSize: 'clamp(1.7rem, 4.6vw, 3rem)' }}
+        >
+          Is my page ugly?<br />
+          Did my developer lie to me?<br />
+          Did he spend 20 min on my website?
+        </h1>
+
+        <div className="mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3">
           <input
             type="text"
             value={url}
             onChange={e => setUrl(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && run()}
-            placeholder="yourcompetitor.com"
-            className="flex-1 rounded-xl bg-white/5 border border-white/15 px-4 py-3.5 font-body text-base text-white placeholder-white/35 focus:outline-none focus:border-[#D46FC8]/60 transition-colors"
+            placeholder="type your website"
+            className="flex-1 rounded-full bg-white/80 backdrop-blur border border-white/60 px-5 py-3.5 font-body text-base text-[#16161A] placeholder-[#16161A]/40 shadow-lg shadow-black/5 focus:outline-none focus:border-[#16161A]/40 transition-colors"
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
@@ -102,37 +158,55 @@ export default function WebPoliceClient() {
           <button
             type="button"
             onClick={run}
-            disabled={loading}
-            className="inline-flex items-center justify-center rounded-xl bg-[#D46FC8] hover:bg-[#DE85D2] px-6 py-3.5 font-body font-semibold text-base text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled={phase === 'loading'}
+            className="inline-flex items-center justify-center rounded-full bg-[#16161A] hover:bg-black px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {loading ? 'Investigating…' : 'Run the check'}
+            {phase === 'loading' ? 'Analyzing…' : 'Analyze'}
           </button>
         </div>
 
-        {loading && (
-          <p className="mt-5 text-center font-mono text-sm text-white/50 animate-pulse">{LOADING_LINES[line]}</p>
-        )}
-        {error && <p className="mt-5 text-center font-body text-sm text-red-400">{error}</p>}
+        {phase === 'loading' && <p className="mt-5 font-mono text-sm text-[#16161A]/60 animate-pulse">{LOADING_LINES[line]}</p>}
+        {error && <p className="mt-5 font-body text-sm text-red-700">{error}</p>}
+      </div>
 
-        {/* Results */}
-        {result && !loading && <Report result={result} />}
-
-        {/* Footer disclaimer */}
-        <p className="mt-16 text-center font-body text-xs text-white/30">
-          A tongue-in-cheek tool by Yele. We fetch the page&apos;s public HTML and run Google PageSpeed — no accounts, no
-          data stored. Verdicts are opinionated and meant in good fun.
-        </p>
+      {/* Report — a sheet that slides up from the bottom when the verdict is in */}
+      <div
+        className={`fixed inset-x-0 bottom-0 z-30 px-3 sm:px-4 pb-3 transition-transform duration-700 ease-out ${
+          phase === 'done' ? 'translate-y-0' : 'translate-y-full pointer-events-none'
+        }`}
+      >
+        <div className="mx-auto max-h-[80vh] max-w-3xl overflow-y-auto rounded-3xl">
+          {result && (
+            <Report
+              result={result}
+              onReset={() => {
+                setPhase('idle')
+                setResult(null)
+                resetGorillas()
+              }}
+            />
+          )}
+        </div>
       </div>
     </main>
   )
 }
 
-function Report({ result }: { result: Result }) {
+function Report({ result, onReset }: { result: Result; onReset: () => void }) {
   const v = VERDICT_STYLE[result.verdict.level]
   return (
-    <div className="mt-12">
-      {/* Verdict card */}
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8 text-center">
+    <div className="rounded-3xl border border-black/10 bg-[#0D0E12] p-6 md:p-8 shadow-2xl shadow-black/30">
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={onReset}
+          className="rounded-full border border-white/15 px-3.5 py-1.5 font-body text-xs font-medium text-white/70 hover:text-white hover:border-white/30 transition-colors"
+        >
+          ↺ New search
+        </button>
+      </div>
+      {/* Verdict */}
+      <div className="text-center">
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/40 mb-4 break-all">Case file: {result.url}</p>
         <div className={`mx-auto flex h-28 w-28 flex-col items-center justify-center rounded-full border-4 ${v.ring}`}>
           <span className="font-display text-3xl font-bold leading-none">{result.guilt}</span>
@@ -143,7 +217,7 @@ function Report({ result }: { result: Result }) {
       </div>
 
       {/* Quick stats */}
-      <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Stat label="Mobile speed" value={result.speed.mobile ? `${result.speed.mobile.score}` : '—'} suffix="/100" />
         <Stat label="Desktop speed" value={result.speed.desktop ? `${result.speed.desktop.score}` : '—'} suffix="/100" />
         <Stat label="Mobile-ready" value={result.mobileFriendly ? 'Yes' : 'No'} />
@@ -151,7 +225,7 @@ function Report({ result }: { result: Result }) {
       </div>
 
       {/* Charges */}
-      <h3 className="font-display font-bold text-xl text-white mt-10 mb-4">The charges ({result.charges.length})</h3>
+      <h3 className="font-display font-bold text-xl text-white mt-8 mb-4">The charges ({result.charges.length})</h3>
       <div className="space-y-3">
         {result.charges.length === 0 && (
           <p className="font-body text-sm text-white/60">No charges filed. Suspiciously clean. Are you a designer?</p>
@@ -171,9 +245,11 @@ function Report({ result }: { result: Result }) {
         })}
       </div>
 
-      {result.fonts.length > 0 && (
-        <p className="font-body text-xs text-white/40 mt-6">Fonts spotted: {result.fonts.join(', ')}</p>
-      )}
+      {result.fonts.length > 0 && <p className="font-body text-xs text-white/40 mt-6">Fonts spotted: {result.fonts.join(', ')}</p>}
+
+      <p className="font-body text-xs text-white/30 mt-8 text-center">
+        A tongue-in-cheek tool by Yele. We fetch the page&apos;s public HTML and run Google PageSpeed — nothing stored.
+      </p>
     </div>
   )
 }
