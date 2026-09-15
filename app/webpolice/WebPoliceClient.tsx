@@ -89,6 +89,10 @@ export default function WebPoliceClient() {
     setResult(null)
     setPhase('loading')
     setRate(2)
+    const started = Date.now()
+    // Let the running gorilla play for at least this long, even if the API
+    // comes back sooner.
+    const MIN_LOADING_MS = 2400
     const timer = setInterval(() => setLine(l => (l + 1) % LOADING_LINES.length), 1400)
     try {
       const res = await fetch('/api/webpolice/analyze', {
@@ -102,6 +106,8 @@ export default function WebPoliceClient() {
         setPhase('idle')
         setRate(1)
       } else {
+        const wait = MIN_LOADING_MS - (Date.now() - started)
+        if (wait > 0) await new Promise(r => setTimeout(r, wait))
         setResult(data)
         setPhase('done')
       }
@@ -128,17 +134,21 @@ export default function WebPoliceClient() {
         {/* Animated police siren — sound of da (web) police */}
         <span
           aria-hidden="true"
-          className="mb-5 inline-block select-none text-6xl md:text-7xl"
+          className="mb-4 inline-block select-none text-5xl md:text-6xl"
           style={{ animation: 'wpSiren 0.7s ease-in-out infinite' }}
         >
           🚨
         </span>
 
-        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.12]" style={{ fontSize: 'clamp(1.35rem, 3.6vw, 2.25rem)' }}>
+        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.08]" style={{ fontSize: 'clamp(1.7rem, 4.6vw, 3rem)' }}>
+          Whoop Whoop,<br className="sm:hidden" /> sound of da (web) police
+        </h1>
+
+        <p className="mt-4 font-body font-semibold text-[#16161A]/75 leading-snug" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.25rem)' }}>
           Is my website ugly? generic?<br />
           Did my developer lie to me?<br />
           Did he use AI to generate my website in 10 min?
-        </h1>
+        </p>
 
         <div className="mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3">
           <input
@@ -163,9 +173,34 @@ export default function WebPoliceClient() {
           </button>
         </div>
 
-        {phase === 'loading' && <p className="mt-5 font-mono text-sm text-[#16161A]/60 animate-pulse">{LOADING_LINES[line]}</p>}
         {error && <p className="mt-5 font-body text-sm text-red-700">{error}</p>}
       </div>
+
+      {/* Loading — the police gorilla runs to the scene (plays ≥2.4s) */}
+      {phase === 'loading' && (
+        <div className="fixed inset-0 z-20 flex flex-col items-center justify-center px-6 pointer-events-none">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            className="w-[74vw] max-w-[340px]"
+            style={
+              {
+                maskImage: `${MASK_H}, ${MASK_V}`,
+                maskComposite: 'intersect',
+                WebkitMaskImage: `${MASK_H}, ${MASK_V}`,
+                WebkitMaskComposite: 'source-in',
+              } as React.CSSProperties
+            }
+          >
+            <source src="/media/webpolice/gorilla-run.mp4" type="video/mp4" />
+          </video>
+          <p className="mt-2 font-mono text-sm text-[#16161A]/70 animate-pulse">{LOADING_LINES[line]}</p>
+        </div>
+      )}
 
       {/* Report — full-screen panel that slides up to cover everything */}
       <div
