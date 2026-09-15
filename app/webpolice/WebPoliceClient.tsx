@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import LeadForm from '@/components/LeadForm'
 
 type Charge = { code: string; title: string; detail: string }
@@ -91,25 +91,35 @@ export default function WebPoliceClient() {
     for (const v of [leftVid.current, rightVid.current]) if (v) v.playbackRate = r
   }
 
-  async function run() {
-    if (!url.trim() || phase === 'loading') return
+  async function run(override?: string) {
+    const value = (override ?? url).trim()
+    if (!value || phase === 'loading') return
+    if (override && override !== url) setUrl(override)
     setError('')
     setResult(null)
     setPhase('loading')
     setRate(2)
     setProgress(0)
+    // Reflect the analyzed site in the URL so results are shareable/linkable.
+    try {
+      window.history.replaceState(null, '', `/webpolice?url=${encodeURIComponent(value)}`)
+    } catch { /* ignore */ }
     const started = Date.now()
     // Let the running gorilla play for at least this long, even if the API
     // comes back sooner.
     const MIN_LOADING_MS = 2400
     const timer = setInterval(() => setLine(l => (l + 1) % LOADING_LINES.length), 1400)
-    // Fake-but-satisfying progress that eases toward ~95% while we wait.
-    progRef.current = setInterval(() => setProgress(p => Math.min(95, p + Math.max(0.6, (95 - p) * 0.06))), 110)
+    // Smooth, always-moving progress that asymptotes toward 98% over time
+    // (≈63% at 6s, 86% at 12s, 95% at 18s) — never jumps then freezes.
+    progRef.current = setInterval(() => {
+      const elapsed = Date.now() - started
+      setProgress(Math.min(98, Math.round(100 * (1 - Math.exp(-elapsed / 6000)))))
+    }, 150)
     try {
       const res = await fetch('/api/webpolice/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: value }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -132,6 +142,13 @@ export default function WebPoliceClient() {
       setProgress(100)
     }
   }
+
+  // Shared link support: /webpolice?url=example.com auto-runs on load.
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get('url')
+    if (p) run(p)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <main className="relative min-h-screen overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
@@ -176,7 +193,7 @@ export default function WebPoliceClient() {
           />
           <button
             type="button"
-            onClick={run}
+            onClick={() => run()}
             disabled={phase === 'loading'}
             className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors hover:animate-[wpSirenBtn_0.6s_linear_infinite] disabled:opacity-70 disabled:cursor-not-allowed"
           >
@@ -250,12 +267,49 @@ export default function WebPoliceClient() {
                 setPhase('idle')
                 setResult(null)
                 setRate(1)
+                try { window.history.replaceState(null, '', '/webpolice') } catch { /* ignore */ }
               }}
             />
           )}
         </div>
       </div>
     </main>
+  )
+}
+
+function ShareBar({ result }: { result: Result }) {
+  const [copied, setCopied] = useState(false)
+  const link = typeof window !== 'undefined' ? `${window.location.origin}/webpolice?url=${encodeURIComponent(result.url)}` : ''
+  const text = `This website scored ${result.quality}/100 on the Web Police 🚨 — ${result.verdict.label}. Get yours judged:`
+
+  const open = (u: string) => window.open(u, '_blank', 'noopener,noreferrer')
+  const share = {
+    x: () => open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`),
+    facebook: () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`),
+    linkedin: () => open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`),
+    whatsapp: () => open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + link)}`),
+  }
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(link)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    } catch { /* ignore */ }
+  }
+
+  const btn = 'inline-flex items-center justify-center rounded-full border border-white/15 bg-white/[0.04] h-9 px-4 font-body text-xs font-semibold text-white/80 hover:text-white hover:border-white/35 transition-colors'
+
+  return (
+    <div className="mt-6">
+      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40 mb-3">Share the verdict</p>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <button type="button" onClick={share.x} className={btn} aria-label="Share on X">X</button>
+        <button type="button" onClick={share.facebook} className={btn} aria-label="Share on Facebook">Facebook</button>
+        <button type="button" onClick={share.linkedin} className={btn} aria-label="Share on LinkedIn">LinkedIn</button>
+        <button type="button" onClick={share.whatsapp} className={btn} aria-label="Share on WhatsApp">WhatsApp</button>
+        <button type="button" onClick={copy} className={btn} aria-label="Copy link">{copied ? '✓ Copied' : 'Copy link'}</button>
+      </div>
+    </div>
   )
 }
 
@@ -303,6 +357,7 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
           {result.verdict.label}
         </p>
         {result.summary && <p className="font-body text-sm italic text-white/60 mt-3 max-w-md mx-auto">“{result.summary}”</p>}
+        <ShareBar result={result} />
       </div>
 
       {/* Charges */}
