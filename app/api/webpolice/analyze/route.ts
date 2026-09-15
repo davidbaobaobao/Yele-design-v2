@@ -13,7 +13,18 @@ import { NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-type Charge = { code: string; title: string; detail: string }
+type Charge = { code: string; title: string; detail: string; bg?: string }
+
+function toGradient(colors: unknown): string | undefined {
+  if (!Array.isArray(colors)) return undefined
+  const hex = colors
+    .map(c => String(c).trim())
+    .map(c => (c.startsWith('#') ? c : `#${c}`))
+    .filter(c => /^#[0-9a-fA-F]{3,8}$/.test(c))
+    .slice(0, 2)
+  if (hex.length < 2) return undefined
+  return `linear-gradient(135deg, ${hex[0]} 0%, ${hex[1]} 100%)`
+}
 
 function normalizeUrl(raw: string): URL | null {
   let s = (raw || '').trim()
@@ -129,10 +140,12 @@ Aspects (what LOW means):
 
 The "summary" is the headline verdict everyone reads — make it FUNNY and a little EDGY: a savage-but-playful one-liner roast (or genuine praise if it's actually good). Punchy, quotable, PG-13. No hedging, no "overall this site…".
 
-Return ONLY compact JSON, no markdown:
-{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"..."},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny, edgy roast (or praise) sentence"}`
+For "color", also return "colors": the TWO most dominant or clashing colors actually used on the page, as hex (e.g. ["#39ff14","#7c3aed"]).
 
-type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string }
+Return ONLY compact JSON, no markdown:
+{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"...","colors":["#hex","#hex"]},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny, edgy roast (or praise) sentence"}`
+
+type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; colorBg?: string }
 type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
 
 async function visionAnalyze(images: string[], hints: string[]): Promise<VisionResult> {
@@ -162,7 +175,7 @@ async function visionAnalyze(images: string[], hints: string[]): Promise<VisionR
       aspects[a] = { score: Math.max(0, Math.min(100, Number(raw.score) || 0)), reason: String(raw.reason || '').slice(0, 200) }
     }
     const overall = Math.max(0, Math.min(100, Number(parsed.overall) || Math.round(ASPECTS.reduce((s, a) => s + aspects[a].score, 0) / ASPECTS.length)))
-    return { ok: true, data: { aspects, overall, summary: String(parsed.summary || '').slice(0, 200) } }
+    return { ok: true, data: { aspects, overall, summary: String(parsed.summary || '').slice(0, 200), colorBg: toGradient(parsed.color?.colors) } }
   } catch (err) {
     return { ok: false, reason: `vision error: ${err instanceof Error ? err.message : String(err)}`.slice(0, 160) }
   }
@@ -197,7 +210,7 @@ export async function POST(request: Request) {
       effortLabel: 'Handcrafted by Yele themselves',
       effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.',
       passed: true,
-      verdict: { level: 'cleared', label: 'CLEARED — flawless, obviously 😏' },
+      verdict: { level: 'cleared', label: 'Illegally Good 😏' },
       summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.',
       mode: 'vision',
       note: '',
@@ -243,7 +256,13 @@ export async function POST(request: Request) {
     charges = ASPECTS.map(a => ({ a, ...vision.data.aspects[a] }))
       .filter(x => x.score <= 55)
       .sort((x, y) => x.score - y.score)
-      .map(x => ({ code: x.a, title: `${ASPECT_TITLE[x.a]} — ${x.score}/100`, detail: x.reason || 'Reads generic.' }))
+      .map(x => ({
+        code: x.a,
+        title: `${ASPECT_TITLE[x.a]} — ${x.score}/100`,
+        detail: x.reason || 'Reads generic.',
+        // Paint the colour crime with the site's own clashing colours.
+        ...(x.a === 'color' && vision.data.colorBg ? { bg: vision.data.colorBg } : {}),
+      }))
   } else {
     mode = 'basic'
     note = vision.reason
@@ -256,12 +275,12 @@ export async function POST(request: Request) {
   const { label: effortLabel, flavor: effortFlavor } = effortFor(quality)
   const passed = quality >= 60
   const verdict = quality >= 75
-    ? { level: 'cleared', label: 'CLEARED — actually good design' }
+    ? { level: 'cleared', label: 'Certified Gorgeous' }
     : quality >= 60
-      ? { level: 'cleared', label: 'CLEARED — solid enough' }
+      ? { level: 'cleared', label: 'Actually Decent' }
       : quality >= 40
-        ? { level: 'suspicious', label: 'SUSPICIOUS' }
-        : { level: 'guilty', label: 'GUILTY OF DESIGN CRIMES' }
+        ? { level: 'suspicious', label: 'Painfully Average' }
+        : { level: 'guilty', label: 'Objectively Ugly' }
 
   return NextResponse.json({
     url: target,

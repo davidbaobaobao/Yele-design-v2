@@ -5,7 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import LeadForm from '@/components/LeadForm'
 
 // Fade-in-on-mount + cursor parallax tilt wrapper for the report cards.
-function TiltCard({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+function TiltCard({ children, className = '', delay = 0, bg }: { children: React.ReactNode; className?: string; delay?: number; bg?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -27,7 +27,7 @@ function TiltCard({ children, className = '', delay = 0 }: { children: React.Rea
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease: 'easeOut' }}
-      style={{ rotateX, rotateY, transformPerspective: 1000 }}
+      style={{ rotateX, rotateY, transformPerspective: 1000, ...(bg ? { background: bg } : {}) }}
       className={className}
     >
       {children}
@@ -35,7 +35,7 @@ function TiltCard({ children, className = '', delay = 0 }: { children: React.Rea
   )
 }
 
-type Charge = { code: string; title: string; detail: string }
+type Charge = { code: string; title: string; detail: string; bg?: string }
 type Result = {
   url: string
   crimes: number
@@ -406,13 +406,13 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
         <ShareBar result={result} />
       </div>
 
-      {/* Effort tier — the funny conclusion, right after the score. Light card. */}
-      <TiltCard className="rounded-3xl bg-[#F2F0EB] p-7 text-center mb-10 shadow-2xl shadow-black/30">
-        <p className="font-body text-sm text-[#16161A]/50">Looks like it took</p>
-        <p className="font-display font-bold tracking-tight text-[#16161A] mt-1" style={{ fontSize: 'clamp(1.6rem, 6vw, 2.8rem)' }}>
+      {/* Effort tier — the funny conclusion, right after the score. */}
+      <TiltCard className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center mb-10">
+        <p className="font-body text-sm text-white/50">Looks like it took</p>
+        <p className="font-display font-bold tracking-tight text-white mt-1" style={{ fontSize: 'clamp(1.6rem, 6vw, 2.8rem)' }}>
           {result.effortLabel}
         </p>
-        <p className="font-body text-base text-[#16161A]/70 mt-1.5">{result.effortFlavor}</p>
+        <p className="font-body text-base text-white/70 mt-1.5">{result.effortFlavor}</p>
       </TiltCard>
 
       {/* Charges */}
@@ -424,14 +424,27 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
           <p className="font-body text-sm text-white/60">Clean record. This actually looks like real, considered design. The Web Police tip their hats.</p>
         )}
         {shown.map((c, i) => (
-          <TiltCard key={c.code} delay={i * 0.06} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-            <div className="flex items-start gap-3">
-              <span className="flex-shrink-0 mt-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-[#D46FC8]/20 font-display text-sm font-bold text-[#D46FC8]">
+          <TiltCard
+            key={c.code}
+            delay={i * 0.06}
+            bg={c.bg}
+            className={`relative overflow-hidden rounded-2xl border p-4 ${c.bg ? 'border-white/25' : 'border-white/10 bg-white/[0.03]'}`}
+          >
+            {/* Legibility scrim over the site's own (often hideous) colours. */}
+            {c.bg && <div className="pointer-events-none absolute inset-0 bg-black/50" aria-hidden="true" />}
+            <div className="relative flex items-start gap-3">
+              <span className="flex-shrink-0 mt-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-white font-display text-sm font-bold text-[#0D0E12]">
                 {i + 1}
               </span>
-              <div>
-                <p className="font-body font-semibold text-sm text-white">{c.title}</p>
-                <p className="font-body text-sm text-white/60 mt-0.5">{c.detail}</p>
+              <div className="min-w-0">
+                <p className="font-body font-semibold text-sm text-white" style={c.bg ? { textShadow: '0 1px 3px rgba(0,0,0,0.7)' } : undefined}>{c.title}</p>
+                <p className="font-body text-sm text-white/70 mt-0.5" style={c.bg ? { textShadow: '0 1px 3px rgba(0,0,0,0.7)' } : undefined}>{c.detail}</p>
+                {c.code === 'imagery' && (
+                  <div className="mt-3 overflow-hidden rounded-lg border border-white/15">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- static meme asset */}
+                    <img src="/media/webpolice/stock-photo.jpg" alt="Exhibit A: a stock photo" className="block w-full max-w-[280px]" />
+                  </div>
+                )}
               </div>
             </div>
           </TiltCard>
