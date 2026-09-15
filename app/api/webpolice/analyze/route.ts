@@ -5,10 +5,10 @@ function toLocale(v: unknown): Locale {
   return v === 'es' || v === 'zh' ? v : 'en'
 }
 
-const YELE_TEXT: Record<Locale, { effortLabel: string; effortFlavor: string; summary: string }> = {
-  en: { effortLabel: 'Handcrafted by Yele themselves', effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.', summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.' },
-  es: { effortLabel: 'Hecha a mano por el propio Yele', effortFlavor: 'Los sospechosos SON la policía. Caso cerrado con un guiño.', summary: 'La única web que ha hecho sonrojar a la Policía Web. 105/100, sin objeciones — buscaos un cuarto.' },
-  zh: { effortLabel: '由 Yele 亲手打造', effortFlavor: '嫌疑人就是警察本人。眨眨眼，结案。', summary: '唯一一个让网页警察脸红的网站。105/100，无可挑剔 —— 你俩开个房吧。' },
+const YELE_TEXT: Record<Locale, { effortLabel: string; effortFlavor: string; summary: string; rant: string }> = {
+  en: { effortLabel: 'Handcrafted by Yele themselves', effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.', summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.', rant: "Look, we tried to find something. We really did. We dusted the whole site for the usual crimes — the purple gradients, the rounded-card soup, the stock photos of people high-fiving a robot — and came back with nothing but fingerprints of actual taste.\n\nEvery pixel looks like a decision, not an accident. The typography has opinions, the spacing can breathe, and nobody bolted on a fake dashboard to look busy. Frankly it's showing off. 105/100, the extra five points are for making the rest of the internet look bad." },
+  es: { effortLabel: 'Hecha a mano por el propio Yele', effortFlavor: 'Los sospechosos SON la policía. Caso cerrado con un guiño.', summary: 'La única web que ha hecho sonrojar a la Policía Web. 105/100, sin objeciones — buscaos un cuarto.', rant: 'Mira, lo intentamos. De verdad. Peinamos toda la web buscando los delitos de siempre — los degradados morados, la sopa de tarjetas redondeadas, las fotos de stock de gente chocando los cinco con un robot — y solo encontramos huellas de buen gusto.\n\nCada píxel parece una decisión, no un accidente. La tipografía tiene criterio, el espaciado respira y nadie ha pegado un dashboard falso para parecer ocupado. Sinceramente, está presumiendo. 105/100; los cinco puntos extra son por dejar en evidencia al resto de internet.' },
+  zh: { effortLabel: '由 Yele 亲手打造', effortFlavor: '嫌疑人就是警察本人。眨眨眼，结案。', summary: '唯一一个让网页警察脸红的网站。105/100，无可挑剔 —— 你俩开个房吧。', rant: '说真的，我们努力想找茬了。我们把整个网站都排查了一遍常见罪名——紫色渐变、圆角卡片堆成汤、和机器人击掌的图库照片——结果只找到了「有品味」的指纹。\n\n每一个像素都像是深思熟虑的决定，而不是意外。字体有主见，间距能呼吸，也没人硬塞一个假仪表盘来假装很忙。老实说，它在炫技。105/100，多出来的五分是奖励它让互联网上其余的网站相形见绌。' },
 }
 
 // The Web Police — satire design analyzer. HYBRID:
@@ -225,6 +225,7 @@ export async function POST(request: Request) {
       passed: true,
       verdict: { level: 'cleared', label: wp.verdict.yele },
       summary: y.summary,
+      rant: y.rant,
       mode: 'vision',
       note: '',
       screenshot: top ? `data:image/jpeg;base64,${top}` : null,
@@ -258,6 +259,7 @@ export async function POST(request: Request) {
   let charges: Charge[]
   let quality: number
   let summary = ''
+  let rant = ''
   let mode: 'vision' | 'basic'
   let note = ''
 
@@ -265,6 +267,7 @@ export async function POST(request: Request) {
     mode = 'vision'
     quality = vision.data.overall
     summary = vision.data.summary
+    rant = vision.data.rant
     // Charges = the weakest aspects (low quality), worst first.
     charges = ASPECTS.map(a => ({ a, ...vision.data.aspects[a] }))
       .filter(x => x.score <= 55)
@@ -305,6 +308,7 @@ export async function POST(request: Request) {
     passed,
     verdict,
     summary,
+    rant,
     mode,
     note,
     screenshot: topB64 ? `data:image/jpeg;base64,${topB64}` : fullB64 ? `data:image/jpeg;base64,${fullB64}` : null,

@@ -48,6 +48,7 @@ type Result = {
   passed: boolean
   verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
   summary?: string
+  rant?: string
   screenshot?: string | null
   mode?: 'vision' | 'basic'
   note?: string
@@ -361,6 +362,7 @@ function ShareBar({ result, t, basePath }: { result: Result; t: WPStrings; baseP
 
 function Report({ result, t, locale, planOptions, basePath, onReset }: { result: Result; t: WPStrings; locale: Locale; planOptions: string[]; basePath: string; onReset: () => void }) {
   const [showAll, setShowAll] = useState(false)
+  const [showRant, setShowRant] = useState(false)
   const main = result.charges.slice(0, 3)
   const extra = result.charges.slice(3, 8)
   const shown = showAll ? [...main, ...extra] : main
@@ -403,6 +405,34 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
           {result.verdict.label}
         </p>
         {result.summary && <p className="font-body text-lg md:text-2xl text-white/90 mt-4 max-w-xl mx-auto leading-snug">“{result.summary}”</p>}
+
+        {result.rant && (
+          <div className="mt-4 max-w-xl mx-auto">
+            {!showRant ? (
+              <button
+                type="button"
+                onClick={() => setShowRant(true)}
+                className="font-body text-sm font-semibold text-[#D46FC8] underline underline-offset-4 hover:text-[#DE85D2] transition-colors"
+              >
+                {t.readMore} ↓
+              </button>
+            ) : (
+              <div className="mt-2 space-y-3 text-left">
+                {result.rant.split('\n').filter(p => p.trim()).map((p, i) => (
+                  <p key={i} className="font-body text-base text-white/75 leading-relaxed">{p}</p>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setShowRant(false)}
+                  className="font-body text-sm font-semibold text-[#D46FC8] underline underline-offset-4 hover:text-[#DE85D2] transition-colors"
+                >
+                  {t.showLess} ↑
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         <ShareBar result={result} t={t} basePath={basePath} />
       </div>
 
@@ -476,6 +506,14 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
       <p className="font-body text-xs text-white/30 mt-8 text-center">
         {t.footer}
       </p>
+
+      {/* Yele logo → home */}
+      <div className="mt-8 flex justify-center">
+        <a href="/" aria-label="Yele — home" className="inline-flex opacity-60 hover:opacity-100 transition-opacity">
+          {/* eslint-disable-next-line @next/next/no-img-element -- SVG logo */}
+          <img src="/media/logomedia/mainlogo.svg" alt="Yele" className="h-7 w-auto" />
+        </a>
+      </div>
     </div>
   )
 }
