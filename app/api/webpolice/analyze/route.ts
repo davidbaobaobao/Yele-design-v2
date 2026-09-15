@@ -232,5 +232,17 @@ export async function POST(request: Request) {
       ? { level: 'suspicious', label: 'SUSPICIOUS' }
       : { level: 'guilty', label: 'GUILTY OF DESIGN CRIMES' }
 
-  return NextResponse.json({ url: target, crimes, charges, effort, effortFlavor, passed, verdict, overall, summary, mode })
+  return NextResponse.json({
+    url: target,
+    crimes,
+    charges,
+    effort,
+    effortFlavor,
+    passed,
+    verdict,
+    overall,
+    summary,
+    mode,
+    screenshot: imageB64 ? `data:image/jpeg;base64,${imageB64}` : null,
+  })
 }

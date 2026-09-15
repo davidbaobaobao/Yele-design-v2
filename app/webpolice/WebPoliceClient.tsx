@@ -13,6 +13,7 @@ type Result = {
   passed: boolean
   verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
   summary?: string
+  screenshot?: string | null
 }
 
 const PLAN_OPTIONS = ['Launch — $699', 'Business — $1,199', 'Pro — $2,799']
@@ -245,7 +246,14 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
         </button>
       </div>
 
-      <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/40 break-all mb-6">Case file: {result.url}</p>
+      <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/40 break-all mb-4">Case file: {result.url}</p>
+
+      {result.screenshot && (
+        <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">
+          {/* eslint-disable-next-line @next/next/no-img-element -- data URI screenshot */}
+          <img src={result.screenshot} alt="Evidence: screenshot of the suspect website" className="block max-h-64 w-full object-cover object-top" />
+        </div>
+      )}
 
       {/* Charges */}
       <h2 className="font-display font-bold text-2xl md:text-3xl text-white tracking-tight mb-4">
