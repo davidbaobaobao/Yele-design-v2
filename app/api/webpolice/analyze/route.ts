@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server'
 
 // The Web Police — satire design analyzer. HYBRID:
-//  1. Deterministic pre-pass over the HTML for cheap hints (fonts, tiny text,
-//     stock-photo domains, color/gradient counts).
-//  2. Screenshot (ScreenshotOne) → Claude Sonnet vision, which scores the six
-//     design aspects the user cares about, with a short reason each.
-//  3. If the ANTHROPIC_API_KEY or SCREENSHOT_API_KEY env vars are missing, or
-//     any step fails, it falls back to a purely deterministic verdict so the
-//     tool still works.
+//  1. Deterministic pre-pass over the HTML for cheap hints.
+//  2. Two screenshots (ScreenshotOne, 3s settle delay): the top/hero viewport
+//     and the full page (so the model sees every section), fed to Claude
+//     Sonnet vision, which QUALITY-scores six design aspects (0 = awful slop,
+//     100 = excellent custom design — higher is BETTER).
+//  3. Falls back to a deterministic verdict if keys are missing / a step fails.
 //
 // Env: ANTHROPIC_API_KEY, SCREENSHOT_API_KEY (ScreenshotOne access key).
 
 export const runtime = 'nodejs'
-export const maxDuration = 40
+export const maxDuration = 60
 
 type Charge = { code: string; title: string; detail: string }
 
@@ -32,7 +31,6 @@ function normalizeUrl(raw: string): URL | null {
   return u
 }
 
-// ---- Deterministic hints from the HTML (fed to the vision model) ----
 function htmlHints(html: string): string[] {
   const lower = html.toLowerCase()
   const hints: string[] = []
@@ -40,35 +38,35 @@ function htmlHints(html: string): string[] {
   Array.from(lower.matchAll(/fonts\.googleapis\.com\/css2?\?[^"']*family=([^"'&]+)/gi)).forEach((m: RegExpMatchArray) =>
     m[1].split('|').forEach((f: string) => fonts.add(decodeURIComponent(f.split(':')[0]).replace(/\+/g, ' ').trim()))
   )
-  if (fonts.size) hints.push(`Fonts loaded: ${Array.from(fonts).slice(0, 6).join(', ')}`)
+  if (fonts.size) hints.push(`Fonts loaded: ${Array.from(fonts).slice(0, 6).join(', ')}.`)
   const generic = ['poppins', 'inter', 'montserrat', 'roboto', 'open sans', 'lato'].filter(f => lower.includes(f))
-  if (generic.length) hints.push(`Uses over-used generic fonts: ${generic.join(', ')}`)
+  if (generic.length) hints.push(`Over-used generic fonts present: ${generic.join(', ')}.`)
   const stock = ['unsplash', 'pexels', 'shutterstock', 'istockphoto', 'gettyimages', 'pixabay', 'freepik'].filter(s => lower.includes(s))
-  if (stock.length) hints.push(`Stock-photo sources detected in image URLs: ${stock.join(', ')}`)
-  if (/bg-gradient|linear-gradient|radial-gradient/.test(lower) && /purple|indigo|violet|#7c3aed|#8b5cf6|#6366f1/.test(lower)) hints.push('Purple/blue gradients present in the CSS.')
-  if ((lower.match(/text-xs|text-\[1[0-2]px\]|font-size:\s*1[0-2]px/g) || []).length >= 3) hints.push('Lots of very small text.')
+  if (stock.length) hints.push(`Stock-photo sources in image URLs: ${stock.join(', ')}.`)
+  if (/bg-gradient|linear-gradient|radial-gradient/.test(lower) && /purple|indigo|violet|#7c3aed|#8b5cf6|#6366f1/.test(lower)) hints.push('Purple/blue gradients in the CSS.')
   return hints
 }
 
-// ---- Deterministic fallback verdict (no AI) ----
-function deterministicCharges(html: string): Charge[] {
+// Deterministic fallback — returns { charges, quality (0-100, higher better) }.
+function deterministic(html: string): { charges: Charge[]; quality: number } {
   const lower = html.toLowerCase()
   const n = (re: RegExp) => (lower.match(re) || []).length
   const d: { hit: boolean; code: string; title: string; detail: string }[] = [
     { hit: /bg-gradient|linear-gradient/.test(lower) && /purple|indigo|violet|#7c3aed|#8b5cf6|#6366f1/.test(lower), code: 'purple', title: 'Purple-gradient abuse', detail: 'Purple-blue gradients everywhere — everything competes, nothing wins.' },
-    { hit: n(/rounded-2xl|rounded-3xl/g) >= 6, code: 'rounded', title: 'Rounded-card soup', detail: 'The page reads like a component-library demo.' },
+    { hit: n(/rounded-2xl|rounded-3xl/g) >= 6, code: 'rounded', title: 'Rounded-card soup', detail: 'Reads like a component-library demo.' },
     { hit: /backdrop-blur|blur\(|shadow-2xl/.test(lower), code: 'glow', title: 'Glow & blur overload', detail: 'Blurred blobs and neon shadows muddy the hierarchy.' },
-    { hit: /bg-clip-text|text-transparent/.test(lower), code: 'gradtext', title: 'Gradient text on a random word', detail: 'Decorative, not intentional.' },
     { hit: n(/text-gray-400|text-gray-500|text-slate-400|#9ca3af/g) >= 3, code: 'graytext', title: 'Tiny low-contrast gray text', detail: 'Looks "premium" for 4 seconds, then just hard to read.' },
     { hit: /lucide/.test(lower) || n(/<svg/g) >= 20, code: 'lucide', title: 'Lucide icon spam', detail: 'The same thin-line icon in a rounded square on every card.' },
     { hit: ['unsplash', 'pexels', 'shutterstock', 'istockphoto'].some(s => lower.includes(s)), code: 'stock', title: 'Stock photos', detail: 'Instantly reads as a generic template.' },
     { hit: /poppins|inter|montserrat/.test(lower), code: 'font', title: 'The default AI font', detail: 'Poppins / Inter / Montserrat — every generator’s first pick.' },
   ]
-  return d.filter(x => x.hit).map(({ code, title, detail }) => ({ code, title, detail }))
+  const charges = d.filter(x => x.hit).map(({ code, title, detail }) => ({ code, title, detail }))
+  const quality = Math.max(0, 100 - charges.length * 15)
+  return { charges, quality }
 }
 
-// ---- Screenshot via ScreenshotOne ----
-async function screenshot(target: string): Promise<string | null> {
+// ---- ScreenshotOne, with a settle delay ----
+async function shot(target: string, fullPage: boolean): Promise<string | null> {
   const key = process.env.SCREENSHOT_API_KEY
   if (!key) return null
   const api = new URL('https://api.screenshotone.com/take')
@@ -78,15 +76,18 @@ async function screenshot(target: string): Promise<string | null> {
   api.searchParams.set('image_quality', '72')
   api.searchParams.set('viewport_width', '1280')
   api.searchParams.set('viewport_height', '900')
-  api.searchParams.set('full_page', 'true')
-  api.searchParams.set('full_page_max_height', '2600')
+  api.searchParams.set('delay', '3') // wait 3s so the page actually finishes loading
   api.searchParams.set('block_cookie_banners', 'true')
   api.searchParams.set('block_ads', 'true')
   api.searchParams.set('cache', 'true')
   api.searchParams.set('cache_ttl', '86400')
+  if (fullPage) {
+    api.searchParams.set('full_page', 'true')
+    api.searchParams.set('full_page_max_height', '2600')
+  }
   try {
     const ctrl = new AbortController()
-    const to = setTimeout(() => ctrl.abort(), 25000)
+    const to = setTimeout(() => ctrl.abort(), 30000)
     const res = await fetch(api.toString(), { signal: ctrl.signal })
     clearTimeout(to)
     if (!res.ok) return null
@@ -100,62 +101,51 @@ async function screenshot(target: string): Promise<string | null> {
 
 const ASPECTS = ['typography', 'spacing', 'color', 'clutter', 'hierarchy', 'imagery'] as const
 type Aspect = (typeof ASPECTS)[number]
-
 const ASPECT_TITLE: Record<Aspect, string> = {
-  typography: 'Typography',
-  spacing: 'Spacing',
-  color: 'Colour',
-  clutter: 'Clutter',
-  hierarchy: 'Structure & hierarchy',
-  imagery: 'Imagery',
+  typography: 'Typography', spacing: 'Spacing', color: 'Colour', clutter: 'Clarity', hierarchy: 'Structure & hierarchy', imagery: 'Imagery',
 }
 
-const RUBRIC = `You are the "Web Police", a witty design critic judging a website SCREENSHOT for how much it looks like cheap, generic, AI-slop / template design. Be opinionated and a little funny, but ground every judgment in what is actually visible.
+const RUBRIC = `You are the "Web Police", a sharp but funny design critic judging a website from screenshots (first image = top/hero, second image = the full page). Rate how GOOD the design is.
 
-Score each aspect from 0 (excellent, clearly intentional custom design) to 100 (awful, textbook slop). Higher = worse.
+Score each aspect 0–100 where HIGHER IS BETTER:
+- 0–30 = awful, generic AI-slop / cheap template.
+- 40–60 = mediocre, forgettable.
+- 70–85 = good, clearly intentional professional design.
+- 90–100 = excellent, distinctive custom design.
 
-Aspects and what "bad" means:
-- typography: generic fonts (Poppins/Inter/Montserrat), tiny low-contrast text, weak weight/size hierarchy — feels generic and cheap.
-- spacing: elements too close together / cramped, or awkward, no comfortable negative space.
-- color: too many colors, random or clashing palette, over-saturated, ugly gradients — becomes a clown.
-- clutter: disorganized, too much at once, no clear focal point — you don't know where to look.
-- hierarchy: no clear layout or path for the eye; unclear where to go; feels lost.
-- imagery: obvious stock photos or obviously fake/AI images — instantly reads as a generic template.
+Be fair: genuinely well-designed, custom, professional sites MUST score high. Do not punish clean minimal design. Only score low when it truly looks generic/cheap/cluttered.
 
-Return ONLY a compact JSON object, no markdown, exactly:
+Aspects (what LOW means):
+- typography: generic fonts (Poppins/Inter/Montserrat), tiny low-contrast text, weak hierarchy — cheap/generic feel.
+- spacing: cramped, elements too close, no comfortable negative space.
+- color: too many colors, random/clashing, over-saturated, ugly gradients — clownish. (Restrained, harmonious palettes score HIGH.)
+- clutter: disorganized, too much at once, no clear focal point. (Clean, calm layouts score HIGH.)
+- hierarchy: no clear layout or path for the eye; you feel lost. (Clear structure scores HIGH.)
+- imagery: obvious stock photos or obviously fake/AI images. (Real, original, well-shot imagery scores HIGH.)
+
+Return ONLY compact JSON, no markdown:
 {"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"..."},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one witty sentence"}`
 
-async function visionAnalyze(imageB64: string, hints: string[]): Promise<{ aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string } | null> {
+async function visionAnalyze(images: string[], hints: string[]): Promise<{ aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string } | null> {
   const key = process.env.ANTHROPIC_API_KEY
-  if (!key) return null
-  const text = hints.length ? `${RUBRIC}\n\nDeterministic hints from the page's code (use as supporting evidence): ${hints.join(' ')}` : RUBRIC
+  if (!key || images.length === 0) return null
+  const text = hints.length ? `${RUBRIC}\n\nHints from the page code: ${hints.join(' ')}` : RUBRIC
+  const content: unknown[] = images.map(data => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data } }))
+  content.push({ type: 'text', text })
   try {
     const ctrl = new AbortController()
-    const to = setTimeout(() => ctrl.abort(), 30000)
+    const to = setTimeout(() => ctrl.abort(), 40000)
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
       signal: ctrl.signal,
-      body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 900,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: imageB64 } },
-              { type: 'text', text },
-            ],
-          },
-        ],
-      }),
+      body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 900, messages: [{ role: 'user', content }] }),
     })
     clearTimeout(to)
     if (!res.ok) return null
     const j = await res.json()
     const out: string = j?.content?.[0]?.text ?? ''
-    const jsonStr = out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1)
-    const parsed = JSON.parse(jsonStr)
+    const parsed = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1))
     const aspects = {} as Record<Aspect, { score: number; reason: string }>
     for (const a of ASPECTS) {
       const raw = parsed[a] ?? {}
@@ -168,13 +158,21 @@ async function visionAnalyze(imageB64: string, hints: string[]): Promise<{ aspec
   }
 }
 
+// Realistic "who made this and how long" tiers, keyed on quality (higher=better).
+function effortFor(quality: number): { label: string; flavor: string } {
+  if (quality < 25) return { label: 'One afternoon of vibe-coding', flavor: 'AI generated it, nobody checked.' }
+  if (quality < 45) return { label: 'A weekend template job', flavor: 'A theme bought, logo swapped, shipped.' }
+  if (quality < 62) return { label: 'About a week with a freelancer', flavor: 'Competent, if a little by-the-numbers.' }
+  if (quality < 80) return { label: 'A couple of weeks at a real agency', flavor: 'Considered, professional work.' }
+  return { label: 'Months with a serious design studio', flavor: 'Distinctive, crafted, genuinely good.' }
+}
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}))
   const u = normalizeUrl(body?.url)
   if (!u) return NextResponse.json({ error: 'Give us a real, public URL to investigate (like example.com).' }, { status: 400 })
   const target = u.toString()
 
-  // Fetch HTML (hints + fallback) and screenshot in parallel.
   let html = ''
   const htmlPromise = (async () => {
     try {
@@ -185,64 +183,63 @@ export async function POST(request: Request) {
       html = (await res.text()).slice(0, 800_000)
     } catch { /* handled below */ }
   })()
-  const shotPromise = screenshot(target)
+  // Two screenshots: the hero (top viewport) and the full page.
+  const topPromise = shot(target, false)
+  const fullPromise = shot(target, true)
   await htmlPromise
-  const imageB64 = await shotPromise
+  const [topB64, fullB64] = await Promise.all([topPromise, fullPromise])
 
-  if (!html && !imageB64) {
+  if (!html && !topB64 && !fullB64) {
     return NextResponse.json({ error: "Couldn't reach that site. Is the address right and the site online?" }, { status: 502 })
   }
 
   const hints = html ? htmlHints(html) : []
-  const vision = imageB64 ? await visionAnalyze(imageB64, hints) : null
+  const images = [topB64, fullB64].filter((x): x is string => !!x)
+  const vision = images.length ? await visionAnalyze(images, hints) : null
 
   let charges: Charge[]
-  let overall: number
+  let quality: number
   let summary = ''
   let mode: 'vision' | 'basic'
 
   if (vision) {
     mode = 'vision'
-    overall = vision.overall
+    quality = vision.overall
     summary = vision.summary
-    // Charges = aspects scoring "bad", worst first.
+    // Charges = the weakest aspects (low quality), worst first.
     charges = ASPECTS.map(a => ({ a, ...vision.aspects[a] }))
-      .filter(x => x.score >= 50)
-      .sort((x, y) => y.score - x.score)
+      .filter(x => x.score <= 55)
+      .sort((x, y) => x.score - y.score)
       .map(x => ({ code: x.a, title: `${ASPECT_TITLE[x.a]} — ${x.score}/100`, detail: x.reason || 'Reads generic.' }))
-    // If the model found nothing bad, keep an empty charge list (clean site).
   } else {
     mode = 'basic'
-    charges = deterministicCharges(html)
-    overall = Math.min(100, charges.length * 14)
+    const det = deterministic(html)
+    charges = det.charges
+    quality = det.quality
   }
 
   const crimes = charges.length
-  const effort = Math.max(1, Math.round(22 - overall * 0.2))
-  const effortFlavor =
-    effort <= 4 ? 'Barely longer than ordering a coffee.' :
-    effort <= 9 ? 'One lunch break, tops.' :
-    effort <= 15 ? 'A solid afternoon of copy-pasting.' :
-    'Suspiciously high. Someone may have actually tried.'
-
-  const passed = overall < 40
-  const verdict = passed
-    ? { level: 'cleared', label: overall < 20 ? 'CLEARED — no slop detected' : 'CLEARED — barely' }
-    : overall < 65
-      ? { level: 'suspicious', label: 'SUSPICIOUS' }
-      : { level: 'guilty', label: 'GUILTY OF DESIGN CRIMES' }
+  const { label: effortLabel, flavor: effortFlavor } = effortFor(quality)
+  const passed = quality >= 60
+  const verdict = quality >= 75
+    ? { level: 'cleared', label: 'CLEARED — actually good design' }
+    : quality >= 60
+      ? { level: 'cleared', label: 'CLEARED — solid enough' }
+      : quality >= 40
+        ? { level: 'suspicious', label: 'SUSPICIOUS' }
+        : { level: 'guilty', label: 'GUILTY OF DESIGN CRIMES' }
 
   return NextResponse.json({
     url: target,
     crimes,
     charges,
-    effort,
+    quality,
+    effortLabel,
     effortFlavor,
     passed,
     verdict,
-    overall,
     summary,
     mode,
-    screenshot: imageB64 ? `data:image/jpeg;base64,${imageB64}` : null,
+    screenshot: topB64 ? `data:image/jpeg;base64,${topB64}` : fullB64 ? `data:image/jpeg;base64,${fullB64}` : null,
   })
 }

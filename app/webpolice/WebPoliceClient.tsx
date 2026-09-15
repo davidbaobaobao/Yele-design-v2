@@ -8,7 +8,8 @@ type Result = {
   url: string
   crimes: number
   charges: Charge[]
-  effort: number
+  quality: number
+  effortLabel: string
   effortFlavor: string
   passed: boolean
   verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
@@ -257,11 +258,11 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
 
       {/* Charges */}
       <h2 className="font-display font-bold text-2xl md:text-3xl text-white tracking-tight mb-4">
-        {result.crimes === 0 ? 'No charges filed 😳' : `The ${Math.min(3, result.crimes)} main charges`}
+        {result.crimes === 0 ? 'No charges filed ✅' : `The ${Math.min(3, result.crimes)} main charges`}
       </h2>
       <div className="space-y-3">
         {result.crimes === 0 && (
-          <p className="font-body text-sm text-white/60">Suspiciously clean. Either a real designer made this… or you built it yourself. Respect.</p>
+          <p className="font-body text-sm text-white/60">Clean record. This actually looks like real, considered design. The Web Police tip their hats.</p>
         )}
         {shown.map((c, i) => (
           <div key={c.code} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -290,9 +291,10 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
 
       {/* Verdict — effort */}
       <div className="mt-10 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center">
-        <p className="font-body text-sm text-white/50">Effort used to create this website</p>
-        <p className="font-display font-bold tracking-tight text-white mt-1" style={{ fontSize: 'clamp(2.6rem, 9vw, 4.5rem)' }}>
-          {result.effort} min
+        <p className="font-body text-sm text-white/50">Design score: <span className="font-semibold text-white/80">{result.quality}/100</span></p>
+        <p className="font-body text-sm text-white/50 mt-4">Looks like it took</p>
+        <p className="font-display font-bold tracking-tight text-white mt-1" style={{ fontSize: 'clamp(1.6rem, 6vw, 2.8rem)' }}>
+          {result.effortLabel}
         </p>
         <p className="font-body text-sm text-white/60 mt-1">{result.effortFlavor}</p>
         <p className={`font-display font-bold text-xl md:text-2xl tracking-tight mt-4 ${VERDICT_TEXT[result.verdict.level]}`}>
