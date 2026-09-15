@@ -60,6 +60,13 @@ const PINK_BOTTOM = '#d4a6b2'
 const MASK_H = 'linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)'
 const MASK_V = 'linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%)'
 
+// Fun meme images shown inside specific crime cards.
+const CRIME_IMAGES: Record<string, string[]> = {
+  imagery: ['/media/webpolice/stock-photo.jpg', '/media/webpolice/imagery-2.jpg'],
+  typography: ['/media/webpolice/typography-1.jpg', '/media/webpolice/typography-2.jpg'],
+  color: ['/media/webpolice/color-1.jpg', '/media/webpolice/color-2.jpg'],
+}
+
 const VERDICT_TEXT: Record<string, string> = {
   guilty: 'text-red-400',
   suspicious: 'text-amber-300',
@@ -497,10 +504,14 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
               <div className="min-w-0">
                 <p className="font-body font-semibold text-sm text-white" style={c.bg ? { textShadow: '0 1px 3px rgba(0,0,0,0.7)' } : undefined}>{c.title}</p>
                 <p className="font-body text-sm text-white/70 mt-0.5" style={c.bg ? { textShadow: '0 1px 3px rgba(0,0,0,0.7)' } : undefined}>{c.detail}</p>
-                {c.code === 'imagery' && (
-                  <div className="mt-3 overflow-hidden rounded-lg border border-white/15">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- static meme asset */}
-                    <img src="/media/webpolice/stock-photo.jpg" alt={t.exhibitAlt} className="block w-full max-w-[280px]" />
+                {CRIME_IMAGES[c.code] && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {CRIME_IMAGES[c.code].map(src => (
+                      <div key={src} className="overflow-hidden rounded-lg border border-white/15">
+                        {/* eslint-disable-next-line @next/next/no-img-element -- static meme asset */}
+                        <img src={src} alt={t.exhibitAlt} className="block h-24 w-auto object-cover" />
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
