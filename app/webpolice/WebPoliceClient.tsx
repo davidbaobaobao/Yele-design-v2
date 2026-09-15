@@ -15,17 +15,19 @@ type Result = {
   verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
   summary?: string
   screenshot?: string | null
+  mode?: 'vision' | 'basic'
+  note?: string
 }
 
 const PLAN_OPTIONS = ['Launch — $699', 'Business — $1,199', 'Pro — $2,799']
 
 const LOADING_LINES = [
-  'Reading the site its rights…',
-  'Dusting for purple gradients…',
-  'Counting the rounded cards…',
-  'Bagging the Lucide icons as evidence…',
-  'Consulting the gorilla…',
-  'Cross-checking against known AI slop…',
+  'Sending in the gorilla unit…',
+  'Judging your font choices…',
+  'Checking for stolen stock photos…',
+  'Measuring the amount of purple…',
+  'Comparing it to actual good websites…',
+  'Trying not to laugh…',
 ]
 
 const PINK_TOP = '#edb9ca'
@@ -42,7 +44,8 @@ const VERDICT_TEXT: Record<string, string> = {
 
 // Module-level so it is NOT recreated on every keystroke — that remount was
 // what reset the videos while typing.
-function Gorilla({ side, vref }: { side: 'left' | 'right'; vref: React.RefObject<HTMLVideoElement> }) {
+function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.RefObject<HTMLVideoElement>; hidden: boolean }) {
+  const slide = hidden ? (side === 'left' ? 'translateX(-150%)' : 'translateX(150%)') : 'translateX(0)'
   return (
     <video
       ref={vref}
@@ -52,12 +55,12 @@ function Gorilla({ side, vref }: { side: 'left' | 'right'; vref: React.RefObject
       playsInline
       preload="auto"
       aria-hidden="true"
-      className={`pointer-events-none absolute top-1/2 z-0 w-[46vw] max-w-[300px] md:w-[26vw] md:max-w-[380px] ${
+      className={`pointer-events-none absolute top-1/2 z-0 w-[46vw] max-w-[300px] md:w-[26vw] md:max-w-[380px] transition-transform duration-500 ease-in ${
         side === 'left' ? 'left-[-9%] md:left-[-2%]' : 'right-[-9%] md:right-[-2%]'
       }`}
       style={
         {
-          transform: `translateY(-50%) ${side === 'right' ? 'scaleX(-1)' : ''}`,
+          transform: `${slide} translateY(-50%) ${side === 'right' ? 'scaleX(-1)' : ''}`,
           maskImage: `${MASK_H}, ${MASK_V}`,
           maskComposite: 'intersect',
           WebkitMaskImage: `${MASK_H}, ${MASK_V}`,
@@ -125,32 +128,27 @@ export default function WebPoliceClient() {
 
   return (
     <main className="relative min-h-screen overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
-      <Gorilla side="left" vref={leftVid} />
-      <Gorilla side="right" vref={rightVid} />
+      <Gorilla side="left" vref={leftVid} hidden={moved} />
+      <Gorilla side="right" vref={rightVid} hidden={moved} />
 
-      {/* Hero — slides up when the case opens */}
+      {/* Hero — slides fully up (leaving the screen empty) when the case opens */}
       <div
-        className={`relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center transition-transform duration-700 ease-out ${
-          moved ? '-translate-y-[26vh] md:-translate-y-[24vh]' : 'translate-y-0'
+        className={`relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center transition-transform duration-500 ease-in ${
+          moved ? '-translate-y-[110vh]' : 'translate-y-0'
         }`}
       >
-        {/* Animated police siren — sound of da (web) police */}
-        <span
-          aria-hidden="true"
-          className="mb-4 inline-block select-none text-5xl md:text-6xl"
-          style={{ animation: 'wpSiren 0.7s ease-in-out infinite' }}
-        >
-          🚨
-        </span>
-
-        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.08]" style={{ fontSize: 'clamp(1.7rem, 4.6vw, 3rem)' }}>
-          Whoop Whoop,<br className="sm:hidden" /> sound of da (web) police
+        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.05]" style={{ fontSize: 'clamp(2rem, 5.4vw, 3.6rem)' }}>
+          Is my website{' '}
+          <span className="font-normal italic" style={{ fontFamily: '"Snell Roundhand", "Brush Script MT", "Segoe Script", cursive' }}>
+            objectively
+          </span>{' '}
+          ugly?
         </h1>
 
-        <p className="mt-4 font-body font-semibold text-[#16161A]/75 leading-snug" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.25rem)' }}>
+        <p className="mt-5 font-body font-semibold text-[#16161A]/75 leading-snug" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.25rem)' }}>
           Is my website ugly? generic?<br />
           Did my developer lie to me?<br />
-          Did he use AI to generate my website in 10 min?
+          Did he use ChatGPT to generate my website in 10 min?
         </p>
 
         <div className="mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3">
@@ -179,9 +177,13 @@ export default function WebPoliceClient() {
         {error && <p className="mt-5 font-body text-sm text-red-700">{error}</p>}
       </div>
 
-      {/* Loading — the police gorilla runs to the scene (plays ≥2.4s) */}
+      {/* Loading — funny text on top, the police gorilla runs to the scene,
+          plus a circular spinner. Plays ≥2.4s. */}
       {phase === 'loading' && (
         <div className="fixed inset-0 z-20 flex flex-col items-center justify-center px-6 pointer-events-none">
+          <p className="mb-4 font-display font-bold text-[#16161A] text-center leading-snug" style={{ fontSize: 'clamp(1.1rem, 3vw, 1.6rem)' }}>
+            {LOADING_LINES[line]}
+          </p>
           <video
             autoPlay
             loop
@@ -189,7 +191,7 @@ export default function WebPoliceClient() {
             playsInline
             preload="auto"
             aria-hidden="true"
-            className="w-[74vw] max-w-[340px]"
+            className="w-[70vw] max-w-[320px]"
             style={
               {
                 maskImage: `${MASK_H}, ${MASK_V}`,
@@ -201,7 +203,7 @@ export default function WebPoliceClient() {
           >
             <source src="/media/webpolice/gorilla-run.mp4" type="video/mp4" />
           </video>
-          <p className="mt-2 font-mono text-sm text-[#16161A]/70 animate-pulse">{LOADING_LINES[line]}</p>
+          <div className="mt-4 h-9 w-9 rounded-full border-[3px] border-[#16161A]/20 border-t-[#16161A] animate-spin" aria-hidden="true" />
         </div>
       )}
 
@@ -248,6 +250,12 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
       </div>
 
       <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/40 break-all mb-4">Case file: {result.url}</p>
+
+      {result.mode === 'basic' && (
+        <div className="mb-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 font-body text-xs text-amber-200/90">
+          ⚠️ Running basic (keyword) mode, not the accurate AI vision analysis{result.note ? ` — ${result.note}` : ''}. Add both env vars in Vercel for real results.
+        </div>
+      )}
 
       {result.screenshot && (
         <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">

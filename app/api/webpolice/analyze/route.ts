@@ -107,13 +107,17 @@ const ASPECT_TITLE: Record<Aspect, string> = {
 
 const RUBRIC = `You are the "Web Police", a sharp but funny design critic judging a website from screenshots (first image = top/hero, second image = the full page). Rate how GOOD the design is.
 
-Score each aspect 0–100 where HIGHER IS BETTER:
-- 0–30 = awful, generic AI-slop / cheap template.
-- 40–60 = mediocre, forgettable.
-- 70–85 = good, clearly intentional professional design.
-- 90–100 = excellent, distinctive custom design.
+Score each aspect 0–100 where HIGHER IS BETTER, and BE STRICT:
+- 0–25 = awful, generic AI-slop / cheap builder template.
+- 30–50 = average, forgettable, template-y. MOST generic small-business/handyman/agency-template sites belong HERE, not higher.
+- 55–70 = good, clearly intentional professional design.
+- 75–90 = excellent, distinctive custom design.
+- 90–100 = exceptional, world-class.
 
-Be fair: genuinely well-designed, custom, professional sites MUST score high. Do not punish clean minimal design. Only score low when it truly looks generic/cheap/cluttered.
+Punish hard, specifically:
+- Obvious STOCK PHOTOS or obviously fake/AI-generated images → imagery must score 20–35. This is a big tell of a template.
+- Average, "safe", forgettable template designs (even if tidy) → keep the overall in the 35–50 band. "Inoffensive but generic" is NOT a 60.
+Be fair the other way too: genuinely custom, distinctive, professional sites MUST score high, and clean minimal design is good, not a crime.
 
 Aspects (what LOW means):
 - typography: generic fonts (Poppins/Inter/Montserrat), tiny low-contrast text, weak hierarchy — cheap/generic feel.
@@ -126,15 +130,19 @@ Aspects (what LOW means):
 Return ONLY compact JSON, no markdown:
 {"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"..."},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one witty sentence"}`
 
-async function visionAnalyze(images: string[], hints: string[]): Promise<{ aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string } | null> {
+type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string }
+type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
+
+async function visionAnalyze(images: string[], hints: string[]): Promise<VisionResult> {
   const key = process.env.ANTHROPIC_API_KEY
-  if (!key || images.length === 0) return null
+  if (!key) return { ok: false, reason: 'ANTHROPIC_API_KEY not set' }
+  if (images.length === 0) return { ok: false, reason: 'no screenshot captured (check SCREENSHOT_API_KEY)' }
   const text = hints.length ? `${RUBRIC}\n\nHints from the page code: ${hints.join(' ')}` : RUBRIC
   const content: unknown[] = images.map(data => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data } }))
   content.push({ type: 'text', text })
   try {
     const ctrl = new AbortController()
-    const to = setTimeout(() => ctrl.abort(), 40000)
+    const to = setTimeout(() => ctrl.abort(), 45000)
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
@@ -142,7 +150,7 @@ async function visionAnalyze(images: string[], hints: string[]): Promise<{ aspec
       body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 900, messages: [{ role: 'user', content }] }),
     })
     clearTimeout(to)
-    if (!res.ok) return null
+    if (!res.ok) return { ok: false, reason: `Anthropic ${res.status}: ${(await res.text()).slice(0, 160)}` }
     const j = await res.json()
     const out: string = j?.content?.[0]?.text ?? ''
     const parsed = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1))
@@ -152,19 +160,22 @@ async function visionAnalyze(images: string[], hints: string[]): Promise<{ aspec
       aspects[a] = { score: Math.max(0, Math.min(100, Number(raw.score) || 0)), reason: String(raw.reason || '').slice(0, 200) }
     }
     const overall = Math.max(0, Math.min(100, Number(parsed.overall) || Math.round(ASPECTS.reduce((s, a) => s + aspects[a].score, 0) / ASPECTS.length)))
-    return { aspects, overall, summary: String(parsed.summary || '').slice(0, 200) }
-  } catch {
-    return null
+    return { ok: true, data: { aspects, overall, summary: String(parsed.summary || '').slice(0, 200) } }
+  } catch (err) {
+    return { ok: false, reason: `vision error: ${err instanceof Error ? err.message : String(err)}`.slice(0, 160) }
   }
 }
 
-// Realistic "who made this and how long" tiers, keyed on quality (higher=better).
+// "Who made this and how long" tiers, keyed on quality (higher = better).
+// Low end: a vibe-coder with ChatGPT. High end: a real studio.
 function effortFor(quality: number): { label: string; flavor: string } {
-  if (quality < 25) return { label: 'One afternoon of vibe-coding', flavor: 'AI generated it, nobody checked.' }
-  if (quality < 45) return { label: 'A weekend template job', flavor: 'A theme bought, logo swapped, shipped.' }
-  if (quality < 62) return { label: 'About a week with a freelancer', flavor: 'Competent, if a little by-the-numbers.' }
-  if (quality < 80) return { label: 'A couple of weeks at a real agency', flavor: 'Considered, professional work.' }
-  return { label: 'Months with a serious design studio', flavor: 'Distinctive, crafted, genuinely good.' }
+  if (quality < 20) return { label: 'One hour with ChatGPT', flavor: 'A vibe-coder, one prompt, zero taste.' }
+  if (quality < 35) return { label: 'An afternoon with ChatGPT', flavor: 'A vibe-coder and a long coffee.' }
+  if (quality < 50) return { label: 'A weekend of vibe-coding with ChatGPT', flavor: 'Copy, paste, deploy, repeat.' }
+  if (quality < 58) return { label: 'A few days at an average agency', flavor: 'Fast, competent, forgettable.' }
+  if (quality < 68) return { label: 'About a week of serious agency work', flavor: 'Actually considered. Quite good.' }
+  if (quality < 78) return { label: 'About a month of serious agency work', flavor: 'Real craft and iteration.' }
+  return { label: 'Months of serious studio work', flavor: 'Hundreds of meetings between the CEO, the CTO and assorted three-letter guys.' }
 }
 
 export async function POST(request: Request) {
@@ -195,24 +206,26 @@ export async function POST(request: Request) {
 
   const hints = html ? htmlHints(html) : []
   const images = [topB64, fullB64].filter((x): x is string => !!x)
-  const vision = images.length ? await visionAnalyze(images, hints) : null
+  const vision = await visionAnalyze(images, hints)
 
   let charges: Charge[]
   let quality: number
   let summary = ''
   let mode: 'vision' | 'basic'
+  let note = ''
 
-  if (vision) {
+  if (vision.ok) {
     mode = 'vision'
-    quality = vision.overall
-    summary = vision.summary
+    quality = vision.data.overall
+    summary = vision.data.summary
     // Charges = the weakest aspects (low quality), worst first.
-    charges = ASPECTS.map(a => ({ a, ...vision.aspects[a] }))
+    charges = ASPECTS.map(a => ({ a, ...vision.data.aspects[a] }))
       .filter(x => x.score <= 55)
       .sort((x, y) => x.score - y.score)
       .map(x => ({ code: x.a, title: `${ASPECT_TITLE[x.a]} — ${x.score}/100`, detail: x.reason || 'Reads generic.' }))
   } else {
     mode = 'basic'
+    note = vision.reason
     const det = deterministic(html)
     charges = det.charges
     quality = det.quality
@@ -240,6 +253,7 @@ export async function POST(request: Request) {
     verdict,
     summary,
     mode,
+    note,
     screenshot: topB64 ? `data:image/jpeg;base64,${topB64}` : fullB64 ? `data:image/jpeg;base64,${fullB64}` : null,
   })
 }
