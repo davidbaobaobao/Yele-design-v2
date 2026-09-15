@@ -1,14 +1,18 @@
 import { NextResponse } from 'next/server'
 
-// The Web Police — a satire tool, not a serious audit. It fetches the target's
-// public HTML and hunts for the classic "AI slop" design tells (purple
-// gradients, rounded-card soup, glow/blur, giant centered hero, gradient text,
-// tiny gray text, Lucide icon spam, bento grids, pill overload, etc.), then
-// hands down a comedic verdict + an "effort" estimate. Accuracy is explicitly
-// NOT the point — laughs are.
+// The Web Police — satire design analyzer. HYBRID:
+//  1. Deterministic pre-pass over the HTML for cheap hints (fonts, tiny text,
+//     stock-photo domains, color/gradient counts).
+//  2. Screenshot (ScreenshotOne) → Claude Sonnet vision, which scores the six
+//     design aspects the user cares about, with a short reason each.
+//  3. If the ANTHROPIC_API_KEY or SCREENSHOT_API_KEY env vars are missing, or
+//     any step fails, it falls back to a purely deterministic verdict so the
+//     tool still works.
+//
+// Env: ANTHROPIC_API_KEY, SCREENSHOT_API_KEY (ScreenshotOne access key).
 
 export const runtime = 'nodejs'
-export const maxDuration = 20
+export const maxDuration = 40
 
 type Charge = { code: string; title: string; detail: string }
 
@@ -17,11 +21,7 @@ function normalizeUrl(raw: string): URL | null {
   if (!s) return null
   if (!/^https?:\/\//i.test(s)) s = 'https://' + s
   let u: URL
-  try {
-    u = new URL(s)
-  } catch {
-    return null
-  }
+  try { u = new URL(s) } catch { return null }
   if (u.protocol !== 'http:' && u.protocol !== 'https:') return null
   const host = u.hostname.toLowerCase()
   if (
@@ -32,95 +32,205 @@ function normalizeUrl(raw: string): URL | null {
   return u
 }
 
+// ---- Deterministic hints from the HTML (fed to the vision model) ----
+function htmlHints(html: string): string[] {
+  const lower = html.toLowerCase()
+  const hints: string[] = []
+  const fonts = new Set<string>()
+  Array.from(lower.matchAll(/fonts\.googleapis\.com\/css2?\?[^"']*family=([^"'&]+)/gi)).forEach((m: RegExpMatchArray) =>
+    m[1].split('|').forEach((f: string) => fonts.add(decodeURIComponent(f.split(':')[0]).replace(/\+/g, ' ').trim()))
+  )
+  if (fonts.size) hints.push(`Fonts loaded: ${Array.from(fonts).slice(0, 6).join(', ')}`)
+  const generic = ['poppins', 'inter', 'montserrat', 'roboto', 'open sans', 'lato'].filter(f => lower.includes(f))
+  if (generic.length) hints.push(`Uses over-used generic fonts: ${generic.join(', ')}`)
+  const stock = ['unsplash', 'pexels', 'shutterstock', 'istockphoto', 'gettyimages', 'pixabay', 'freepik'].filter(s => lower.includes(s))
+  if (stock.length) hints.push(`Stock-photo sources detected in image URLs: ${stock.join(', ')}`)
+  if (/bg-gradient|linear-gradient|radial-gradient/.test(lower) && /purple|indigo|violet|#7c3aed|#8b5cf6|#6366f1/.test(lower)) hints.push('Purple/blue gradients present in the CSS.')
+  if ((lower.match(/text-xs|text-\[1[0-2]px\]|font-size:\s*1[0-2]px/g) || []).length >= 3) hints.push('Lots of very small text.')
+  return hints
+}
+
+// ---- Deterministic fallback verdict (no AI) ----
+function deterministicCharges(html: string): Charge[] {
+  const lower = html.toLowerCase()
+  const n = (re: RegExp) => (lower.match(re) || []).length
+  const d: { hit: boolean; code: string; title: string; detail: string }[] = [
+    { hit: /bg-gradient|linear-gradient/.test(lower) && /purple|indigo|violet|#7c3aed|#8b5cf6|#6366f1/.test(lower), code: 'purple', title: 'Purple-gradient abuse', detail: 'Purple-blue gradients everywhere — everything competes, nothing wins.' },
+    { hit: n(/rounded-2xl|rounded-3xl/g) >= 6, code: 'rounded', title: 'Rounded-card soup', detail: 'The page reads like a component-library demo.' },
+    { hit: /backdrop-blur|blur\(|shadow-2xl/.test(lower), code: 'glow', title: 'Glow & blur overload', detail: 'Blurred blobs and neon shadows muddy the hierarchy.' },
+    { hit: /bg-clip-text|text-transparent/.test(lower), code: 'gradtext', title: 'Gradient text on a random word', detail: 'Decorative, not intentional.' },
+    { hit: n(/text-gray-400|text-gray-500|text-slate-400|#9ca3af/g) >= 3, code: 'graytext', title: 'Tiny low-contrast gray text', detail: 'Looks "premium" for 4 seconds, then just hard to read.' },
+    { hit: /lucide/.test(lower) || n(/<svg/g) >= 20, code: 'lucide', title: 'Lucide icon spam', detail: 'The same thin-line icon in a rounded square on every card.' },
+    { hit: ['unsplash', 'pexels', 'shutterstock', 'istockphoto'].some(s => lower.includes(s)), code: 'stock', title: 'Stock photos', detail: 'Instantly reads as a generic template.' },
+    { hit: /poppins|inter|montserrat/.test(lower), code: 'font', title: 'The default AI font', detail: 'Poppins / Inter / Montserrat — every generator’s first pick.' },
+  ]
+  return d.filter(x => x.hit).map(({ code, title, detail }) => ({ code, title, detail }))
+}
+
+// ---- Screenshot via ScreenshotOne ----
+async function screenshot(target: string): Promise<string | null> {
+  const key = process.env.SCREENSHOT_API_KEY
+  if (!key) return null
+  const api = new URL('https://api.screenshotone.com/take')
+  api.searchParams.set('access_key', key)
+  api.searchParams.set('url', target)
+  api.searchParams.set('format', 'jpg')
+  api.searchParams.set('image_quality', '72')
+  api.searchParams.set('viewport_width', '1280')
+  api.searchParams.set('viewport_height', '900')
+  api.searchParams.set('full_page', 'true')
+  api.searchParams.set('full_page_max_height', '2600')
+  api.searchParams.set('block_cookie_banners', 'true')
+  api.searchParams.set('block_ads', 'true')
+  api.searchParams.set('cache', 'true')
+  api.searchParams.set('cache_ttl', '86400')
+  try {
+    const ctrl = new AbortController()
+    const to = setTimeout(() => ctrl.abort(), 25000)
+    const res = await fetch(api.toString(), { signal: ctrl.signal })
+    clearTimeout(to)
+    if (!res.ok) return null
+    const buf = Buffer.from(await res.arrayBuffer())
+    if (buf.byteLength < 1000) return null
+    return buf.toString('base64')
+  } catch {
+    return null
+  }
+}
+
+const ASPECTS = ['typography', 'spacing', 'color', 'clutter', 'hierarchy', 'imagery'] as const
+type Aspect = (typeof ASPECTS)[number]
+
+const ASPECT_TITLE: Record<Aspect, string> = {
+  typography: 'Typography',
+  spacing: 'Spacing',
+  color: 'Colour',
+  clutter: 'Clutter',
+  hierarchy: 'Structure & hierarchy',
+  imagery: 'Imagery',
+}
+
+const RUBRIC = `You are the "Web Police", a witty design critic judging a website SCREENSHOT for how much it looks like cheap, generic, AI-slop / template design. Be opinionated and a little funny, but ground every judgment in what is actually visible.
+
+Score each aspect from 0 (excellent, clearly intentional custom design) to 100 (awful, textbook slop). Higher = worse.
+
+Aspects and what "bad" means:
+- typography: generic fonts (Poppins/Inter/Montserrat), tiny low-contrast text, weak weight/size hierarchy — feels generic and cheap.
+- spacing: elements too close together / cramped, or awkward, no comfortable negative space.
+- color: too many colors, random or clashing palette, over-saturated, ugly gradients — becomes a clown.
+- clutter: disorganized, too much at once, no clear focal point — you don't know where to look.
+- hierarchy: no clear layout or path for the eye; unclear where to go; feels lost.
+- imagery: obvious stock photos or obviously fake/AI images — instantly reads as a generic template.
+
+Return ONLY a compact JSON object, no markdown, exactly:
+{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"..."},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one witty sentence"}`
+
+async function visionAnalyze(imageB64: string, hints: string[]): Promise<{ aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string } | null> {
+  const key = process.env.ANTHROPIC_API_KEY
+  if (!key) return null
+  const text = hints.length ? `${RUBRIC}\n\nDeterministic hints from the page's code (use as supporting evidence): ${hints.join(' ')}` : RUBRIC
+  try {
+    const ctrl = new AbortController()
+    const to = setTimeout(() => ctrl.abort(), 30000)
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        model: 'claude-sonnet-5',
+        max_tokens: 900,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: imageB64 } },
+              { type: 'text', text },
+            ],
+          },
+        ],
+      }),
+    })
+    clearTimeout(to)
+    if (!res.ok) return null
+    const j = await res.json()
+    const out: string = j?.content?.[0]?.text ?? ''
+    const jsonStr = out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1)
+    const parsed = JSON.parse(jsonStr)
+    const aspects = {} as Record<Aspect, { score: number; reason: string }>
+    for (const a of ASPECTS) {
+      const raw = parsed[a] ?? {}
+      aspects[a] = { score: Math.max(0, Math.min(100, Number(raw.score) || 0)), reason: String(raw.reason || '').slice(0, 200) }
+    }
+    const overall = Math.max(0, Math.min(100, Number(parsed.overall) || Math.round(ASPECTS.reduce((s, a) => s + aspects[a].score, 0) / ASPECTS.length)))
+    return { aspects, overall, summary: String(parsed.summary || '').slice(0, 200) }
+  } catch {
+    return null
+  }
+}
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}))
   const u = normalizeUrl(body?.url)
   if (!u) return NextResponse.json({ error: 'Give us a real, public URL to investigate (like example.com).' }, { status: 400 })
+  const target = u.toString()
 
+  // Fetch HTML (hints + fallback) and screenshot in parallel.
   let html = ''
-  try {
-    const ctrl = new AbortController()
-    const to = setTimeout(() => ctrl.abort(), 12000)
-    const res = await fetch(u.toString(), {
-      headers: { 'user-agent': 'Mozilla/5.0 (compatible; YeleWebPolice/1.0; +https://yele.design/webpolice)' },
-      redirect: 'follow',
-      signal: ctrl.signal,
-    })
-    clearTimeout(to)
-    html = (await res.text()).slice(0, 800_000)
-  } catch {
+  const htmlPromise = (async () => {
+    try {
+      const ctrl = new AbortController()
+      const to = setTimeout(() => ctrl.abort(), 12000)
+      const res = await fetch(target, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; YeleWebPolice/1.0)' }, redirect: 'follow', signal: ctrl.signal })
+      clearTimeout(to)
+      html = (await res.text()).slice(0, 800_000)
+    } catch { /* handled below */ }
+  })()
+  const shotPromise = screenshot(target)
+  await htmlPromise
+  const imageB64 = await shotPromise
+
+  if (!html && !imageB64) {
     return NextResponse.json({ error: "Couldn't reach that site. Is the address right and the site online?" }, { status: 502 })
   }
 
-  const lower = html.toLowerCase()
-  const n = (re: RegExp) => (lower.match(re) || []).length
+  const hints = html ? htmlHints(html) : []
+  const vision = imageB64 ? await visionAnalyze(imageB64, hints) : null
 
-  const hasGradient = /bg-gradient|linear-gradient|radial-gradient|conic-gradient/.test(lower)
-  const hasPurple = /purple|indigo|violet|fuchsia|#7c3aed|#6d28d9|#8b5cf6|#6366f1|#4f46e5|#a855f7|#818cf8|#c084fc/.test(lower)
-  const roundedCards = n(/rounded-2xl|rounded-3xl|rounded-\[1[6-9]px\]|rounded-\[2\dpx\]|rounded-\[3\dpx\]/g)
-  const roundedFull = n(/rounded-full/g)
-  const blurGlow = /backdrop-blur|backdrop-filter|blur\(|drop-shadow|shadow-2xl|shadow-\[0/.test(lower)
-  const bigText = /text-6xl|text-7xl|text-8xl|text-9xl/.test(lower)
-  const textCenter = n(/text-center/g)
-  const mxAuto = n(/mx-auto/g)
-  const gradientText = /bg-clip-text|-webkit-background-clip:\s*text|background-clip:\s*text|text-transparent/.test(lower)
-  const tinyGray = n(/text-gray-400|text-gray-500|text-slate-400|text-slate-500|text-neutral-400|text-zinc-400|#9ca3af|#6b7280|#94a3b8/g)
-  const lucide = /lucide/.test(lower)
-  const svgCount = n(/<svg/g)
-  const bento = /bento/.test(lower) || n(/col-span-/g) >= 4
-  const charts = /recharts|chart\.js|chartjs|apexcharts|highcharts/.test(lower)
-  const bigPad = n(/py-24|py-28|py-32|py-40|py-48/g)
-  const hover = n(/hover:scale|hover:-translate|group-hover|hover:shadow/g)
-  const particles = /tsparticles|particles\.js|particlesjs/.test(lower)
-  const darkBg = /bg-black|bg-gray-950|bg-neutral-950|bg-zinc-950|bg-slate-900|#0a0a0a|#0b1120|#0f172a|#111827/.test(lower)
-  const genericFont = /poppins|inter|montserrat|roboto|open\+sans|lato/.test(lower)
+  let charges: Charge[]
+  let overall: number
+  let summary = ''
+  let mode: 'vision' | 'basic'
 
-  // Ordered most→least visually damning (matches the design-cue priority list).
-  const detectors: { code: string; hit: boolean; title: string; detail: string }[] = [
-    { code: 'purple', hit: hasGradient && hasPurple, title: 'Purple-gradient abuse, first degree', detail: 'The suspect drenched the page in purple-blue gradients. Everything glows, nothing wins.' },
-    { code: 'rounded', hit: roundedCards >= 6, title: 'Rounded-card soup', detail: `Counted a suspicious ${roundedCards}+ big rounded rectangles. The page reads like a component-library demo.` },
-    { code: 'glow', hit: blurGlow, title: 'Glow & blur overload', detail: 'Blurred blobs, glassmorphism and neon shadows muddying the hierarchy. Squint harder, citizen.' },
-    { code: 'hero', hit: bigText && textCenter >= 1, title: 'Giant centered hero, tiny eyebrow, two pill buttons', detail: 'The most predictable hero in the game. We could have drawn it blindfolded.' },
-    { code: 'gradtext', hit: gradientText, title: 'Gradient text on one random word', detail: 'One word in the headline mysteriously rainbow. Decorative, not intentional.' },
-    { code: 'graytext', hit: tinyGray >= 3, title: 'Tiny low-contrast gray text everywhere', detail: 'Micro gray captions and labels that look "premium" for 4 seconds, then just hard to read.' },
-    { code: 'lucide', hit: lucide || svgCount >= 20, title: 'Lucide icon spam', detail: 'The same thin-line sparkle / rocket / bolt / shield in a rounded square, on every card.' },
-    { code: 'bento', hit: bento, title: 'Bento grids with no reason to exist', detail: 'Irregular card grid used for content that had zero need to be a grid.' },
-    { code: 'pills', hit: roundedFull >= 6, title: 'Pills. Everywhere.', detail: `Around ${roundedFull} capsule-shaped things. Nav, badges, CTAs — soft and toy-like.` },
-    { code: 'dashboard', hit: charts, title: 'Fake dashboard cosplay', detail: 'Decorative charts, KPIs and little widgets that measure absolutely nothing.' },
-    { code: 'space', hit: bigPad >= 3, title: 'Excessive empty space', detail: 'Enormous gaps between very little information. Stretched, not elegant.' },
-    { code: 'centered', hit: textCenter >= 4 && mxAuto >= 6, title: 'Everything centered', detail: 'Centered titles, text, buttons, testimonials — all composition and tension surrendered.' },
-    { code: 'combo', hit: hasGradient && blurGlow && roundedCards >= 4 && hover >= 4, title: 'Too many competing effects in one component', detail: 'Gradient + glass + border + shadow + glow + icon + badge, all fighting in the same box.' },
-    { code: 'darkmode', hit: darkBg && hasPurple, title: 'Generic neon dark mode', detail: 'Near-black navy with purple/cyan accents. Instantly recognizable, instantly anonymous.' },
-    { code: 'hover', hit: hover >= 8, title: 'Overdone hover animations', detail: 'Every card lifts, glows, scales or grows a gradient border. Calm down.' },
-    { code: 'particles', hit: particles, title: 'Decorative particles to fill the void', detail: 'Floating dots and stars added purely to hide the emptiness.' },
-    { code: 'font', hit: genericFont, title: 'The default AI font', detail: 'Poppins / Inter / Montserrat — the typeface every generator reaches for first.' },
-  ]
+  if (vision) {
+    mode = 'vision'
+    overall = vision.overall
+    summary = vision.summary
+    // Charges = aspects scoring "bad", worst first.
+    charges = ASPECTS.map(a => ({ a, ...vision.aspects[a] }))
+      .filter(x => x.score >= 50)
+      .sort((x, y) => y.score - x.score)
+      .map(x => ({ code: x.a, title: `${ASPECT_TITLE[x.a]} — ${x.score}/100`, detail: x.reason || 'Reads generic.' }))
+    // If the model found nothing bad, keep an empty charge list (clean site).
+  } else {
+    mode = 'basic'
+    charges = deterministicCharges(html)
+    overall = Math.min(100, charges.length * 14)
+  }
 
-  const charges: Charge[] = detectors.filter(d => d.hit).map(d => ({ code: d.code, title: d.title, detail: d.detail }))
-
-  // Effort: the more crimes, the less effort was spent. Pure comedy math.
   const crimes = charges.length
-  const effort = Math.max(1, 22 - crimes * 2)
+  const effort = Math.max(1, Math.round(22 - overall * 0.2))
   const effortFlavor =
     effort <= 4 ? 'Barely longer than ordering a coffee.' :
     effort <= 9 ? 'One lunch break, tops.' :
     effort <= 15 ? 'A solid afternoon of copy-pasting.' :
     'Suspiciously high. Someone may have actually tried.'
 
-  const passed = crimes <= 2
+  const passed = overall < 40
   const verdict = passed
-    ? { level: 'cleared', label: crimes === 0 ? 'CLEARED — no slop detected' : 'CLEARED — barely' }
-    : crimes <= 5
+    ? { level: 'cleared', label: overall < 20 ? 'CLEARED — no slop detected' : 'CLEARED — barely' }
+    : overall < 65
       ? { level: 'suspicious', label: 'SUSPICIOUS' }
       : { level: 'guilty', label: 'GUILTY OF DESIGN CRIMES' }
 
-  return NextResponse.json({
-    url: u.toString(),
-    crimes,
-    charges,
-    effort,
-    effortFlavor,
-    passed,
-    verdict,
-  })
+  return NextResponse.json({ url: target, crimes, charges, effort, effortFlavor, passed, verdict, overall, summary, mode })
 }

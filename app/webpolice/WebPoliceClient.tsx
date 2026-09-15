@@ -12,6 +12,7 @@ type Result = {
   effortFlavor: string
   passed: boolean
   verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
+  summary?: string
 }
 
 const PLAN_OPTIONS = ['Launch — $699', 'Business — $1,199', 'Pro — $2,799']
@@ -289,6 +290,7 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
         <p className={`font-display font-bold text-xl md:text-2xl tracking-tight mt-4 ${VERDICT_TEXT[result.verdict.level]}`}>
           {result.verdict.label}
         </p>
+        {result.summary && <p className="font-body text-sm italic text-white/60 mt-3 max-w-md mx-auto">“{result.summary}”</p>}
       </div>
 
       {/* Shameless plug + form */}
