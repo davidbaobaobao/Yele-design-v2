@@ -1,4 +1,15 @@
 import { NextResponse } from 'next/server'
+import { getWP, type Locale } from '@/lib/i18n/webpolice'
+
+function toLocale(v: unknown): Locale {
+  return v === 'es' || v === 'zh' ? v : 'en'
+}
+
+const YELE_TEXT: Record<Locale, { effortLabel: string; effortFlavor: string; summary: string }> = {
+  en: { effortLabel: 'Handcrafted by Yele themselves', effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.', summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.' },
+  es: { effortLabel: 'Hecha a mano por el propio Yele', effortFlavor: 'Los sospechosos SON la policía. Caso cerrado con un guiño.', summary: 'La única web que ha hecho sonrojar a la Policía Web. 105/100, sin objeciones — buscaos un cuarto.' },
+  zh: { effortLabel: '由 Yele 亲手打造', effortFlavor: '嫌疑人就是警察本人。眨眨眼，结案。', summary: '唯一一个让网页警察脸红的网站。105/100，无可挑剔 —— 你俩开个房吧。' },
+}
 
 // The Web Police — satire design analyzer. HYBRID:
 //  1. Deterministic pre-pass over the HTML for cheap hints.
@@ -112,9 +123,6 @@ async function shot(target: string, fullPage: boolean): Promise<string | null> {
 
 const ASPECTS = ['typography', 'spacing', 'color', 'clutter', 'hierarchy', 'imagery'] as const
 type Aspect = (typeof ASPECTS)[number]
-const ASPECT_TITLE: Record<Aspect, string> = {
-  typography: 'Typography', spacing: 'Spacing', color: 'Colour', clutter: 'Clarity', hierarchy: 'Structure & hierarchy', imagery: 'Imagery',
-}
 
 const RUBRIC = `You are the "Web Police", a sharp but funny design critic judging a website from screenshots (first image = top/hero, second image = the full page). Rate how GOOD the design is.
 
@@ -142,17 +150,20 @@ The "summary" is the headline verdict everyone reads — make it FUNNY and a lit
 
 For "color", also return "colors": the TWO most dominant or clashing colors actually used on the page, as hex (e.g. ["#39ff14","#7c3aed"]).
 
-Return ONLY compact JSON, no markdown:
-{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"...","colors":["#hex","#hex"]},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny, edgy roast (or praise) sentence"}`
+The "summary" is a punchy one-line roast (or praise). The "rant" is the longer cut: 1–2 SHORT paragraphs (~60–110 words) expanding it — funnier, more specific about the actual design, easy to read, playful, PG-13, no bullet points.
 
-type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; colorBg?: string }
+Return ONLY compact JSON, no markdown:
+{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"...","colors":["#hex","#hex"]},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny, edgy roast (or praise) sentence","rant":"1-2 short funny paragraphs"}`
+
+type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; rant: string; colorBg?: string }
 type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
 
-async function visionAnalyze(images: string[], hints: string[]): Promise<VisionResult> {
+async function visionAnalyze(images: string[], hints: string[], languageName: string): Promise<VisionResult> {
   const key = process.env.ANTHROPIC_API_KEY
   if (!key) return { ok: false, reason: 'ANTHROPIC_API_KEY not set' }
   if (images.length === 0) return { ok: false, reason: 'no screenshot captured (check SCREENSHOT_API_KEY)' }
-  const text = hints.length ? `${RUBRIC}\n\nHints from the page code: ${hints.join(' ')}` : RUBRIC
+  const lang = `\n\nWrite every "reason" field and the "summary" in ${languageName}.`
+  const text = (hints.length ? `${RUBRIC}\n\nHints from the page code: ${hints.join(' ')}` : RUBRIC) + lang
   const content: unknown[] = images.map(data => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data } }))
   content.push({ type: 'text', text })
   try {
@@ -175,43 +186,45 @@ async function visionAnalyze(images: string[], hints: string[]): Promise<VisionR
       aspects[a] = { score: Math.max(0, Math.min(100, Number(raw.score) || 0)), reason: String(raw.reason || '').slice(0, 200) }
     }
     const overall = Math.max(0, Math.min(100, Number(parsed.overall) || Math.round(ASPECTS.reduce((s, a) => s + aspects[a].score, 0) / ASPECTS.length)))
-    return { ok: true, data: { aspects, overall, summary: String(parsed.summary || '').slice(0, 200), colorBg: toGradient(parsed.color?.colors) } }
+    return { ok: true, data: { aspects, overall, summary: String(parsed.summary || '').slice(0, 200), rant: String(parsed.rant || '').slice(0, 900), colorBg: toGradient(parsed.color?.colors) } }
   } catch (err) {
     return { ok: false, reason: `vision error: ${err instanceof Error ? err.message : String(err)}`.slice(0, 160) }
   }
 }
 
-// "Who made this and how long" tiers, keyed on quality (higher = better).
-// Low end: a vibe-coder with ChatGPT. High end: a real studio.
-function effortFor(quality: number): { label: string; flavor: string } {
-  if (quality < 20) return { label: 'One hour with ChatGPT', flavor: 'A vibe-coder, one prompt, zero taste.' }
-  if (quality < 35) return { label: 'An afternoon with ChatGPT', flavor: 'A vibe-coder and a long coffee.' }
-  if (quality < 50) return { label: 'A weekend of vibe-coding with ChatGPT', flavor: 'Copy, paste, deploy, repeat.' }
-  if (quality < 58) return { label: 'A few days at an average agency', flavor: 'Fast, competent, forgettable.' }
-  if (quality < 68) return { label: 'About a week of serious agency work', flavor: 'Actually considered. Quite good.' }
-  if (quality < 78) return { label: 'About a month of serious agency work', flavor: 'Real craft and iteration.' }
-  return { label: 'Months of serious studio work', flavor: 'Hundreds of meetings between the CEO, the CTO and assorted three-letter guys.' }
+// Quality (higher = better) → effort tier index (0 low … 6 high).
+function effortTier(quality: number): number {
+  if (quality < 20) return 0
+  if (quality < 35) return 1
+  if (quality < 50) return 2
+  if (quality < 58) return 3
+  if (quality < 68) return 4
+  if (quality < 78) return 5
+  return 6
 }
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}))
+  const locale = toLocale(body?.locale)
+  const wp = getWP(locale)
   const u = normalizeUrl(body?.url)
-  if (!u) return NextResponse.json({ error: 'Give us a real, public URL to investigate (like example.com).' }, { status: 400 })
+  if (!u) return NextResponse.json({ error: wp.errBadUrl }, { status: 400 })
   const target = u.toString()
 
   // Easter egg: the suspects ARE the police. Yele always wins.
   if (/(^|\.)yele\.design$/.test(u.hostname.toLowerCase())) {
     const top = await shot(target, false)
+    const y = YELE_TEXT[locale]
     return NextResponse.json({
       url: target,
       crimes: 0,
       charges: [],
       quality: 105,
-      effortLabel: 'Handcrafted by Yele themselves',
-      effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.',
+      effortLabel: y.effortLabel,
+      effortFlavor: y.effortFlavor,
       passed: true,
-      verdict: { level: 'cleared', label: 'Illegally Good 😏' },
-      summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.',
+      verdict: { level: 'cleared', label: wp.verdict.yele },
+      summary: y.summary,
       mode: 'vision',
       note: '',
       screenshot: top ? `data:image/jpeg;base64,${top}` : null,
@@ -235,12 +248,12 @@ export async function POST(request: Request) {
   const [topB64, fullB64] = await Promise.all([topPromise, fullPromise])
 
   if (!html && !topB64 && !fullB64) {
-    return NextResponse.json({ error: "Couldn't reach that site. Is the address right and the site online?" }, { status: 502 })
+    return NextResponse.json({ error: wp.errUnreachable }, { status: 502 })
   }
 
   const hints = html ? htmlHints(html) : []
   const images = [topB64, fullB64].filter((x): x is string => !!x)
-  const vision = await visionAnalyze(images, hints)
+  const vision = await visionAnalyze(images, hints, wp.languageName)
 
   let charges: Charge[]
   let quality: number
@@ -258,7 +271,7 @@ export async function POST(request: Request) {
       .sort((x, y) => x.score - y.score)
       .map(x => ({
         code: x.a,
-        title: `${ASPECT_TITLE[x.a]} — ${x.score}/100`,
+        title: `${wp.aspectTitle[x.a]} — ${x.score}/100`,
         detail: x.reason || 'Reads generic.',
         // Paint the colour crime with the site's own clashing colours.
         ...(x.a === 'color' && vision.data.colorBg ? { bg: vision.data.colorBg } : {}),
@@ -272,15 +285,15 @@ export async function POST(request: Request) {
   }
 
   const crimes = charges.length
-  const { label: effortLabel, flavor: effortFlavor } = effortFor(quality)
+  const { label: effortLabel, flavor: effortFlavor } = wp.effort[effortTier(quality)]
   const passed = quality >= 60
   const verdict = quality >= 75
-    ? { level: 'cleared', label: 'Certified Gorgeous' }
+    ? { level: 'cleared', label: wp.verdict.gorgeous }
     : quality >= 60
-      ? { level: 'cleared', label: 'Actually Decent' }
+      ? { level: 'cleared', label: wp.verdict.decent }
       : quality >= 40
-        ? { level: 'suspicious', label: 'Painfully Average' }
-        : { level: 'guilty', label: 'Objectively Ugly' }
+        ? { level: 'suspicious', label: wp.verdict.average }
+        : { level: 'guilty', label: wp.verdict.ugly }
 
   return NextResponse.json({
     url: target,
