@@ -356,8 +356,17 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
         <p className={`font-display font-bold text-xl md:text-2xl tracking-tight mt-2 ${VERDICT_TEXT[result.verdict.level]}`}>
           {result.verdict.label}
         </p>
-        {result.summary && <p className="font-body text-sm italic text-white/60 mt-3 max-w-md mx-auto">“{result.summary}”</p>}
+        {result.summary && <p className="font-body text-lg md:text-2xl text-white/90 mt-4 max-w-xl mx-auto leading-snug">“{result.summary}”</p>}
         <ShareBar result={result} />
+      </div>
+
+      {/* Effort tier — the funny conclusion, right after the score */}
+      <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center mb-10">
+        <p className="font-body text-sm text-white/50">Looks like it took</p>
+        <p className="font-display font-bold tracking-tight text-white mt-1" style={{ fontSize: 'clamp(1.6rem, 6vw, 2.8rem)' }}>
+          {result.effortLabel}
+        </p>
+        <p className="font-body text-base text-white/70 mt-1.5">{result.effortFlavor}</p>
       </div>
 
       {/* Charges */}
@@ -392,15 +401,6 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
           Load {extra.length} more crime{extra.length > 1 ? 's' : ''} ↓
         </button>
       )}
-
-      {/* Effort tier */}
-      <div className="mt-10 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center">
-        <p className="font-body text-sm text-white/50">Looks like it took</p>
-        <p className="font-display font-bold tracking-tight text-white mt-1" style={{ fontSize: 'clamp(1.6rem, 6vw, 2.8rem)' }}>
-          {result.effortLabel}
-        </p>
-        <p className="font-body text-sm text-white/60 mt-1">{result.effortFlavor}</p>
-      </div>
 
       {/* Shameless plug + form */}
       <div className="mt-10 rounded-3xl border border-[#D46FC8]/30 bg-[#D46FC8]/[0.06] p-6 md:p-8">

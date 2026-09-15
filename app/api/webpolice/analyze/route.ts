@@ -127,8 +127,10 @@ Aspects (what LOW means):
 - hierarchy: no clear layout or path for the eye; you feel lost. (Clear structure scores HIGH.)
 - imagery: obvious stock photos or obviously fake/AI images. (Real, original, well-shot imagery scores HIGH.)
 
+The "summary" is the headline verdict everyone reads — make it FUNNY and a little EDGY: a savage-but-playful one-liner roast (or genuine praise if it's actually good). Punchy, quotable, PG-13. No hedging, no "overall this site…".
+
 Return ONLY compact JSON, no markdown:
-{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"..."},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one witty sentence"}`
+{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"..."},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny, edgy roast (or praise) sentence"}`
 
 type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string }
 type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
