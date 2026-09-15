@@ -78,10 +78,12 @@ export default function WebPoliceClient() {
   const [url, setUrl] = useState('')
   const [phase, setPhase] = useState<'idle' | 'loading' | 'done'>('idle')
   const [line, setLine] = useState(0)
+  const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
   const [result, setResult] = useState<Result | null>(null)
   const leftVid = useRef<HTMLVideoElement>(null)
   const rightVid = useRef<HTMLVideoElement>(null)
+  const progRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const moved = phase !== 'idle'
 
@@ -95,11 +97,14 @@ export default function WebPoliceClient() {
     setResult(null)
     setPhase('loading')
     setRate(2)
+    setProgress(0)
     const started = Date.now()
     // Let the running gorilla play for at least this long, even if the API
     // comes back sooner.
     const MIN_LOADING_MS = 2400
     const timer = setInterval(() => setLine(l => (l + 1) % LOADING_LINES.length), 1400)
+    // Fake-but-satisfying progress that eases toward ~95% while we wait.
+    progRef.current = setInterval(() => setProgress(p => Math.min(95, p + Math.max(0.6, (95 - p) * 0.06))), 110)
     try {
       const res = await fetch('/api/webpolice/analyze', {
         method: 'POST',
@@ -123,6 +128,8 @@ export default function WebPoliceClient() {
       setRate(1)
     } finally {
       clearInterval(timer)
+      if (progRef.current) clearInterval(progRef.current)
+      setProgress(100)
     }
   }
 
@@ -145,11 +152,14 @@ export default function WebPoliceClient() {
           ugly?
         </h1>
 
-        <p className="mt-5 font-body font-semibold text-[#16161A]/75 leading-snug" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.25rem)' }}>
-          Is my website ugly? generic?<br />
-          Did my developer lie to me?<br />
-          Did he use ChatGPT to generate my website in 10 min?
-        </p>
+        <ul className="mt-6 mx-auto inline-flex flex-col gap-2.5 text-left">
+          {['Is my website ugly? generic?', 'Did my developer lie to me?', 'Did he use ChatGPT to generate my website in 10 min?'].map(q => (
+            <li key={q} className="flex items-start gap-2.5">
+              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#16161A] font-body text-xs font-bold text-white">?</span>
+              <span className="font-body font-semibold text-[#16161A]/80 leading-snug" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.2rem)' }}>{q}</span>
+            </li>
+          ))}
+        </ul>
 
         <div className="mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3">
           <input
@@ -203,7 +213,26 @@ export default function WebPoliceClient() {
           >
             <source src="/media/webpolice/gorilla-run.mp4" type="video/mp4" />
           </video>
-          <div className="mt-4 h-9 w-9 rounded-full border-[3px] border-[#16161A]/20 border-t-[#16161A] animate-spin" aria-hidden="true" />
+          <div className="relative mt-5 h-16 w-16">
+            <svg viewBox="0 0 40 40" className="h-16 w-16 -rotate-90" aria-hidden="true">
+              <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(22,22,26,0.15)" strokeWidth="3.5" />
+              <circle
+                cx="20"
+                cy="20"
+                r="17"
+                fill="none"
+                stroke="#16161A"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                strokeDasharray={2 * Math.PI * 17}
+                strokeDashoffset={2 * Math.PI * 17 * (1 - Math.min(progress, 100) / 100)}
+                style={{ transition: 'stroke-dashoffset 0.15s linear' }}
+              />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-semibold text-[#16161A]">
+              {Math.round(progress)}%
+            </span>
+          </div>
         </div>
       )}
 
@@ -243,7 +272,7 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
         <button
           type="button"
           onClick={onReset}
-          className="rounded-full border border-white/15 px-3.5 py-1.5 font-body text-xs font-medium text-white/70 hover:text-white hover:border-white/30 transition-colors"
+          className="rounded-full bg-white px-4 py-2 font-body text-sm font-semibold text-[#0D0E12] shadow-lg shadow-black/20 hover:bg-white/90 transition-colors"
         >
           ↺ New search
         </button>
