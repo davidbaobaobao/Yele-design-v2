@@ -411,8 +411,8 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
       <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/40 break-all mb-4">{t.caseFile} {result.url}</p>
 
       {result.mode === 'basic' && (
-        <div className="mb-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 font-body text-xs text-amber-200/90">
-          ⚠️ Running basic (keyword) mode, not the accurate AI vision analysis{result.note ? ` — ${result.note}` : ''}. Add both env vars in Vercel for real results.
+        <div className="mb-4 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 font-body text-sm text-amber-200/90">
+          {t.aiFailed}
         </div>
       )}
 

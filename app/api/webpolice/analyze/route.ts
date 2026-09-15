@@ -87,10 +87,13 @@ function deterministic(html: string): { charges: Charge[]; quality: number } {
   return { charges, quality }
 }
 
-// ---- ScreenshotOne, with a settle delay ----
-async function shot(target: string, fullPage: boolean): Promise<string | null> {
+// ---- ScreenshotOne, with a settle delay. Returns the base64 image or a
+// human-readable failure reason (surfaced in the report so we can diagnose). ----
+type ShotResult = { b64: string } | { error: string }
+
+async function shot(target: string, fullPage: boolean): Promise<ShotResult> {
   const key = process.env.SCREENSHOT_API_KEY
-  if (!key) return null
+  if (!key) return { error: 'SCREENSHOT_API_KEY not set' }
   const api = new URL('https://api.screenshotone.com/take')
   api.searchParams.set('access_key', key)
   api.searchParams.set('url', target)
@@ -99,8 +102,10 @@ async function shot(target: string, fullPage: boolean): Promise<string | null> {
   api.searchParams.set('viewport_width', '1280')
   api.searchParams.set('viewport_height', '900')
   api.searchParams.set('delay', '3') // wait 3s so the page actually finishes loading
+  api.searchParams.set('timeout', '40') // let ScreenshotOne wait out slow/heavy sites
   api.searchParams.set('block_cookie_banners', 'true')
   api.searchParams.set('block_ads', 'true')
+  api.searchParams.set('block_chats', 'true')
   api.searchParams.set('cache', 'true')
   api.searchParams.set('cache_ttl', '86400')
   if (fullPage) {
@@ -109,22 +114,22 @@ async function shot(target: string, fullPage: boolean): Promise<string | null> {
   }
   try {
     const ctrl = new AbortController()
-    const to = setTimeout(() => ctrl.abort(), 30000)
+    const to = setTimeout(() => ctrl.abort(), 45000)
     const res = await fetch(api.toString(), { signal: ctrl.signal })
     clearTimeout(to)
-    if (!res.ok) return null
+    if (!res.ok) return { error: `screenshot ${res.status}: ${(await res.text()).slice(0, 140)}` }
     const buf = Buffer.from(await res.arrayBuffer())
-    if (buf.byteLength < 1000) return null
-    return buf.toString('base64')
-  } catch {
-    return null
+    if (buf.byteLength < 1000) return { error: 'screenshot came back empty' }
+    return { b64: buf.toString('base64') }
+  } catch (err) {
+    return { error: `screenshot request failed: ${err instanceof Error ? err.message : String(err)}`.slice(0, 140) }
   }
 }
 
 const ASPECTS = ['typography', 'spacing', 'color', 'clutter', 'hierarchy', 'imagery'] as const
 type Aspect = (typeof ASPECTS)[number]
 
-const RUBRIC = `You are the "Web Police", a sharp but funny design critic judging a website from screenshots (first image = top/hero, second image = the full page). Rate how GOOD the design is.
+const RUBRIC = `You are the "Web Police", a sharp but funny design critic judging a website from a full-page screenshot. Rate how GOOD the design is.
 
 Score each aspect 0–100 where HIGHER IS BETTER, and BE STRICT:
 - 0–25 = awful, generic AI-slop / cheap builder template.
@@ -213,7 +218,7 @@ export async function POST(request: Request) {
 
   // Easter egg: the suspects ARE the police. Yele always wins.
   if (/(^|\.)yele\.design$/.test(u.hostname.toLowerCase())) {
-    const top = await shot(target, false)
+    const s = await shot(target, false)
     const y = YELE_TEXT[locale]
     return NextResponse.json({
       url: target,
@@ -228,7 +233,7 @@ export async function POST(request: Request) {
       rant: y.rant,
       mode: 'vision',
       note: '',
-      screenshot: top ? `data:image/jpeg;base64,${top}` : null,
+      screenshot: 'b64' in s ? `data:image/jpeg;base64,${s.b64}` : null,
     })
   }
 
@@ -242,18 +247,20 @@ export async function POST(request: Request) {
       html = (await res.text()).slice(0, 800_000)
     } catch { /* handled below */ }
   })()
-  // Two screenshots: the hero (top viewport) and the full page.
-  const topPromise = shot(target, false)
-  const fullPromise = shot(target, true)
+  // One full-page screenshot — used for both the vision analysis and the
+  // report thumbnail (cheaper on the screenshot quota, fewer failure points).
+  const shotPromise = shot(target, true)
   await htmlPromise
-  const [topB64, fullB64] = await Promise.all([topPromise, fullPromise])
+  const shotRes = await shotPromise
+  const imgB64 = 'b64' in shotRes ? shotRes.b64 : null
+  const shotError = 'error' in shotRes ? shotRes.error : ''
 
-  if (!html && !topB64 && !fullB64) {
+  if (!html && !imgB64) {
     return NextResponse.json({ error: wp.errUnreachable }, { status: 502 })
   }
 
   const hints = html ? htmlHints(html) : []
-  const images = [topB64, fullB64].filter((x): x is string => !!x)
+  const images = imgB64 ? [imgB64] : []
   const vision = await visionAnalyze(images, hints, wp.languageName)
 
   let charges: Charge[]
@@ -281,7 +288,9 @@ export async function POST(request: Request) {
       }))
   } else {
     mode = 'basic'
-    note = vision.reason
+    // Prefer the concrete screenshot error (quota, block, timeout) when there
+    // was no image, so the report banner shows the real cause.
+    note = !imgB64 && shotError ? shotError : vision.reason
     const det = deterministic(html)
     charges = det.charges
     quality = det.quality
@@ -311,6 +320,6 @@ export async function POST(request: Request) {
     rant,
     mode,
     note,
-    screenshot: topB64 ? `data:image/jpeg;base64,${topB64}` : fullB64 ? `data:image/jpeg;base64,${fullB64}` : null,
+    screenshot: imgB64 ? `data:image/jpeg;base64,${imgB64}` : null,
   })
 }

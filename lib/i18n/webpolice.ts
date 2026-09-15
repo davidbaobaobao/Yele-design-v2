@@ -33,6 +33,7 @@ export type WPStrings = {
   exhibitAlt: string
   readMore: string
   showLess: string
+  aiFailed: string
   seoH2: string
   seoP1: string
   seoP2: string
@@ -74,6 +75,7 @@ const en: WPStrings = {
   exhibitAlt: 'Exhibit A: a stock photo',
   readMore: 'Read the full rant',
   showLess: 'Show less',
+  aiFailed: '🚧 My AI analyzer failed on this one — running a quick automatic review instead.',
   seoH2: 'The website design checker that roasts your homepage',
   seoP1: 'Web Police is a free website design analyzer and website roast tool. Paste any URL and our AI website design review scores your homepage out of 100 across typography, spacing, colour, clutter, structure and imagery — the fastest way to settle the eternal question: is my website ugly?',
   seoP2: 'Think of it as a website UX checker with a sense of humour. Instead of a dry audit you get a verdict, a design score and a comedy rant — plus the specific design crimes making your site look cheap, generic or AI-generated, so you know exactly what to fix.',
@@ -127,6 +129,7 @@ const es: WPStrings = {
   exhibitAlt: 'Prueba A: una foto de stock',
   readMore: 'Leer el veredicto completo',
   showLess: 'Mostrar menos',
+  aiFailed: '🚧 Mi analizador con IA falló con esta web — te dejo una revisión automática rápida.',
   seoH2: 'El analizador de diseño web que critica tu página',
   seoP1: 'Web Police es un analizador de diseño web y herramienta de «roast» gratis. Pega cualquier URL y nuestra revisión de diseño web con IA puntúa tu página sobre 100 en tipografía, espaciado, color, saturación visual, estructura e imágenes — la forma más rápida de responder la eterna duda: ¿mi web es fea?',
   seoP2: 'Piénsalo como un chequeo de UX web con sentido del humor. En vez de una auditoría aburrida recibes un veredicto, una puntuación de diseño y un monólogo cómico — además de los «delitos de diseño» concretos que hacen que tu web parezca barata, genérica o generada por IA, para que sepas exactamente qué arreglar.',
@@ -180,6 +183,7 @@ const zh: WPStrings = {
   exhibitAlt: '证物 A：一张图库照片',
   readMore: '阅读完整吐槽',
   showLess: '收起',
+  aiFailed: '🚧 我的 AI 分析器在这个网站上出错了 —— 先给你一个快速的自动检查。',
   seoH2: '会吐槽你首页的网站设计检查器',
   seoP1: 'Web Police 是一款免费的网站设计分析器和「吐槽」工具。粘贴任意网址，我们的 AI 网站设计评审会从字体、间距、色彩、杂乱度、结构和图像六个方面为你的首页打出百分制评分 —— 最快回答那个永恒的问题：我的网站丑吗？',
   seoP2: '把它当作一个有幽默感的网站 UX 检查器。你得到的不是枯燥的审计，而是一个判决、一个设计评分和一段吐槽 —— 以及让你的网站显得廉价、普通或像 AI 生成的具体「设计罪名」，让你清楚知道该改什么。',
