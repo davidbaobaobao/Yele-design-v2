@@ -184,6 +184,25 @@ export async function POST(request: Request) {
   if (!u) return NextResponse.json({ error: 'Give us a real, public URL to investigate (like example.com).' }, { status: 400 })
   const target = u.toString()
 
+  // Easter egg: the suspects ARE the police. Yele always wins.
+  if (/(^|\.)yele\.design$/.test(u.hostname.toLowerCase())) {
+    const top = await shot(target, false)
+    return NextResponse.json({
+      url: target,
+      crimes: 0,
+      charges: [],
+      quality: 105,
+      effortLabel: 'Handcrafted by Yele themselves',
+      effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.',
+      passed: true,
+      verdict: { level: 'cleared', label: 'CLEARED — flawless, obviously 😏' },
+      summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.',
+      mode: 'vision',
+      note: '',
+      screenshot: top ? `data:image/jpeg;base64,${top}` : null,
+    })
+  }
+
   let html = ''
   const htmlPromise = (async () => {
     try {

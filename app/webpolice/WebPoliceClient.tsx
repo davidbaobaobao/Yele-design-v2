@@ -264,6 +264,18 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
         </div>
       )}
 
+      {/* Big score */}
+      <div className="text-center my-8">
+        <p className="font-display font-bold tracking-tighter text-white leading-none" style={{ fontSize: 'clamp(4.5rem, 22vw, 9rem)' }}>
+          {result.quality}
+          <span className="text-white/35" style={{ fontSize: '0.32em' }}>/100</span>
+        </p>
+        <p className={`font-display font-bold text-xl md:text-2xl tracking-tight mt-2 ${VERDICT_TEXT[result.verdict.level]}`}>
+          {result.verdict.label}
+        </p>
+        {result.summary && <p className="font-body text-sm italic text-white/60 mt-3 max-w-md mx-auto">“{result.summary}”</p>}
+      </div>
+
       {/* Charges */}
       <h2 className="font-display font-bold text-2xl md:text-3xl text-white tracking-tight mb-4">
         {result.crimes === 0 ? 'No charges filed ✅' : `The ${Math.min(3, result.crimes)} main charges`}
@@ -297,18 +309,13 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
         </button>
       )}
 
-      {/* Verdict — effort */}
+      {/* Effort tier */}
       <div className="mt-10 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center">
-        <p className="font-body text-sm text-white/50">Design score: <span className="font-semibold text-white/80">{result.quality}/100</span></p>
-        <p className="font-body text-sm text-white/50 mt-4">Looks like it took</p>
+        <p className="font-body text-sm text-white/50">Looks like it took</p>
         <p className="font-display font-bold tracking-tight text-white mt-1" style={{ fontSize: 'clamp(1.6rem, 6vw, 2.8rem)' }}>
           {result.effortLabel}
         </p>
         <p className="font-body text-sm text-white/60 mt-1">{result.effortFlavor}</p>
-        <p className={`font-display font-bold text-xl md:text-2xl tracking-tight mt-4 ${VERDICT_TEXT[result.verdict.level]}`}>
-          {result.verdict.label}
-        </p>
-        {result.summary && <p className="font-body text-sm italic text-white/60 mt-3 max-w-md mx-auto">“{result.summary}”</p>}
       </div>
 
       {/* Shameless plug + form */}
