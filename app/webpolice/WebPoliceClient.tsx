@@ -28,7 +28,8 @@ const LOADING_LINES = [
 // Pink sampled from the gorilla clip so the video edges melt into the page.
 const PINK_TOP = '#edb9ca'
 const PINK_BOTTOM = '#d4a6b2'
-const VIDEO_MASK = 'radial-gradient(62% 60% at 50% 48%, #000 46%, transparent 100%)'
+// Fade the left/right sides so the video melts into the pink background.
+const VIDEO_MASK = 'linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)'
 
 const VERDICT_STYLE: Record<string, { ring: string; text: string; blurb: string }> = {
   guilty: { ring: 'border-red-500 text-red-400', text: 'text-red-400', blurb: 'Caught red-handed. This site did minimal time in the design studio.' },
@@ -133,7 +134,6 @@ export default function WebPoliceClient() {
           moved ? '-translate-y-[26vh] md:-translate-y-[24vh]' : 'translate-y-0'
         }`}
       >
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#16161A]/50 mb-4">Web Police · Design Crimes Unit</p>
         <h1
           className="font-display font-bold text-[#16161A] tracking-tight leading-[1.08]"
           style={{ fontSize: 'clamp(1.7rem, 4.6vw, 3rem)' }}
@@ -150,7 +150,8 @@ export default function WebPoliceClient() {
             onChange={e => setUrl(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && run()}
             placeholder="type your website"
-            className="flex-1 rounded-full bg-white/80 backdrop-blur border border-white/60 px-5 py-3.5 font-body text-base text-[#16161A] placeholder-[#16161A]/40 shadow-lg shadow-black/5 focus:outline-none focus:border-[#16161A]/40 transition-colors"
+            style={{ color: '#16161A', caretColor: '#16161A' }}
+            className="flex-1 rounded-full bg-white/85 backdrop-blur border border-white/60 px-5 py-3.5 font-body text-base placeholder-[#16161A]/40 shadow-lg shadow-black/5 focus:outline-none focus:border-[#16161A]/40 transition-colors"
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
@@ -159,9 +160,9 @@ export default function WebPoliceClient() {
             type="button"
             onClick={run}
             disabled={phase === 'loading'}
-            className="inline-flex items-center justify-center rounded-full bg-[#16161A] hover:bg-black px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] hover:bg-black px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {phase === 'loading' ? 'Analyzing…' : 'Analyze'}
+            {phase === 'loading' ? 'Dispatching…' : 'Call the Web Police'}
           </button>
         </div>
 
@@ -169,13 +170,13 @@ export default function WebPoliceClient() {
         {error && <p className="mt-5 font-body text-sm text-red-700">{error}</p>}
       </div>
 
-      {/* Report — a sheet that slides up from the bottom when the verdict is in */}
+      {/* Report — full-screen panel that slides up to cover everything */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-30 px-3 sm:px-4 pb-3 transition-transform duration-700 ease-out ${
+        className={`fixed inset-0 z-30 overflow-y-auto bg-[#0D0E12] transition-transform duration-700 ease-out ${
           phase === 'done' ? 'translate-y-0' : 'translate-y-full pointer-events-none'
         }`}
       >
-        <div className="mx-auto max-h-[80vh] max-w-3xl overflow-y-auto rounded-3xl">
+        <div className="mx-auto max-w-3xl px-6 py-10 md:py-14">
           {result && (
             <Report
               result={result}
@@ -195,8 +196,8 @@ export default function WebPoliceClient() {
 function Report({ result, onReset }: { result: Result; onReset: () => void }) {
   const v = VERDICT_STYLE[result.verdict.level]
   return (
-    <div className="rounded-3xl border border-black/10 bg-[#0D0E12] p-6 md:p-8 shadow-2xl shadow-black/30">
-      <div className="mb-4 flex justify-end">
+    <div>
+      <div className="mb-6 flex justify-end">
         <button
           type="button"
           onClick={onReset}
