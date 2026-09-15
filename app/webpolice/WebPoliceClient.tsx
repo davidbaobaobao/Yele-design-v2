@@ -27,12 +27,45 @@ const LOADING_LINES = [
 
 const PINK_TOP = '#edb9ca'
 const PINK_BOTTOM = '#d4a6b2'
-const VIDEO_MASK = 'linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)'
+// Fade all four edges so the video melts into the pink (sides + top/bottom).
+const MASK_H = 'linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)'
+const MASK_V = 'linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%)'
 
 const VERDICT_TEXT: Record<string, string> = {
   guilty: 'text-red-400',
   suspicious: 'text-amber-300',
   cleared: 'text-emerald-300',
+}
+
+// Module-level so it is NOT recreated on every keystroke — that remount was
+// what reset the videos while typing.
+function Gorilla({ side, vref }: { side: 'left' | 'right'; vref: React.RefObject<HTMLVideoElement> }) {
+  return (
+    <video
+      ref={vref}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      className={`pointer-events-none absolute top-1/2 z-0 w-[46vw] max-w-[300px] md:w-[26vw] md:max-w-[380px] ${
+        side === 'left' ? 'left-[-9%] md:left-[-2%]' : 'right-[-9%] md:right-[-2%]'
+      }`}
+      style={
+        {
+          transform: `translateY(-50%) ${side === 'right' ? 'scaleX(-1)' : ''}`,
+          maskImage: `${MASK_H}, ${MASK_V}`,
+          maskComposite: 'intersect',
+          WebkitMaskImage: `${MASK_H}, ${MASK_V}`,
+          WebkitMaskComposite: 'source-in',
+          opacity: 0.96,
+        } as React.CSSProperties
+      }
+    >
+      <source src="/media/webpolice/gorilla.mp4" type="video/mp4" />
+    </video>
+  )
 }
 
 export default function WebPoliceClient() {
@@ -81,29 +114,6 @@ export default function WebPoliceClient() {
     }
   }
 
-  const Gorilla = ({ side, vref }: { side: 'left' | 'right'; vref: React.RefObject<HTMLVideoElement> }) => (
-    <video
-      ref={vref}
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="auto"
-      aria-hidden="true"
-      className={`pointer-events-none absolute top-1/2 z-0 w-[46vw] max-w-[300px] md:w-[26vw] md:max-w-[380px] ${
-        side === 'left' ? 'left-[-9%] md:left-[-2%]' : 'right-[-9%] md:right-[-2%]'
-      }`}
-      style={{
-        transform: `translateY(-50%) ${side === 'right' ? 'scaleX(-1)' : ''}`,
-        maskImage: VIDEO_MASK,
-        WebkitMaskImage: VIDEO_MASK,
-        opacity: 0.96,
-      }}
-    >
-      <source src="/media/webpolice/gorilla.mp4" type="video/mp4" />
-    </video>
-  )
-
   return (
     <main className="relative min-h-screen overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
       <Gorilla side="left" vref={leftVid} />
@@ -115,10 +125,19 @@ export default function WebPoliceClient() {
           moved ? '-translate-y-[26vh] md:-translate-y-[24vh]' : 'translate-y-0'
         }`}
       >
-        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.08]" style={{ fontSize: 'clamp(1.7rem, 4.6vw, 3rem)' }}>
-          Is my page ugly?<br />
+        {/* Animated police siren — sound of da (web) police */}
+        <span
+          aria-hidden="true"
+          className="mb-5 inline-block select-none text-6xl md:text-7xl"
+          style={{ animation: 'wpSiren 0.7s ease-in-out infinite' }}
+        >
+          🚨
+        </span>
+
+        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.12]" style={{ fontSize: 'clamp(1.35rem, 3.6vw, 2.25rem)' }}>
+          Is my website ugly? generic?<br />
           Did my developer lie to me?<br />
-          Did he spend 20 min on my website?
+          Did he use AI to generate my website in 10 min?
         </h1>
 
         <div className="mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3">
@@ -138,7 +157,7 @@ export default function WebPoliceClient() {
             type="button"
             onClick={run}
             disabled={phase === 'loading'}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] hover:bg-black px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors hover:animate-[wpSirenBtn_0.6s_linear_infinite] disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {phase === 'loading' ? 'Dispatching…' : 'Call the Web Police'}
           </button>
