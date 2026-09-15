@@ -1,47 +1,38 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import LeadForm from '@/components/LeadForm'
 
-type Severity = 'critical' | 'major' | 'minor' | 'good'
-type Charge = { code: string; severity: Severity; title: string; detail: string }
-type Speed = { score: number; lcp: string | null; cls: string | null } | null
+type Charge = { code: string; title: string; detail: string }
 type Result = {
   url: string
-  guilt: number
-  verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
+  crimes: number
   charges: Charge[]
-  builder: { name: string; kind: string } | null
-  fonts: string[]
-  speed: { mobile: Speed; desktop: Speed }
-  mobileFriendly: boolean
+  effort: number
+  effortFlavor: string
+  passed: boolean
+  verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
 }
+
+const PLAN_OPTIONS = ['Launch — $699', 'Business — $1,199', 'Pro — $2,799']
 
 const LOADING_LINES = [
   'Reading the site its rights…',
-  'Dusting for template fingerprints…',
-  'Running the fonts through the database…',
-  'Checking speed on the radar gun…',
+  'Dusting for purple gradients…',
+  'Counting the rounded cards…',
+  'Bagging the Lucide icons as evidence…',
   'Consulting the gorilla…',
   'Cross-checking against known AI slop…',
 ]
 
-// Pink sampled from the gorilla clip so the video edges melt into the page.
 const PINK_TOP = '#edb9ca'
 const PINK_BOTTOM = '#d4a6b2'
-// Fade the left/right sides so the video melts into the pink background.
 const VIDEO_MASK = 'linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)'
 
-const VERDICT_STYLE: Record<string, { ring: string; text: string; blurb: string }> = {
-  guilty: { ring: 'border-red-500 text-red-400', text: 'text-red-400', blurb: 'Caught red-handed. This site did minimal time in the design studio.' },
-  suspicious: { ring: 'border-amber-400 text-amber-300', text: 'text-amber-300', blurb: 'A few priors on record. Not the worst, but the jury has questions.' },
-  cleared: { ring: 'border-emerald-400 text-emerald-300', text: 'text-emerald-300', blurb: 'Free to go. This one looks like actual humans were involved.' },
-}
-
-const SEV: Record<Severity, { tag: string; cls: string; icon: string }> = {
-  critical: { tag: 'FELONY', cls: 'text-red-400 border-red-500/40 bg-red-500/10', icon: '🚨' },
-  major: { tag: 'MISDEMEANOR', cls: 'text-amber-300 border-amber-400/40 bg-amber-400/10', icon: '⚠️' },
-  minor: { tag: 'PARKING TICKET', cls: 'text-white/70 border-white/15 bg-white/[0.04]', icon: '🅿️' },
-  good: { tag: 'CLEAN RECORD', cls: 'text-emerald-300 border-emerald-400/40 bg-emerald-400/10', icon: '✅' },
+const VERDICT_TEXT: Record<string, string> = {
+  guilty: 'text-red-400',
+  suspicious: 'text-amber-300',
+  cleared: 'text-emerald-300',
 }
 
 export default function WebPoliceClient() {
@@ -55,15 +46,8 @@ export default function WebPoliceClient() {
 
   const moved = phase !== 'idle'
 
-  function speedUpGorillas() {
-    for (const v of [leftVid.current, rightVid.current]) {
-      if (v) v.playbackRate = 2
-    }
-  }
-  function resetGorillas() {
-    for (const v of [leftVid.current, rightVid.current]) {
-      if (v) v.playbackRate = 1
-    }
+  const setRate = (r: number) => {
+    for (const v of [leftVid.current, rightVid.current]) if (v) v.playbackRate = r
   }
 
   async function run() {
@@ -71,7 +55,7 @@ export default function WebPoliceClient() {
     setError('')
     setResult(null)
     setPhase('loading')
-    speedUpGorillas()
+    setRate(2)
     const timer = setInterval(() => setLine(l => (l + 1) % LOADING_LINES.length), 1400)
     try {
       const res = await fetch('/api/webpolice/analyze', {
@@ -83,7 +67,7 @@ export default function WebPoliceClient() {
       if (!res.ok) {
         setError(data.error || 'The investigation hit a wall. Try another URL.')
         setPhase('idle')
-        resetGorillas()
+        setRate(1)
       } else {
         setResult(data)
         setPhase('done')
@@ -91,7 +75,7 @@ export default function WebPoliceClient() {
     } catch {
       setError('The investigation hit a wall. Try another URL.')
       setPhase('idle')
-      resetGorillas()
+      setRate(1)
     } finally {
       clearInterval(timer)
     }
@@ -121,23 +105,17 @@ export default function WebPoliceClient() {
   )
 
   return (
-    <main
-      className="relative min-h-screen overflow-hidden"
-      style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}
-    >
+    <main className="relative min-h-screen overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
       <Gorilla side="left" vref={leftVid} />
       <Gorilla side="right" vref={rightVid} />
 
-      {/* Hero — slides up when an analysis starts */}
+      {/* Hero — slides up when the case opens */}
       <div
         className={`relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center transition-transform duration-700 ease-out ${
           moved ? '-translate-y-[26vh] md:-translate-y-[24vh]' : 'translate-y-0'
         }`}
       >
-        <h1
-          className="font-display font-bold text-[#16161A] tracking-tight leading-[1.08]"
-          style={{ fontSize: 'clamp(1.7rem, 4.6vw, 3rem)' }}
-        >
+        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.08]" style={{ fontSize: 'clamp(1.7rem, 4.6vw, 3rem)' }}>
           Is my page ugly?<br />
           Did my developer lie to me?<br />
           Did he spend 20 min on my website?
@@ -176,14 +154,14 @@ export default function WebPoliceClient() {
           phase === 'done' ? 'translate-y-0' : 'translate-y-full pointer-events-none'
         }`}
       >
-        <div className="mx-auto max-w-3xl px-6 py-10 md:py-14">
+        <div className="mx-auto max-w-2xl px-6 py-10 md:py-14">
           {result && (
             <Report
               result={result}
               onReset={() => {
                 setPhase('idle')
                 setResult(null)
-                resetGorillas()
+                setRate(1)
               }}
             />
           )}
@@ -194,10 +172,15 @@ export default function WebPoliceClient() {
 }
 
 function Report({ result, onReset }: { result: Result; onReset: () => void }) {
-  const v = VERDICT_STYLE[result.verdict.level]
+  const [showAll, setShowAll] = useState(false)
+  const main = result.charges.slice(0, 3)
+  const extra = result.charges.slice(3, 8)
+  const shown = showAll ? [...main, ...extra] : main
+
   return (
     <div>
-      <div className="mb-6 flex justify-end">
+      <div className="mb-6 flex items-center justify-between">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/40">🚨 Web Police report</span>
         <button
           type="button"
           onClick={onReset}
@@ -206,63 +189,70 @@ function Report({ result, onReset }: { result: Result; onReset: () => void }) {
           ↺ New search
         </button>
       </div>
-      {/* Verdict */}
-      <div className="text-center">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/40 mb-4 break-all">Case file: {result.url}</p>
-        <div className={`mx-auto flex h-28 w-28 flex-col items-center justify-center rounded-full border-4 ${v.ring}`}>
-          <span className="font-display text-3xl font-bold leading-none">{result.guilt}</span>
-          <span className="font-mono text-[10px] uppercase tracking-widest mt-1 text-white/50">guilt</span>
-        </div>
-        <h2 className={`font-display font-bold text-4xl md:text-5xl tracking-tight mt-5 ${v.text}`}>{result.verdict.label}</h2>
-        <p className="font-body text-base text-white/70 mt-3 max-w-md mx-auto">{v.blurb}</p>
-      </div>
 
-      {/* Quick stats */}
-      <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Stat label="Mobile speed" value={result.speed.mobile ? `${result.speed.mobile.score}` : '—'} suffix="/100" />
-        <Stat label="Desktop speed" value={result.speed.desktop ? `${result.speed.desktop.score}` : '—'} suffix="/100" />
-        <Stat label="Mobile-ready" value={result.mobileFriendly ? 'Yes' : 'No'} />
-        <Stat label="Built with" value={result.builder ? result.builder.name.split(' ')[0] : 'Unknown'} />
-      </div>
+      <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/40 break-all mb-6">Case file: {result.url}</p>
 
       {/* Charges */}
-      <h3 className="font-display font-bold text-xl text-white mt-8 mb-4">The charges ({result.charges.length})</h3>
+      <h2 className="font-display font-bold text-2xl md:text-3xl text-white tracking-tight mb-4">
+        {result.crimes === 0 ? 'No charges filed 😳' : `The ${Math.min(3, result.crimes)} main charges`}
+      </h2>
       <div className="space-y-3">
-        {result.charges.length === 0 && (
-          <p className="font-body text-sm text-white/60">No charges filed. Suspiciously clean. Are you a designer?</p>
+        {result.crimes === 0 && (
+          <p className="font-body text-sm text-white/60">Suspiciously clean. Either a real designer made this… or you built it yourself. Respect.</p>
         )}
-        {result.charges.map(c => {
-          const s = SEV[c.severity]
-          return (
-            <div key={c.code} className={`rounded-xl border p-4 ${s.cls}`}>
-              <div className="flex items-center gap-2 mb-1">
-                <span aria-hidden className="select-none">{s.icon}</span>
-                <span className="font-mono text-[10px] uppercase tracking-widest">{s.tag}</span>
+        {shown.map((c, i) => (
+          <div key={c.code} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="flex items-start gap-3">
+              <span className="flex-shrink-0 mt-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-[#D46FC8]/20 font-display text-sm font-bold text-[#D46FC8]">
+                {i + 1}
+              </span>
+              <div>
+                <p className="font-body font-semibold text-sm text-white">{c.title}</p>
+                <p className="font-body text-sm text-white/60 mt-0.5">{c.detail}</p>
               </div>
-              <p className="font-body font-semibold text-sm text-white">{c.title}</p>
-              <p className="font-body text-sm text-white/60 mt-0.5">{c.detail}</p>
             </div>
-          )
-        })}
+          </div>
+        ))}
       </div>
 
-      {result.fonts.length > 0 && <p className="font-body text-xs text-white/40 mt-6">Fonts spotted: {result.fonts.join(', ')}</p>}
+      {!showAll && extra.length > 0 && (
+        <button
+          type="button"
+          onClick={() => setShowAll(true)}
+          className="mt-4 w-full rounded-2xl border border-dashed border-white/20 py-3 font-body text-sm font-medium text-white/70 hover:text-white hover:border-white/40 transition-colors"
+        >
+          Load {extra.length} more crime{extra.length > 1 ? 's' : ''} ↓
+        </button>
+      )}
+
+      {/* Verdict — effort */}
+      <div className="mt-10 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center">
+        <p className="font-body text-sm text-white/50">Effort used to create this website</p>
+        <p className="font-display font-bold tracking-tight text-white mt-1" style={{ fontSize: 'clamp(2.6rem, 9vw, 4.5rem)' }}>
+          {result.effort} min
+        </p>
+        <p className="font-body text-sm text-white/60 mt-1">{result.effortFlavor}</p>
+        <p className={`font-display font-bold text-xl md:text-2xl tracking-tight mt-4 ${VERDICT_TEXT[result.verdict.level]}`}>
+          {result.verdict.label}
+        </p>
+      </div>
+
+      {/* Shameless plug + form */}
+      <div className="mt-10 rounded-3xl border border-[#D46FC8]/30 bg-[#D46FC8]/[0.06] p-6 md:p-8">
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#D46FC8] mb-2">Shameless plug</p>
+        <h3 className="font-display font-bold text-2xl md:text-3xl text-white tracking-tight">
+          We&apos;ll build you a better website — from $699.
+        </h3>
+        <p className="font-body text-base text-white/70 mt-2 mb-6">
+          Custom-designed, no template, no AI slop. It passes the Web Police test — we checked.
+        </p>
+        <LeadForm variant="dark" ctaLabel="Get my better website" planOptions={PLAN_OPTIONS} leadSource="Web Police" sendWelcome />
+      </div>
 
       <p className="font-body text-xs text-white/30 mt-8 text-center">
-        A tongue-in-cheek tool by Yele. We fetch the page&apos;s public HTML and run Google PageSpeed — nothing stored.
+        A tongue-in-cheek tool by Yele. We fetch the page&apos;s public HTML and look for design clichés — nothing stored,
+        verdicts strictly for laughs.
       </p>
-    </div>
-  )
-}
-
-function Stat({ label, value, suffix }: { label: string; value: string; suffix?: string }) {
-  return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-center">
-      <p className="font-display font-bold text-xl text-white leading-none">
-        {value}
-        {suffix && <span className="font-body text-xs text-white/40">{suffix}</span>}
-      </p>
-      <p className="font-body text-[11px] text-white/45 mt-1">{label}</p>
     </div>
   )
 }

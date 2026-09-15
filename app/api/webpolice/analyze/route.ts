@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server'
 
-// Deterministic "Web Police" analyzer — no AI. It fetches the target page's
-// HTML and runs factual checks (builder/template fingerprint, generic fonts,
-// design/slop tells) plus Google PageSpeed Insights (speed + mobile). Returns
-// structured "charges"; the /webpolice page dresses them up comedically.
+// The Web Police — a satire tool, not a serious audit. It fetches the target's
+// public HTML and hunts for the classic "AI slop" design tells (purple
+// gradients, rounded-card soup, glow/blur, giant centered hero, gradient text,
+// tiny gray text, Lucide icon spam, bento grids, pill overload, etc.), then
+// hands down a comedic verdict + an "effort" estimate. Accuracy is explicitly
+// NOT the point — laughs are.
 
 export const runtime = 'nodejs'
-export const maxDuration = 60
+export const maxDuration = 20
 
-type Severity = 'critical' | 'major' | 'minor' | 'good'
-type Charge = { code: string; severity: Severity; title: string; detail: string }
+type Charge = { code: string; title: string; detail: string }
 
-// ---- SSRF guard: only public http(s) hosts ----
 function normalizeUrl(raw: string): URL | null {
   let s = (raw || '').trim()
   if (!s) return null
@@ -25,113 +25,19 @@ function normalizeUrl(raw: string): URL | null {
   if (u.protocol !== 'http:' && u.protocol !== 'https:') return null
   const host = u.hostname.toLowerCase()
   if (
-    host === 'localhost' ||
-    host.endsWith('.local') ||
-    host.endsWith('.internal') ||
-    /^127\./.test(host) ||
-    /^10\./.test(host) ||
-    /^192\.168\./.test(host) ||
-    /^169\.254\./.test(host) ||
-    /^172\.(1[6-9]|2\d|3[0-1])\./.test(host) ||
-    host === '0.0.0.0' ||
-    host === '::1' ||
-    !host.includes('.')
-  ) {
-    return null
-  }
+    host === 'localhost' || host.endsWith('.local') || host.endsWith('.internal') ||
+    /^127\./.test(host) || /^10\./.test(host) || /^192\.168\./.test(host) || /^169\.254\./.test(host) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(host) || host === '0.0.0.0' || host === '::1' || !host.includes('.')
+  ) return null
   return u
-}
-
-// ---- Builder / template fingerprints (HTML + headers) ----
-type BuilderHit = { name: string; kind: 'ai' | 'template' | 'ecommerce' | 'custom'; note: string }
-
-function detectBuilder(html: string, headers: Headers): BuilderHit | null {
-  const h = html.toLowerCase()
-  const server = (headers.get('server') || '').toLowerCase()
-  const powered = (headers.get('x-powered-by') || '').toLowerCase()
-  const gen = (html.match(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)["']/i)?.[1] || '').toLowerCase()
-
-  const has = (...needles: string[]) => needles.some(n => h.includes(n) || server.includes(n) || powered.includes(n) || gen.includes(n))
-
-  // AI website builders — the prime suspects.
-  if (has('durable.co', 'durable ai')) return { name: 'Durable (AI builder)', kind: 'ai', note: 'A one-click AI website generator.' }
-  if (has('hostinger') && has('ai')) return { name: 'Hostinger AI Builder', kind: 'ai', note: 'Auto-generated from a prompt.' }
-  if (has('framerusercontent', 'framer.com') || gen.includes('framer')) return { name: 'Framer', kind: 'template', note: 'Often used with AI/templated starts.' }
-  // Classic drag-and-drop template builders.
-  if (has('static.wixstatic.com', 'wix.com', 'x-wix') || gen.includes('wix')) return { name: 'Wix', kind: 'template', note: 'Drag-and-drop template builder.' }
-  if (has('static1.squarespace', 'squarespace.com') || gen.includes('squarespace')) return { name: 'Squarespace', kind: 'template', note: 'Template builder.' }
-  if (has('img1.wsimg.com', 'godaddy') && has('websitebuilder', 'wsimg')) return { name: 'GoDaddy Website Builder', kind: 'template', note: 'Template builder.' }
-  if (has('weebly.com', 'weeblycloud')) return { name: 'Weebly', kind: 'template', note: 'Template builder.' }
-  if (has('carrd.co')) return { name: 'Carrd', kind: 'template', note: 'One-page template builder.' }
-  if (has('sites.google.com/embed', 'gstatic.com/_/mss')) return { name: 'Google Sites', kind: 'template', note: 'Free template builder.' }
-  if (has('data-wf-', 'assets.website-files.com', 'webflow.io') || gen.includes('webflow')) return { name: 'Webflow', kind: 'template', note: 'Visual builder — quality depends on the designer.' }
-  // WordPress + page builders (template-heavy).
-  if (has('elementor')) return { name: 'WordPress + Elementor', kind: 'template', note: 'Drag-and-drop page builder on WordPress.' }
-  if (has('et_pb_', 'divi')) return { name: 'WordPress + Divi', kind: 'template', note: 'Template page builder on WordPress.' }
-  if (has('wp-content', 'wp-includes') || gen.includes('wordpress')) return { name: 'WordPress', kind: 'template', note: 'Could be a default theme — check the design.' }
-  if (has('cdn.shopify.com') || gen.includes('shopify')) return { name: 'Shopify', kind: 'ecommerce', note: 'Store platform — usually a template theme.' }
-  // Signs of a real, hand-built site.
-  if (has('/_next/', '__next_f')) return { name: 'Next.js (custom-coded)', kind: 'custom', note: 'Hand-built — like a proper custom site.' }
-  if (has('/_nuxt/')) return { name: 'Nuxt (custom-coded)', kind: 'custom', note: 'Hand-built framework.' }
-  if (has('data-reactroot') || has('/static/js/main.')) return { name: 'Custom React build', kind: 'custom', note: 'Hand-built.' }
-  return null
-}
-
-// ---- Generic / over-used fonts ----
-const GENERIC_FONTS = ['poppins', 'inter', 'montserrat', 'roboto', 'open sans', 'lato', 'raleway', 'nunito', 'arial', 'helvetica', 'times new roman', 'georgia', 'verdana']
-
-function detectFonts(html: string): { fonts: string[]; generic: string[] } {
-  const found = new Set<string>()
-  // Google Fonts links
-  Array.from(html.matchAll(/fonts\.googleapis\.com\/css2?\?[^"']*family=([^"'&]+)/gi)).forEach((m: RegExpMatchArray) => {
-    m[1].split('|').forEach((fam: string) => found.add(decodeURIComponent(fam.split(':')[0]).replace(/\+/g, ' ').trim()))
-  })
-  // font-family declarations in inline CSS
-  Array.from(html.matchAll(/font-family\s*:\s*([^;"'}]+)/gi)).forEach((m: RegExpMatchArray) => {
-    const first = m[1].split(',')[0].replace(/["']/g, '').trim()
-    if (first && first.length < 40 && !/var\(|inherit|initial/i.test(first)) found.add(first)
-  })
-  const fonts = Array.from(found).slice(0, 8)
-  const generic = fonts.filter(f => GENERIC_FONTS.includes(f.toLowerCase()))
-  return { fonts, generic }
-}
-
-// ---- PageSpeed Insights (speed + mobile), keyless-capable ----
-async function pageSpeed(url: string, strategy: 'mobile' | 'desktop') {
-  const key = process.env.PAGESPEED_API_KEY
-  const api = new URL('https://www.googleapis.com/pagespeedonline/v5/runPagespeed')
-  api.searchParams.set('url', url)
-  api.searchParams.set('strategy', strategy)
-  api.searchParams.set('category', 'performance')
-  if (key) api.searchParams.set('key', key)
-  const ctrl = new AbortController()
-  const to = setTimeout(() => ctrl.abort(), 45000)
-  try {
-    const res = await fetch(api.toString(), { signal: ctrl.signal })
-    if (!res.ok) return null
-    const j = await res.json()
-    const lh = j.lighthouseResult
-    if (!lh) return null
-    const score = Math.round((lh.categories?.performance?.score ?? 0) * 100)
-    const lcp = lh.audits?.['largest-contentful-paint']?.displayValue ?? null
-    const cls = lh.audits?.['cumulative-layout-shift']?.displayValue ?? null
-    return { score, lcp, cls }
-  } catch {
-    return null
-  } finally {
-    clearTimeout(to)
-  }
 }
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}))
   const u = normalizeUrl(body?.url)
-  if (!u) return NextResponse.json({ error: 'Enter a real, public website URL (like example.com).' }, { status: 400 })
+  if (!u) return NextResponse.json({ error: 'Give us a real, public URL to investigate (like example.com).' }, { status: 400 })
 
-  // Fetch the page HTML.
   let html = ''
-  let finalUrl = u.toString()
-  let headers = new Headers()
   try {
     const ctrl = new AbortController()
     const to = setTimeout(() => ctrl.abort(), 12000)
@@ -141,75 +47,80 @@ export async function POST(request: Request) {
       signal: ctrl.signal,
     })
     clearTimeout(to)
-    finalUrl = res.url || finalUrl
-    headers = res.headers
-    html = (await res.text()).slice(0, 600_000)
+    html = (await res.text()).slice(0, 800_000)
   } catch {
     return NextResponse.json({ error: "Couldn't reach that site. Is the address right and the site online?" }, { status: 502 })
   }
 
   const lower = html.toLowerCase()
-  const charges: Charge[] = []
+  const n = (re: RegExp) => (lower.match(re) || []).length
 
-  // Builder / template.
-  const builder = detectBuilder(html, headers)
-  if (builder) {
-    if (builder.kind === 'ai') charges.push({ code: 'ai_builder', severity: 'critical', title: `Built with an AI generator: ${builder.name}`, detail: builder.note })
-    else if (builder.kind === 'template') charges.push({ code: 'template', severity: 'major', title: `Template builder detected: ${builder.name}`, detail: builder.note })
-    else if (builder.kind === 'ecommerce') charges.push({ code: 'ecom', severity: 'minor', title: `${builder.name} store`, detail: builder.note })
-    else charges.push({ code: 'custom', severity: 'good', title: `Looks hand-built: ${builder.name}`, detail: builder.note })
-  }
+  const hasGradient = /bg-gradient|linear-gradient|radial-gradient|conic-gradient/.test(lower)
+  const hasPurple = /purple|indigo|violet|fuchsia|#7c3aed|#6d28d9|#8b5cf6|#6366f1|#4f46e5|#a855f7|#818cf8|#c084fc/.test(lower)
+  const roundedCards = n(/rounded-2xl|rounded-3xl|rounded-\[1[6-9]px\]|rounded-\[2\dpx\]|rounded-\[3\dpx\]/g)
+  const roundedFull = n(/rounded-full/g)
+  const blurGlow = /backdrop-blur|backdrop-filter|blur\(|drop-shadow|shadow-2xl|shadow-\[0/.test(lower)
+  const bigText = /text-6xl|text-7xl|text-8xl|text-9xl/.test(lower)
+  const textCenter = n(/text-center/g)
+  const mxAuto = n(/mx-auto/g)
+  const gradientText = /bg-clip-text|-webkit-background-clip:\s*text|background-clip:\s*text|text-transparent/.test(lower)
+  const tinyGray = n(/text-gray-400|text-gray-500|text-slate-400|text-slate-500|text-neutral-400|text-zinc-400|#9ca3af|#6b7280|#94a3b8/g)
+  const lucide = /lucide/.test(lower)
+  const svgCount = n(/<svg/g)
+  const bento = /bento/.test(lower) || n(/col-span-/g) >= 4
+  const charts = /recharts|chart\.js|chartjs|apexcharts|highcharts/.test(lower)
+  const bigPad = n(/py-24|py-28|py-32|py-40|py-48/g)
+  const hover = n(/hover:scale|hover:-translate|group-hover|hover:shadow/g)
+  const particles = /tsparticles|particles\.js|particlesjs/.test(lower)
+  const darkBg = /bg-black|bg-gray-950|bg-neutral-950|bg-zinc-950|bg-slate-900|#0a0a0a|#0b1120|#0f172a|#111827/.test(lower)
+  const genericFont = /poppins|inter|montserrat|roboto|open\+sans|lato/.test(lower)
 
-  // Fonts.
-  const { fonts, generic } = detectFonts(html)
-  if (generic.length) {
-    charges.push({ code: 'generic_font', severity: generic.some(f => ['poppins', 'inter', 'montserrat'].includes(f.toLowerCase())) ? 'major' : 'minor', title: `Overused font: ${generic.join(', ')}`, detail: 'These are the fonts every AI/template site reaches for. Distinctive type is a mark of custom design.' })
-  }
+  // Ordered most→least visually damning (matches the design-cue priority list).
+  const detectors: { code: string; hit: boolean; title: string; detail: string }[] = [
+    { code: 'purple', hit: hasGradient && hasPurple, title: 'Purple-gradient abuse, first degree', detail: 'The suspect drenched the page in purple-blue gradients. Everything glows, nothing wins.' },
+    { code: 'rounded', hit: roundedCards >= 6, title: 'Rounded-card soup', detail: `Counted a suspicious ${roundedCards}+ big rounded rectangles. The page reads like a component-library demo.` },
+    { code: 'glow', hit: blurGlow, title: 'Glow & blur overload', detail: 'Blurred blobs, glassmorphism and neon shadows muddying the hierarchy. Squint harder, citizen.' },
+    { code: 'hero', hit: bigText && textCenter >= 1, title: 'Giant centered hero, tiny eyebrow, two pill buttons', detail: 'The most predictable hero in the game. We could have drawn it blindfolded.' },
+    { code: 'gradtext', hit: gradientText, title: 'Gradient text on one random word', detail: 'One word in the headline mysteriously rainbow. Decorative, not intentional.' },
+    { code: 'graytext', hit: tinyGray >= 3, title: 'Tiny low-contrast gray text everywhere', detail: 'Micro gray captions and labels that look "premium" for 4 seconds, then just hard to read.' },
+    { code: 'lucide', hit: lucide || svgCount >= 20, title: 'Lucide icon spam', detail: 'The same thin-line sparkle / rocket / bolt / shield in a rounded square, on every card.' },
+    { code: 'bento', hit: bento, title: 'Bento grids with no reason to exist', detail: 'Irregular card grid used for content that had zero need to be a grid.' },
+    { code: 'pills', hit: roundedFull >= 6, title: 'Pills. Everywhere.', detail: `Around ${roundedFull} capsule-shaped things. Nav, badges, CTAs — soft and toy-like.` },
+    { code: 'dashboard', hit: charts, title: 'Fake dashboard cosplay', detail: 'Decorative charts, KPIs and little widgets that measure absolutely nothing.' },
+    { code: 'space', hit: bigPad >= 3, title: 'Excessive empty space', detail: 'Enormous gaps between very little information. Stretched, not elegant.' },
+    { code: 'centered', hit: textCenter >= 4 && mxAuto >= 6, title: 'Everything centered', detail: 'Centered titles, text, buttons, testimonials — all composition and tension surrendered.' },
+    { code: 'combo', hit: hasGradient && blurGlow && roundedCards >= 4 && hover >= 4, title: 'Too many competing effects in one component', detail: 'Gradient + glass + border + shadow + glow + icon + badge, all fighting in the same box.' },
+    { code: 'darkmode', hit: darkBg && hasPurple, title: 'Generic neon dark mode', detail: 'Near-black navy with purple/cyan accents. Instantly recognizable, instantly anonymous.' },
+    { code: 'hover', hit: hover >= 8, title: 'Overdone hover animations', detail: 'Every card lifts, glows, scales or grows a gradient border. Calm down.' },
+    { code: 'particles', hit: particles, title: 'Decorative particles to fill the void', detail: 'Floating dots and stars added purely to hide the emptiness.' },
+    { code: 'font', hit: genericFont, title: 'The default AI font', detail: 'Poppins / Inter / Montserrat — the typeface every generator reaches for first.' },
+  ]
 
-  // Design / slop tells.
-  const title = html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1]?.trim() || ''
-  if (!title || /^(home|untitled|my site|website|document|new page)$/i.test(title)) {
-    charges.push({ code: 'title', severity: 'minor', title: 'Generic or missing page title', detail: `Title reads: "${title || '(none)'}". Search engines and tabs show this.` })
-  }
-  const hasViewport = /<meta[^>]+name=["']viewport["']/i.test(html)
-  if (!hasViewport) charges.push({ code: 'viewport', severity: 'major', title: 'No mobile viewport tag', detail: 'The page likely isn’t built to adapt to phones at all.' })
-  if (!/<link[^>]+rel=["'][^"']*icon/i.test(html)) charges.push({ code: 'favicon', severity: 'minor', title: 'No favicon', detail: 'That little tab icon is missing — a small but classic unfinished-site tell.' })
-  if (!/property=["']og:image["']/i.test(html)) charges.push({ code: 'og', severity: 'minor', title: 'No social preview image', detail: 'Shared on WhatsApp/LinkedIn, this link will look bare.' })
-  const placeholders = ['lorem ipsum', 'welcome to our website', 'welcome to my website', 'your business name', 'company name here', 'coming soon', 'lorem'].filter(p => lower.includes(p))
-  if (placeholders.length) charges.push({ code: 'placeholder', severity: 'critical', title: 'Placeholder/filler text found', detail: `Detected: "${placeholders[0]}". The template’s demo copy was never replaced.` })
-  if (/wix\.com\/website-builder|created with weebly|make a free website with|proudly powered by|carrd\.co|godaddy\.com\/websites/i.test(lower)) {
-    charges.push({ code: 'badge', severity: 'major', title: 'Free "Made with…" badge', detail: 'The builder’s own advertising badge is still on the site — a dead giveaway of a free plan.' })
-  }
+  const charges: Charge[] = detectors.filter(d => d.hit).map(d => ({ code: d.code, title: d.title, detail: d.detail }))
 
-  // Speed + mobile (parallel).
-  const [mobile, desktop] = await Promise.all([pageSpeed(finalUrl, 'mobile'), pageSpeed(finalUrl, 'desktop')])
-  if (mobile) {
-    if (mobile.score < 50) charges.push({ code: 'slow_mobile', severity: 'critical', title: `Painfully slow on mobile (${mobile.score}/100)`, detail: `Largest content paints at ${mobile.lcp ?? '—'}. Visitors leave before it loads.` })
-    else if (mobile.score < 80) charges.push({ code: 'okish_mobile', severity: 'minor', title: `Mediocre mobile speed (${mobile.score}/100)`, detail: `Room to improve. LCP ${mobile.lcp ?? '—'}.` })
-    else charges.push({ code: 'fast_mobile', severity: 'good', title: `Fast on mobile (${mobile.score}/100)`, detail: 'Loads quickly on a phone. Nice.' })
-  }
+  // Effort: the more crimes, the less effort was spent. Pure comedy math.
+  const crimes = charges.length
+  const effort = Math.max(1, 22 - crimes * 2)
+  const effortFlavor =
+    effort <= 4 ? 'Barely longer than ordering a coffee.' :
+    effort <= 9 ? 'One lunch break, tops.' :
+    effort <= 15 ? 'A solid afternoon of copy-pasting.' :
+    'Suspiciously high. Someone may have actually tried.'
 
-  // ---- Guilt score: 0 (innocent, human-made) → 100 (throw the book at it) ----
-  const weights: Record<Severity, number> = { critical: 34, major: 20, minor: 9, good: -14 }
-  let guilt = 0
-  for (const c of charges) guilt += weights[c.severity]
-  guilt = Math.max(0, Math.min(100, guilt))
-
-  const verdict =
-    guilt >= 66
-      ? { level: 'guilty', label: 'GUILTY' }
-      : guilt >= 30
-        ? { level: 'suspicious', label: 'SUSPICIOUS' }
-        : { level: 'cleared', label: 'CLEARED' }
+  const passed = crimes <= 2
+  const verdict = passed
+    ? { level: 'cleared', label: crimes === 0 ? 'CLEARED — no slop detected' : 'CLEARED — barely' }
+    : crimes <= 5
+      ? { level: 'suspicious', label: 'SUSPICIOUS' }
+      : { level: 'guilty', label: 'GUILTY OF DESIGN CRIMES' }
 
   return NextResponse.json({
-    url: finalUrl,
-    guilt,
+    url: u.toString(),
+    crimes,
+    charges,
+    effort,
+    effortFlavor,
+    passed,
     verdict,
-    charges: charges.sort((a, b) => weights[b.severity] - weights[a.severity]),
-    builder: builder ? { name: builder.name, kind: builder.kind } : null,
-    fonts,
-    speed: { mobile, desktop },
-    mobileFriendly: hasViewport,
   })
 }
