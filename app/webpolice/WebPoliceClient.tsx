@@ -79,7 +79,7 @@ function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.R
       playsInline
       preload="auto"
       aria-hidden="true"
-      className={`pointer-events-none absolute top-[26%] md:top-1/2 z-0 w-[46vw] max-w-[300px] md:w-[26vw] md:max-w-[380px] transition-transform duration-500 ease-in ${
+      className={`pointer-events-none absolute top-[15%] md:top-1/2 z-0 w-[42vw] max-w-[260px] md:w-[26vw] md:max-w-[380px] transition-transform duration-500 ease-in ${
         side === 'left' ? 'left-[-9%] md:left-[-2%]' : 'right-[-9%] md:right-[-2%]'
       }`}
       style={
@@ -95,6 +95,29 @@ function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.R
     >
       <source src="/media/webpolice/gorilla.mp4" type="video/mp4" />
     </video>
+  )
+}
+
+// Crawlable, keyword-rich SEO content shown below the tool. It renders in the
+// server HTML (client components still SSR), so search engines index it.
+function SeoSection({ t }: { t: WPStrings }) {
+  return (
+    <section className="bg-[#0D0E12] px-6 py-16 md:py-24">
+      <div className="mx-auto max-w-2xl">
+        <h2 className="font-display font-bold text-2xl md:text-3xl text-white tracking-tight">{t.seoH2}</h2>
+        <p className="font-body text-base text-white/70 leading-relaxed mt-4">{t.seoP1}</p>
+        <p className="font-body text-base text-white/70 leading-relaxed mt-3">{t.seoP2}</p>
+
+        <div className="mt-10 divide-y divide-white/10 border-t border-b border-white/10">
+          {t.faq.map(item => (
+            <div key={item.q} className="py-5">
+              <h3 className="font-body font-semibold text-base text-white">{item.q}</h3>
+              <p className="font-body text-sm text-white/65 leading-relaxed mt-1.5">{item.a}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -179,14 +202,15 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   }, [])
 
   return (
-    <main className="relative min-h-screen overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
+    <main className="relative">
+      <section className="relative min-h-screen overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
       <Gorilla side="left" vref={leftVid} hidden={moved} />
       <Gorilla side="right" vref={rightVid} hidden={moved} />
 
       {/* Hero — bottom half on mobile (gorillas take the top half); centered
           on desktop. Slides fully up when the case opens. */}
       <div
-        className={`relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-end md:justify-center px-6 pb-[9vh] md:pb-0 text-center transition-transform duration-500 ease-in ${
+        className={`relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-end md:justify-center px-6 pb-[5vh] md:pb-0 text-center transition-transform duration-500 ease-in ${
           moved ? '-translate-y-[110vh]' : 'translate-y-0'
         }`}
       >
@@ -232,6 +256,10 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
 
         {error && <p className="mt-5 font-body text-sm text-red-700">{error}</p>}
       </div>
+      </section>
+
+      {/* SEO content — crawlable copy + FAQ, visible on scroll in the idle state */}
+      <SeoSection t={t} />
 
       {/* Loading — funny text on top, the police gorilla runs to the scene,
           plus a circular spinner. Plays ≥2.4s. */}

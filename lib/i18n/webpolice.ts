@@ -33,6 +33,10 @@ export type WPStrings = {
   exhibitAlt: string
   readMore: string
   showLess: string
+  seoH2: string
+  seoP1: string
+  seoP2: string
+  faq: { q: string; a: string }[]
   // Server-side
   languageName: string
   aspectTitle: Record<'typography' | 'spacing' | 'color' | 'clutter' | 'hierarchy' | 'imagery', string>
@@ -70,6 +74,15 @@ const en: WPStrings = {
   exhibitAlt: 'Exhibit A: a stock photo',
   readMore: 'Read the full rant',
   showLess: 'Show less',
+  seoH2: 'The website design checker that roasts your homepage',
+  seoP1: 'Web Police is a free website design analyzer and website roast tool. Paste any URL and our AI website design review scores your homepage out of 100 across typography, spacing, colour, clutter, structure and imagery — the fastest way to settle the eternal question: is my website ugly?',
+  seoP2: 'Think of it as a website UX checker with a sense of humour. Instead of a dry audit you get a verdict, a design score and a comedy rant — plus the specific design crimes making your site look cheap, generic or AI-generated, so you know exactly what to fix.',
+  faq: [
+    { q: 'Is this website design checker free?', a: 'Yes. Paste a URL and get an instant design score and roast — no signup, nothing stored.' },
+    { q: 'How does the AI website design review work?', a: 'We capture your homepage and a full-page screenshot, then an AI design critic scores it across six design aspects and explains what is letting it down.' },
+    { q: 'What does the website roast actually check?', a: 'Typography, spacing, colour, visual clutter, structure and hierarchy, and imagery — the things that make a website feel cheap, generic or AI-generated.' },
+    { q: 'Is my website ugly if it scores low?', a: 'A low score means it reads as generic or template-like. It is meant to be funny, but the design crimes it lists are real and fixable.' },
+  ],
   languageName: 'English',
   aspectTitle: { typography: 'Typography', spacing: 'Spacing', color: 'Colour', clutter: 'Clarity', hierarchy: 'Structure & hierarchy', imagery: 'Imagery' },
   verdict: { gorgeous: 'Certified Gorgeous', decent: 'Actually Decent', average: 'Painfully Average', ugly: 'Objectively Ugly', yele: 'Illegally Good 😏' },
@@ -114,6 +127,15 @@ const es: WPStrings = {
   exhibitAlt: 'Prueba A: una foto de stock',
   readMore: 'Leer el veredicto completo',
   showLess: 'Mostrar menos',
+  seoH2: 'El analizador de diseño web que critica tu página',
+  seoP1: 'Web Police es un analizador de diseño web y herramienta de «roast» gratis. Pega cualquier URL y nuestra revisión de diseño web con IA puntúa tu página sobre 100 en tipografía, espaciado, color, saturación visual, estructura e imágenes — la forma más rápida de responder la eterna duda: ¿mi web es fea?',
+  seoP2: 'Piénsalo como un chequeo de UX web con sentido del humor. En vez de una auditoría aburrida recibes un veredicto, una puntuación de diseño y un monólogo cómico — además de los «delitos de diseño» concretos que hacen que tu web parezca barata, genérica o generada por IA, para que sepas exactamente qué arreglar.',
+  faq: [
+    { q: '¿Este analizador de diseño web es gratis?', a: 'Sí. Pega una URL y obtén al instante una puntuación de diseño y un roast — sin registro y sin guardar nada.' },
+    { q: '¿Cómo funciona la revisión de diseño web con IA?', a: 'Capturamos tu página y una captura de la web completa, y un crítico de diseño con IA la puntúa en seis aspectos y explica qué falla.' },
+    { q: '¿Qué comprueba exactamente el roast de la web?', a: 'Tipografía, espaciado, color, saturación visual, estructura y jerarquía, e imágenes — lo que hace que una web parezca barata, genérica o hecha con IA.' },
+    { q: '¿Mi web es fea si saca poca nota?', a: 'Una nota baja significa que se percibe como genérica o de plantilla. Es para reír, pero los delitos de diseño que señala son reales y se pueden arreglar.' },
+  ],
   languageName: 'Spanish',
   aspectTitle: { typography: 'Tipografía', spacing: 'Espaciado', color: 'Color', clutter: 'Claridad', hierarchy: 'Estructura y jerarquía', imagery: 'Imágenes' },
   verdict: { gorgeous: 'Espectacular', decent: 'Bastante Decente', average: 'Dolorosamente del Montón', ugly: 'Objetivamente Fea', yele: 'Ilegalmente Buena 😏' },
@@ -158,6 +180,15 @@ const zh: WPStrings = {
   exhibitAlt: '证物 A：一张图库照片',
   readMore: '阅读完整吐槽',
   showLess: '收起',
+  seoH2: '会吐槽你首页的网站设计检查器',
+  seoP1: 'Web Police 是一款免费的网站设计分析器和「吐槽」工具。粘贴任意网址，我们的 AI 网站设计评审会从字体、间距、色彩、杂乱度、结构和图像六个方面为你的首页打出百分制评分 —— 最快回答那个永恒的问题：我的网站丑吗？',
+  seoP2: '把它当作一个有幽默感的网站 UX 检查器。你得到的不是枯燥的审计，而是一个判决、一个设计评分和一段吐槽 —— 以及让你的网站显得廉价、普通或像 AI 生成的具体「设计罪名」，让你清楚知道该改什么。',
+  faq: [
+    { q: '这个网站设计检查器免费吗？', a: '免费。粘贴网址即可立即获得设计评分和吐槽 —— 无需注册，不保存任何数据。' },
+    { q: 'AI 网站设计评审是怎么工作的？', a: '我们截取你的首页和整页截图，然后由 AI 设计评审从六个方面打分，并解释问题所在。' },
+    { q: '网站吐槽具体检查什么？', a: '字体、间距、色彩、视觉杂乱、结构与层级，以及图像 —— 让网站显得廉价、普通或像 AI 生成的那些方面。' },
+    { q: '评分低就代表我的网站丑吗？', a: '低分意味着它看起来普通或像模板。它是为了搞笑，但列出的设计罪名是真实且可以修复的。' },
+  ],
   languageName: 'Simplified Chinese',
   aspectTitle: { typography: '字体排版', spacing: '间距', color: '色彩', clutter: '清晰度', hierarchy: '结构与层级', imagery: '图像' },
   verdict: { gorgeous: '惊艳认证', decent: '其实还不错', average: '平庸得让人心痛', ugly: '客观上很丑', yele: '好得犯规 😏' },
@@ -178,4 +209,27 @@ const WP: Record<Locale, WPStrings> = { en, es, zh }
 
 export function getWP(locale: Locale): WPStrings {
   return WP[locale] ?? en
+}
+
+// schema.org JSON-LD for a /webpolice page: WebApplication + FAQPage.
+export function webPoliceJsonLd(locale: Locale, url: string, name: string) {
+  const wp = getWP(locale)
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebApplication',
+        name,
+        url,
+        applicationCategory: 'DesignApplication',
+        operatingSystem: 'Web',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        description: wp.seoP1,
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: wp.faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      },
+    ],
+  }
 }

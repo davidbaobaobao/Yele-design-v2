@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import WebPoliceClient from './WebPoliceClient'
+import { webPoliceJsonLd } from '@/lib/i18n/webpolice'
 
 const OG_TITLE = 'IS MY WEBSITE UGLY?'
 const OG_DESC = 'Paste your website and the Web Police judge if it’s ugly, generic, or made by ChatGPT in 10 minutes — a comprehensive design score out of 100.'
@@ -8,7 +9,10 @@ const OG_IMG = 'https://yele.design/media/webpolice/og.jpg'
 export const metadata: Metadata = {
   title: 'Is my website ugly? Comprehensive & accurate website design analysis',
   description: OG_DESC,
-  alternates: { canonical: 'https://yele.design/webpolice' },
+  alternates: {
+    canonical: 'https://yele.design/webpolice',
+    languages: { en: 'https://yele.design/webpolice', es: 'https://yele.design/es/webpolice', zh: 'https://yele.design/zh/webpolice' },
+  },
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
@@ -22,5 +26,13 @@ export const metadata: Metadata = {
 }
 
 export default function WebPolicePage() {
-  return <WebPoliceClient locale="en" />
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPoliceJsonLd('en', 'https://yele.design/webpolice', 'Web Police — Website design checker')) }}
+      />
+      <WebPoliceClient locale="en" />
+    </>
+  )
 }
