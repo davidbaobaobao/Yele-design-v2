@@ -25,7 +25,7 @@ const YELE_TEXT: Record<Locale, { effortLabel: string; effortFlavor: string; sum
 // Env: ANTHROPIC_API_KEY, SCREENSHOT_API_KEY (ScreenshotOne access key).
 
 export const runtime = 'nodejs'
-export const maxDuration = 60
+export const maxDuration = 90
 
 type Charge = { code: string; title: string; detail: string; bg?: string }
 
@@ -87,11 +87,17 @@ async function shot(target: string, fullPage: boolean): Promise<ShotResult> {
   api.searchParams.set('image_quality', '72')
   api.searchParams.set('viewport_width', '1280')
   api.searchParams.set('viewport_height', '900')
-  api.searchParams.set('delay', '3') // wait 3s so the page actually finishes loading
-  api.searchParams.set('timeout', '40') // let ScreenshotOne wait out slow/heavy sites
+  // Wait for the network to go quiet, then sit for a few more seconds, so lazy
+  // images / cards / fonts have actually rendered before we shoot — otherwise
+  // the model roasts half-loaded blank boxes.
+  api.searchParams.set('wait_until', 'networkidle2')
+  api.searchParams.set('delay', '5')
+  api.searchParams.set('timeout', '35') // let ScreenshotOne wait out slow/heavy sites
+  // Dismiss the overlays that otherwise cover (and dominate) the screenshot.
   api.searchParams.set('block_cookie_banners', 'true')
   api.searchParams.set('block_ads', 'true')
   api.searchParams.set('block_chats', 'true')
+  api.searchParams.set('block_banners_by_heuristics', 'true')
   api.searchParams.set('cache', 'true')
   api.searchParams.set('cache_ttl', '86400')
   if (fullPage) {
@@ -100,7 +106,7 @@ async function shot(target: string, fullPage: boolean): Promise<ShotResult> {
   }
   try {
     const ctrl = new AbortController()
-    const to = setTimeout(() => ctrl.abort(), 45000)
+    const to = setTimeout(() => ctrl.abort(), 40000)
     const res = await fetch(api.toString(), { signal: ctrl.signal })
     clearTimeout(to)
     if (!res.ok) return { error: `screenshot ${res.status}: ${(await res.text()).slice(0, 140)}` }
@@ -170,6 +176,10 @@ Punish hard, specifically:
 - Obvious STOCK PHOTOS or obviously fake/AI-generated images → imagery must score 20–35. This is a big tell of a template.
 - Average, "safe", forgettable template designs (even if tidy) → keep the overall in the 35–50 band. "Inoffensive but generic" is NOT a 60.
 Be fair the other way too: genuinely custom, distinctive, professional sites MUST score high, and clean minimal design is good, not a crime.
+
+IMPORTANT — judge the ACTUAL website, not the screenshot's accidents:
+- If a cookie/consent/GDPR banner, newsletter popup, chat bubble, age-gate or any modal overlay covers part of the page, IGNORE it completely. Do not mention it, do not let it lower any score. Evaluate the real design behind/around it.
+- If areas look blank, grey, or half-rendered (images, cards or sections that clearly just hadn't finished loading when the photo was taken), do NOT treat that as a design crime. Judge the parts that DID render. Never criticize "empty cards" or missing content that is really just a loading artifact.
 
 Aspects (what LOW means):
 - typography: generic fonts (Poppins/Inter/Montserrat), tiny low-contrast text, weak hierarchy — cheap/generic feel.
