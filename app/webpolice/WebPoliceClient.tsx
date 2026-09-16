@@ -812,7 +812,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
           aria-hidden="true"
           style={{ background: 'linear-gradient(90deg, rgba(238,191,207,0.94) 0%, rgba(238,191,207,0.72) 38%, rgba(238,191,207,0) 66%)' }}
         />
-        <div className="relative z-10 mx-auto flex min-h-[240px] md:min-h-[340px] max-w-5xl items-center px-6 md:px-10">
+        <div className="relative z-10 mx-auto flex min-h-[80vh] md:min-h-screen max-w-5xl items-center px-6 md:px-10">
           <div className="max-w-[62%] sm:max-w-[56%] py-8 md:py-14">
             <p className="font-display font-bold tracking-tight text-[#16161A] leading-tight" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.6rem)' }}>
               {t.seriouslyLead}
