@@ -37,6 +37,11 @@ export type WPStrings = {
   readMore: string
   showLess: string
   aiFailed: string
+  signatureIntro: string
+  saysLabel: string
+  hearsLabel: string
+  personalityLabel: string
+  designYearLabel: string
   seoH2: string
   seoP1: string
   seoP2: string
@@ -85,6 +90,11 @@ const en: WPStrings = {
   readMore: 'Read the full rant',
   showLess: 'Show less',
   aiFailed: '🚧 My AI analyzer failed on this one — running a quick automatic review instead.',
+  signatureIntro: 'And here’s the bit that could become your signature — what your site thinks it says vs. what visitors actually hear:',
+  saysLabel: 'Your website says',
+  hearsLabel: 'Visitors hear',
+  personalityLabel: 'Website personality diagnosis',
+  designYearLabel: 'Estimated design year',
   seoH2: 'The website design checker that roasts your homepage',
   seoP1: 'Web Police is a free website design analyzer and website roast tool. Paste any URL and our AI website design review scores your homepage out of 100 across typography, spacing, colour, clutter, structure and imagery — the fastest way to settle the eternal question: is my website ugly?',
   seoP2: 'Think of it as a website UX checker with a sense of humour. Instead of a dry audit you get a verdict, a design score and a comedy rant — plus the specific design crimes making your site look cheap, generic or AI-generated, so you know exactly what to fix.',
@@ -143,6 +153,11 @@ const es: WPStrings = {
   readMore: 'Leer el veredicto completo',
   showLess: 'Mostrar menos',
   aiFailed: '🚧 Mi analizador con IA falló con esta web — te dejo una revisión automática rápida.',
+  signatureIntro: 'Y aquí va lo que podría ser tu sello — lo que tu web cree que dice vs. lo que la gente entiende de verdad:',
+  saysLabel: 'Tu web dice',
+  hearsLabel: 'La gente entiende',
+  personalityLabel: 'Diagnóstico de personalidad de la web',
+  designYearLabel: 'Año de diseño estimado',
   seoH2: 'El analizador de diseño web que critica tu página',
   seoP1: 'Web Police es un analizador de diseño web y herramienta de «roast» gratis. Pega cualquier URL y nuestra revisión de diseño web con IA puntúa tu página sobre 100 en tipografía, espaciado, color, saturación visual, estructura e imágenes — la forma más rápida de responder la eterna duda: ¿mi web es fea?',
   seoP2: 'Piénsalo como un chequeo de UX web con sentido del humor. En vez de una auditoría aburrida recibes un veredicto, una puntuación de diseño y un monólogo cómico — además de los «delitos de diseño» concretos que hacen que tu web parezca barata, genérica o generada por IA, para que sepas exactamente qué arreglar.',
@@ -201,6 +216,11 @@ const zh: WPStrings = {
   readMore: '看完整吐槽',
   showLess: '收起',
   aiFailed: '🚧 AI 检察官在这个网站上翻车了 —— 先给你一份快速的自动检查。',
+  signatureIntro: '还有一个点，说不定能成为你的招牌 —— 你的网站以为自己在说什么 vs. 访客其实听到了什么：',
+  saysLabel: '你的网站说',
+  hearsLabel: '访客听到的是',
+  personalityLabel: '网站人格诊断',
+  designYearLabel: '预估设计年份',
   seoH2: '会吐槽你首页的网站设计检查器',
   seoP1: '「网页警察」是一个免费的网站设计检查器，也是一个网站吐槽工具。贴上任意网址，AI 设计评审会从字体、间距、配色、杂乱度、结构和图片六个方面给你的首页打一个百分制的分数 —— 用最快的方式回答那个永恒的问题：我的网站到底丑不丑？',
   seoP2: '你可以把它当成一个有幽默感的网站体验检查工具。你拿到的不是一份枯燥的审计报告，而是一份判决、一个设计评分，外加一段吐槽 —— 以及那些让你的网站显得廉价、像模板、像 AI 生成的具体「罪名」，让你清楚知道该改哪里。',

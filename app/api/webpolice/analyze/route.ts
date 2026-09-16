@@ -6,10 +6,10 @@ function toLocale(v: unknown): Locale {
   return v === 'es' || v === 'zh' ? v : 'en'
 }
 
-const YELE_TEXT: Record<Locale, { effortLabel: string; effortFlavor: string; summary: string; rant: string }> = {
-  en: { effortLabel: 'Handcrafted by Yele themselves', effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.', summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.', rant: "Look, we tried to find something. We really did. We dusted the whole site for the usual crimes — the purple gradients, the rounded-card soup, the stock photos of people high-fiving a robot — and came back with nothing but fingerprints of actual taste.\n\nEvery pixel looks like a decision, not an accident. The typography has opinions, the spacing can breathe, and nobody bolted on a fake dashboard to look busy. Frankly it's showing off. 105/100, the extra five points are for making the rest of the internet look bad." },
-  es: { effortLabel: 'Hecha a mano por el propio Yele', effortFlavor: 'Los sospechosos SON la policía. Caso cerrado con un guiño.', summary: 'La única web que ha hecho sonrojar a la Policía Web. 105/100, sin objeciones — buscaos un cuarto.', rant: 'Mira, lo intentamos. De verdad. Peinamos toda la web buscando los delitos de siempre — los degradados morados, la sopa de tarjetas redondeadas, las fotos de stock de gente chocando los cinco con un robot — y solo encontramos huellas de buen gusto.\n\nCada píxel parece una decisión, no un accidente. La tipografía tiene criterio, el espaciado respira y nadie ha pegado un dashboard falso para parecer ocupado. Sinceramente, está presumiendo. 105/100; los cinco puntos extra son por dejar en evidencia al resto de internet.' },
-  zh: { effortLabel: 'Yele 自己做的', effortFlavor: '嫌疑人就是警察本人。眨个眼，结案。', summary: '唯一一个让网页警察脸红的网站。105/100，挑不出毛病，我们决定给它送面锦旗。', rant: '说真的，我们是想挑毛病的。整个站从上到下排查了一遍：紫色渐变、圆角卡片堆成汤、西装大哥握手的图库照片 —— 一个都没抓到，只找到了「有品味」的指纹。\n\n每个像素都像是有人认真决定过的，不是随手摆的。字体有主见，间距能喘气，也没硬塞一个假仪表盘来装忙。说白了就是在炫技。105/100，多出来的五分，是奖励它把互联网上其他网站衬托得那么惨。' },
+const YELE_TEXT: Record<Locale, { effortLabel: string; effortFlavor: string; summary: string; rant: string; says: string; hears: string; personality: string; designYear: number; designYearWhy: string }> = {
+  en: { effortLabel: 'Handcrafted by Yele themselves', effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.', summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.', rant: "Look, we tried to find something. We really did. We dusted the whole site for the usual crimes — the purple gradients, the rounded-card soup, the stock photos of people high-fiving a robot — and came back with nothing but fingerprints of actual taste.\n\nEvery pixel looks like a decision, not an accident. The typography has opinions, the spacing can breathe, and nobody bolted on a fake dashboard to look busy. Frankly it's showing off. 105/100, the extra five points are for making the rest of the internet look bad.", says: 'We build beautiful websites.', hears: 'Oh. They actually meant it.', personality: 'The kid who did the homework AND made it look effortless.', designYear: 2026, designYearWhy: 'It looks like next year, honestly.' },
+  es: { effortLabel: 'Hecha a mano por el propio Yele', effortFlavor: 'Los sospechosos SON la policía. Caso cerrado con un guiño.', summary: 'La única web que ha hecho sonrojar a la Policía Web. 105/100, sin objeciones — buscaos un cuarto.', rant: 'Mira, lo intentamos. De verdad. Peinamos toda la web buscando los delitos de siempre — los degradados morados, la sopa de tarjetas redondeadas, las fotos de stock de gente chocando los cinco con un robot — y solo encontramos huellas de buen gusto.\n\nCada píxel parece una decisión, no un accidente. La tipografía tiene criterio, el espaciado respira y nadie ha pegado un dashboard falso para parecer ocupado. Sinceramente, está presumiendo. 105/100; los cinco puntos extra son por dejar en evidencia al resto de internet.', says: 'Hacemos webs bonitas.', hears: 'Ah. Va en serio.', personality: 'El empollón que hizo los deberes Y encima queda de guay.', designYear: 2026, designYearWhy: 'Parece del año que viene, la verdad.' },
+  zh: { effortLabel: 'Yele 自己做的', effortFlavor: '嫌疑人就是警察本人。眨个眼，结案。', summary: '唯一一个让网页警察脸红的网站。105/100，挑不出毛病，我们决定给它送面锦旗。', rant: '说真的，我们是想挑毛病的。整个站从上到下排查了一遍：紫色渐变、圆角卡片堆成汤、西装大哥握手的图库照片 —— 一个都没抓到，只找到了「有品味」的指纹。\n\n每个像素都像是有人认真决定过的，不是随手摆的。字体有主见，间距能喘气，也没硬塞一个假仪表盘来装忙。说白了就是在炫技。105/100，多出来的五分，是奖励它把互联网上其他网站衬托得那么惨。', says: '我们做好看的网站。', hears: '哦，人家是玩真的。', personality: '那个既写完了作业、还顺手做得毫不费力的学霸。', designYear: 2026, designYearWhy: '说实话，它看着像明年才该有的设计。' },
 }
 
 // The Web Police — satire design analyzer. HYBRID:
@@ -201,10 +201,15 @@ For "color", also return "colors": the TWO most dominant or clashing colors actu
 
 The "summary" is a punchy one-line roast (or praise). The "rant" is the longer cut: 1–2 SHORT paragraphs (~60–110 words) expanding it — funnier, more specific about the actual design, easy to read, playful, PG-13, no bullet points.
 
-Return ONLY compact JSON, no markdown:
-{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"...","colors":["#hex","#hex"]},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny, edgy roast (or praise) sentence","rant":"1-2 short funny paragraphs"}`
+Also produce these, all in the same language and voice:
+- "saysHears": a funny-but-legit UX gap. "says" = the site's boldest claim or main CTA, short and quote-like. "hears" = the honest, funny thing a normal visitor actually thinks. (e.g. says: "We're an innovative full-service digital transformation partner." hears: "I have no idea what this company does." / says: "Book an appointment." hears: "First solve this navigation puzzle.")
+- "personality": one conceptual, unhinged-but-funny metaphor for what this site IS — NOT technical. (e.g. "A regional insurance company trying to look like a Silicon Valley startup." / "A PowerPoint that escaped onto the internet.") Return just the descriptor, no "Your website is".
+- "designYear": the year this design LOOKS like it is from, as an integer (e.g. 2014). "designYearWhy": one short sentence explaining the giveaway, understandable to a non-designer.
 
-type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; rant: string; colorBg?: string }
+Return ONLY compact JSON, no markdown:
+{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"...","colors":["#hex","#hex"]},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny sentence","rant":"1-2 short funny paragraphs","saysHears":{"says":"...","hears":"..."},"personality":"one funny metaphor","designYear":2014,"designYearWhy":"one sentence"}`
+
+type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; rant: string; colorBg?: string; saysHears?: { says: string; hears: string }; personality?: string; designYear?: number | null; designYearWhy?: string }
 type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
 
 async function visionAnalyze(images: { data: string; mime: string }[], hints: string[], languageName: string, roastStyle: string): Promise<VisionResult> {
@@ -235,7 +240,21 @@ async function visionAnalyze(images: { data: string; mime: string }[], hints: st
       aspects[a] = { score: Math.max(0, Math.min(100, Number(raw.score) || 0)), reason: String(raw.reason || '').slice(0, 200) }
     }
     const overall = Math.max(0, Math.min(100, Number(parsed.overall) || Math.round(ASPECTS.reduce((s, a) => s + aspects[a].score, 0) / ASPECTS.length)))
-    return { ok: true, data: { aspects, overall, summary: String(parsed.summary || '').slice(0, 200), rant: String(parsed.rant || '').slice(0, 900), colorBg: toGradient(parsed.color?.colors) } }
+    const dy = Number(parsed.designYear)
+    return {
+      ok: true,
+      data: {
+        aspects,
+        overall,
+        summary: String(parsed.summary || '').slice(0, 200),
+        rant: String(parsed.rant || '').slice(0, 900),
+        colorBg: toGradient(parsed.color?.colors),
+        saysHears: parsed.saysHears ? { says: String(parsed.saysHears.says || '').slice(0, 220), hears: String(parsed.saysHears.hears || '').slice(0, 220) } : undefined,
+        personality: String(parsed.personality || '').slice(0, 220) || undefined,
+        designYear: Number.isFinite(dy) && dy > 1990 && dy < 2100 ? Math.round(dy) : null,
+        designYearWhy: String(parsed.designYearWhy || '').slice(0, 240) || undefined,
+      },
+    }
   } catch (err) {
     return { ok: false, reason: `vision error: ${err instanceof Error ? err.message : String(err)}`.slice(0, 160) }
   }
@@ -274,6 +293,10 @@ async function runAnalysis(body: Record<string, unknown>) {
       verdict: { level: 'cleared', label: wp.verdict.yele },
       summary: y.summary,
       rant: y.rant,
+      saysHears: { says: y.says, hears: y.hears },
+      personality: y.personality,
+      designYear: y.designYear,
+      designYearWhy: y.designYearWhy,
       mode: 'vision',
       note: '',
       screenshot: 'b64' in s ? `data:${s.mime};base64,${s.b64}` : null,
@@ -311,6 +334,10 @@ async function runAnalysis(body: Record<string, unknown>) {
   let quality: number
   let summary = ''
   let rant = ''
+  let saysHears: { says: string; hears: string } | null = null
+  let personality = ''
+  let designYear: number | null = null
+  let designYearWhy = ''
   let mode: 'vision' | 'basic'
   let note = ''
 
@@ -319,6 +346,10 @@ async function runAnalysis(body: Record<string, unknown>) {
     quality = vision.data.overall
     summary = vision.data.summary
     rant = vision.data.rant
+    saysHears = vision.data.saysHears ?? null
+    personality = vision.data.personality ?? ''
+    designYear = vision.data.designYear ?? null
+    designYearWhy = vision.data.designYearWhy ?? ''
     // Charges = the weakest aspects (low quality), worst first.
     charges = ASPECTS.map(a => ({ a, ...vision.data.aspects[a] }))
       .filter(x => x.score <= 55)
@@ -362,6 +393,10 @@ async function runAnalysis(body: Record<string, unknown>) {
     verdict,
     summary,
     rant,
+    saysHears,
+    personality,
+    designYear,
+    designYearWhy,
     mode,
     note,
     screenshot: imgB64 ? `data:${imgMime};base64,${imgB64}` : null,

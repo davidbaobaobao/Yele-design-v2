@@ -183,6 +183,10 @@ type Result = {
   verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
   summary?: string
   rant?: string
+  saysHears?: { says: string; hears: string } | null
+  personality?: string
+  designYear?: number | null
+  designYearWhy?: string
   screenshot?: string | null
   mode?: 'vision' | 'basic'
   note?: string
@@ -596,7 +600,7 @@ function ShareBar({ result, t, basePath }: { result: Result; t: WPStrings; baseP
 
 function Report({ result, t, locale, planOptions, basePath, onReset }: { result: Result; t: WPStrings; locale: Locale; planOptions: string[]; basePath: string; onReset: () => void }) {
   const [showAll, setShowAll] = useState(false)
-  const [showRant, setShowRant] = useState(false)
+  const host = result.url.replace(/^https?:\/\//, '').replace(/\/$/, '')
   const main = result.charges.slice(0, 3)
   const extra = result.charges.slice(3, 8)
   const shown = showAll ? [...main, ...extra] : main
@@ -633,31 +637,32 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         <p className={`font-display font-bold text-xl md:text-2xl tracking-tight mt-2 ${VERDICT_TEXT[result.verdict.level]}`}>
           {result.verdict.label}
         </p>
+        <a
+          href={result.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block font-body text-sm text-white/45 underline underline-offset-4 decoration-white/25 hover:text-white hover:decoration-white/60 transition-colors break-all mt-2"
+        >
+          {host}
+        </a>
         {result.summary && <p className="font-body text-lg md:text-2xl text-white/90 mt-4 max-w-xl mx-auto leading-snug">“{result.summary}”</p>}
 
-        {result.rant && (
-          <div className="mt-4 max-w-xl mx-auto">
-            {!showRant ? (
-              <button
-                type="button"
-                onClick={() => setShowRant(true)}
-                className="font-body text-sm font-semibold text-[#D46FC8] underline underline-offset-4 hover:text-[#DE85D2] transition-colors"
-              >
-                {t.readMore} ↓
-              </button>
-            ) : (
-              <div className="mt-2 space-y-3 text-left">
-                {result.rant.split('\n').filter(p => p.trim()).map((p, i) => (
-                  <p key={i} className="font-body text-base text-white/75 leading-relaxed">{p}</p>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setShowRant(false)}
-                  className="font-body text-sm font-semibold text-[#D46FC8] underline underline-offset-4 hover:text-[#DE85D2] transition-colors"
-                >
-                  {t.showLess} ↑
-                </button>
-              </div>
+        {result.saysHears && (result.saysHears.says || result.saysHears.hears) && (
+          <div className="mt-6 max-w-xl mx-auto rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-left">
+            {t.signatureIntro && (
+              <p className="font-body text-sm text-white/60 mb-4 text-center">{t.signatureIntro}</p>
+            )}
+            {result.saysHears.says && (
+              <>
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#D46FC8]">{t.saysLabel}</p>
+                <p className="font-body text-base md:text-lg text-white/90 mt-1 mb-4">“{result.saysHears.says}”</p>
+              </>
+            )}
+            {result.saysHears.hears && (
+              <>
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-amber-300">{t.hearsLabel}</p>
+                <p className="font-body text-base md:text-lg text-white/90 mt-1">“{result.saysHears.hears}”</p>
+              </>
             )}
           </div>
         )}
@@ -722,6 +727,36 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         >
           {t.loadMore(extra.length)}
         </button>
+      )}
+
+      {/* The long roast — always shown, no expand. */}
+      {result.rant && (
+        <div className="mt-10 space-y-3">
+          {result.rant.split('\n').filter(p => p.trim()).map((p, i) => (
+            <p key={i} className="font-body text-base md:text-lg text-white/75 leading-relaxed">{p}</p>
+          ))}
+        </div>
+      )}
+
+      {/* Website personality diagnosis */}
+      {result.personality && (
+        <TiltCard className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-7">
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40 mb-2">{t.personalityLabel}</p>
+          <p className="font-display font-bold text-xl md:text-2xl text-white leading-snug tracking-tight">“{result.personality}”</p>
+        </TiltCard>
+      )}
+
+      {/* Estimated design year */}
+      {result.designYear && (
+        <TiltCard className="mt-4 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">{t.designYearLabel}</p>
+          <p className="font-display font-bold tracking-tighter text-white leading-none mt-1" style={{ fontSize: 'clamp(2.6rem, 12vw, 4.5rem)' }}>
+            {result.designYear}
+          </p>
+          {result.designYearWhy && (
+            <p className="font-body text-sm md:text-base text-white/60 mt-2 max-w-md mx-auto">{result.designYearWhy}</p>
+          )}
+        </TiltCard>
       )}
 
       {/* Shameless plug + form — light card to highlight */}
