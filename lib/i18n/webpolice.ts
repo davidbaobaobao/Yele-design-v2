@@ -58,13 +58,15 @@ export type WPStrings = {
   effort: { label: string; flavor: string }[] // 7 tiers, low→high quality
   errBadUrl: string
   errUnreachable: string
+  errProtected: string
+  errAiFailed: string
 }
 
 const en: WPStrings = {
   heroPre: 'Is my website ',
   heroCursive: 'objectively',
   heroPost: ' ugly?',
-  questions: ['Is my website ugly? generic?', 'Did my developer lie to me?', 'Did he use ChatGPT to generate my website in 10 min?'],
+  questions: ['Is my website ugly? generic? 🍌', 'Did my developer lie to me? 👨‍💻', 'Did he use ChatGPT to generate my website in 10 min? 🤖'],
   ctaIdle: 'Call the Web Police',
   ctaLoading: 'Dispatching…',
   placeholder: 'type your website',
@@ -123,13 +125,15 @@ const en: WPStrings = {
   ],
   errBadUrl: 'Give us a real, public URL to investigate (like example.com).',
   errUnreachable: "Couldn't reach that site. Is the address right and the site online?",
+  errProtected: "🕵️ This site is locked down tighter than a witness protection program — we couldn't get a photo of it. Smells fishy. Try another one.",
+  errAiFailed: '🚔 Our forensic expert just fainted looking at this one. We couldn’t file a report — try another site while we get the smelling salts.',
 }
 
 const es: WPStrings = {
   heroPre: '¿Mi web es ',
   heroCursive: 'objetivamente',
   heroPost: ' fea?',
-  questions: ['¿Mi web es fea? ¿genérica?', '¿Me mintió mi desarrollador?', '¿Usó ChatGPT para generar mi web en 10 min?'],
+  questions: ['¿Mi web es fea? ¿genérica? 🍌', '¿Me mintió mi desarrollador? 👨‍💻', '¿Usó ChatGPT para generar mi web en 10 min? 🤖'],
   ctaIdle: 'Llama a la Policía Web',
   ctaLoading: 'Enviando patrulla…',
   placeholder: 'escribe tu web',
@@ -188,13 +192,15 @@ const es: WPStrings = {
   ],
   errBadUrl: 'Danos una URL pública real (como ejemplo.com).',
   errUnreachable: 'No pudimos acceder a esa web. ¿Es correcta la dirección y está online?',
+  errProtected: '🕵️ Esta web está más blindada que un testigo protegido — no pudimos hacerle ni una foto. Huele raro. Prueba con otra.',
+  errAiFailed: '🚔 A nuestro forense le ha dado un mareo al verla. No pudimos redactar el informe — prueba otra web mientras lo reanimamos.',
 }
 
 const zh: WPStrings = {
   heroPre: '我的网站是不是 ',
   heroCursive: '客观上',
   heroPost: ' 就很丑？',
-  questions: ['我的网站是不是又土又丑？', '给我做网站的是不是在忽悠我？', '他是不是拿 ChatGPT 十分钟糊弄了一个？'],
+  questions: ['我的网站是不是又土又丑？🍌', '给我做网站的是不是在忽悠我？👨‍💻', '他是不是拿 ChatGPT 十分钟糊弄了一个？🤖'],
   ctaIdle: '一键报警',
   ctaLoading: '出警中…',
   placeholder: '输入你的网址',
@@ -257,6 +263,8 @@ const zh: WPStrings = {
   ],
   errBadUrl: '给我们一个真实的、能公开打开的网址（比如 example.com）。',
   errUnreachable: '打不开这个网站。地址写对了吗？站点还活着吗？',
+  errProtected: '🕵️ 这网站防得比证人保护计划还严 —— 我们连张照片都拍不到。有点可疑，换一个试试吧。',
+  errAiFailed: '🚔 我们的法医看了一眼就晕过去了，报告没写成 —— 先换个网站，等我们把他掐醒。',
 }
 
 const WP: Record<Locale, WPStrings> = { en, es, zh }

@@ -26,6 +26,7 @@ export type ScanRow = {
   referer: string | null
   result: unknown | null
   created_at?: string
+  seed?: boolean
 }
 
 const TABLE = 'webpolice_scans'
@@ -110,15 +111,60 @@ export async function findCachedScan(url: string, locale: string, windowMs = 24 
   const supabase = db()
   if (supabase) {
     const { data, error } = await supabase.from(TABLE).select('result').eq('url', url).eq('locale', locale)
-      .not('result', 'is', null).gte('created_at', since)
+      .eq('seed', false).not('result', 'is', null).gte('created_at', since)
       .order('created_at', { ascending: false }).limit(1).maybeSingle()
     if (error) { console.error('[webpolice] findCachedScan failed:', error.message); return null }
     return (data?.result as Record<string, unknown>) ?? null
   }
   memPrune()
-  const hit = [...mem].reverse().find(r => r.url === url && r.locale === locale && r.result &&
+  const hit = [...mem].reverse().find(r => r.url === url && r.locale === locale && r.result && !r.seed &&
     new Date(r.created_at ?? 0).getTime() >= Date.now() - windowMs)
   return (hit?.result as Record<string, unknown>) ?? null
+}
+
+// ── Seed store: precomputed results for the showcase / random pool. ──────────
+// Seeded rows are permanent (seed=true) and carry the full result INCLUDING the
+// screenshot, so the showcase chips and the random button never call the LLM.
+
+const seedMem = new Map<string, Record<string, unknown>>()
+const seedKey = (url: string, locale: string) => `${locale}::${url}`
+
+/** A precomputed result for this URL+locale, or null. No expiry. */
+export async function getSeed(url: string, locale: string): Promise<Record<string, unknown> | null> {
+  const supabase = db()
+  if (supabase) {
+    const { data, error } = await supabase.from(TABLE).select('result')
+      .eq('url', url).eq('locale', locale).eq('seed', true).not('result', 'is', null)
+      .order('created_at', { ascending: false }).limit(1).maybeSingle()
+    if (error) { console.error('[webpolice] getSeed failed:', error.message); return null }
+    return (data?.result as Record<string, unknown>) ?? null
+  }
+  return seedMem.get(seedKey(url, locale)) ?? null
+}
+
+/** Store (replace) a precomputed result for this URL+locale. */
+export async function saveSeed(row: { url: string; host: string; locale: string; quality: number | null; verdict: string | null; result: Record<string, unknown> }): Promise<void> {
+  const supabase = db()
+  if (!supabase) { seedMem.set(seedKey(row.url, row.locale), row.result); return }
+  await supabase.from(TABLE).delete().eq('url', row.url).eq('locale', row.locale).eq('seed', true)
+  const { error } = await supabase.from(TABLE).insert({
+    session_id: null, url: row.url, host: row.host, locale: row.locale,
+    quality: row.quality, verdict: row.verdict, mode: 'seed', cached: false,
+    ip_hash: 'seed', country: null, user_agent: 'seed', referer: null,
+    result: row.result, seed: true, created_at: new Date().toISOString(),
+  })
+  if (error) console.error('[webpolice] saveSeed failed:', error.message)
+}
+
+/** All seeded URLs for a locale — used by the client to pick only seeded sites. */
+export async function listSeededUrls(locale: string): Promise<string[]> {
+  const supabase = db()
+  if (supabase) {
+    const { data, error } = await supabase.from(TABLE).select('url').eq('seed', true).eq('locale', locale)
+    if (error) { console.error('[webpolice] listSeededUrls failed:', error.message); return [] }
+    return Array.from(new Set((data ?? []).map(r => r.url as string)))
+  }
+  return Array.from(seedMem.keys()).filter(k => k.startsWith(`${locale}::`)).map(k => k.slice(locale.length + 2))
 }
 
 /** Scans in a visitor session that have not been emailed yet; marks them sent. */

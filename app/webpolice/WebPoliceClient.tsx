@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import LeadForm from '@/components/LeadForm'
 import { getWP, type WPStrings, type Locale } from '@/lib/i18n/webpolice'
-import { SHOWCASE, randomSite, faviconUrl } from '@/lib/webpolice/examples'
+import { SHOWCASE, POOL, faviconUrl } from '@/lib/webpolice/examples'
 import { getFunnelDict } from '@/lib/i18n/funnel'
 
 // A visitor session id, so every site checked in one sitting is emailed as a
@@ -13,6 +13,10 @@ import { getFunnelDict } from '@/lib/i18n/funnel'
 // as an opaque id.
 // Email the digest once the visitor has done nothing for this long.
 const DIGEST_IDLE_MS = 90_000
+
+// Compare URLs ignoring protocol / trailing slash / case, so the pool's
+// "https://stripe.com" matches the server's normalized "https://stripe.com/".
+const normKey = (u: string) => u.replace(/^https?:\/\//, '').replace(/\/+$/, '').toLowerCase()
 
 function sessionId(): string {
   try {
@@ -246,8 +250,9 @@ function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.R
 // Crawlable, keyword-rich SEO content shown below the tool. It renders in the
 // server HTML (client components still SSR), so search engines index it.
 function SeoSection({ t }: { t: WPStrings }) {
+  // Kept in the DOM for SEO (crawlers + the FAQ copy), but visually hidden.
   return (
-    <section className="bg-[#0D0E12] px-6 py-16 md:py-24">
+    <section className="sr-only" aria-hidden="true">
       <div className="mx-auto max-w-2xl">
         <h2 className="font-display font-bold text-2xl md:text-3xl text-white tracking-tight">{t.seoH2}</h2>
         <p className="font-body text-base text-white/70 leading-relaxed mt-4">{t.seoP1}</p>
@@ -284,6 +289,9 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   const digestTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Last site the dice landed on, so the next roll is a different one.
   const lastRandom = useRef<string | undefined>(undefined)
+  // Which pool sites are precomputed (seeded) — the dice only rolls these, so a
+  // random pick is instant and never spends an LLM call. null = not loaded yet.
+  const seededSet = useRef<Set<string> | null>(null)
 
   const moved = phase !== 'idle'
   const basePath = locale === 'en' ? '/webpolice' : `/${locale}/webpolice`
@@ -306,9 +314,9 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
       window.history.replaceState(null, '', `${basePath}?url=${encodeURIComponent(value)}`)
     } catch { /* ignore */ }
     const started = Date.now()
-    // Let the running gorilla play for at least this long, even if the API
-    // comes back sooner.
-    const MIN_LOADING_MS = 2400
+    // Keep the "thinking" animation up for at least this long, even when the
+    // answer comes back instantly (e.g. a precomputed showcase/random site).
+    const MIN_LOADING_MS = 5000
     const timer = setInterval(() => setLine(l => (l + 1) % loadingLines.length), 1400)
     // Smooth, always-moving progress that asymptotes toward 98% over time
     // (≈63% at 6s, 86% at 12s, 95% at 18s) — never jumps then freezes.
@@ -369,6 +377,25 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Learn which pool sites are precomputed so the dice only rolls those.
+  useEffect(() => {
+    fetch(`/api/webpolice/seed?locale=${locale}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (d && Array.isArray(d.urls)) seededSet.current = new Set(d.urls.map(normKey)) })
+      .catch(() => { /* fall back to the full pool */ })
+  }, [locale])
+
+  // Roll the dice — prefer seeded (instant, free) sites; fall back to the full
+  // pool if the seed list hasn't loaded or is empty.
+  function pickRandom(): string {
+    const set = seededSet.current
+    const source = set && set.size ? POOL.filter(s => set.has(normKey(s.url))) : POOL
+    const pool = source.length ? source : POOL
+    const avail = pool.filter(s => s.url !== lastRandom.current)
+    const list = avail.length ? avail : pool
+    return list[Math.floor(Math.random() * list.length)].url
+  }
+
   return (
     <main className="relative">
       <section className="relative min-h-screen overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
@@ -424,16 +451,16 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
             <button
               type="button"
               onClick={() => {
-                const pick = randomSite(lastRandom.current)
-                lastRandom.current = pick.url
-                run(pick.url)
+                const pick = pickRandom()
+                lastRandom.current = pick
+                run(pick)
               }}
               disabled={phase === 'loading'}
               title={t.randomCta}
-              className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[#16161A]/15 bg-white/80 px-4 py-3.5 font-body font-semibold text-base text-[#16161A]/80 shadow-lg shadow-black/5 backdrop-blur transition-colors hover:border-[#16161A]/40 hover:text-[#16161A] disabled:opacity-60 disabled:cursor-not-allowed"
+              aria-label={t.randomCta}
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-[#16161A]/15 bg-white/80 px-4 py-3.5 font-body font-semibold text-base text-[#16161A]/80 shadow-lg shadow-black/5 backdrop-blur transition-colors hover:border-[#16161A]/40 hover:text-[#16161A] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <span aria-hidden>🎲</span>
-              <span className="hidden sm:inline">{t.randomCta}</span>
             </button>
           </div>
         </div>
@@ -773,17 +800,19 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} />
       </TiltCard>
 
-      {/* But seriously — suited gorilla on pink, text on the left, no overlay on the gorilla */}
-      <TiltCard className="relative mt-6 overflow-hidden rounded-3xl bg-[#F2CAD7]">
-        <div className="relative flex min-h-[240px] md:min-h-[300px] items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
-          <img
-            src="/media/webpolice/gorilla-suit.jpg"
-            alt=""
+      {/* But seriously — suited gorilla banner as background, text overlaid on the left */}
+      <TiltCard className="relative mt-6 overflow-hidden rounded-3xl bg-[#EEBFCF]">
+        <div
+          className="relative flex min-h-[220px] md:min-h-[300px] items-center bg-cover bg-no-repeat"
+          style={{ backgroundImage: 'url(/media/webpolice/gorilla-suit.jpg)', backgroundPosition: 'right center' }}
+        >
+          {/* Left scrim so the copy stays legible over the pink no matter the crop. */}
+          <div
+            className="pointer-events-none absolute inset-0"
             aria-hidden="true"
-            className="absolute right-0 bottom-0 h-full w-auto select-none pointer-events-none object-contain object-bottom"
+            style={{ background: 'linear-gradient(90deg, rgba(238,191,207,0.92) 0%, rgba(238,191,207,0.70) 34%, rgba(238,191,207,0) 62%)' }}
           />
-          <div className="relative z-10 max-w-[64%] sm:max-w-[60%] px-6 py-8 md:px-10 md:py-10">
+          <div className="relative z-10 max-w-[62%] sm:max-w-[56%] px-6 py-8 md:px-10 md:py-12">
             <p className="font-display font-bold tracking-tight text-[#16161A] leading-tight" style={{ fontSize: 'clamp(1.35rem, 5vw, 2.3rem)' }}>
               {t.seriouslyLead}
             </p>

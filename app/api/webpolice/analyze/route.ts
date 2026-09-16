@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getWP, type Locale } from '@/lib/i18n/webpolice'
-import { logScan, findCachedScan, countScans, lastScanAt, hashIp, clientIp } from '@/lib/webpolice/store'
+import { logScan, findCachedScan, countScans, lastScanAt, hashIp, clientIp, getSeed } from '@/lib/webpolice/store'
 
 function toLocale(v: unknown): Locale {
   return v === 'es' || v === 'zh' ? v : 'en'
@@ -12,13 +12,15 @@ const YELE_TEXT: Record<Locale, { effortLabel: string; effortFlavor: string; sum
   zh: { effortLabel: 'Yele 自己做的', effortFlavor: '嫌疑人就是警察本人。眨个眼，结案。', summary: '唯一一个让网页警察脸红的网站。105/100，挑不出毛病，我们决定给它送面锦旗。', rant: '说真的，我们是想挑毛病的。整个站从上到下排查了一遍：紫色渐变、圆角卡片堆成汤、西装大哥握手的图库照片 —— 一个都没抓到，只找到了「有品味」的指纹。\n\n每个像素都像是有人认真决定过的，不是随手摆的。字体有主见，间距能喘气，也没硬塞一个假仪表盘来装忙。说白了就是在炫技。105/100，多出来的五分，是奖励它把互联网上其他网站衬托得那么惨。', says: '我们做好看的网站。', hears: '哦，人家是玩真的。', personality: '那个既写完了作业、还顺手做得毫不费力的学霸。', designYear: 2026, designYearWhy: '说实话，它看着像明年才该有的设计。' },
 }
 
-// The Web Police — satire design analyzer. HYBRID:
-//  1. Deterministic pre-pass over the HTML for cheap hints.
-//  2. Two screenshots (ScreenshotOne, 3s settle delay): the top/hero viewport
-//     and the full page (so the model sees every section), fed to Claude
-//     Sonnet vision, which QUALITY-scores six design aspects (0 = awful slop,
-//     100 = excellent custom design — higher is BETTER).
-//  3. Falls back to a deterministic verdict if keys are missing / a step fails.
+// The Web Police — satire design analyzer. VISION-ONLY:
+//  1. A cheap HTML fetch for hint text (fonts, stock-photo hosts).
+//  2. A full-page screenshot (ScreenshotOne, else free PageSpeed Insights),
+//     fed to Claude Sonnet vision, which QUALITY-scores six design aspects
+//     (0 = awful slop, 100 = excellent custom design — higher is BETTER).
+//  There is NO deterministic fallback: if the screenshot can't be captured
+//  (bot-protected site) or vision fails, we return a funny error instead of a
+//  bad guess. Showcase / random-pool sites are served from precomputed "seed"
+//  rows so those never call the LLM at all.
 //
 // Env: ANTHROPIC_API_KEY, SCREENSHOT_API_KEY (ScreenshotOne access key).
 
@@ -38,7 +40,7 @@ function toGradient(colors: unknown): string | undefined {
   return `linear-gradient(135deg, ${hex[0]} 0%, ${hex[1]} 100%)`
 }
 
-function normalizeUrl(raw: unknown): URL | null {
+export function normalizeUrl(raw: unknown): URL | null {
   let s = (typeof raw === 'string' ? raw : '').trim()
   if (s.length > 2000) return null
   if (!s) return null
@@ -69,24 +71,6 @@ function htmlHints(html: string): string[] {
   if (stock.length) hints.push(`Stock-photo sources in image URLs: ${stock.join(', ')}.`)
   if (/bg-gradient|linear-gradient|radial-gradient/.test(lower) && /purple|indigo|violet|#7c3aed|#8b5cf6|#6366f1/.test(lower)) hints.push('Purple/blue gradients in the CSS.')
   return hints
-}
-
-// Deterministic fallback — returns { charges, quality (0-100, higher better) }.
-function deterministic(html: string): { charges: Charge[]; quality: number } {
-  const lower = html.toLowerCase()
-  const n = (re: RegExp) => (lower.match(re) || []).length
-  const d: { hit: boolean; code: string; title: string; detail: string }[] = [
-    { hit: /bg-gradient|linear-gradient/.test(lower) && /purple|indigo|violet|#7c3aed|#8b5cf6|#6366f1/.test(lower), code: 'purple', title: 'Purple-gradient abuse', detail: 'Purple-blue gradients everywhere — everything competes, nothing wins.' },
-    { hit: n(/rounded-2xl|rounded-3xl/g) >= 6, code: 'rounded', title: 'Rounded-card soup', detail: 'Reads like a component-library demo.' },
-    { hit: /backdrop-blur|blur\(|shadow-2xl/.test(lower), code: 'glow', title: 'Glow & blur overload', detail: 'Blurred blobs and neon shadows muddy the hierarchy.' },
-    { hit: n(/text-gray-400|text-gray-500|text-slate-400|#9ca3af/g) >= 3, code: 'graytext', title: 'Tiny low-contrast gray text', detail: 'Looks "premium" for 4 seconds, then just hard to read.' },
-    { hit: /lucide/.test(lower) || n(/<svg/g) >= 20, code: 'lucide', title: 'Lucide icon spam', detail: 'The same thin-line icon in a rounded square on every card.' },
-    { hit: ['unsplash', 'pexels', 'shutterstock', 'istockphoto'].some(s => lower.includes(s)), code: 'stock', title: 'Stock photos', detail: 'Instantly reads as a generic template.' },
-    { hit: /poppins|inter|montserrat/.test(lower), code: 'font', title: 'The default AI font', detail: 'Poppins / Inter / Montserrat — every generator’s first pick.' },
-  ]
-  const charges = d.filter(x => x.hit).map(({ code, title, detail }) => ({ code, title, detail }))
-  const quality = Math.max(0, 100 - charges.length * 15)
-  return { charges, quality }
 }
 
 // ---- Screenshot capture. Returns base64 + mime, or a readable failure. ----
@@ -271,36 +255,40 @@ function effortTier(quality: number): number {
   return 6
 }
 
-async function runAnalysis(body: Record<string, unknown>) {
-  const locale = toLocale(body?.locale)
+type CoreResult =
+  | { ok: true; payload: Record<string, unknown> }
+  | { ok: false; status: number; error: string }
+
+export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
   const wp = getWP(locale)
-  const u = normalizeUrl(body?.url)
-  if (!u) return NextResponse.json({ error: wp.errBadUrl }, { status: 400 })
   const target = u.toString()
 
   // Easter egg: the suspects ARE the police. Yele always wins.
   if (/(^|\.)yele\.design$/.test(u.hostname.toLowerCase())) {
     const s = await capture(target)
     const y = YELE_TEXT[locale]
-    return NextResponse.json({
-      url: target,
-      crimes: 0,
-      charges: [],
-      quality: 105,
-      effortLabel: y.effortLabel,
-      effortFlavor: y.effortFlavor,
-      passed: true,
-      verdict: { level: 'cleared', label: wp.verdict.yele },
-      summary: y.summary,
-      rant: y.rant,
-      saysHears: { says: y.says, hears: y.hears },
-      personality: y.personality,
-      designYear: y.designYear,
-      designYearWhy: y.designYearWhy,
-      mode: 'vision',
-      note: '',
-      screenshot: 'b64' in s ? `data:${s.mime};base64,${s.b64}` : null,
-    })
+    return {
+      ok: true,
+      payload: {
+        url: target,
+        crimes: 0,
+        charges: [],
+        quality: 105,
+        effortLabel: y.effortLabel,
+        effortFlavor: y.effortFlavor,
+        passed: true,
+        verdict: { level: 'cleared', label: wp.verdict.yele },
+        summary: y.summary,
+        rant: y.rant,
+        saysHears: { says: y.says, hears: y.hears },
+        personality: y.personality,
+        designYear: y.designYear,
+        designYearWhy: y.designYearWhy,
+        mode: 'vision',
+        note: '',
+        screenshot: 'b64' in s ? `data:${s.mime};base64,${s.b64}` : null,
+      },
+    }
   }
 
   let html = ''
@@ -322,54 +310,44 @@ async function runAnalysis(body: Record<string, unknown>) {
   const imgMime = 'b64' in shotRes ? shotRes.mime : 'image/jpeg'
   const shotError = 'error' in shotRes ? shotRes.error : ''
 
-  if (!html && !imgB64) {
-    return NextResponse.json({ error: wp.errUnreachable }, { status: 502 })
+  // No screenshot → almost always a site that blocks bots / screenshots.
+  // We refuse to guess from HTML alone (deterministic guesses read badly), so
+  // we bail out with a funny "this site is protected" message instead.
+  if (!imgB64) {
+    if (shotError) console.warn('[webpolice] capture failed:', shotError)
+    return { ok: false, status: 502, error: wp.errProtected }
   }
 
   const hints = html ? htmlHints(html) : []
-  const images = imgB64 ? [{ data: imgB64, mime: imgMime }] : []
+  const images = [{ data: imgB64, mime: imgMime }]
   const vision = await visionAnalyze(images, hints, wp.languageName, wp.roastStyle)
 
-  let charges: Charge[]
-  let quality: number
-  let summary = ''
-  let rant = ''
-  let saysHears: { says: string; hears: string } | null = null
-  let personality = ''
-  let designYear: number | null = null
-  let designYearWhy = ''
-  let mode: 'vision' | 'basic'
-  let note = ''
-
-  if (vision.ok) {
-    mode = 'vision'
-    quality = vision.data.overall
-    summary = vision.data.summary
-    rant = vision.data.rant
-    saysHears = vision.data.saysHears ?? null
-    personality = vision.data.personality ?? ''
-    designYear = vision.data.designYear ?? null
-    designYearWhy = vision.data.designYearWhy ?? ''
-    // Charges = the weakest aspects (low quality), worst first.
-    charges = ASPECTS.map(a => ({ a, ...vision.data.aspects[a] }))
-      .filter(x => x.score <= 55)
-      .sort((x, y) => x.score - y.score)
-      .map(x => ({
-        code: x.a,
-        title: `${wp.aspectTitle[x.a]} — ${x.score}/100`,
-        detail: x.reason || 'Reads generic.',
-        // Paint the colour crime with the site's own clashing colours.
-        ...(x.a === 'color' && vision.data.colorBg ? { bg: vision.data.colorBg } : {}),
-      }))
-  } else {
-    mode = 'basic'
-    // Prefer the concrete screenshot error (quota, block, timeout) when there
-    // was no image, so the report banner shows the real cause.
-    note = !imgB64 && shotError ? shotError : vision.reason
-    const det = deterministic(html)
-    charges = det.charges
-    quality = det.quality
+  // Vision is the ONLY source of truth now — no deterministic fallback.
+  if (!vision.ok) {
+    console.warn('[webpolice] vision failed:', vision.reason)
+    return { ok: false, status: 502, error: wp.errAiFailed }
   }
+
+  const mode = 'vision' as const
+  const quality = vision.data.overall
+  const summary = vision.data.summary
+  const rant = vision.data.rant
+  const saysHears: { says: string; hears: string } | null = vision.data.saysHears ?? null
+  const personality = vision.data.personality ?? ''
+  const designYear: number | null = vision.data.designYear ?? null
+  const designYearWhy = vision.data.designYearWhy ?? ''
+  const note = ''
+  // Charges = the weakest aspects (low quality), worst first.
+  const charges: Charge[] = ASPECTS.map(a => ({ a, ...vision.data.aspects[a] }))
+    .filter(x => x.score <= 55)
+    .sort((x, y) => x.score - y.score)
+    .map(x => ({
+      code: x.a,
+      title: wp.aspectTitle[x.a],
+      detail: x.reason || 'Reads generic.',
+      // Paint the colour crime with the site's own clashing colours.
+      ...(x.a === 'color' && vision.data.colorBg ? { bg: vision.data.colorBg } : {}),
+    }))
 
   const crimes = charges.length
   const { label: effortLabel, flavor: effortFlavor } = wp.effort[effortTier(quality)]
@@ -382,25 +360,28 @@ async function runAnalysis(body: Record<string, unknown>) {
         ? { level: 'suspicious', label: wp.verdict.average }
         : { level: 'guilty', label: wp.verdict.ugly }
 
-  return NextResponse.json({
-    url: target,
-    crimes,
-    charges,
-    quality,
-    effortLabel,
-    effortFlavor,
-    passed,
-    verdict,
-    summary,
-    rant,
-    saysHears,
-    personality,
-    designYear,
-    designYearWhy,
-    mode,
-    note,
-    screenshot: imgB64 ? `data:${imgMime};base64,${imgB64}` : null,
-  })
+  return {
+    ok: true,
+    payload: {
+      url: target,
+      crimes,
+      charges,
+      quality,
+      effortLabel,
+      effortFlavor,
+      passed,
+      verdict,
+      summary,
+      rant,
+      saysHears,
+      personality,
+      designYear,
+      designYearWhy,
+      mode,
+      note,
+      screenshot: imgB64 ? `data:${imgMime};base64,${imgB64}` : null,
+    },
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -474,6 +455,21 @@ export async function POST(request: Request) {
   const country = request.headers.get('x-vercel-ip-country')
   const referer = request.headers.get('referer')
 
+  // 3a. Precomputed showcase / random result → serve instantly. No LLM, no
+  //     screenshot credit, and it doesn't burn the visitor's daily quota, so
+  //     the "Try random" button can be clicked freely.
+  const seeded = await getSeed(target, locale)
+  if (seeded) {
+    logScan({
+      session_id: sessionId, url: target, host: u.hostname, locale,
+      quality: typeof seeded.quality === 'number' ? seeded.quality : null,
+      verdict: (seeded.verdict as { label?: string } | undefined)?.label ?? null,
+      mode: 'seed', cached: true, ip_hash: ipHash, country,
+      user_agent: ua.slice(0, 300), referer: referer?.slice(0, 300) ?? null, result: null,
+    }).catch(err => console.error('[webpolice] log failed', err))
+    return NextResponse.json({ ...seeded, seeded: true })
+  }
+
   // 3. Throttles: a gap between calls, then per-IP, per-session and global caps.
   const last = await lastScanAt(ipHash)
   if (last && Date.now() - last < LIMITS.minGapMs) {
@@ -518,10 +514,8 @@ export async function POST(request: Request) {
     return NextResponse.json(payload)
   }
 
-  const res = await runAnalysis(body)
-  if (res.ok) {
-    const payload = (await res.clone().json()) as Record<string, unknown>
-    await record(payload, false, true)
-  }
-  return res
+  const core = await analyzeCore(u, locale)
+  if (!core.ok) return NextResponse.json({ error: core.error }, { status: core.status })
+  await record(core.payload, false, true)
+  return NextResponse.json(core.payload)
 }
