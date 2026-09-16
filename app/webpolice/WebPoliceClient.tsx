@@ -474,7 +474,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
               type="button"
               onClick={() => run(sIt.url)}
               disabled={phase === 'loading'}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#16161A]/12 bg-white/70 px-2.5 py-1.5 font-body text-xs font-medium text-[#16161A]/80 backdrop-blur transition-colors hover:border-[#16161A]/40 hover:bg-white disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 font-body text-xs font-medium text-[#16161A]/70 transition-colors hover:text-[#16161A] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- third-party favicon */}
               <img
@@ -549,7 +549,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
 
       {/* Report — full-screen panel that slides up to cover everything */}
       <div
-        className={`fixed inset-0 z-30 overflow-y-auto bg-[#0D0E12] transition-transform duration-700 ease-out ${
+        className={`fixed inset-0 z-30 overflow-y-auto overflow-x-hidden bg-[#0D0E12] transition-transform duration-700 ease-out ${
           phase === 'done' ? 'translate-y-0' : 'translate-y-full pointer-events-none'
         }`}
       >
@@ -800,28 +800,29 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} />
       </TiltCard>
 
-      {/* But seriously — suited gorilla banner as background, text overlaid on the left */}
-      <TiltCard className="relative mt-6 overflow-hidden rounded-3xl bg-[#EEBFCF]">
+      {/* But seriously — full-bleed gorilla banner (breaks out of the max-w-2xl
+          report column), text overlaid on the left. */}
+      <div
+        className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-[#EEBFCF]"
+        style={{ backgroundImage: 'url(/media/webpolice/gorilla-suit.jpg)', backgroundPosition: 'right center' }}
+      >
+        {/* Left scrim so the copy stays legible over the pink no matter the crop. */}
         <div
-          className="relative flex min-h-[220px] md:min-h-[300px] items-center bg-cover bg-no-repeat"
-          style={{ backgroundImage: 'url(/media/webpolice/gorilla-suit.jpg)', backgroundPosition: 'right center' }}
-        >
-          {/* Left scrim so the copy stays legible over the pink no matter the crop. */}
-          <div
-            className="pointer-events-none absolute inset-0"
-            aria-hidden="true"
-            style={{ background: 'linear-gradient(90deg, rgba(238,191,207,0.92) 0%, rgba(238,191,207,0.70) 34%, rgba(238,191,207,0) 62%)' }}
-          />
-          <div className="relative z-10 max-w-[62%] sm:max-w-[56%] px-6 py-8 md:px-10 md:py-12">
-            <p className="font-display font-bold tracking-tight text-[#16161A] leading-tight" style={{ fontSize: 'clamp(1.35rem, 5vw, 2.3rem)' }}>
+          className="pointer-events-none absolute inset-0"
+          aria-hidden="true"
+          style={{ background: 'linear-gradient(90deg, rgba(238,191,207,0.94) 0%, rgba(238,191,207,0.72) 38%, rgba(238,191,207,0) 66%)' }}
+        />
+        <div className="relative z-10 mx-auto flex min-h-[240px] md:min-h-[340px] max-w-5xl items-center px-6 md:px-10">
+          <div className="max-w-[62%] sm:max-w-[56%] py-8 md:py-14">
+            <p className="font-display font-bold tracking-tight text-[#16161A] leading-tight" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.6rem)' }}>
               {t.seriouslyLead}
             </p>
-            <p className="font-body text-[#3A2C33] mt-1.5 leading-snug" style={{ fontSize: 'clamp(1rem, 3.4vw, 1.4rem)' }}>
+            <p className="font-body text-[#3A2C33] mt-1.5 leading-snug" style={{ fontSize: 'clamp(1rem, 3.4vw, 1.45rem)' }}>
               {t.seriouslyBody}
             </p>
           </div>
         </div>
-      </TiltCard>
+      </div>
 
       <p className="font-body text-xs text-white/30 mt-8 text-center">
         {t.footer}
