@@ -4,7 +4,141 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import LeadForm from '@/components/LeadForm'
 import { getWP, type WPStrings, type Locale } from '@/lib/i18n/webpolice'
+import { SHOWCASE, randomSite, faviconUrl } from '@/lib/webpolice/examples'
 import { getFunnelDict } from '@/lib/i18n/funnel'
+
+// A visitor session id, so every site checked in one sitting is emailed as a
+// single digest instead of one message per search. Lives in sessionStorage:
+// new tab / new visit = new session, and it never leaves this browser except
+// as an opaque id.
+// Email the digest once the visitor has done nothing for this long.
+const DIGEST_IDLE_MS = 90_000
+
+function sessionId(): string {
+  try {
+    const k = 'wp_session'
+    let v = sessionStorage.getItem(k)
+    if (!v) {
+      v = (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`).replace(/[^A-Za-z0-9_-]/g, '')
+      sessionStorage.setItem(k, v)
+    }
+    return v
+  } catch {
+    return ''
+  }
+}
+
+// Ask the server to email the session digest. Fired once the visitor has been
+// idle for a while and again when the page goes away; the server only sends
+// for scans it has not reported yet, so extra calls are harmless.
+function sendDigest(beacon = false) {
+  const sid = sessionId()
+  if (!sid) return
+  const payload = JSON.stringify({ sessionId: sid })
+  try {
+    if (beacon && navigator.sendBeacon) {
+      navigator.sendBeacon('/api/webpolice/report', new Blob([payload], { type: 'application/json' }))
+      return
+    }
+    fetch('/api/webpolice/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {})
+  } catch { /* reporting is best-effort */ }
+}
+
+// A full-page screenshot can be several thousand pixels tall. The card keeps a
+// fixed height and the image is dragged inside it, so a long site can't push
+// the whole report off the screen — and you can still see every section.
+function EvidenceViewer({ src, hint }: { src: string; hint: string }) {
+  const box = useRef<HTMLDivElement>(null)
+  const img = useRef<HTMLImageElement>(null)
+  const drag = useRef<{ fromY: number; fromOffset: number } | null>(null)
+  const [y, setY] = useState(0)
+  const [max, setMax] = useState(0)
+  const [thumbPct, setThumbPct] = useState(100)
+  const [grabbing, setGrabbing] = useState(false)
+
+  function measure() {
+    const b = box.current
+    const i = img.current
+    if (!b || !i || !i.offsetHeight) return
+    const overflow = Math.max(0, i.offsetHeight - b.clientHeight)
+    setMax(overflow)
+    setThumbPct(Math.max(12, Math.min(100, (b.clientHeight / i.offsetHeight) * 100)))
+    setY(v => Math.min(v, overflow))
+  }
+
+  useEffect(() => {
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
+  const clamp = (v: number) => Math.min(max, Math.max(0, v))
+
+  function onDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (max <= 0) return
+    drag.current = { fromY: e.clientY, fromOffset: y }
+    setGrabbing(true)
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* older browsers */ }
+  }
+  function onMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!drag.current) return
+    setY(clamp(drag.current.fromOffset - (e.clientY - drag.current.fromY)))
+  }
+  function onUp(e: React.PointerEvent<HTMLDivElement>) {
+    drag.current = null
+    setGrabbing(false)
+    try { e.currentTarget.releasePointerCapture(e.pointerId) } catch { /* ignore */ }
+  }
+
+  return (
+    <div
+      className="relative mb-6 select-none overflow-hidden rounded-2xl border border-white/10 bg-black/25"
+      style={{ height: 'clamp(260px, 42vh, 460px)' }}
+    >
+      <div
+        ref={box}
+        className="h-full w-full overflow-hidden"
+        style={{ touchAction: max > 0 ? 'none' : 'auto', cursor: max > 0 ? (grabbing ? 'grabbing' : 'grab') : 'default' }}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- data URI screenshot */}
+        <img
+          ref={img}
+          src={src}
+          onLoad={measure}
+          draggable={false}
+          alt="Evidence: screenshot of the suspect website"
+          className="block w-full"
+          style={{ transform: `translateY(${-y}px)`, willChange: 'transform' }}
+        />
+      </div>
+
+      {max > 0 && (
+        <>
+          {/* position indicator */}
+          <div className="pointer-events-none absolute bottom-2 right-2 top-2 w-1 rounded-full bg-white/10">
+            <div
+              className="absolute left-0 w-full rounded-full bg-white/45"
+              style={{ height: `${thumbPct}%`, top: `${(y / max) * (100 - thumbPct)}%` }}
+            />
+          </div>
+          {y === 0 && (
+            <span className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 font-mono text-[11px] text-white/85 backdrop-blur">
+              ↕ {hint}
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
 
 // Fade-in-on-mount + cursor parallax tilt wrapper for the report cards.
 function TiltCard({ children, className = '', delay = 0, bg }: { children: React.ReactNode; className?: string; delay?: number; bg?: string }) {
@@ -141,6 +275,11 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   const leftVid = useRef<HTMLVideoElement>(null)
   const rightVid = useRef<HTMLVideoElement>(null)
   const progRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Digest bookkeeping: whether this visit scanned anything, and the idle timer.
+  const scanned = useRef(false)
+  const digestTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Last site the dice landed on, so the next roll is a different one.
+  const lastRandom = useRef<string | undefined>(undefined)
 
   const moved = phase !== 'idle'
   const basePath = locale === 'en' ? '/webpolice' : `/${locale}/webpolice`
@@ -177,7 +316,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
       const res = await fetch('/api/webpolice/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: value, locale }),
+        body: JSON.stringify({ url: value, locale, sessionId: sessionId() }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -189,6 +328,9 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
         if (wait > 0) await new Promise(r => setTimeout(r, wait))
         setResult(data)
         setPhase('done')
+        scanned.current = true
+        if (digestTimer.current) clearTimeout(digestTimer.current)
+        digestTimer.current = setTimeout(() => sendDigest(), DIGEST_IDLE_MS)
       }
     } catch {
       setError(t.errWall)
@@ -200,6 +342,21 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
       setProgress(100)
     }
   }
+
+  // Flush the session digest when the visitor leaves, so a session that ends
+  // before the idle timer still gets reported.
+  useEffect(() => {
+    const flush = () => {
+      if (!scanned.current) return
+      if (digestTimer.current) clearTimeout(digestTimer.current)
+      sendDigest(true)
+    }
+    window.addEventListener('pagehide', flush)
+    return () => {
+      window.removeEventListener('pagehide', flush)
+      if (digestTimer.current) clearTimeout(digestTimer.current)
+    }
+  }, [])
 
   // Shared link support: /webpolice?url=example.com auto-runs on load.
   useEffect(() => {
@@ -251,14 +408,56 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
             autoCapitalize="off"
             spellCheck={false}
           />
-          <button
-            type="button"
-            onClick={() => run()}
-            disabled={phase === 'loading'}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors hover:animate-[wpSirenBtn_0.6s_linear_infinite] disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {phase === 'loading' ? t.ctaLoading : t.ctaIdle}
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => run()}
+              disabled={phase === 'loading'}
+              className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors hover:animate-[wpSirenBtn_0.6s_linear_infinite] disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {phase === 'loading' ? t.ctaLoading : t.ctaIdle}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const pick = randomSite(lastRandom.current)
+                lastRandom.current = pick.url
+                run(pick.url)
+              }}
+              disabled={phase === 'loading'}
+              title={t.randomCta}
+              className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-[#16161A]/15 bg-white/80 px-4 py-3.5 font-body font-semibold text-base text-[#16161A]/80 shadow-lg shadow-black/5 backdrop-blur transition-colors hover:border-[#16161A]/40 hover:text-[#16161A] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              <span aria-hidden>🎲</span>
+              <span className="hidden sm:inline">{t.randomCta}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Known sites to try in one tap — good ones and famously rough ones. */}
+        <div className="mt-4 flex w-full max-w-lg flex-wrap items-center gap-2">
+          <span className="font-body text-xs text-[#16161A]/55">{t.tryLabel}</span>
+          {SHOWCASE.map(sIt => (
+            <button
+              key={sIt.url}
+              type="button"
+              onClick={() => run(sIt.url)}
+              disabled={phase === 'loading'}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#16161A]/12 bg-white/70 px-2.5 py-1.5 font-body text-xs font-medium text-[#16161A]/80 backdrop-blur transition-colors hover:border-[#16161A]/40 hover:bg-white disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element -- third-party favicon */}
+              <img
+                src={faviconUrl(sIt.domain)}
+                alt=""
+                width={16}
+                height={16}
+                loading="lazy"
+                className="h-4 w-4 rounded-[3px]"
+                onError={e => { e.currentTarget.style.display = 'none' }}
+              />
+              {sIt.name}
+            </button>
+          ))}
         </div>
 
         {error && <p className="mt-5 font-body text-sm text-red-700">{error}</p>}
@@ -423,12 +622,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         </div>
       )}
 
-      {result.screenshot && (
-        <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">
-          {/* eslint-disable-next-line @next/next/no-img-element -- data URI screenshot */}
-          <img src={result.screenshot} alt="Evidence: screenshot of the suspect website" className="block max-h-64 w-full object-cover object-top" />
-        </div>
-      )}
+      {result.screenshot && <EvidenceViewer src={result.screenshot} hint={t.dragHint} />}
 
       {/* Big score */}
       <div className="text-center my-8">
@@ -532,11 +726,11 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
 
       {/* Shameless plug + form — light card to highlight */}
       <TiltCard className="mt-10 rounded-3xl bg-[#F7F6F3] p-6 md:p-8 shadow-2xl shadow-black/30">
-        <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#D46FC8] mb-2">{t.plugKicker}</p>
-        <h3 className="font-display font-bold text-2xl md:text-3xl text-[#16161A] tracking-tight">
+        <p className="font-mono text-xs uppercase tracking-[0.16em] mb-2" style={{ color: '#B23FA3' }}>{t.plugKicker}</p>
+        <h3 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: '#16161A' }}>
           {t.plugTitle}
         </h3>
-        <p className="font-body text-base text-[#16161A]/70 mt-2 mb-6">
+        <p className="font-body text-base mt-2 mb-6" style={{ color: '#4A4550' }}>
           {t.plugBody}
         </p>
         <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} />

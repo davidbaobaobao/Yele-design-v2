@@ -1,6 +1,6 @@
 // i18n for the /webpolice satire tool — English, Spanish, Chinese. Shared by
 // the client UI (WebPoliceClient) and the API route (verdict/effort/aspect
-// strings + the language the vision model should reply in).
+// strings + the language and comedic register the vision model should use).
 
 import type { Locale } from './funnel'
 export type { Locale }
@@ -23,6 +23,9 @@ export type WPStrings = {
   noChargesBody: string
   loadMore: (n: number) => string
   looksLikeTook: string
+  tryLabel: string
+  randomCta: string
+  dragHint: string
   shareTitle: string
   shareText: (q: number) => string
   plugKicker: string
@@ -40,6 +43,9 @@ export type WPStrings = {
   faq: { q: string; a: string }[]
   // Server-side
   languageName: string
+  // Extra voice instructions for the vision model, so the roast lands in the
+  // local register instead of reading like a translation of the English one.
+  roastStyle: string
   aspectTitle: Record<'typography' | 'spacing' | 'color' | 'clutter' | 'hierarchy' | 'imagery', string>
   verdict: { gorgeous: string; decent: string; average: string; ugly: string; yele: string }
   effort: { label: string; flavor: string }[] // 7 tiers, low→high quality
@@ -64,7 +70,10 @@ const en: WPStrings = {
   noCharges: 'No charges filed ✅',
   noChargesBody: 'Clean record. This actually looks like real, considered design. The Web Police tip their hats.',
   loadMore: n => `Load ${n} more crime${n > 1 ? 's' : ''} ↓`,
-  looksLikeTook: 'Looks like it took',
+  looksLikeTook: 'Time to make this website',
+  tryLabel: 'Or try one of these',
+  randomCta: 'Try random',
+  dragHint: 'Drag to see the whole page',
   shareTitle: 'Share the verdict',
   shareText: q => `IS MY WEBSITE UGLY? 🚨 I scored ${q}/100 on the Web Police. Judge yours:`,
   plugKicker: 'Shameless plug',
@@ -86,6 +95,7 @@ const en: WPStrings = {
     { q: 'Is my website ugly if it scores low?', a: 'A low score means it reads as generic or template-like. It is meant to be funny, but the design crimes it lists are real and fixable.' },
   ],
   languageName: 'English',
+  roastStyle: 'Write like a very funny, slightly mean designer on Twitter. Short punchy sentences, concrete specifics about what you can SEE, no corporate hedging.',
   aspectTitle: { typography: 'Typography', spacing: 'Spacing', color: 'Colour', clutter: 'Clarity', hierarchy: 'Structure & hierarchy', imagery: 'Imagery' },
   verdict: { gorgeous: 'Certified Gorgeous', decent: 'Actually Decent', average: 'Painfully Average', ugly: 'Objectively Ugly', yele: 'Illegally Good 😏' },
   effort: [
@@ -118,7 +128,10 @@ const es: WPStrings = {
   noCharges: 'Sin cargos ✅',
   noChargesBody: 'Sin antecedentes. Esto parece diseño de verdad, pensado. La Policía Web se quita el sombrero.',
   loadMore: n => `Cargar ${n} cargo${n > 1 ? 's' : ''} más ↓`,
-  looksLikeTook: 'Parece que llevó',
+  looksLikeTook: 'Tiempo para hacer esta web',
+  tryLabel: 'O prueba con una de estas',
+  randomCta: 'Una al azar',
+  dragHint: 'Arrastra para ver la página entera',
   shareTitle: 'Comparte el veredicto',
   shareText: q => `¿MI WEB ES FEA? 🚨 Saqué ${q}/100 en la Policía Web. Juzga la tuya:`,
   plugKicker: 'Publicidad descarada',
@@ -140,6 +153,7 @@ const es: WPStrings = {
     { q: '¿Mi web es fea si saca poca nota?', a: 'Una nota baja significa que se percibe como genérica o de plantilla. Es para reír, pero los delitos de diseño que señala son reales y se pueden arreglar.' },
   ],
   languageName: 'Spanish',
+  roastStyle: 'Escribe en español de España, de tú, con mala leche y gracia — como un diseñador cabrón en Twitter. Frases cortas, nada de tono neutro latinoamericano, nada de lenguaje corporativo.',
   aspectTitle: { typography: 'Tipografía', spacing: 'Espaciado', color: 'Color', clutter: 'Claridad', hierarchy: 'Estructura y jerarquía', imagery: 'Imágenes' },
   verdict: { gorgeous: 'Espectacular', decent: 'Bastante Decente', average: 'Dolorosamente del Montón', ugly: 'Objetivamente Fea', yele: 'Ilegalmente Buena 😏' },
   effort: [
@@ -156,57 +170,65 @@ const es: WPStrings = {
 }
 
 const zh: WPStrings = {
-  heroPre: '我的网站',
+  heroPre: '我的网站是不是 ',
   heroCursive: '客观上',
-  heroPost: '丑吗？',
-  questions: ['我的网站丑吗？普通吗？', '我的开发者骗了我吗？', '他是不是用 ChatGPT 十分钟做出了我的网站？'],
-  ctaIdle: '呼叫网页警察',
+  heroPost: ' 就很丑？',
+  questions: ['我的网站是不是又土又丑？', '给我做网站的是不是在忽悠我？', '他是不是拿 ChatGPT 十分钟糊弄了一个？'],
+  ctaIdle: '一键报警',
   ctaLoading: '出警中…',
-  placeholder: '输入你的网站',
-  loadingLines: ['派出大猩猩小队…', '审判你的字体选择…', '排查被盗的图库照片…', '测量紫色的用量…', '和真正好的网站作对比…', '努力憋住不笑…'],
-  errWall: '调查遇到了瓶颈。换个网址试试。',
-  reportLabel: '网页警察报告',
+  placeholder: '输入你的网址',
+  loadingLines: ['大猩猩小队已出发…', '正在数你首页有几个渐变…', '正在测量微软雅黑的含量…', '正在核对这张图是不是全网都在用…', '正在和真正好看的网站做对比…', '正在憋笑，请稍候…'],
+  errWall: '调查卡住了，换个网址再试试。',
+  reportLabel: '网页警察出警报告',
   caseFile: '案卷：',
-  newSearch: '↺ 重新搜索',
-  mainCharges: n => `${n} 项主要罪名`,
-  noCharges: '无罪指控 ✅',
-  noChargesBody: '记录清白。这看起来是真正用心的设计。网页警察向你致敬。',
-  loadMore: n => `再看 ${n} 项罪名 ↓`,
-  looksLikeTook: '看起来花了',
-  shareTitle: '分享判决',
-  shareText: q => `我的网站丑吗？🚨 我在网页警察拿了 ${q}/100。来评评你的：`,
-  plugKicker: '厚脸皮广告',
-  plugTitle: '我们帮你做个更好的网站 — €699 起。',
-  plugBody: '定制设计，无模板，无 AI 垃圾。通过网页警察测试 — 我们查过了。',
-  plugCta: '获取我的更好网站',
-  footer: 'Yele 出品的玩笑工具。我们查看页面的设计俗套 — 不保存任何数据，判决纯属娱乐。',
-  exhibitAlt: '证物 A：一张图库照片',
-  readMore: '阅读完整吐槽',
+  newSearch: '↺ 再查一个',
+  mainCharges: n => `主要罪名 ${n} 项`,
+  noCharges: '无罪释放 ✅',
+  noChargesBody: '查无此罪。这是真的有人认真设计过的网站。网页警察敬个礼，收队。',
+  loadMore: n => `还有 ${n} 项，继续看 ↓`,
+  looksLikeTook: '做这个网站花的时间',
+  tryLabel: '或者试试这几个',
+  randomCta: '随机抽一个',
+  dragHint: '拖动查看整页',
+  shareTitle: '把判决书发出去',
+  shareText: q => `我的网站丑吗？🚨 我在「网页警察」只拿了 ${q}/100。来看看你的：`,
+  plugKicker: '恰饭时间',
+  plugTitle: '我们帮你做个不丢人的网站 —— €699 起。',
+  plugBody: '纯定制设计，不套模板，不用 AI 糊弄。我们自己的网站也送去测过了 —— 警察没敢开罚单。',
+  plugCta: '我也要一个',
+  footer: 'Yele 出品的玩笑工具。我们只看页面上的设计俗套，不保存任何数据，判决仅供一乐。',
+  exhibitAlt: '证物 A：一张全网通用的图库照片',
+  readMore: '看完整吐槽',
   showLess: '收起',
-  aiFailed: '🚧 我的 AI 分析器在这个网站上出错了 —— 先给你一个快速的自动检查。',
+  aiFailed: '🚧 AI 检察官在这个网站上翻车了 —— 先给你一份快速的自动检查。',
   seoH2: '会吐槽你首页的网站设计检查器',
-  seoP1: 'Web Police 是一款免费的网站设计分析器和「吐槽」工具。粘贴任意网址，我们的 AI 网站设计评审会从字体、间距、色彩、杂乱度、结构和图像六个方面为你的首页打出百分制评分 —— 最快回答那个永恒的问题：我的网站丑吗？',
-  seoP2: '把它当作一个有幽默感的网站 UX 检查器。你得到的不是枯燥的审计，而是一个判决、一个设计评分和一段吐槽 —— 以及让你的网站显得廉价、普通或像 AI 生成的具体「设计罪名」，让你清楚知道该改什么。',
+  seoP1: '「网页警察」是一个免费的网站设计检查器，也是一个网站吐槽工具。贴上任意网址，AI 设计评审会从字体、间距、配色、杂乱度、结构和图片六个方面给你的首页打一个百分制的分数 —— 用最快的方式回答那个永恒的问题：我的网站到底丑不丑？',
+  seoP2: '你可以把它当成一个有幽默感的网站体验检查工具。你拿到的不是一份枯燥的审计报告，而是一份判决、一个设计评分，外加一段吐槽 —— 以及那些让你的网站显得廉价、像模板、像 AI 生成的具体「罪名」，让你清楚知道该改哪里。',
   faq: [
-    { q: '这个网站设计检查器免费吗？', a: '免费。粘贴网址即可立即获得设计评分和吐槽 —— 无需注册，不保存任何数据。' },
-    { q: 'AI 网站设计评审是怎么工作的？', a: '我们截取你的首页和整页截图，然后由 AI 设计评审从六个方面打分，并解释问题所在。' },
-    { q: '网站吐槽具体检查什么？', a: '字体、间距、色彩、视觉杂乱、结构与层级，以及图像 —— 让网站显得廉价、普通或像 AI 生成的那些方面。' },
-    { q: '评分低就代表我的网站丑吗？', a: '低分意味着它看起来普通或像模板。它是为了搞笑，但列出的设计罪名是真实且可以修复的。' },
+    { q: '这个网站设计检查器收费吗？', a: '不收费。贴上网址就能立刻拿到设计评分和吐槽，不用注册，也不保存你的数据。' },
+    { q: 'AI 设计评审是怎么打分的？', a: '我们先给你的首页拍一张整页截图，再由 AI 设计评审从六个方面打分，并说明问题出在哪。' },
+    { q: '它到底会检查什么？', a: '字体、间距、配色、页面是否杂乱、结构与层级，以及图片 —— 也就是让一个网站显得廉价、像模板、像 AI 随手生成的那些地方。' },
+    { q: '分数低是不是就代表我的网站很丑？', a: '分数低说明它看起来很像模板、没有记忆点。结果是拿来一乐的，但它列出来的问题都是真的，也都能改。' },
   ],
   languageName: 'Simplified Chinese',
-  aspectTitle: { typography: '字体排版', spacing: '间距', color: '色彩', clutter: '清晰度', hierarchy: '结构与层级', imagery: '图像' },
-  verdict: { gorgeous: '惊艳认证', decent: '其实还不错', average: '平庸得让人心痛', ugly: '客观上很丑', yele: '好得犯规 😏' },
+  roastStyle: [
+    '用中文互联网的口语来写，像一个毒舌但好笑的设计师在小红书或知乎上吐槽，绝对不要翻译腔，不要书面报告腔，不要「总体而言」「该网站」这类词。',
+    '句子要短、要脆，可以用「辣眼睛」「土」「尬」「一眼假」「一眼模板」「五彩斑斓的黑」「微软雅黑」「建站三件套」「甲方」「祖传」这类说法，但只在真的贴切的时候用，别硬塞。',
+    '吐槽要针对你真正看到的东西（具体的颜色、字体、排版、那张图），不要泛泛而谈。可以自嘲、可以损，但别人身攻击，尺度控制在朋友之间开玩笑的程度。',
+  ].join(' '),
+  aspectTitle: { typography: '字体排版', spacing: '间距', color: '配色', clutter: '清爽度', hierarchy: '结构与层级', imagery: '图片' },
+  verdict: { gorgeous: '好看得不像话', decent: '还真挺能打', average: '平平无奇', ugly: '客观上就是丑', yele: '好看到犯规 😏' },
   effort: [
-    { label: '用 ChatGPT 花了一小时', flavor: '一个 vibe-coder，一句提示词，毫无品味。' },
-    { label: '用 ChatGPT 花了一下午', flavor: '一个 vibe-coder 加一杯长咖啡。' },
-    { label: '用 ChatGPT 折腾了一个周末', flavor: '复制、粘贴、部署、重复。' },
-    { label: '在普通代理公司做了几天', flavor: '快速、还行，但很快就被忘掉。' },
-    { label: '认真的代理公司做了大约一周', flavor: '有认真考虑，相当不错。' },
-    { label: '认真的代理公司做了大约一个月', flavor: '真正的用心与打磨。' },
-    { label: '认真的工作室做了几个月', flavor: 'CEO、CTO 和一堆三字母大佬开了几百场会。' },
+    { label: 'ChatGPT 一小时速成', flavor: '一条提示词，零审美，直接上线。' },
+    { label: '老板的侄子做了一下午', flavor: '家里那个「会电脑」的亲戚，友情价。' },
+    { label: '一个周末的 AI 折腾', flavor: '复制、粘贴、部署，再复制一遍。' },
+    { label: '普通建站公司做了几天', flavor: '快，便宜，转头就忘。' },
+    { label: '正经设计师做了一周', flavor: '看得出来是想过的，挺好。' },
+    { label: '正经设计师做了一个月', flavor: '真下了功夫，反复打磨过。' },
+    { label: '正经工作室做了几个月', flavor: 'CEO、CTO 和一堆挂着总监头衔的人开了几百场会。' },
   ],
-  errBadUrl: '请给我们一个真实的公开网址（例如 example.com）。',
-  errUnreachable: '无法访问该网站。网址正确吗？网站在线吗？',
+  errBadUrl: '给我们一个真实的、能公开打开的网址（比如 example.com）。',
+  errUnreachable: '打不开这个网站。地址写对了吗？站点还活着吗？',
 }
 
 const WP: Record<Locale, WPStrings> = { en, es, zh }

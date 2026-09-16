@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getWP, type Locale } from '@/lib/i18n/webpolice'
+import { logScan, findCachedScan, countScans, lastScanAt, hashIp, clientIp } from '@/lib/webpolice/store'
 
 function toLocale(v: unknown): Locale {
   return v === 'es' || v === 'zh' ? v : 'en'
@@ -8,7 +9,7 @@ function toLocale(v: unknown): Locale {
 const YELE_TEXT: Record<Locale, { effortLabel: string; effortFlavor: string; summary: string; rant: string }> = {
   en: { effortLabel: 'Handcrafted by Yele themselves', effortFlavor: 'The suspects ARE the police. Case dismissed with a wink.', summary: 'The only website to ever make the Web Police blush. 105/100, no notes — get a room.', rant: "Look, we tried to find something. We really did. We dusted the whole site for the usual crimes — the purple gradients, the rounded-card soup, the stock photos of people high-fiving a robot — and came back with nothing but fingerprints of actual taste.\n\nEvery pixel looks like a decision, not an accident. The typography has opinions, the spacing can breathe, and nobody bolted on a fake dashboard to look busy. Frankly it's showing off. 105/100, the extra five points are for making the rest of the internet look bad." },
   es: { effortLabel: 'Hecha a mano por el propio Yele', effortFlavor: 'Los sospechosos SON la policía. Caso cerrado con un guiño.', summary: 'La única web que ha hecho sonrojar a la Policía Web. 105/100, sin objeciones — buscaos un cuarto.', rant: 'Mira, lo intentamos. De verdad. Peinamos toda la web buscando los delitos de siempre — los degradados morados, la sopa de tarjetas redondeadas, las fotos de stock de gente chocando los cinco con un robot — y solo encontramos huellas de buen gusto.\n\nCada píxel parece una decisión, no un accidente. La tipografía tiene criterio, el espaciado respira y nadie ha pegado un dashboard falso para parecer ocupado. Sinceramente, está presumiendo. 105/100; los cinco puntos extra son por dejar en evidencia al resto de internet.' },
-  zh: { effortLabel: '由 Yele 亲手打造', effortFlavor: '嫌疑人就是警察本人。眨眨眼，结案。', summary: '唯一一个让网页警察脸红的网站。105/100，无可挑剔 —— 你俩开个房吧。', rant: '说真的，我们努力想找茬了。我们把整个网站都排查了一遍常见罪名——紫色渐变、圆角卡片堆成汤、和机器人击掌的图库照片——结果只找到了「有品味」的指纹。\n\n每一个像素都像是深思熟虑的决定，而不是意外。字体有主见，间距能呼吸，也没人硬塞一个假仪表盘来假装很忙。老实说，它在炫技。105/100，多出来的五分是奖励它让互联网上其余的网站相形见绌。' },
+  zh: { effortLabel: 'Yele 自己做的', effortFlavor: '嫌疑人就是警察本人。眨个眼，结案。', summary: '唯一一个让网页警察脸红的网站。105/100，挑不出毛病，我们决定给它送面锦旗。', rant: '说真的，我们是想挑毛病的。整个站从上到下排查了一遍：紫色渐变、圆角卡片堆成汤、西装大哥握手的图库照片 —— 一个都没抓到，只找到了「有品味」的指纹。\n\n每个像素都像是有人认真决定过的，不是随手摆的。字体有主见，间距能喘气，也没硬塞一个假仪表盘来装忙。说白了就是在炫技。105/100，多出来的五分，是奖励它把互联网上其他网站衬托得那么惨。' },
 }
 
 // The Web Police — satire design analyzer. HYBRID:
@@ -37,8 +38,9 @@ function toGradient(colors: unknown): string | undefined {
   return `linear-gradient(135deg, ${hex[0]} 0%, ${hex[1]} 100%)`
 }
 
-function normalizeUrl(raw: string): URL | null {
-  let s = (raw || '').trim()
+function normalizeUrl(raw: unknown): URL | null {
+  let s = (typeof raw === 'string' ? raw : '').trim()
+  if (s.length > 2000) return null
   if (!s) return null
   if (!/^https?:\/\//i.test(s)) s = 'https://' + s
   let u: URL
@@ -87,10 +89,10 @@ function deterministic(html: string): { charges: Charge[]; quality: number } {
   return { charges, quality }
 }
 
-// ---- ScreenshotOne, with a settle delay. Returns the base64 image or a
-// human-readable failure reason (surfaced in the report so we can diagnose). ----
-type ShotResult = { b64: string } | { error: string }
+// ---- Screenshot capture. Returns base64 + mime, or a readable failure. ----
+type ShotResult = { b64: string; mime: string } | { error: string }
 
+// ScreenshotOne (fast, paid). Used when SCREENSHOT_API_KEY is set.
 async function shot(target: string, fullPage: boolean): Promise<ShotResult> {
   const key = process.env.SCREENSHOT_API_KEY
   if (!key) return { error: 'SCREENSHOT_API_KEY not set' }
@@ -120,10 +122,52 @@ async function shot(target: string, fullPage: boolean): Promise<ShotResult> {
     if (!res.ok) return { error: `screenshot ${res.status}: ${(await res.text()).slice(0, 140)}` }
     const buf = Buffer.from(await res.arrayBuffer())
     if (buf.byteLength < 1000) return { error: 'screenshot came back empty' }
-    return { b64: buf.toString('base64') }
+    return { b64: buf.toString('base64'), mime: 'image/jpeg' }
   } catch (err) {
     return { error: `screenshot request failed: ${err instanceof Error ? err.message : String(err)}`.slice(0, 140) }
   }
+}
+
+// Free PageSpeed Insights screenshot (fullPageScreenshot). Slower (a full
+// Lighthouse run) but $0. Kept lean — one category — to run as fast as PSI
+// allows.
+async function psiScreenshot(target: string): Promise<ShotResult> {
+  const api = new URL('https://www.googleapis.com/pagespeedonline/v5/runPagespeed')
+  api.searchParams.set('url', target)
+  api.searchParams.set('strategy', 'desktop')
+  api.searchParams.set('category', 'performance')
+  const key = process.env.PAGESPEED_API_KEY
+  if (key) api.searchParams.set('key', key)
+  try {
+    const ctrl = new AbortController()
+    const to = setTimeout(() => ctrl.abort(), 50000)
+    const res = await fetch(api.toString(), { signal: ctrl.signal })
+    clearTimeout(to)
+    if (!res.ok) return { error: `psi ${res.status}: ${(await res.text()).slice(0, 120)}` }
+    const j = await res.json()
+    const data: string | undefined = j?.lighthouseResult?.fullPageScreenshot?.screenshot?.data
+    if (!data || !data.startsWith('data:')) return { error: 'psi: no screenshot in response' }
+    const m = data.match(/^data:([^;]+);base64,(.*)$/)
+    if (!m) return { error: 'psi: unexpected screenshot format' }
+    return { b64: m[2], mime: m[1] }
+  } catch (err) {
+    return { error: `psi request failed: ${err instanceof Error ? err.message : String(err)}`.slice(0, 140) }
+  }
+}
+
+// Capture: ScreenshotOne first (fast) if configured, else the free PSI
+// screenshot; PSI is also the fallback if ScreenshotOne fails.
+async function capture(target: string): Promise<ShotResult> {
+  if (process.env.SCREENSHOT_API_KEY) {
+    const s = await shot(target, true)
+    if ('b64' in s) return s
+    if (process.env.PAGESPEED_API_KEY) {
+      const p = await psiScreenshot(target)
+      if ('b64' in p) return p
+    }
+    return s
+  }
+  return psiScreenshot(target)
 }
 
 const ASPECTS = ['typography', 'spacing', 'color', 'clutter', 'hierarchy', 'imagery'] as const
@@ -163,13 +207,13 @@ Return ONLY compact JSON, no markdown:
 type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; rant: string; colorBg?: string }
 type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
 
-async function visionAnalyze(images: string[], hints: string[], languageName: string): Promise<VisionResult> {
+async function visionAnalyze(images: { data: string; mime: string }[], hints: string[], languageName: string, roastStyle: string): Promise<VisionResult> {
   const key = process.env.ANTHROPIC_API_KEY
   if (!key) return { ok: false, reason: 'ANTHROPIC_API_KEY not set' }
-  if (images.length === 0) return { ok: false, reason: 'no screenshot captured (check SCREENSHOT_API_KEY)' }
-  const lang = `\n\nWrite every "reason" field and the "summary" in ${languageName}.`
+  if (images.length === 0) return { ok: false, reason: 'no screenshot captured' }
+  const lang = `\n\nWrite every "reason" field, the "summary" and the "rant" in ${languageName}. Do not translate an English joke — write it the way a native speaker would say it.\n\nVOICE: ${roastStyle}`
   const text = (hints.length ? `${RUBRIC}\n\nHints from the page code: ${hints.join(' ')}` : RUBRIC) + lang
-  const content: unknown[] = images.map(data => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data } }))
+  const content: unknown[] = images.map(img => ({ type: 'image', source: { type: 'base64', media_type: img.mime, data: img.data } }))
   content.push({ type: 'text', text })
   try {
     const ctrl = new AbortController()
@@ -208,8 +252,7 @@ function effortTier(quality: number): number {
   return 6
 }
 
-export async function POST(request: Request) {
-  const body = await request.json().catch(() => ({}))
+async function runAnalysis(body: Record<string, unknown>) {
   const locale = toLocale(body?.locale)
   const wp = getWP(locale)
   const u = normalizeUrl(body?.url)
@@ -218,7 +261,7 @@ export async function POST(request: Request) {
 
   // Easter egg: the suspects ARE the police. Yele always wins.
   if (/(^|\.)yele\.design$/.test(u.hostname.toLowerCase())) {
-    const s = await shot(target, false)
+    const s = await capture(target)
     const y = YELE_TEXT[locale]
     return NextResponse.json({
       url: target,
@@ -233,7 +276,7 @@ export async function POST(request: Request) {
       rant: y.rant,
       mode: 'vision',
       note: '',
-      screenshot: 'b64' in s ? `data:image/jpeg;base64,${s.b64}` : null,
+      screenshot: 'b64' in s ? `data:${s.mime};base64,${s.b64}` : null,
     })
   }
 
@@ -247,12 +290,13 @@ export async function POST(request: Request) {
       html = (await res.text()).slice(0, 800_000)
     } catch { /* handled below */ }
   })()
-  // One full-page screenshot — used for both the vision analysis and the
-  // report thumbnail (cheaper on the screenshot quota, fewer failure points).
-  const shotPromise = shot(target, true)
+  // One full-page screenshot (ScreenshotOne if configured, else free PSI),
+  // used for both the vision analysis and the report thumbnail.
+  const shotPromise = capture(target)
   await htmlPromise
   const shotRes = await shotPromise
   const imgB64 = 'b64' in shotRes ? shotRes.b64 : null
+  const imgMime = 'b64' in shotRes ? shotRes.mime : 'image/jpeg'
   const shotError = 'error' in shotRes ? shotRes.error : ''
 
   if (!html && !imgB64) {
@@ -260,8 +304,8 @@ export async function POST(request: Request) {
   }
 
   const hints = html ? htmlHints(html) : []
-  const images = imgB64 ? [imgB64] : []
-  const vision = await visionAnalyze(images, hints, wp.languageName)
+  const images = imgB64 ? [{ data: imgB64, mime: imgMime }] : []
+  const vision = await visionAnalyze(images, hints, wp.languageName, wp.roastStyle)
 
   let charges: Charge[]
   let quality: number
@@ -320,6 +364,129 @@ export async function POST(request: Request) {
     rant,
     mode,
     note,
-    screenshot: imgB64 ? `data:image/jpeg;base64,${imgB64}` : null,
+    screenshot: imgB64 ? `data:${imgMime};base64,${imgB64}` : null,
   })
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Guardrails. Each scan costs a screenshot credit plus a vision call, so the
+// endpoint only answers same-origin browser traffic, throttles per IP and per
+// visitor session, caps the whole day globally, and serves repeat URLs from a
+// 24h cache instead of paying twice.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const num = (v: string | undefined, d: number) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : d)
+const LIMITS = {
+  minGapMs: num(process.env.WEBPOLICE_MIN_GAP_MS, 3000),
+  perIpHour: num(process.env.WEBPOLICE_MAX_PER_IP_HOUR, 15),
+  perIpDay: num(process.env.WEBPOLICE_MAX_PER_IP_DAY, 40),
+  perSessionDay: num(process.env.WEBPOLICE_MAX_PER_SESSION_DAY, 25),
+  globalDay: num(process.env.WEBPOLICE_MAX_PER_DAY, 500),
+}
+
+const BOT_UA = /bot|crawler|spider|curl|wget|python-requests|httpie|axios|node-fetch|go-http|java\/|okhttp|scrapy|headless|phantomjs|puppeteer/i
+
+const GUARD_MSG: Record<Locale, { blocked: string; slow: string; limit: string; closed: string }> = {
+  en: {
+    blocked: 'The Web Police only take calls from the website itself.',
+    slow: 'Easy, officer. Give us a few seconds between cases.',
+    limit: "You've filed a lot of reports today. Try again tomorrow — or just hire us.",
+    closed: 'The station is closed for today — too many cases. Come back tomorrow.',
+  },
+  es: {
+    blocked: 'La Policía Web solo atiende llamadas desde la propia web.',
+    slow: 'Tranquilo, agente. Danos unos segundos entre casos.',
+    limit: 'Has presentado muchas denuncias hoy. Prueba mañana — o contrátanos y ya está.',
+    closed: 'La comisaría cierra por hoy — demasiados casos. Vuelve mañana.',
+  },
+  zh: {
+    blocked: '网页警察只接这个网站打来的电话。',
+    slow: '别急，警官。两个案子之间让我们喘口气。',
+    limit: '你今天报的案有点多了。明天再来吧 —— 或者干脆找我们做一个。',
+    closed: '今天案子太多，派出所打烊了。明天请早。',
+  },
+}
+
+function sameOrigin(request: Request): boolean {
+  if (process.env.NODE_ENV !== 'production') return true
+  const host = request.headers.get('host')
+  const src = request.headers.get('origin') ?? request.headers.get('referer')
+  if (!host || !src) return false
+  try { return new URL(src).host === host } catch { return false }
+}
+
+export async function POST(request: Request) {
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
+  const locale = toLocale(body?.locale)
+  const wp = getWP(locale)
+  const msg = GUARD_MSG[locale]
+
+  // 1. Browser traffic only — no scripts, no scrapers.
+  const ua = request.headers.get('user-agent') ?? ''
+  if (!sameOrigin(request) || !ua || BOT_UA.test(ua)) {
+    return NextResponse.json({ error: msg.blocked }, { status: 403 })
+  }
+
+  // 2. Valid, public target.
+  const u = normalizeUrl(body?.url)
+  if (!u) return NextResponse.json({ error: wp.errBadUrl }, { status: 400 })
+  const target = u.toString()
+
+  const sessionId = typeof body?.sessionId === 'string' && /^[A-Za-z0-9_-]{8,64}$/.test(body.sessionId)
+    ? (body.sessionId as string)
+    : null
+  const ipHash = hashIp(clientIp(request))
+  const country = request.headers.get('x-vercel-ip-country')
+  const referer = request.headers.get('referer')
+
+  // 3. Throttles: a gap between calls, then per-IP, per-session and global caps.
+  const last = await lastScanAt(ipHash)
+  if (last && Date.now() - last < LIMITS.minGapMs) {
+    return NextResponse.json({ error: msg.slow }, { status: 429 })
+  }
+  const [ipHour, ipDay, sessionDay, globalDay] = await Promise.all([
+    countScans({ ipHash, windowMs: 3600_000 }),
+    countScans({ ipHash, windowMs: 86_400_000 }),
+    sessionId ? countScans({ sessionId, windowMs: 86_400_000 }) : Promise.resolve(0),
+    countScans({ windowMs: 86_400_000 }),
+  ])
+  if (globalDay >= LIMITS.globalDay) return NextResponse.json({ error: msg.closed }, { status: 429 })
+  if (ipHour >= LIMITS.perIpHour || ipDay >= LIMITS.perIpDay || sessionDay >= LIMITS.perSessionDay) {
+    return NextResponse.json({ error: msg.limit }, { status: 429 })
+  }
+
+  const record = (payload: Record<string, unknown>, cached: boolean, store: boolean) =>
+    logScan({
+      session_id: sessionId,
+      url: target,
+      host: u.hostname,
+      locale,
+      quality: typeof payload.quality === 'number' ? payload.quality : null,
+      verdict: (payload.verdict as { label?: string } | undefined)?.label ?? null,
+      mode: typeof payload.mode === 'string' ? payload.mode : null,
+      cached,
+      ip_hash: ipHash,
+      country,
+      user_agent: ua.slice(0, 300),
+      referer: referer?.slice(0, 300) ?? null,
+      // The screenshot is a multi-hundred-KB data URL — never stored.
+      result: store ? { ...payload, screenshot: null } : null,
+    }).catch(err => console.error('[webpolice] log failed', err))
+
+  // 4. Same URL again today → reuse the verdict, pay only for the (cached)
+  //    screenshot so the report still shows a thumbnail.
+  const cachedResult = await findCachedScan(target, locale)
+  if (cachedResult) {
+    const shotRes = process.env.SCREENSHOT_API_KEY ? await capture(target) : { error: 'skipped' }
+    const payload = { ...cachedResult, screenshot: 'b64' in shotRes ? `data:${shotRes.mime};base64,${shotRes.b64}` : null }
+    await record(payload, true, false)
+    return NextResponse.json(payload)
+  }
+
+  const res = await runAnalysis(body)
+  if (res.ok) {
+    const payload = (await res.clone().json()) as Record<string, unknown>
+    await record(payload, false, true)
+  }
+  return res
 }
