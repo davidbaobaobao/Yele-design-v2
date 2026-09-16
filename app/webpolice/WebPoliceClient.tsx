@@ -771,6 +771,27 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} />
       </TiltCard>
 
+      {/* But seriously — suited gorilla on pink, text on the left, no overlay on the gorilla */}
+      <TiltCard className="relative mt-6 overflow-hidden rounded-3xl bg-[#F2CAD7]">
+        <div className="relative flex min-h-[240px] md:min-h-[300px] items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
+          <img
+            src="/media/webpolice/gorilla-suit.jpg"
+            alt=""
+            aria-hidden="true"
+            className="absolute right-0 bottom-0 h-full w-auto select-none pointer-events-none object-contain object-bottom"
+          />
+          <div className="relative z-10 max-w-[64%] sm:max-w-[60%] px-6 py-8 md:px-10 md:py-10">
+            <p className="font-display font-bold tracking-tight text-[#16161A] leading-tight" style={{ fontSize: 'clamp(1.35rem, 5vw, 2.3rem)' }}>
+              {t.seriouslyLead}
+            </p>
+            <p className="font-body text-[#3A2C33] mt-1.5 leading-snug" style={{ fontSize: 'clamp(1rem, 3.4vw, 1.4rem)' }}>
+              {t.seriouslyBody}
+            </p>
+          </div>
+        </div>
+      </TiltCard>
+
       <p className="font-body text-xs text-white/30 mt-8 text-center">
         {t.footer}
       </p>

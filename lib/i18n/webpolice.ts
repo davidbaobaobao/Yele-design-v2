@@ -42,6 +42,8 @@ export type WPStrings = {
   hearsLabel: string
   personalityLabel: string
   designYearLabel: string
+  seriouslyLead: string
+  seriouslyBody: string
   seoH2: string
   seoP1: string
   seoP2: string
@@ -95,6 +97,8 @@ const en: WPStrings = {
   hearsLabel: 'Visitors hear',
   personalityLabel: 'Website personality diagnosis',
   designYearLabel: 'Estimated design year',
+  seriouslyLead: 'But seriously…',
+  seriouslyBody: 'We try our best so your website looks good.',
   seoH2: 'The website design checker that roasts your homepage',
   seoP1: 'Web Police is a free website design analyzer and website roast tool. Paste any URL and our AI website design review scores your homepage out of 100 across typography, spacing, colour, clutter, structure and imagery — the fastest way to settle the eternal question: is my website ugly?',
   seoP2: 'Think of it as a website UX checker with a sense of humour. Instead of a dry audit you get a verdict, a design score and a comedy rant — plus the specific design crimes making your site look cheap, generic or AI-generated, so you know exactly what to fix.',
@@ -158,6 +162,8 @@ const es: WPStrings = {
   hearsLabel: 'La gente entiende',
   personalityLabel: 'Diagnóstico de personalidad de la web',
   designYearLabel: 'Año de diseño estimado',
+  seriouslyLead: 'Pero en serio…',
+  seriouslyBody: 'Hacemos todo lo posible para que tu web se vea bien.',
   seoH2: 'El analizador de diseño web que critica tu página',
   seoP1: 'Web Police es un analizador de diseño web y herramienta de «roast» gratis. Pega cualquier URL y nuestra revisión de diseño web con IA puntúa tu página sobre 100 en tipografía, espaciado, color, saturación visual, estructura e imágenes — la forma más rápida de responder la eterna duda: ¿mi web es fea?',
   seoP2: 'Piénsalo como un chequeo de UX web con sentido del humor. En vez de una auditoría aburrida recibes un veredicto, una puntuación de diseño y un monólogo cómico — además de los «delitos de diseño» concretos que hacen que tu web parezca barata, genérica o generada por IA, para que sepas exactamente qué arreglar.',
@@ -221,6 +227,8 @@ const zh: WPStrings = {
   hearsLabel: '访客听到的是',
   personalityLabel: '网站人格诊断',
   designYearLabel: '预估设计年份',
+  seriouslyLead: '不过说正经的……',
+  seriouslyBody: '我们是真的用心，想让你的网站好看。',
   seoH2: '会吐槽你首页的网站设计检查器',
   seoP1: '「网页警察」是一个免费的网站设计检查器，也是一个网站吐槽工具。贴上任意网址，AI 设计评审会从字体、间距、配色、杂乱度、结构和图片六个方面给你的首页打一个百分制的分数 —— 用最快的方式回答那个永恒的问题：我的网站到底丑不丑？',
   seoP2: '你可以把它当成一个有幽默感的网站体验检查工具。你拿到的不是一份枯燥的审计报告，而是一份判决、一个设计评分，外加一段吐槽 —— 以及那些让你的网站显得廉价、像模板、像 AI 生成的具体「罪名」，让你清楚知道该改哪里。',
