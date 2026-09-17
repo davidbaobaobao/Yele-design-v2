@@ -8,10 +8,12 @@ import { FeatureTooltip } from '@/components/PricingCards'
 import { getFunnelDict, currencySymbol, type Locale } from '@/lib/i18n/funnel'
 
 // Micro-strings not worth a full dict entry.
-const MICRO: Record<Locale, { most: string; from: string }> = {
-  en: { most: 'Most Popular', from: 'from' },
-  es: { most: 'Más popular', from: 'desde' },
-  zh: { most: '最受欢迎', from: '' },
+// `vat` shows next to EUR prices (Spain/Chinese versions) — website tiers only,
+// never Yele Care. Empty for USD.
+const MICRO: Record<Locale, { most: string; from: string; vat: string }> = {
+  en: { most: 'Most Popular', from: 'from', vat: '' },
+  es: { most: 'Más popular', from: 'desde', vat: '+ IVA' },
+  zh: { most: '最受欢迎', from: '', vat: '+ IVA' },
 }
 
 type Feature = { label: string; info?: string }
@@ -37,7 +39,7 @@ type Tier = {
 // the dark highlighted middle card (#1C1D24) between two light bg-base cards,
 // green check marks, and the shared click-to-open FeatureTooltip. Data + CTAs
 // (plan-select dispatch) stay letsbuild-specific.
-function PricingCard({ tier, index, ctaHref, sym, micro }: { tier: Tier; index: number; ctaHref?: string; sym: string; micro: { most: string; from: string } }) {
+function PricingCard({ tier, index, ctaHref, sym, micro }: { tier: Tier; index: number; ctaHref?: string; sym: string; micro: { most: string; from: string; vat: string } }) {
   const ref = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -94,6 +96,9 @@ function PricingCard({ tier, index, ctaHref, sym, micro }: { tier: Tier; index: 
           )}
           <span className={`mb-1 font-body text-2xl font-semibold ${hl ? 'text-white/60' : 'text-muted'}`}>{sym}</span>
           <span className="font-display text-5xl font-semibold tracking-tight">{tier.amount}</span>
+          {micro.vat && (
+            <span className={`mb-2 font-body text-sm ${hl ? 'text-white/50' : 'text-muted'}`}>{micro.vat}</span>
+          )}
         </div>
       </div>
 
