@@ -589,13 +589,20 @@ function ShareBar({ result, t, basePath }: { result: Result; t: WPStrings; baseP
   const text = t.shareText(result.quality)
 
   const open = (u: string) => window.open(u, '_blank', 'noopener,noreferrer')
+  // Instagram has no web share URL. On mobile, the native share sheet (which
+  // includes Instagram / Stories / DM) is the real "share to Instagram"; on
+  // desktop we copy the link and open Instagram so it can be pasted.
+  const shareNative = async (): Promise<boolean> => {
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try { await navigator.share({ title: 'Web Police', text, url: link }); return true } catch { return false }
+    }
+    return false
+  }
   const targets: { key: string; label: string; go: () => void }[] = [
-    { key: 'x', label: 'X', go: () => open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`) },
-    { key: 'facebook', label: 'Facebook', go: () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}&quote=${encodeURIComponent(text)}`) },
-    { key: 'linkedin', label: 'LinkedIn', go: () => open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`) },
+    { key: 'instagram', label: 'Instagram', go: async () => { if (await shareNative()) return; try { await navigator.clipboard.writeText(link) } catch { /* ignore */ } open('https://www.instagram.com/') } },
     { key: 'whatsapp', label: 'WhatsApp', go: () => open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + link)}`) },
-    // Instagram has no web share intent — copy the link, then open Instagram to paste.
-    { key: 'instagram', label: 'Instagram', go: () => { try { navigator.clipboard.writeText(link) } catch { /* ignore */ } open('https://www.instagram.com/') } },
+    { key: 'facebook', label: 'Facebook', go: () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}&quote=${encodeURIComponent(text)}`) },
+    { key: 'x', label: 'X', go: () => open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`) },
   ]
   const copy = async () => {
     try {
