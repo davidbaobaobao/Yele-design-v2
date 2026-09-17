@@ -792,7 +792,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
       <TiltCard className="mt-10 rounded-3xl bg-[#F7F6F3] p-6 md:p-8 shadow-2xl shadow-black/30">
         <p className="font-mono text-xs uppercase tracking-[0.16em] mb-2" style={{ color: '#B23FA3' }}>{t.plugKicker}</p>
         <h3 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: '#16161A' }}>
-          {t.plugTitle}
+          {result.quality >= 60 ? t.plugTitleGood : t.plugTitleBad}
         </h3>
         <p className="font-body text-base mt-2 mb-6" style={{ color: '#4A4550' }}>
           {t.plugBody}
@@ -806,20 +806,27 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-[#EEBFCF]"
         style={{ backgroundImage: 'url(/media/webpolice/gorilla-suit.jpg)', backgroundPosition: 'right center' }}
       >
-        {/* Left scrim so the copy stays legible over the pink no matter the crop. */}
+        {/* Dark plum scrim on the left so the WHITE copy stays legible over the pink. */}
         <div
           className="pointer-events-none absolute inset-0"
           aria-hidden="true"
-          style={{ background: 'linear-gradient(90deg, rgba(238,191,207,0.94) 0%, rgba(238,191,207,0.72) 38%, rgba(238,191,207,0) 66%)' }}
+          style={{ background: 'linear-gradient(90deg, rgba(26,15,26,0.82) 0%, rgba(26,15,26,0.55) 40%, rgba(26,15,26,0) 70%)' }}
         />
         <div className="relative z-10 mx-auto flex min-h-[80vh] md:min-h-screen max-w-5xl items-center px-6 md:px-10">
-          <div className="max-w-[62%] sm:max-w-[56%] py-8 md:py-14">
-            <p className="font-display font-bold tracking-tight text-[#16161A] leading-tight" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.6rem)' }}>
+          <div className="max-w-[64%] sm:max-w-[56%] py-8 md:py-14">
+            <p className="font-display font-bold tracking-tight text-white leading-tight" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.6rem)' }}>
               {t.seriouslyLead}
             </p>
-            <p className="font-body text-[#3A2C33] mt-1.5 leading-snug" style={{ fontSize: 'clamp(1rem, 3.4vw, 1.45rem)' }}>
+            <p className="font-body text-white/90 mt-1.5 leading-snug" style={{ fontSize: 'clamp(1rem, 3.4vw, 1.45rem)' }}>
               {t.seriouslyBody}
             </p>
+            <a
+              href="/letsbuild"
+              className="mt-5 inline-flex items-center font-body font-semibold text-white underline underline-offset-4 decoration-white/50 hover:decoration-white transition-colors"
+              style={{ fontSize: 'clamp(0.95rem, 3vw, 1.2rem)' }}
+            >
+              {t.seriouslyCta}
+            </a>
           </div>
         </div>
       </div>

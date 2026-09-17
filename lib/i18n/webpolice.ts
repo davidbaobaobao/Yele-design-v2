@@ -29,7 +29,8 @@ export type WPStrings = {
   shareTitle: string
   shareText: (q: number) => string
   plugKicker: string
-  plugTitle: string
+  plugTitleGood: string
+  plugTitleBad: string
   plugBody: string
   plugCta: string
   footer: string
@@ -44,6 +45,7 @@ export type WPStrings = {
   designYearLabel: string
   seriouslyLead: string
   seriouslyBody: string
+  seriouslyCta: string
   seoH2: string
   seoP1: string
   seoP2: string
@@ -86,10 +88,11 @@ const en: WPStrings = {
   shareTitle: 'Share the verdict',
   shareText: q => `IS MY WEBSITE UGLY? 🚨 I scored ${q}/100 on the Web Police. Judge yours:`,
   plugKicker: 'Shameless plug',
-  plugTitle: 'We’ll build you a better website — from $699.',
+  plugTitleGood: 'We’ll build you a great website — just like this one, from $699.',
+  plugTitleBad: 'We’ll build you a much better website — from $699.',
   plugBody: 'Custom-designed, no template, no AI slop. It passes the Web Police test — we checked.',
   plugCta: 'Get my better website',
-  footer: 'A tongue-in-cheek tool by Yele. We look at the page for design clichés — nothing stored, verdicts strictly for laughs.',
+  footer: 'A tongue-in-cheek tool by Yele. An AI design critic roasts your homepage for the usual clichés — we don’t store anything, and every verdict is strictly for laughs.',
   exhibitAlt: 'Exhibit A: a stock photo',
   readMore: 'Read the full rant',
   showLess: 'Show less',
@@ -101,6 +104,7 @@ const en: WPStrings = {
   designYearLabel: 'Estimated design year',
   seriouslyLead: 'But seriously…',
   seriouslyBody: 'We try our best so your website looks good.',
+  seriouslyCta: 'Check out our site →',
   seoH2: 'The website design checker that roasts your homepage',
   seoP1: 'Web Police is a free website design analyzer and website roast tool. Paste any URL and our AI website design review scores your homepage out of 100 across typography, spacing, colour, clutter, structure and imagery — the fastest way to settle the eternal question: is my website ugly?',
   seoP2: 'Think of it as a website UX checker with a sense of humour. Instead of a dry audit you get a verdict, a design score and a comedy rant — plus the specific design crimes making your site look cheap, generic or AI-generated, so you know exactly what to fix.',
@@ -153,10 +157,11 @@ const es: WPStrings = {
   shareTitle: 'Comparte el veredicto',
   shareText: q => `¿MI WEB ES FEA? 🚨 Saqué ${q}/100 en la Policía Web. Juzga la tuya:`,
   plugKicker: 'Publicidad descarada',
-  plugTitle: 'Te hacemos una web mejor — desde 699€.',
+  plugTitleGood: 'Te hacemos una web genial — igual que esta, desde 699€.',
+  plugTitleBad: 'Te hacemos una web mucho mejor — desde 699€.',
   plugBody: 'Diseño a medida, sin plantillas, sin IA cutre. Pasa el test de la Policía Web — lo comprobamos.',
   plugCta: 'Quiero mi mejor web',
-  footer: 'Una herramienta con humor de Yele. Analizamos la página en busca de clichés de diseño — no guardamos nada, los veredictos son solo para reír.',
+  footer: 'Una herramienta con humor de Yele. Un crítico de diseño con IA se ríe de tu página buscando los clichés de siempre — no guardamos nada y todos los veredictos son solo para reír.',
   exhibitAlt: 'Prueba A: una foto de stock',
   readMore: 'Leer el veredicto completo',
   showLess: 'Mostrar menos',
@@ -168,6 +173,7 @@ const es: WPStrings = {
   designYearLabel: 'Año de diseño estimado',
   seriouslyLead: 'Pero en serio…',
   seriouslyBody: 'Hacemos todo lo posible para que tu web se vea bien.',
+  seriouslyCta: 'Visita nuestra web →',
   seoH2: 'El analizador de diseño web que critica tu página',
   seoP1: 'Web Police es un analizador de diseño web y herramienta de «roast» gratis. Pega cualquier URL y nuestra revisión de diseño web con IA puntúa tu página sobre 100 en tipografía, espaciado, color, saturación visual, estructura e imágenes — la forma más rápida de responder la eterna duda: ¿mi web es fea?',
   seoP2: 'Piénsalo como un chequeo de UX web con sentido del humor. En vez de una auditoría aburrida recibes un veredicto, una puntuación de diseño y un monólogo cómico — además de los «delitos de diseño» concretos que hacen que tu web parezca barata, genérica o generada por IA, para que sepas exactamente qué arreglar.',
@@ -220,10 +226,11 @@ const zh: WPStrings = {
   shareTitle: '把判决书发出去',
   shareText: q => `我的网站丑吗？🚨 我在「网页警察」只拿了 ${q}/100。来看看你的：`,
   plugKicker: '恰饭时间',
-  plugTitle: '我们帮你做个不丢人的网站 —— €699 起。',
+  plugTitleGood: '我们也能给你做个这么好看的 —— €699 起。',
+  plugTitleBad: '这个我们能给你做得好看得多 —— €699 起。',
   plugBody: '纯定制设计，不套模板，不用 AI 糊弄。我们自己的网站也送去测过了 —— 警察没敢开罚单。',
   plugCta: '我也要一个',
-  footer: 'Yele 出品的玩笑工具。我们只看页面上的设计俗套，不保存任何数据，判决仅供一乐。',
+  footer: 'Yele 出品的玩笑工具。一个 AI 设计评审专挑你首页的老套路吐槽 —— 不保存任何数据，判决纯属娱乐，图一乐。',
   exhibitAlt: '证物 A：一张全网通用的图库照片',
   readMore: '看完整吐槽',
   showLess: '收起',
@@ -235,6 +242,7 @@ const zh: WPStrings = {
   designYearLabel: '预估设计年份',
   seriouslyLead: '不过说正经的……',
   seriouslyBody: '我们是真的用心，想让你的网站好看。',
+  seriouslyCta: '来看看我们的网站 →',
   seoH2: '会吐槽你首页的网站设计检查器',
   seoP1: '「网页警察」是一个免费的网站设计检查器，也是一个网站吐槽工具。贴上任意网址，AI 设计评审会从字体、间距、配色、杂乱度、结构和图片六个方面给你的首页打一个百分制的分数 —— 用最快的方式回答那个永恒的问题：我的网站到底丑不丑？',
   seoP2: '你可以把它当成一个有幽默感的网站体验检查工具。你拿到的不是一份枯燥的审计报告，而是一份判决、一个设计评分，外加一段吐槽 —— 以及那些让你的网站显得廉价、像模板、像 AI 生成的具体「罪名」，让你清楚知道该改哪里。',
