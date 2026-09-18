@@ -11,8 +11,6 @@ import { getFunnelDict } from '@/lib/i18n/funnel'
 // single digest instead of one message per search. Lives in sessionStorage:
 // new tab / new visit = new session, and it never leaves this browser except
 // as an opaque id.
-// Email the digest once the visitor has done nothing for this long.
-const DIGEST_IDLE_MS = 90_000
 
 // Compare URLs ignoring protocol / trailing slash / case, so the pool's
 // "https://stripe.com" matches the server's normalized "https://stripe.com/".
@@ -32,26 +30,6 @@ function sessionId(): string {
   }
 }
 
-// Ask the server to email the session digest. Fired once the visitor has been
-// idle for a while and again when the page goes away; the server only sends
-// for scans it has not reported yet, so extra calls are harmless.
-function sendDigest(beacon = false) {
-  const sid = sessionId()
-  if (!sid) return
-  const payload = JSON.stringify({ sessionId: sid })
-  try {
-    if (beacon && navigator.sendBeacon) {
-      navigator.sendBeacon('/api/webpolice/report', new Blob([payload], { type: 'application/json' }))
-      return
-    }
-    fetch('/api/webpolice/report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: payload,
-      keepalive: true,
-    }).catch(() => {})
-  } catch { /* reporting is best-effort */ }
-}
 
 // A full-page screenshot can be several thousand pixels tall. The card keeps a
 // fixed height and the image is dragged inside it, so a long site can't push
@@ -277,9 +255,6 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   const leftVid = useRef<HTMLVideoElement>(null)
   const rightVid = useRef<HTMLVideoElement>(null)
   const progRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  // Digest bookkeeping: whether this visit scanned anything, and the idle timer.
-  const scanned = useRef(false)
-  const digestTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Last site the dice landed on, so the next roll is a different one.
   const lastRandom = useRef<string | undefined>(undefined)
   // Which pool sites are precomputed (seeded) — the dice only rolls these, so a
@@ -333,9 +308,6 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
         if (wait > 0) await new Promise(r => setTimeout(r, wait))
         setResult(data)
         setPhase('done')
-        scanned.current = true
-        if (digestTimer.current) clearTimeout(digestTimer.current)
-        digestTimer.current = setTimeout(() => sendDigest(), DIGEST_IDLE_MS)
       }
     } catch {
       setError(t.errWall)
@@ -347,21 +319,6 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
       setProgress(100)
     }
   }
-
-  // Flush the session digest when the visitor leaves, so a session that ends
-  // before the idle timer still gets reported.
-  useEffect(() => {
-    const flush = () => {
-      if (!scanned.current) return
-      if (digestTimer.current) clearTimeout(digestTimer.current)
-      sendDigest(true)
-    }
-    window.addEventListener('pagehide', flush)
-    return () => {
-      window.removeEventListener('pagehide', flush)
-      if (digestTimer.current) clearTimeout(digestTimer.current)
-    }
-  }, [])
 
   // Shared link support: /webpolice?url=example.com auto-runs on load.
   useEffect(() => {
@@ -458,6 +415,14 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
             </button>
           </div>
         </div>
+
+        {/* Consent note under the CTA */}
+        <p className="mt-2.5 max-w-lg text-center font-body text-[11px] leading-snug text-[#16161A]/45">
+          {t.consentPre}{' '}
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#16161A]/70">{t.consentTerms}</a>
+          {' '}{t.consentAnd}{' '}
+          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#16161A]/70">{t.consentPrivacy}</a>.
+        </p>
 
         {/* Known sites to try in one tap — good ones and famously rough ones. */}
         <div className="mt-4 flex w-full max-w-lg flex-wrap items-center gap-2">

@@ -182,3 +182,20 @@ export async function claimUnreportedScans(sessionId: string): Promise<ScanRow[]
   if (error) { console.error('[webpolice] claimUnreportedScans failed:', error.message); return [] }
   return (data ?? []) as unknown as ScanRow[]
 }
+
+/** All real (non-seed) scans in the last `windowMs`, newest first — for the
+ *  once-a-day owner digest. */
+export async function scansSince(windowMs: number): Promise<ScanRow[]> {
+  const since = new Date(Date.now() - windowMs).toISOString()
+  const supabase = db()
+  if (supabase) {
+    const { data, error } = await supabase.from(TABLE)
+      .select('url, host, locale, quality, verdict, mode, cached, country, created_at')
+      .eq('seed', false).gte('created_at', since)
+      .order('created_at', { ascending: false })
+    if (error) { console.error('[webpolice] scansSince failed:', error.message); return [] }
+    return (data ?? []).filter(r => r.mode !== 'seed') as unknown as ScanRow[]
+  }
+  memPrune()
+  return mem.filter(r => !r.seed && r.mode !== 'seed' && new Date(r.created_at ?? 0).getTime() >= Date.now() - windowMs)
+}

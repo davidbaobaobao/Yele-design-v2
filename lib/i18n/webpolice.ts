@@ -30,6 +30,10 @@ export type WPStrings = {
   tryLabel: string
   randomCta: string
   dragHint: string
+  consentPre: string
+  consentTerms: string
+  consentAnd: string
+  consentPrivacy: string
   shareTitle: string
   shareText: (q: number) => string
   plugKicker: string
@@ -94,6 +98,10 @@ const en: WPStrings = {
   tryLabel: 'Or try one of these',
   randomCta: 'Try random',
   dragHint: 'Drag to see the whole page',
+  consentPre: 'By tapping the button you agree to our',
+  consentTerms: 'Terms',
+  consentAnd: 'and',
+  consentPrivacy: 'Privacy Policy',
   shareTitle: 'Share the verdict',
   shareText: q => `IS MY WEBSITE UGLY? 🚨 I scored ${q}/100 on the Web Police. Judge yours:`,
   plugKicker: 'Shameless plug',
@@ -168,6 +176,10 @@ const es: WPStrings = {
   tryLabel: 'O prueba con una de estas',
   randomCta: 'Una al azar',
   dragHint: 'Arrastra para ver la página entera',
+  consentPre: 'Al pulsar el botón aceptas nuestros',
+  consentTerms: 'Términos',
+  consentAnd: 'y la',
+  consentPrivacy: 'Política de Privacidad',
   shareTitle: 'Comparte el veredicto',
   shareText: q => `¿MI WEB ES FEA? 🚨 Saqué ${q}/100 en la Policía Web. Juzga la tuya:`,
   plugKicker: 'Publicidad descarada',
@@ -242,6 +254,10 @@ const zh: WPStrings = {
   tryLabel: '或者试试这几个',
   randomCta: '随机抽一个',
   dragHint: '拖动查看整页',
+  consentPre: '点击按钮即表示你同意我们的',
+  consentTerms: '条款',
+  consentAnd: '和',
+  consentPrivacy: '隐私政策',
   shareTitle: '把判决书发出去',
   shareText: q => `我的网站丑吗？🚨 我在「网页警察」只拿了 ${q}/100。来看看你的：`,
   plugKicker: '恰饭时间',

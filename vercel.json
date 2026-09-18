@@ -4,6 +4,10 @@
     {
       "path": "/api/survey/abandoned",
       "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/webpolice/daily-report",
+      "schedule": "0 7 * * *"
     }
   ]
 }
