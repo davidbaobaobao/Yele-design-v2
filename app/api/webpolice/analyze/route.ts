@@ -283,7 +283,7 @@ async function visionAnalyze(images: { data: string; mime: string }[], hints: st
         headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
         signal: ctrl.signal,
         // Generous headroom so verbose Spanish/Chinese JSON can't truncate.
-        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 2600, messages: [{ role: 'user', content }] }),
+        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 4000, messages: [{ role: 'user', content }] }),
       })
       clearTimeout(to)
       if (!res.ok) {
@@ -353,7 +353,7 @@ function effortTier(quality: number): number {
 
 type CoreResult =
   | { ok: true; payload: Record<string, unknown> }
-  | { ok: false; status: number; error: string; code?: string }
+  | { ok: false; status: number; error: string; code?: string; reason?: string }
 
 export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
   const wp = getWP(locale)
@@ -426,7 +426,7 @@ export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
     if (vision.reason.startsWith('unusable')) {
       return { ok: false, status: 502, error: wp.errBlocked, code: 'blocked' }
     }
-    return { ok: false, status: 502, error: wp.errAiFailed, code: 'ai_failed' }
+    return { ok: false, status: 502, error: wp.errAiFailed, code: 'ai_failed', reason: vision.reason }
   }
 
   const mode = 'vision' as const
@@ -623,7 +623,8 @@ export async function POST(request: Request) {
     logMiss({
       session_id: sessionId, url: target, host: u.hostname, locale,
       ip_hash: ipHash, country, user_agent: ua.slice(0, 300),
-      referer: referer?.slice(0, 300) ?? null, error: core.code ?? 'error',
+      referer: referer?.slice(0, 300) ?? null,
+      error: core.reason ? `${core.code}: ${core.reason}`.slice(0, 120) : (core.code ?? 'error'),
     }).catch(err => console.error('[webpolice] logMiss failed', err))
     return NextResponse.json({ error: core.error }, { status: core.status })
   }
