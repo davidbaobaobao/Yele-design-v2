@@ -8,6 +8,7 @@ import PricingCards from '@/components/letsbuild/PricingCards'
 import CareVideo from '@/components/letsbuild/CareVideo'
 import StartNowMarquee from '@/components/letsbuild/StartNowMarquee'
 import LocaleSwitcher from '@/components/letsbuild/LocaleSwitcher'
+import WhatsAppLink from '@/components/WhatsAppLink'
 import { EnLangProvider } from '@/components/LangProvider'
 import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
 
@@ -104,9 +105,13 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
                 <LeadForm variant="dark" ctaLabel={d.form.cta} id="lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} />
 
                 <div className="text-center mt-2.5">
-                  <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
-                    {d.form.bookCall}
-                  </Link>
+                  {d.form.whatsapp ? (
+                    <WhatsAppLink label={d.form.whatsapp} tone="dark" prefill="¡Hola! Me interesa una web con Yele." />
+                  ) : (
+                    <Link href="/schedule" className="font-body text-sm text-white/60 hover:text-white transition-colors underline underline-offset-4">
+                      {d.form.bookCall}
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

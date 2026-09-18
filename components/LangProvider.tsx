@@ -9,3 +9,7 @@ export function EnLangProvider({ children }: { children: React.ReactNode }) {
 export function EsLangProvider({ children }: { children: React.ReactNode }) {
   return <LanguageProvider initialLang="es">{children}</LanguageProvider>
 }
+
+export function ZhLangProvider({ children }: { children: React.ReactNode }) {
+  return <LanguageProvider initialLang="zh">{children}</LanguageProvider>
+}

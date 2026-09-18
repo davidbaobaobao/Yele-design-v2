@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import TierCard, { type Tier } from '@/components/received/TierCard'
 import ReceivedCalEmbed from '@/components/received/ReceivedCalEmbed'
+import WhatsAppLink from '@/components/WhatsAppLink'
 import LocaleSwitcher from '@/components/letsbuild/LocaleSwitcher'
 import { getFunnelDict, currencySymbol, type Locale } from '@/lib/i18n/funnel'
 
@@ -74,9 +75,16 @@ export default function ReceivedContent({
         </p>
 
         {/* ---- Booking calendar ---- */}
-        <div className="-mx-6 mb-10 md:mx-0 md:h-[430px] md:w-full md:overflow-hidden md:rounded-2xl md:border md:border-hairline">
+        <div className="-mx-6 mb-4 md:mx-0 md:h-[430px] md:w-full md:overflow-hidden md:rounded-2xl md:border md:border-hairline">
           <ReceivedCalEmbed name={rawName} email={email} />
         </div>
+
+        {/* Spanish version: offer WhatsApp as an alternative to the calendar. */}
+        {getFunnelDict(locale).form.whatsapp && (
+          <div className="mb-10 text-center">
+            <WhatsAppLink label={getFunnelDict(locale).form.whatsapp as string} tone="light" prefill="¡Hola! Acabo de reservar/ver la web con Yele." />
+          </div>
+        )}
 
         {/* ---- Don't want to wait? Pay 50% now ---- */}
         <div className="border-t border-hairline pt-12">

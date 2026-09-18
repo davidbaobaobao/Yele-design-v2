@@ -5,11 +5,12 @@ import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion, useMotionValue, useMotionTemplate } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 import { CTAButton } from '@/components/ui/cta-button'
+import { startHref } from '@/lib/homeCta'
 
 export default function DiferenciaSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef   = useRef<HTMLVideoElement>(null)
-  const { t } = useLang()
+  const { t, lang } = useLang()
 
   useVideoAutoplay(videoRef)
 
@@ -151,11 +152,11 @@ export default function DiferenciaSection() {
             className="flex flex-wrap gap-3"
           >
             <CTAButton
-              href="/start"
+              href={startHref(lang)}
               variant="light"
               className="text-base font-semibold px-8 py-3.5"
             >
-              {t('Empezar gratis', 'Start for free')}
+              {t('Empezar gratis', 'Start for free', '免费开始')}
             </CTAButton>
             <a
               href="#contacto"

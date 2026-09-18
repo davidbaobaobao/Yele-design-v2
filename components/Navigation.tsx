@@ -7,12 +7,13 @@ import { usePathname } from 'next/navigation'
 import { useLang } from '@/context/LanguageContext'
 import { X, Menu } from 'lucide-react'
 import { CTAButton } from '@/components/ui/cta-button'
+import { startHref } from '@/lib/homeCta'
 
 export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}) {
   const { lang, toggleLang, t } = useLang()
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const isHomePage = pathname === '/' || pathname === '/es'
+  const isHomePage = pathname === '/' || pathname === '/es' || pathname === '/zh'
   const langHref   = pathname === '/' ? '/es' : '/'
   const [scrolled, setScrolled] = useState(false)
 
@@ -25,9 +26,9 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
   const isDark = heroIsDark && !scrolled
 
   const links = [
-    { label: t('Cómo funciona', 'How it works'), href: '#como-funciona' },
-    { label: t('Proyectos', 'Projects'), href: '/ejemplos' },
-    { label: t('Precios', 'Pricing'), href: '#precios' },
+    { label: t('Cómo funciona', 'How it works', '运作方式'), href: '#como-funciona' },
+    { label: t('Proyectos', 'Projects', '案例'), href: '/ejemplos' },
+    { label: t('Precios', 'Pricing', '价格'), href: '#precios' },
     { label: 'FAQ', href: '#faq' },
   ]
 
@@ -116,16 +117,26 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 isDark ? 'text-white/60 hover:text-white' : 'text-muted hover:text-ink'
               }`}
             >
-              {t('Ingresar', 'Log in')}
+              {t('Ingresar', 'Log in', '登录')}
             </a>
 
+            {/* Secondary CTA → pricing */}
+            <button
+              onClick={() => scroll('#precios')}
+              className={`font-body text-xs font-medium px-3.5 py-2 rounded-full border transition-colors cursor-pointer focus-visible:outline-none ${
+                isDark ? 'border-white/30 text-white hover:bg-white/10' : 'border-black/15 text-ink hover:bg-black/[0.04]'
+              }`}
+            >
+              {t('Ver precios', 'See pricing', '查看价格')}
+            </button>
+
             <CTAButton
-              href="/start"
+              href={startHref(lang)}
               prefetch={false}
               variant={isDark ? 'light' : 'dark'}
               className="text-xs px-4 py-2"
             >
-              {t('Empezar gratis', 'Start for free')}
+              {t('Empezar gratis', 'Start for free', '免费开始')}
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                 <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -176,16 +187,16 @@ export default function Navigation({ heroIsDark }: { heroIsDark?: boolean } = {}
                 href="https://app.yele.design/login"
                 className="font-body text-sm text-muted cursor-pointer"
               >
-                {t('Ingresar', 'Log in')}
+                {t('Ingresar', 'Log in', '登录')}
               </a>
               <CTAButton
-                href="/start"
+                href={startHref(lang)}
                 prefetch={false}
                 onClick={() => setOpen(false)}
                 variant="dark"
                 className="text-xs px-4 py-2"
               >
-                {t('Empezar gratis', 'Start for free')}
+                {t('Empezar gratis', 'Start for free', '免费开始')}
               </CTAButton>
             </div>
           </motion.div>

@@ -89,14 +89,15 @@ export const POOL: SiteRef[] = [
 // Same good/rough contrast; seeding discards any that block screenshots, so
 // only the working ones end up in the live pool.
 
-/** The chips shown under the search box on /es/webpolice. */
+/** The chips shown under the search box on /es/webpolice. Recognisable AND
+ *  actually capturable (many big Spanish sites are Cloudflare/DataDome-walled). */
 export const SHOWCASE_ES: SiteRef[] = [
-  site('El Corte Inglés', 'elcorteingles.es', 'rough', 'https://www.elcorteingles.es/'),
   site('Mercadona', 'mercadona.es', 'rough', 'https://www.mercadona.es/'),
+  site('Zara', 'zara.com', 'good', 'https://www.zara.com/es/'),
   site('Marca', 'marca.com', 'rough', 'https://www.marca.com/'),
-  site('Idealista', 'idealista.com', 'good', 'https://www.idealista.com/'),
-  site('Wallapop', 'wallapop.com', 'good', 'https://es.wallapop.com/'),
-  site('Milanuncios', 'milanuncios.com', 'rough', 'https://www.milanuncios.com/'),
+  site('Carrefour', 'carrefour.es', 'rough', 'https://www.carrefour.es/'),
+  site('Glovo', 'glovoapp.com', 'good', 'https://glovoapp.com/es/es/'),
+  site('20minutos', '20minutos.es', 'rough', 'https://www.20minutos.es/'),
 ]
 
 /** The "Try random" pool for the Spanish version — common Spanish sites. */

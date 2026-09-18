@@ -5,10 +5,11 @@ import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { motion } from 'framer-motion'
 import { useLang } from '@/context/LanguageContext'
 import { CTAButton } from '@/components/ui/cta-button'
+import { startHref } from '@/lib/homeCta'
 
 export default function FinaleSection() {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const { t } = useLang()
+  const { t, lang } = useLang()
   useVideoAutoplay(videoRef)
 
   return (
@@ -40,8 +41,8 @@ export default function FinaleSection() {
           className="font-display font-light text-white tracking-tight leading-none mb-10"
           style={{ fontSize: 'clamp(40px, 7vw, 100px)' }}
         >
-          {t('Empieza', 'Start')}<br />
-          <span style={{ fontWeight: 700 }}>{t('ahora', 'now')}</span>
+          {t('Empieza', 'Start', '现在')}<br />
+          <span style={{ fontWeight: 700 }}>{t('ahora', 'now', '开始')}</span>
         </motion.h2>
 
         <motion.div
@@ -51,11 +52,11 @@ export default function FinaleSection() {
           viewport={{ once: true }}
         >
           <CTAButton
-            href="/start"
+            href={startHref(lang)}
             variant="light"
             className="text-lg font-semibold px-10 py-4"
           >
-            {t('Empezar gratis', 'Start for free')}
+            {t('Empezar gratis', 'Start for free', '免费开始')}
           </CTAButton>
         </motion.div>
 

@@ -141,10 +141,10 @@ export default function Footer() {
                   info@yele.design
                 </a>
                 <a
-                  href="tel:+18882648656"
+                  href={t('tel:+34655517760', 'tel:+18882648656', 'tel:+34655517760')}
                   className="font-body text-sm text-white/60 hover:text-white transition-colors mt-1 block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                 >
-                  +1 (888) 264-8656
+                  {t('+34 655 517 760', '+1 (888) 264-8656', '+34 655 517 760')}
                 </a>
               </div>
 

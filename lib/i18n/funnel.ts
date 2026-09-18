@@ -56,6 +56,9 @@ export type FunnelDict = {
     coreValues: string
     values: { title: string; body: string }[]
     bookCall: string
+    // When set, the "book a call" link becomes a WhatsApp link instead (used
+    // for the Spanish version, where the Spanish number is a WhatsApp line).
+    whatsapp?: string
     // LeadForm field labels + controls
     name: string
     email: string
@@ -348,6 +351,7 @@ const es: FunnelDict = {
       { title: 'Rendimiento', body: 'Optimizada para conseguirte más clientes, más contactos y más ventas.' },
     ],
     bookCall: '¿Prefieres hablar? Reserva una llamada gratis de 10 min',
+    whatsapp: 'O danos un toque por WhatsApp',
     name: 'Nombre',
     email: 'Correo electrónico',
     phone: 'Teléfono',

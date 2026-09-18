@@ -128,7 +128,7 @@ export default function HeroBento() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {t('Primer mes ', 'Start for ')}<span style={{ fontWeight: 800 }}>{t('gratis', 'free')}</span>
+                {t('Primer mes ', 'Start for ', '首月')}<span style={{ fontWeight: 800 }}>{t('gratis', 'free', '免费')}</span>
               </span>
             </div>
 
@@ -145,21 +145,21 @@ export default function HeroBento() {
                   marginLeft: 20,
                 }}
               >
-                {t('Tu Web', 'Your Website')}<br />
-                {t('Gestionada', 'Handled')}<br />
-                {t('Para siempre', 'Forever')}
+                {t('Tu Web', 'Your Website', '你的网站')}<br />
+                {t('Gestionada', 'Handled', '全托管')}<br />
+                {t('Para siempre', 'Forever', '永久')}
               </h1>
               <p
                 className="font-body"
                 style={{ marginTop: 32, marginLeft: 20, fontWeight: 400, fontSize: 19, letterSpacing: '0.01em', color: '#ffffff' }}
               >
-                {t('Diseño, contenido y mantenimiento · Una suscripción', 'Design, content & maintenance · One subscription')}
+                {t('Diseño, contenido y mantenimiento · Una suscripción', 'Design, content & maintenance · One subscription', '设计、内容与维护 · 一个订阅')}
               </p>
               <p
                 className="font-body"
                 style={{ marginTop: 8, marginLeft: 20, fontWeight: 600, fontSize: 19, letterSpacing: '0.01em', color: '#ffffff' }}
               >
-                {t('Desde 49 €/mes · Cancela cuando quieras', 'From $99/month · Cancel anytime')}
+                {t('Desde 49 €/mes · Cancela cuando quieras', 'From $99/month · Cancel anytime', '€49/月起 · 随时取消')}
               </p>
             </div>
 
@@ -195,13 +195,13 @@ export default function HeroBento() {
               className="font-display text-white"
               style={{ fontWeight: 500, fontSize: 64, lineHeight: 0.97, letterSpacing: '-0.02em' }}
             >
-              {t('Tu Web', 'Your Website')}<br />{t('Gestionada', 'Handled')}<br />{t('Para siempre', 'Forever')}
+              {t('Tu Web', 'Your Website', '你的网站')}<br />{t('Gestionada', 'Handled', '全托管')}<br />{t('Para siempre', 'Forever', '永久')}
             </h1>
             <p className="font-body text-white/80 mt-4 text-lg leading-relaxed">
-              {t('Diseño, contenido y mantenimiento · Una suscripción', 'Design, content & maintenance · One subscription')}
+              {t('Diseño, contenido y mantenimiento · Una suscripción', 'Design, content & maintenance · One subscription', '设计、内容与维护 · 一个订阅')}
             </p>
             <p className="font-body text-white font-semibold mt-1.5 text-lg">
-              {t('Desde 49 €/mes · Cancela cuando quieras', 'From $99/month · Cancel anytime')}
+              {t('Desde 49 €/mes · Cancela cuando quieras', 'From $99/month · Cancel anytime', '€49/月起 · 随时取消')}
             </p>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function HeroBento() {
               <path className="hero-sparkle-main" d="M12 3L13.6 8.4L19 10L13.6 11.6L12 17L10.4 11.6L5 10L10.4 8.4L12 3Z" stroke="#ffffff" strokeWidth="1.6" strokeLinejoin="round" />
             </svg>
             <span style={{ fontFamily: 'var(--font-body), sans-serif', fontWeight: 600, fontSize: 17, color: '#ffffff', whiteSpace: 'nowrap' }}>
-              {t('Primer mes ', 'Start for ')}<span style={{ fontWeight: 800 }}>{t('gratis', 'free')}</span>
+              {t('Primer mes ', 'Start for ', '首月')}<span style={{ fontWeight: 800 }}>{t('gratis', 'free', '免费')}</span>
             </span>
           </div>
           {/* Marquee strip */}
