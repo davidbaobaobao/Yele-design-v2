@@ -609,19 +609,34 @@ function RantSpeaker({ parts, lang, t }: { parts: string[]; lang: string; t: WPS
 
   if (!supported) return null
 
+  const base = lang.split('-')[0]
+  // Per-language voice character: English = a robotic-ish MALE voice; Spanish =
+  // a subtly robotic "Loquendo"-style voice (not the smooth natural one — that
+  // read too plain); Chinese = a steady robotic voice. rate/pitch tuned for a
+  // funny, subtly mechanical feel, plus a short pause between sentences.
+  const cfg = (
+    base === 'es' ? { male: false, robotic: true, rate: 1.0, pitchA: 0.82, pitchB: 0.76, pause: 150 }
+    : base === 'zh' ? { male: false, robotic: true, rate: 1.02, pitchA: 0.9, pitchB: 0.82, pause: 150 }
+    : { male: true, robotic: true, rate: 1.04, pitchA: 0.86, pitchB: 0.8, pause: 150 }
+  )
+
+  const MALE_RE = /david|daniel|alex|fred|jorge|pablo|diego|carlos|miguel|male|james|george|mark|guy|aaron|arthur|liam|nathan|thomas|paul/i
+  const ROBOTIC_RE = /microsoft|espeak|loquendo|desktop|driver|pico|festival/i
+
   const pickVoice = (): SpeechSynthesisVoice | null => {
     const voices = window.speechSynthesis.getVoices()
     if (!voices.length) return null
-    const base = lang.split('-')[0]
     const inLang = voices.filter(v => v.lang === lang || v.lang.startsWith(base))
     if (!inLang.length) return null
-    // Prefer a natural-sounding cloud voice (Google / "Natural" / non-local) so
-    // it doesn't come out flat and robotic; fall back to any voice for the lang.
-    return (
-      inLang.find(v => /google|natural|online/i.test(v.name)) ||
-      inLang.find(v => v.localService === false) ||
-      inLang[0]
-    )
+    let pool = inLang
+    if (cfg.male) { const m = pool.filter(v => MALE_RE.test(v.name)); if (m.length) pool = m }
+    // Prefer a more mechanical engine (Microsoft / eSpeak / local) for the
+    // Loquendo-ish robotic character, over the smooth cloud voices.
+    if (cfg.robotic) {
+      const r = pool.filter(v => ROBOTIC_RE.test(v.name) || v.localService === true)
+      if (r.length) pool = r
+    }
+    return pool[0] || inLang[0]
   }
 
   const stop = () => {
@@ -657,11 +672,11 @@ function RantSpeaker({ parts, lang, t }: { parts: string[]; lang: string; t: WPS
       const u = new SpeechSynthesisUtterance(sentences[i])
       if (voice) u.voice = voice
       u.lang = voice?.lang || lang
-      u.rate = 1.06
-      // Gentle sing-song alternation so it's lively and funny, not a flat drone.
-      u.pitch = i % 2 === 0 ? 0.95 : 0.82
+      u.rate = cfg.rate
+      // Subtle alternation for a funny, slightly mechanical (not flat) cadence.
+      u.pitch = i % 2 === 0 ? cfg.pitchA : cfg.pitchB
       u.volume = 1
-      u.onend = () => { timerRef.current = setTimeout(speakNext, 300) } // the pause
+      u.onend = () => { timerRef.current = setTimeout(speakNext, cfg.pause) } // short pause
       u.onerror = () => setSpeaking(false)
       i++
       window.speechSynthesis.speak(u)
@@ -800,7 +815,11 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
 
         <div className="mt-4 flex justify-center">
           <RantSpeaker
-            parts={[[result.verdict.label, result.summary].filter(Boolean).join('. '), result.rant || '']}
+            parts={[
+              [result.verdict.label, result.summary].filter(Boolean).join('. '),
+              result.rant || '',
+              result.personality ? `${t.personalityLabel}: ${result.personality}` : '',
+            ].filter(Boolean)}
             lang={t.ttsLang}
             t={t}
           />
