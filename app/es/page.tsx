@@ -63,7 +63,7 @@ export default function EsHome() {
         <PreciosIndexSection />
         <ShowcaseFeatureCards />
         <DiferenciaSection />
-        <Testimonios noBg />
+        <Testimonios noBg locale="es" />
         <TablaComparativa />
         <ContactForm />
         <FAQ noBg />
