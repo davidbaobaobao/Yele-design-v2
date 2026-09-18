@@ -33,8 +33,6 @@ const nextConfig = {
       { source: '/como-funciona', destination: '/#como-funciona',  permanent: true },
       { source: '/precios',       destination: '/#precios',         permanent: true },
       { source: '/contacto',      destination: '/#contacto',        permanent: true },
-      // Phase 3 — retire Spanish homepage
-      { source: '/es',            destination: '/',                permanent: true },
       // Phase 5 — ejemplos → portfolio
       { source: '/ejemplos',      destination: '/portfolio',       permanent: true },
       // Retired trade/vertical landings — consolidated into /letsbuild.

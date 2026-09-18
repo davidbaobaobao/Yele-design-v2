@@ -13,16 +13,18 @@ const EU_COUNTRIES = new Set([
   'GB', // UK GDPR
 ])
 
-// Funnel base paths (no locale prefix) that geo/browser detection applies to.
-const FUNNEL_PATHS = new Set(['/letsbuild', '/received'])
+// Paths (no locale prefix) that geo/browser detection redirects: the homepage
+// and the funnel entry points.
+const LOCALE_PATHS = new Set(['/', '/letsbuild', '/received'])
 
-// Only Spain triggers language detection (per spec: US -> English,
-// Spain -> browser language, everything else/unknown -> English).
+// Language/geo routing:
+//   - Device language Chinese  → Chinese (/zh), anywhere in the world.
+//   - Spain (by IP)            → Spanish (/es).
+//   - USA + everyone else/unknown → English (/).
 function detectLocale(country: string | null, acceptLanguage: string | null): Locale {
-  if (country !== 'ES') return 'en'
   const al = (acceptLanguage ?? '').toLowerCase()
   if (al.includes('zh')) return 'zh'
-  if (al.includes('es')) return 'es'
+  if (country === 'ES') return 'es'
   return 'en'
 }
 
@@ -40,16 +42,18 @@ export async function middleware(request: NextRequest) {
   const country = request.headers.get('x-vercel-ip-country')
   const isEu = country ? EU_COUNTRIES.has(country) : true // unknown -> assume EU (safe for the banner)
 
-  // Locale routing for the funnel entry paths. A manual choice (yele_locale
-  // cookie, set by the LocaleSwitcher) wins; otherwise detect from geo.
-  if (FUNNEL_PATHS.has(pathname)) {
+  // Locale routing for the homepage + funnel entry paths. A manual choice
+  // (yele_locale cookie, set by the LocaleSwitcher) wins; otherwise detect from
+  // device language (zh) and geo (ES). English visitors stay on the plain path.
+  if (LOCALE_PATHS.has(pathname)) {
     const cookieLocale = request.cookies.get('yele_locale')?.value
     const chosen: Locale = isLocale(cookieLocale)
       ? cookieLocale
       : detectLocale(country, request.headers.get('accept-language'))
     if (chosen !== 'en') {
       const url = request.nextUrl.clone()
-      url.pathname = `/${chosen}${pathname}`
+      // '/' → '/es' or '/zh'; '/letsbuild' → '/es/letsbuild', etc.
+      url.pathname = pathname === '/' ? `/${chosen}` : `/${chosen}${pathname}`
       const res = NextResponse.redirect(url)
       res.cookies.set('yele_eu', isEu ? '1' : '0', { path: '/', maxAge: 60 * 60 * 24 * 30 })
       return res
