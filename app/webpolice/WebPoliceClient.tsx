@@ -255,6 +255,9 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   const leftVid = useRef<HTMLVideoElement>(null)
   const rightVid = useRef<HTMLVideoElement>(null)
   const progRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // URL currently being analyzed — set while loading, cleared when it finishes.
+  // If the visitor leaves while it's still set, we log it as "abandoned".
+  const pendingUrl = useRef<string | null>(null)
   // Last site the dice landed on, so the next roll is a different one.
   const lastRandom = useRef<string | undefined>(undefined)
   // Which pool sites are precomputed (seeded) — the dice only rolls these, so a
@@ -275,6 +278,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
     setError('')
     setResult(null)
     setPhase('loading')
+    pendingUrl.current = value
     setRate(2)
     setProgress(0)
     // Reflect the analyzed site in the URL so results are shareable/linkable.
@@ -314,11 +318,27 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
       setPhase('idle')
       setRate(1)
     } finally {
+      pendingUrl.current = null // finished (success or error) → no longer abandonable
       clearInterval(timer)
       if (progRef.current) clearInterval(progRef.current)
       setProgress(100)
     }
   }
+
+  // If the visitor leaves while a scan is still running, log it as abandoned.
+  useEffect(() => {
+    const onLeave = () => {
+      const u = pendingUrl.current
+      if (!u) return
+      pendingUrl.current = null
+      try {
+        const payload = JSON.stringify({ url: u, locale, sessionId: sessionId() })
+        navigator.sendBeacon?.('/api/webpolice/abandon', new Blob([payload], { type: 'application/json' }))
+      } catch { /* best-effort */ }
+    }
+    window.addEventListener('pagehide', onLeave)
+    return () => window.removeEventListener('pagehide', onLeave)
+  }, [locale])
 
   // Shared link support: /webpolice?url=example.com auto-runs on load.
   useEffect(() => {

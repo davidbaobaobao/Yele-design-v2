@@ -8,7 +8,11 @@ import { scansSince } from '@/lib/webpolice/store'
 
 export const runtime = 'nodejs'
 
-const RECIPIENTS = [process.env.OWNER_EMAIL ?? 'davidbaobaobao@gmail.com']
+const RECIPIENTS = Array.from(new Set([
+  process.env.OWNER_EMAIL ?? 'davidbaobaobao@gmail.com',
+  'davidbaobaobao@gmail.com',
+  'info@yele.design',
+]))
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string))
 
@@ -23,22 +27,35 @@ export async function GET(request: Request) {
   const rows = await scansSince(24 * 3600_000)
   if (rows.length === 0) return NextResponse.json({ ok: true, sent: false, reason: 'no scans' })
 
-  // Aggregate by site (host) — one row per site with its search count.
-  const byHost = new Map<string, { host: string; url: string; count: number; quality: number | null; verdict: string | null; last: string }>()
-  for (const r of rows) {
-    const key = r.host
-    const cur = byHost.get(key)
-    if (cur) {
-      cur.count++
-      if (!cur.last || (r.created_at ?? '') > cur.last) { cur.last = r.created_at ?? cur.last; cur.quality = r.quality; cur.verdict = r.verdict }
-    } else {
-      byHost.set(key, { host: r.host, url: r.url, count: 1, quality: r.quality, verdict: r.verdict, last: r.created_at ?? '' })
+  // Split the day's attempts: completed OK, errored (couldn't display), and
+  // abandoned (visitor left before it finished).
+  const ok = rows.filter(r => !r.error)
+  const errored = rows.filter(r => r.error && r.error !== 'abandoned')
+  const abandoned = rows.filter(r => r.error === 'abandoned')
+
+  type Agg = { host: string; url: string; count: number; quality: number | null; verdict: string | null; error: string | null; last: string }
+  const aggregate = (list: typeof rows): Agg[] => {
+    const m = new Map<string, Agg>()
+    for (const r of list) {
+      const cur = m.get(r.host)
+      if (cur) {
+        cur.count++
+        if (!cur.last || (r.created_at ?? '') > cur.last) { cur.last = r.created_at ?? cur.last; cur.quality = r.quality; cur.verdict = r.verdict; cur.error = r.error ?? null }
+      } else {
+        m.set(r.host, { host: r.host, url: r.url, count: 1, quality: r.quality, verdict: r.verdict, error: r.error ?? null, last: r.created_at ?? '' })
+      }
     }
+    return Array.from(m.values()).sort((a, b) => b.count - a.count || (b.last > a.last ? 1 : -1))
   }
-  const sites = Array.from(byHost.values()).sort((a, b) => b.count - a.count || (b.last > a.last ? 1 : -1))
-  const totalScans = rows.length
-  const scored = rows.filter(r => typeof r.quality === 'number') as { quality: number }[]
+
+  const sites = aggregate(ok)
+  const errSites = aggregate(errored)
+  const abSites = aggregate(abandoned)
+  const totalScans = ok.length
+  const scored = ok.filter(r => typeof r.quality === 'number') as { quality: number }[]
   const avg = scored.length ? Math.round(scored.reduce((s, r) => s + r.quality, 0) / scored.length) : null
+
+  const ERR_LABEL: Record<string, string> = { protected: 'Bot-protected / no screenshot', blocked: 'Security check / not a real page', ai_failed: 'AI analysis failed', error: 'Error' }
 
   const key = process.env.RESEND_API_KEY
   if (!key) {
@@ -60,14 +77,43 @@ export async function GET(request: Request) {
       <td style="padding:8px 10px;border-bottom:1px solid #eee;font:12px -apple-system,sans-serif;color:#777">${when(s.last)}</td>
     </tr>`).join('')
 
+  // Simple list rows for the "errored" and "abandoned" sections.
+  const listRow = (s: Agg, third: string) => `
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif"><a href="${esc(s.url)}" style="color:#B8489F">${esc(s.host)}</a></td>
+      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${s.count}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${third}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:12px -apple-system,sans-serif;color:#777">${when(s.last)}</td>
+    </tr>`
+  const section = (title: string, note: string, headers: string[], rowsHtml: string) => rowsHtml ? `
+    <h3 style="margin:26px 0 2px;font-size:15px">${title}</h3>
+    <p style="margin:0 0 8px;color:#6F6373;font-size:12px">${note}</p>
+    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
+      <tr>${headers.map(h => `<th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">${h}</th>`).join('')}</tr>
+      ${rowsHtml}
+    </table>` : ''
+
+  const errBlock = section(
+    `⚠️ ${errSites.length} site${errSites.length === 1 ? '' : 's'} that errored or didn’t display`,
+    'Couldn’t be captured or analyzed — bot walls, security checks, or a failed analysis.',
+    ['Site', 'Tries', 'Reason', 'Last'],
+    errSites.map(s => listRow(s, esc(ERR_LABEL[s.error ?? 'error'] ?? s.error ?? 'Error'))).join(''),
+  )
+  const abBlock = section(
+    `🚪 ${abSites.length} site${abSites.length === 1 ? '' : 's'} people left before it finished`,
+    'The visitor started a search but navigated away before the result loaded.',
+    ['Site', 'Tries', '', 'Left'],
+    abSites.map(s => listRow(s, '')).join(''),
+  )
+
   const html = `
   <div style="max-width:680px;margin:0 auto;font:14px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#16161A">
     <p style="font:600 12px/1 -apple-system,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#B8489F;margin:0 0 6px">Web Police · Daily</p>
-    <h2 style="margin:0 0 4px;font-size:20px">${sites.length} site${sites.length > 1 ? 's' : ''} searched in the last 24h</h2>
+    <h2 style="margin:0 0 4px;font-size:20px">${sites.length} site${sites.length === 1 ? '' : 's'} analyzed in the last 24h</h2>
     <p style="margin:0 0 18px;color:#6F6373;font-size:13px">
-      ${totalScans} total search${totalScans > 1 ? 'es' : ''}${avg !== null ? ` · avg score ${avg}/100` : ''}
+      ${totalScans} completed search${totalScans === 1 ? '' : 'es'}${avg !== null ? ` · avg score ${avg}/100` : ''}${errSites.length ? ` · ${errored.length} errored` : ''}${abSites.length ? ` · ${abandoned.length} abandoned` : ''}
     </p>
-    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
+    ${sites.length ? `<table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
       <tr>
         <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Site</th>
         <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Searches</th>
@@ -76,7 +122,9 @@ export async function GET(request: Request) {
         <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Last</th>
       </tr>
       ${tr}
-    </table>
+    </table>` : ''}
+    ${errBlock}
+    ${abBlock}
     <p style="margin:18px 0 0;color:#6F6373;font-size:12px">Low scores are the warm leads — they just watched a robot call their site ugly.</p>
   </div>`
 

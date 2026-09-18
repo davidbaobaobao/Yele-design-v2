@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getWP, type Locale } from '@/lib/i18n/webpolice'
-import { logScan, findCachedScan, countScans, lastScanAt, hashIp, clientIp, getSeed } from '@/lib/webpolice/store'
+import { logScan, logMiss, findCachedScan, countScans, lastScanAt, hashIp, clientIp, getSeed, saveShot } from '@/lib/webpolice/store'
 
 function toLocale(v: unknown): Locale {
   return v === 'es' || v === 'zh' ? v : 'en'
@@ -353,7 +353,7 @@ function effortTier(quality: number): number {
 
 type CoreResult =
   | { ok: true; payload: Record<string, unknown> }
-  | { ok: false; status: number; error: string }
+  | { ok: false; status: number; error: string; code?: string }
 
 export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
   const wp = getWP(locale)
@@ -411,7 +411,7 @@ export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
   // we bail out with a funny "this site is protected" message instead.
   if (!imgB64) {
     if (shotError) console.warn('[webpolice] capture failed:', shotError)
-    return { ok: false, status: 502, error: wp.errProtected }
+    return { ok: false, status: 502, error: wp.errProtected, code: 'protected' }
   }
 
   const hints = html ? htmlHints(html) : []
@@ -424,9 +424,9 @@ export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
     // The screenshot was a Cloudflare/CAPTCHA/error/blank page, not the real
     // site — say we couldn't reach/analyze it (don't roast the block page).
     if (vision.reason.startsWith('unusable')) {
-      return { ok: false, status: 502, error: wp.errBlocked }
+      return { ok: false, status: 502, error: wp.errBlocked, code: 'blocked' }
     }
-    return { ok: false, status: 502, error: wp.errAiFailed }
+    return { ok: false, status: 502, error: wp.errAiFailed, code: 'ai_failed' }
   }
 
   const mode = 'vision' as const
@@ -587,7 +587,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: msg.limit }, { status: 429 })
   }
 
-  const record = (payload: Record<string, unknown>, cached: boolean, store: boolean) =>
+  const record = (payload: Record<string, unknown>, cached: boolean, store: boolean, screenshotUrl: string | null = null) =>
     logScan({
       session_id: sessionId,
       url: target,
@@ -601,8 +601,10 @@ export async function POST(request: Request) {
       country,
       user_agent: ua.slice(0, 300),
       referer: referer?.slice(0, 300) ?? null,
-      // The screenshot is a multi-hundred-KB data URL — never stored.
+      // The full text result is stored in the DB (light); the heavy screenshot
+      // lives in Storage — screenshot_url points to it (see saveShot).
       result: store ? { ...payload, screenshot: null } : null,
+      screenshot_url: screenshotUrl,
     }).catch(err => console.error('[webpolice] log failed', err))
 
   // 4. Same URL again today → reuse the verdict, pay only for the (cached)
@@ -616,7 +618,21 @@ export async function POST(request: Request) {
   }
 
   const core = await analyzeCore(u, locale)
-  if (!core.ok) return NextResponse.json({ error: core.error }, { status: core.status })
-  await record(core.payload, false, true)
+  if (!core.ok) {
+    // Record the miss (site that errored / didn't display) for the daily report.
+    logMiss({
+      session_id: sessionId, url: target, host: u.hostname, locale,
+      ip_hash: ipHash, country, user_agent: ua.slice(0, 300),
+      referer: referer?.slice(0, 300) ?? null, error: core.code ?? 'error',
+    }).catch(err => console.error('[webpolice] logMiss failed', err))
+    return NextResponse.json({ error: core.error }, { status: core.status })
+  }
+  // Archive the screenshot to Storage for later study (best-effort, toggle off
+  // with WEBPOLICE_STORE_SHOTS=0). The text result is always stored in the DB.
+  const shotData = typeof core.payload.screenshot === 'string' ? core.payload.screenshot : null
+  const shotUrl = shotData && process.env.WEBPOLICE_STORE_SHOTS !== '0'
+    ? await saveShot(shotData, u.hostname)
+    : null
+  await record(core.payload, false, true, shotUrl)
   return NextResponse.json(core.payload)
 }

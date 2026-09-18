@@ -27,6 +27,10 @@ export type ScanRow = {
   result: unknown | null
   created_at?: string
   seed?: boolean
+  screenshot_url?: string | null
+  // Set on failed / abandoned attempts (e.g. 'protected', 'ai_failed',
+  // 'blocked', 'abandoned') so the daily report can list what went wrong.
+  error?: string | null
 }
 
 const TABLE = 'webpolice_scans'
@@ -183,6 +187,39 @@ export async function claimUnreportedScans(sessionId: string): Promise<ScanRow[]
   return (data ?? []) as unknown as ScanRow[]
 }
 
+/** Log a failed or abandoned attempt (no result, no screenshot) so the daily
+ *  report can list what errored or what a visitor bailed on mid-run. */
+export async function logMiss(row: {
+  session_id: string | null; url: string; host: string; locale: string
+  ip_hash: string; country: string | null; user_agent: string | null; referer: string | null
+  error: string
+}): Promise<void> {
+  return logScan({
+    session_id: row.session_id, url: row.url, host: row.host, locale: row.locale,
+    quality: null, verdict: null, mode: row.error === 'abandoned' ? 'abandoned' : 'error',
+    cached: false, ip_hash: row.ip_hash, country: row.country,
+    user_agent: row.user_agent, referer: row.referer, result: null, error: row.error,
+  })
+}
+
+/** Upload a screenshot to Supabase Storage (the `webpolice-shots` bucket) and
+ *  return its public URL, so the heavy image lives in object storage instead of
+ *  bloating the DB. Best-effort — returns null on any failure. */
+export async function saveShot(dataUrl: string, host: string): Promise<string | null> {
+  const supabase = db()
+  if (!supabase) return null
+  const m = dataUrl.match(/^data:([^;]+);base64,(.*)$/)
+  if (!m) return null
+  const buf = Buffer.from(m[2], 'base64')
+  const ext = m[1].includes('png') ? 'png' : 'jpg'
+  const safeHost = (host || 'site').replace(/[^a-z0-9.-]/gi, '_').slice(0, 60)
+  const path = `${safeHost}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+  const { error } = await supabase.storage.from('webpolice-shots').upload(path, buf, { contentType: m[1], upsert: false })
+  if (error) { console.error('[webpolice] saveShot failed:', error.message); return null }
+  const { data } = supabase.storage.from('webpolice-shots').getPublicUrl(path)
+  return data?.publicUrl ?? null
+}
+
 /** All real (non-seed) scans in the last `windowMs`, newest first — for the
  *  once-a-day owner digest. */
 export async function scansSince(windowMs: number): Promise<ScanRow[]> {
@@ -190,7 +227,7 @@ export async function scansSince(windowMs: number): Promise<ScanRow[]> {
   const supabase = db()
   if (supabase) {
     const { data, error } = await supabase.from(TABLE)
-      .select('url, host, locale, quality, verdict, mode, cached, country, created_at')
+      .select('url, host, locale, quality, verdict, mode, cached, country, created_at, error')
       .eq('seed', false).gte('created_at', since)
       .order('created_at', { ascending: false })
     if (error) { console.error('[webpolice] scansSince failed:', error.message); return [] }
