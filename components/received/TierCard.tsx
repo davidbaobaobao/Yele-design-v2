@@ -23,6 +23,7 @@ export default function TierCard({
   company,
   payLabel = 'Pay 50% today',
   payVerb = 'Pay',
+  locale = 'en',
 }: {
   tier: Tier
   name: string
@@ -30,6 +31,7 @@ export default function TierCard({
   company: string
   payLabel?: string
   payVerb?: string
+  locale?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const mx = useMotionValue(0)
@@ -79,7 +81,7 @@ export default function TierCard({
         {tier.desc}
       </p>
       <div className="relative">
-        <PayButton plan={tier.plan} name={name} email={email} company={company} label={`${payVerb} ${tier.pay}`} popular={tier.dark} />
+        <PayButton plan={tier.plan} name={name} email={email} company={company} label={`${payVerb} ${tier.pay}`} popular={tier.dark} locale={locale} />
       </div>
     </motion.div>
   )

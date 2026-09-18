@@ -19,12 +19,13 @@ const PAY_FINAL: Record<string, string> = { launch: 'Pay $349', business: 'Pay $
 export default function PaymentFailedPage({
   searchParams,
 }: {
-  searchParams: { plan?: string; name?: string; email?: string; company?: string; type?: string }
+  searchParams: { plan?: string; name?: string; email?: string; company?: string; type?: string; locale?: string }
 }) {
   const plan = (searchParams.plan ?? '').trim()
   const name = searchParams.name?.trim() ?? ''
   const email = searchParams.email?.trim() ?? ''
   const company = searchParams.company?.trim() ?? ''
+  const locale = (searchParams.locale ?? '').trim()
   const isFinal = searchParams.type === 'final'
   const valid = plan === 'launch' || plan === 'business' || plan === 'pro'
   const action = isFinal ? '/api/final-checkout' : '/api/build-checkout'
@@ -52,7 +53,7 @@ export default function PaymentFailedPage({
 
         {valid ? (
           <div className="max-w-xs mx-auto">
-            <PayButton action={action} plan={plan} name={name} email={email} company={company} label={label} popular />
+            <PayButton action={action} plan={plan} name={name} email={email} company={company} label={label} popular locale={locale} />
           </div>
         ) : (
           <Link

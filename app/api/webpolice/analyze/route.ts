@@ -145,19 +145,18 @@ async function psiScreenshot(target: string): Promise<ShotResult> {
   }
 }
 
-// Capture: ScreenshotOne first (fast) if configured, else the free PSI
-// screenshot; PSI is also the fallback if ScreenshotOne fails.
+// Capture: the FREE PageSpeed Insights screenshot is the default (so we don't
+// burn the paid ScreenshotOne quota); ScreenshotOne is only the fallback when
+// PSI fails or returns nothing.
 async function capture(target: string): Promise<ShotResult> {
+  const p = await psiScreenshot(target)
+  if ('b64' in p) return p
   if (process.env.SCREENSHOT_API_KEY) {
     const s = await shot(target, true)
     if ('b64' in s) return s
-    if (process.env.PAGESPEED_API_KEY) {
-      const p = await psiScreenshot(target)
-      if ('b64' in p) return p
-    }
     return s
   }
-  return psiScreenshot(target)
+  return p
 }
 
 const ASPECTS = ['typography', 'spacing', 'color', 'clutter', 'hierarchy', 'imagery'] as const

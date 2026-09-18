@@ -409,7 +409,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
           moved ? '-translate-y-[110vh]' : 'translate-y-0'
         }`}
       >
-        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.05]" style={{ fontSize: 'clamp(2rem, 5.4vw, 3.6rem)' }}>
+        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.05]" style={{ fontSize: 'clamp(2rem, 5.4vw, 3.6rem)', textShadow: '0 6px 20px rgba(120,40,90,0.18), 0 2px 4px rgba(0,0,0,0.08)' }}>
           {t.heroPre}
           <span className="font-normal italic" style={{ fontFamily: '"Snell Roundhand", "Brush Script MT", "Segoe Script", cursive' }}>
             {t.heroCursive}
@@ -420,8 +420,8 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
         <ul className="mt-6 mx-auto inline-flex flex-col gap-2.5 text-left">
           {t.questions.map(q => (
             <li key={q} className="flex items-start gap-2.5">
-              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#16161A] font-body text-xs font-bold text-white">?</span>
-              <span className="font-body font-semibold text-[#16161A]/80 leading-snug" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.2rem)' }}>{q}</span>
+              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#16161A] font-body text-xs font-bold text-white shadow-[0_4px_10px_rgba(0,0,0,0.20)]">?</span>
+              <span className="font-body font-semibold text-[#16161A]/80 leading-snug" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.2rem)', textShadow: '0 2px 8px rgba(120,40,90,0.12)' }}>{q}</span>
             </li>
           ))}
         </ul>
@@ -434,7 +434,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
             onKeyDown={e => e.key === 'Enter' && run()}
             placeholder={t.placeholder}
             style={{ color: '#16161A', caretColor: '#16161A' }}
-            className="flex-1 rounded-full bg-white/85 backdrop-blur border border-white/60 px-5 py-3.5 font-body text-base placeholder-[#16161A]/40 shadow-lg shadow-black/5 focus:outline-none focus:border-[#16161A]/40 transition-colors"
+            className="flex-1 rounded-full bg-white/85 backdrop-blur border border-white/60 px-5 py-3.5 font-body text-base placeholder-[#16161A]/40 shadow-[0_12px_32px_rgba(120,40,90,0.16)] focus:outline-none focus:border-[#16161A]/40 transition-colors"
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
@@ -444,7 +444,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
               type="button"
               onClick={() => run()}
               disabled={phase === 'loading'}
-              className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] px-7 py-3.5 font-body font-semibold text-base text-white shadow-lg shadow-black/10 transition-colors hover:animate-[wpSirenBtn_0.6s_linear_infinite] disabled:opacity-70 disabled:cursor-not-allowed"
+              className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] px-7 py-3.5 font-body font-semibold text-base text-white shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition-colors hover:animate-[wpSirenBtn_0.6s_linear_infinite] disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {phase === 'loading' ? t.ctaLoading : t.ctaIdle}
             </button>
@@ -458,7 +458,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
               disabled={phase === 'loading'}
               title={t.randomCta}
               aria-label={t.randomCta}
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-[#16161A]/15 bg-white/80 px-4 py-3.5 font-body font-semibold text-base text-[#16161A]/80 shadow-lg shadow-black/5 backdrop-blur transition-colors hover:border-[#16161A]/40 hover:text-[#16161A] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-[#16161A]/15 bg-white/80 px-4 py-3.5 font-body font-semibold text-base text-[#16161A]/80 shadow-[0_10px_26px_rgba(120,40,90,0.16)] backdrop-blur transition-colors hover:border-[#16161A]/40 hover:text-[#16161A] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <span aria-hidden>🎲</span>
             </button>
