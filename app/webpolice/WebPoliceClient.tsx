@@ -544,6 +544,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
               {Math.round(progress)}%
             </span>
           </div>
+          <p className="mt-4 max-w-xs text-center font-body text-sm text-[#16161A]/60">{t.loadingNote}</p>
         </div>
       )}
 
