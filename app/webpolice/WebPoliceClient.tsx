@@ -828,7 +828,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
               {t.seriouslyBody}
             </p>
             <a
-              href="/letsbuild"
+              href={locale === 'en' ? '/letsbuild' : `/${locale}/letsbuild`}
               className="mt-5 inline-flex items-center font-body font-semibold text-white underline underline-offset-4 decoration-white/50 hover:decoration-white transition-colors"
               style={{ fontSize: 'clamp(0.95rem, 3vw, 1.2rem)' }}
             >

@@ -139,9 +139,35 @@ async function psiScreenshot(target: string): Promise<ShotResult> {
     if (!data || !data.startsWith('data:')) return { error: 'psi: no screenshot in response' }
     const m = data.match(/^data:([^;]+);base64,(.*)$/)
     if (!m) return { error: 'psi: unexpected screenshot format' }
-    return { b64: m[2], mime: m[1] }
+    // PSI returns the WHOLE page, which is often taller than the vision model
+    // accepts (so the analysis silently failed for every long page). Normalise
+    // it: scale to a 1280 width and crop to the top ~2600px, same framing as
+    // the ScreenshotOne path.
+    return await normalizeShot(Buffer.from(m[2], 'base64'))
   } catch (err) {
     return { error: `psi request failed: ${err instanceof Error ? err.message : String(err)}`.slice(0, 140) }
+  }
+}
+
+// Downscale + top-crop a screenshot so it always fits the vision model's limits.
+async function normalizeShot(input: Buffer): Promise<ShotResult> {
+  const MAX_W = 1280
+  const MAX_H = 2600
+  try {
+    const sharp = (await import('sharp')).default
+    let pipe = sharp(input, { failOn: 'none' }).resize({ width: MAX_W, withoutEnlargement: true })
+    const stage = await pipe.toBuffer({ resolveWithObject: true })
+    if (stage.info.height > MAX_H) {
+      pipe = sharp(stage.data).extract({ left: 0, top: 0, width: stage.info.width, height: MAX_H })
+    } else {
+      pipe = sharp(stage.data)
+    }
+    const out = await pipe.jpeg({ quality: 72 }).toBuffer()
+    return { b64: out.toString('base64'), mime: 'image/jpeg' }
+  } catch (err) {
+    // If sharp is unavailable for any reason, fall back to the raw image.
+    console.warn('[webpolice] normalizeShot failed:', err instanceof Error ? err.message : String(err))
+    return { b64: input.toString('base64'), mime: 'image/jpeg' }
   }
 }
 
