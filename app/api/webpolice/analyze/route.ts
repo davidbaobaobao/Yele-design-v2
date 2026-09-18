@@ -266,51 +266,78 @@ async function visionAnalyze(images: { data: string; mime: string }[], hints: st
   const text = (hints.length ? `${RUBRIC}\n\nHints from the page code: ${hints.join(' ')}` : RUBRIC) + lang
   const content: unknown[] = images.map(img => ({ type: 'image', source: { type: 'base64', media_type: img.mime, data: img.data } }))
   content.push({ type: 'text', text })
-  try {
-    const ctrl = new AbortController()
-    const to = setTimeout(() => ctrl.abort(), 45000)
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      signal: ctrl.signal,
-      // 900 was too tight for the more verbose Spanish/Chinese output — the JSON
-      // got truncated and failed to parse (showed as "AI failed"). 1800 gives room.
-      body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 1800, messages: [{ role: 'user', content }] }),
-    })
-    clearTimeout(to)
-    if (!res.ok) return { ok: false, reason: `Anthropic ${res.status}: ${(await res.text()).slice(0, 160)}` }
-    const j = await res.json()
-    const out: string = j?.content?.[0]?.text ?? ''
-    const parsed = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1))
-    // The captured page isn't a real site (Cloudflare/CAPTCHA/error/blank) —
-    // don't score it; signal the caller to show a "couldn't analyze" message.
-    if (parsed.unusable === true || parsed.unusable === 'true') {
-      return { ok: false, reason: `unusable: ${String(parsed.reason || 'not a real page').slice(0, 80)}` }
+
+  // Anthropic sometimes returns a transient 429/overloaded or a truncated body
+  // (one run fails, the next works). Retry a few times before giving up so a
+  // single blip doesn't discard an otherwise-fine site.
+  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
+  const MAX_ATTEMPTS = 3
+  let lastReason = 'vision failed'
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const ctrl = new AbortController()
+      const to = setTimeout(() => ctrl.abort(), 45000)
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+        signal: ctrl.signal,
+        // 900 was too tight for the more verbose Spanish/Chinese output.
+        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 1800, messages: [{ role: 'user', content }] }),
+      })
+      clearTimeout(to)
+      if (!res.ok) {
+        lastReason = `Anthropic ${res.status}`
+        // 429 (rate limit) / 5xx / 529 (overloaded) are transient → retry.
+        if ([408, 409, 429, 500, 502, 503, 529].includes(res.status) && attempt < MAX_ATTEMPTS) {
+          await sleep(1200 * attempt)
+          continue
+        }
+        return { ok: false, reason: `${lastReason}: ${(await res.text()).slice(0, 140)}` }
+      }
+      const j = await res.json()
+      const out: string = j?.content?.[0]?.text ?? ''
+      let parsed: Record<string, unknown>
+      try {
+        parsed = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1))
+      } catch {
+        lastReason = 'vision parse error (truncated?)'
+        if (attempt < MAX_ATTEMPTS) { await sleep(600); continue }
+        return { ok: false, reason: lastReason }
+      }
+      // The captured page isn't a real site (Cloudflare/CAPTCHA/error/blank).
+      if (parsed.unusable === true || parsed.unusable === 'true') {
+        return { ok: false, reason: `unusable: ${String(parsed.reason || 'not a real page').slice(0, 80)}` }
+      }
+      const aspects = {} as Record<Aspect, { score: number; reason: string }>
+      for (const a of ASPECTS) {
+        const raw = (parsed[a] ?? {}) as { score?: unknown; reason?: unknown }
+        aspects[a] = { score: Math.max(0, Math.min(100, Number(raw.score) || 0)), reason: String(raw.reason || '').slice(0, 200) }
+      }
+      const overall = Math.max(0, Math.min(100, Number(parsed.overall) || Math.round(ASPECTS.reduce((s, a) => s + aspects[a].score, 0) / ASPECTS.length)))
+      const sh = parsed.saysHears as { says?: unknown; hears?: unknown } | undefined
+      const dy = Number(parsed.designYear)
+      return {
+        ok: true,
+        data: {
+          aspects,
+          overall,
+          summary: String(parsed.summary || '').slice(0, 200),
+          rant: String(parsed.rant || '').slice(0, 900),
+          colorBg: toGradient((parsed.color as { colors?: unknown } | undefined)?.colors),
+          saysHears: sh ? { says: String(sh.says || '').slice(0, 220), hears: String(sh.hears || '').slice(0, 220) } : undefined,
+          personality: String(parsed.personality || '').slice(0, 220) || undefined,
+          designYear: Number.isFinite(dy) && dy > 1990 && dy < 2100 ? Math.round(dy) : null,
+          designYearWhy: String(parsed.designYearWhy || '').slice(0, 240) || undefined,
+        },
+      }
+    } catch (err) {
+      lastReason = `vision error: ${err instanceof Error ? err.message : String(err)}`.slice(0, 160)
+      if (attempt < MAX_ATTEMPTS) { await sleep(1000 * attempt); continue }
+      return { ok: false, reason: lastReason }
     }
-    const aspects = {} as Record<Aspect, { score: number; reason: string }>
-    for (const a of ASPECTS) {
-      const raw = parsed[a] ?? {}
-      aspects[a] = { score: Math.max(0, Math.min(100, Number(raw.score) || 0)), reason: String(raw.reason || '').slice(0, 200) }
-    }
-    const overall = Math.max(0, Math.min(100, Number(parsed.overall) || Math.round(ASPECTS.reduce((s, a) => s + aspects[a].score, 0) / ASPECTS.length)))
-    const dy = Number(parsed.designYear)
-    return {
-      ok: true,
-      data: {
-        aspects,
-        overall,
-        summary: String(parsed.summary || '').slice(0, 200),
-        rant: String(parsed.rant || '').slice(0, 900),
-        colorBg: toGradient(parsed.color?.colors),
-        saysHears: parsed.saysHears ? { says: String(parsed.saysHears.says || '').slice(0, 220), hears: String(parsed.saysHears.hears || '').slice(0, 220) } : undefined,
-        personality: String(parsed.personality || '').slice(0, 220) || undefined,
-        designYear: Number.isFinite(dy) && dy > 1990 && dy < 2100 ? Math.round(dy) : null,
-        designYearWhy: String(parsed.designYearWhy || '').slice(0, 240) || undefined,
-      },
-    }
-  } catch (err) {
-    return { ok: false, reason: `vision error: ${err instanceof Error ? err.message : String(err)}`.slice(0, 160) }
   }
+  return { ok: false, reason: lastReason }
 }
 
 // Quality (higher = better) → effort tier index (0 low … 6 high).
@@ -326,7 +353,7 @@ function effortTier(quality: number): number {
 
 type CoreResult =
   | { ok: true; payload: Record<string, unknown> }
-  | { ok: false; status: number; error: string; debug?: string }
+  | { ok: false; status: number; error: string }
 
 export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
   const wp = getWP(locale)
@@ -399,7 +426,7 @@ export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
     if (vision.reason.startsWith('unusable')) {
       return { ok: false, status: 502, error: wp.errBlocked }
     }
-    return { ok: false, status: 502, error: wp.errAiFailed, debug: vision.reason }
+    return { ok: false, status: 502, error: wp.errAiFailed }
   }
 
   const mode = 'vision' as const
@@ -589,7 +616,7 @@ export async function POST(request: Request) {
   }
 
   const core = await analyzeCore(u, locale)
-  if (!core.ok) return NextResponse.json({ error: core.error, debug: core.debug }, { status: core.status })
+  if (!core.ok) return NextResponse.json({ error: core.error }, { status: core.status })
   await record(core.payload, false, true)
   return NextResponse.json(core.payload)
 }
