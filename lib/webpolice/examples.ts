@@ -85,6 +85,74 @@ export const POOL: SiteRef[] = [
   site('Ryanair', 'ryanair.com', 'rough'),
 ]
 
+// ── Spanish version — the sites a Spanish visitor actually recognises. ───────
+// Same good/rough contrast; seeding discards any that block screenshots, so
+// only the working ones end up in the live pool.
+
+/** The chips shown under the search box on /es/webpolice. */
+export const SHOWCASE_ES: SiteRef[] = [
+  site('El Corte Inglés', 'elcorteingles.es', 'rough', 'https://www.elcorteingles.es/'),
+  site('Mercadona', 'mercadona.es', 'rough', 'https://www.mercadona.es/'),
+  site('Marca', 'marca.com', 'rough', 'https://www.marca.com/'),
+  site('Idealista', 'idealista.com', 'good', 'https://www.idealista.com/'),
+  site('Wallapop', 'wallapop.com', 'good', 'https://es.wallapop.com/'),
+  site('Milanuncios', 'milanuncios.com', 'rough', 'https://www.milanuncios.com/'),
+]
+
+/** The "Try random" pool for the Spanish version — common Spanish sites. */
+export const POOL_ES: SiteRef[] = [
+  // Modern / well-made
+  site('Zara', 'zara.com', 'good', 'https://www.zara.com/es/'),
+  site('Mango', 'mango.com', 'good', 'https://shop.mango.com/es'),
+  site('PcComponentes', 'pccomponentes.com', 'good', 'https://www.pccomponentes.com/'),
+  site('Glovo', 'glovoapp.com', 'good', 'https://glovoapp.com/es/es/'),
+  site('Cabify', 'cabify.com', 'good', 'https://cabify.com/es'),
+  site('Fever', 'feverup.com', 'good', 'https://feverup.com/es'),
+  site('Hawkers', 'hawkersco.com', 'good', 'https://www.hawkersco.com/'),
+  site('Idealista', 'idealista.com', 'good', 'https://www.idealista.com/'),
+  site('Wallapop', 'wallapop.com', 'good', 'https://es.wallapop.com/'),
+  // Famously busy / dated / plain
+  site('Forocoches', 'forocoches.com', 'rough', 'https://www.forocoches.com/'),
+  site('Milanuncios', 'milanuncios.com', 'rough', 'https://www.milanuncios.com/'),
+  site('Páginas Amarillas', 'paginasamarillas.es', 'rough', 'https://www.paginasamarillas.es/'),
+  site('El Corte Inglés', 'elcorteingles.es', 'rough', 'https://www.elcorteingles.es/'),
+  site('Mercadona', 'mercadona.es', 'rough', 'https://www.mercadona.es/'),
+  site('Carrefour', 'carrefour.es', 'rough', 'https://www.carrefour.es/'),
+  site('MediaMarkt', 'mediamarkt.es', 'rough', 'https://www.mediamarkt.es/'),
+  site('Marca', 'marca.com', 'rough', 'https://www.marca.com/'),
+  site('As', 'as.com', 'rough', 'https://as.com/'),
+  site('20minutos', '20minutos.es', 'rough', 'https://www.20minutos.es/'),
+  site('El País', 'elpais.com', 'rough', 'https://elpais.com/'),
+  site('El Mundo', 'elmundo.es', 'rough', 'https://www.elmundo.es/'),
+  site('La Vanguardia', 'lavanguardia.com', 'rough', 'https://www.lavanguardia.com/'),
+  site('ABC', 'abc.es', 'rough', 'https://www.abc.es/'),
+  site('RTVE', 'rtve.es', 'rough', 'https://www.rtve.es/'),
+  site('Telecinco', 'telecinco.es', 'rough', 'https://www.telecinco.es/'),
+  site('Antena 3', 'antena3.com', 'rough', 'https://www.antena3.com/'),
+  site('AEMET', 'aemet.es', 'rough', 'https://www.aemet.es/'),
+  site('Correos', 'correos.es', 'rough', 'https://www.correos.es/'),
+  site('Renfe', 'renfe.com', 'rough', 'https://www.renfe.com/'),
+  site('DGT', 'dgt.es', 'rough', 'https://www.dgt.es/'),
+  site('Fotocasa', 'fotocasa.es', 'rough', 'https://www.fotocasa.es/'),
+  site('InfoJobs', 'infojobs.net', 'rough', 'https://www.infojobs.net/'),
+]
+
+/** Chips for a locale (Spanish has its own; everything else uses the default). */
+export function showcaseFor(locale: string): SiteRef[] {
+  return locale === 'es' ? SHOWCASE_ES : SHOWCASE
+}
+
+/** Random-button pool for a locale. */
+export function poolFor(locale: string): SiteRef[] {
+  return locale === 'es' ? POOL_ES : POOL
+}
+
+/** Full unique site list (chips + pool) to precompute for a locale. */
+export function siteListFor(locale: string): SiteRef[] {
+  const all = [...showcaseFor(locale), ...poolFor(locale)]
+  return Array.from(new Map(all.map(s => [s.url, s])).values())
+}
+
 /** A random site, never the same one twice in a row. */
 export function randomSite(exclude?: string): SiteRef {
   const pool = POOL.filter(s => s.url !== exclude)

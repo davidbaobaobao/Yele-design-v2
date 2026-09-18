@@ -1,15 +1,11 @@
 import { NextResponse } from 'next/server'
 import { type Locale } from '@/lib/i18n/webpolice'
-import { SHOWCASE, POOL } from '@/lib/webpolice/examples'
+import { siteListFor } from '@/lib/webpolice/examples'
 import { saveSeed, listSeededUrls } from '@/lib/webpolice/store'
 import { analyzeCore, normalizeUrl } from '../analyze/route'
 
 export const runtime = 'nodejs'
 export const maxDuration = 300
-
-// Unique list of every site the showcase chips and the random button can land
-// on. These get precomputed once so the front-end never triggers an LLM call.
-const SITES = Array.from(new Map([...SHOWCASE, ...POOL].map(s => [s.url, s])).values())
 
 function toLocales(v: unknown): Locale[] {
   const all: Locale[] = ['en', 'es', 'zh']
@@ -45,6 +41,9 @@ export async function POST(request: Request) {
   const offset = Math.max(0, Number(body.offset ?? sp.get('offset')) || 0)
   const limit = Math.min(8, Math.max(1, Number(body.limit ?? sp.get('limit')) || 4))
 
+  // Each locale has its own site list (Spanish uses common Spanish sites); the
+  // list to walk is the FIRST requested locale's.
+  const SITES = siteListFor(locales[0])
   const batch = SITES.slice(offset, offset + limit)
   const seeded: string[] = []
   const discarded: { url: string; reason: string }[] = []

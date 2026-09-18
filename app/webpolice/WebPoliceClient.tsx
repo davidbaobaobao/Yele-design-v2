@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import LeadForm from '@/components/LeadForm'
 import { getWP, type WPStrings, type Locale } from '@/lib/i18n/webpolice'
-import { SHOWCASE, POOL, faviconUrl } from '@/lib/webpolice/examples'
+import { showcaseFor, poolFor, faviconUrl } from '@/lib/webpolice/examples'
 import { getFunnelDict } from '@/lib/i18n/funnel'
 
 // A visitor session id, so every site checked in one sitting is emailed as a
@@ -202,13 +202,6 @@ const PINK_BOTTOM = '#d4a6b2'
 const MASK_H = 'linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%)'
 const MASK_V = 'linear-gradient(180deg, transparent 0%, #000 20%, #000 80%, transparent 100%)'
 
-// Fun meme images shown inside specific crime cards.
-const CRIME_IMAGES: Record<string, string[]> = {
-  imagery: ['/media/webpolice/stock-photo.jpg', '/media/webpolice/imagery-2.jpg'],
-  typography: ['/media/webpolice/typography-1.jpg', '/media/webpolice/typography-2.jpg'],
-  color: ['/media/webpolice/color-1.jpg', '/media/webpolice/color-2.jpg'],
-}
-
 const VERDICT_TEXT: Record<string, string> = {
   guilty: 'text-red-400',
   suspicious: 'text-amber-300',
@@ -388,9 +381,10 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   // Roll the dice — prefer seeded (instant, free) sites; fall back to the full
   // pool if the seed list hasn't loaded or is empty.
   function pickRandom(): string {
+    const full = poolFor(locale)
     const set = seededSet.current
-    const source = set && set.size ? POOL.filter(s => set.has(normKey(s.url))) : POOL
-    const pool = source.length ? source : POOL
+    const source = set && set.size ? full.filter(s => set.has(normKey(s.url))) : full
+    const pool = source.length ? source : full
     const avail = pool.filter(s => s.url !== lastRandom.current)
     const list = avail.length ? avail : pool
     return list[Math.floor(Math.random() * list.length)].url
@@ -468,7 +462,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
         {/* Known sites to try in one tap — good ones and famously rough ones. */}
         <div className="mt-4 flex w-full max-w-lg flex-wrap items-center gap-2">
           <span className="font-body text-xs text-[#16161A]/55">{t.tryLabel}</span>
-          {SHOWCASE.map(sIt => (
+          {showcaseFor(locale).map(sIt => (
             <button
               key={sIt.url}
               type="button"
@@ -907,16 +901,6 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
               <div className="min-w-0">
                 <p className="font-body font-semibold text-sm text-white" style={c.bg ? { textShadow: '0 1px 3px rgba(0,0,0,0.7)' } : undefined}>{c.title}</p>
                 <p className="font-body text-sm text-white/70 mt-0.5" style={c.bg ? { textShadow: '0 1px 3px rgba(0,0,0,0.7)' } : undefined}>{c.detail}</p>
-                {CRIME_IMAGES[c.code] && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {CRIME_IMAGES[c.code].map(src => (
-                      <div key={src} className="overflow-hidden rounded-lg border border-white/15">
-                        {/* eslint-disable-next-line @next/next/no-img-element -- static meme asset */}
-                        <img src={src} alt={t.exhibitAlt} className="block h-24 w-auto object-cover" />
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           </TiltCard>
