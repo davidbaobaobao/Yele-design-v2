@@ -273,7 +273,9 @@ async function visionAnalyze(images: { data: string; mime: string }[], hints: st
       method: 'POST',
       headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
       signal: ctrl.signal,
-      body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 900, messages: [{ role: 'user', content }] }),
+      // 900 was too tight for the more verbose Spanish/Chinese output — the JSON
+      // got truncated and failed to parse (showed as "AI failed"). 1800 gives room.
+      body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 1800, messages: [{ role: 'user', content }] }),
     })
     clearTimeout(to)
     if (!res.ok) return { ok: false, reason: `Anthropic ${res.status}: ${(await res.text()).slice(0, 160)}` }
