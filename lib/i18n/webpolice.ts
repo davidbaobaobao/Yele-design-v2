@@ -66,6 +66,7 @@ export type WPStrings = {
   errUnreachable: string
   errProtected: string
   errAiFailed: string
+  errBlocked: string
 }
 
 const en: WPStrings = {
@@ -139,6 +140,7 @@ const en: WPStrings = {
   errUnreachable: "Couldn't reach that site. Is the address right and the site online?",
   errProtected: "🕵️ This site is locked down tighter than a witness protection program — we couldn't get a photo of it. Smells fishy. Try another one.",
   errAiFailed: '🚔 Our forensic expert just fainted looking at this one. We couldn’t file a report — try another site while we get the smelling salts.',
+  errBlocked: '🚧 We couldn’t actually reach this site — it threw up a security check before we could see it, so there’s nothing to judge. Try a different one.',
 }
 
 const es: WPStrings = {
@@ -212,6 +214,7 @@ const es: WPStrings = {
   errUnreachable: 'No pudimos acceder a esa web. ¿Es correcta la dirección y está online?',
   errProtected: '🕵️ Esta web está más blindada que un testigo protegido — no pudimos hacerle ni una foto. Huele raro. Prueba con otra.',
   errAiFailed: '🚔 A nuestro forense le ha dado un mareo al verla. No pudimos redactar el informe — prueba otra web mientras lo reanimamos.',
+  errBlocked: '🚧 No pudimos acceder a esta web — nos soltó un control de seguridad antes de poder verla, así que no hay nada que juzgar. Prueba con otra.',
 }
 
 const zh: WPStrings = {
@@ -292,6 +295,7 @@ const zh: WPStrings = {
   errUnreachable: '打不开这个网站。地址写对了吗？站点还活着吗？',
   errProtected: '🕵️ 这网站防得比证人保护计划还严 —— 我们连张照片都拍不到。有点可疑，换一个试试吧。',
   errAiFailed: '🚔 我们的法医看了一眼就晕过去了，报告没写成 —— 先换个网站，等我们把他掐醒。',
+  errBlocked: '🚧 我们其实没能进这个网站 —— 它在门口甩了个安全验证，我们连看都没看到，没东西可评。换一个试试吧。',
 }
 
 const WP: Record<Locale, WPStrings> = { en, es, zh }

@@ -590,6 +590,8 @@ const ICONS: Record<string, string> = {
 function RantSpeaker({ parts, lang, t }: { parts: string[]; lang: string; t: WPStrings }) {
   const [speaking, setSpeaking] = useState(false)
   const supported = typeof window !== 'undefined' && 'speechSynthesis' in window
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const cancelledRef = useRef(false)
 
   // Warm up the voice list (some browsers populate it lazily) and always stop
   // any narration when this leaves the screen.
@@ -600,6 +602,7 @@ function RantSpeaker({ parts, lang, t }: { parts: string[]; lang: string; t: WPS
     window.speechSynthesis.addEventListener?.('voiceschanged', warm)
     return () => {
       window.speechSynthesis.removeEventListener?.('voiceschanged', warm)
+      if (timerRef.current) clearTimeout(timerRef.current)
       window.speechSynthesis.cancel()
     }
   }, [supported])
@@ -610,39 +613,60 @@ function RantSpeaker({ parts, lang, t }: { parts: string[]; lang: string; t: WPS
     const voices = window.speechSynthesis.getVoices()
     if (!voices.length) return null
     const base = lang.split('-')[0]
-    // Prefer a classic robotic engine (Loquendo/eSpeak/Microsoft) in the right
-    // language; otherwise any voice for that language.
     const inLang = voices.filter(v => v.lang === lang || v.lang.startsWith(base))
-    const robotic = inLang.find(v => /loquendo|espeak|microsoft|jorge|pablo|helena/i.test(v.name))
-    return robotic || inLang[0] || null
+    if (!inLang.length) return null
+    // Prefer a natural-sounding cloud voice (Google / "Natural" / non-local) so
+    // it doesn't come out flat and robotic; fall back to any voice for the lang.
+    return (
+      inLang.find(v => /google|natural|online/i.test(v.name)) ||
+      inLang.find(v => v.localService === false) ||
+      inLang[0]
+    )
   }
 
-  const stop = () => { window.speechSynthesis.cancel(); setSpeaking(false) }
+  const stop = () => {
+    cancelledRef.current = true
+    if (timerRef.current) clearTimeout(timerRef.current)
+    window.speechSynthesis.cancel()
+    setSpeaking(false)
+  }
 
   const start = () => {
     window.speechSynthesis.cancel()
+    cancelledRef.current = false
     const voice = pickVoice()
-    // Drop emojis/symbols (astral-plane surrogate pairs + common symbol blocks)
-    // so the voice doesn't read "smiling face…". Avoids \p{} (needs newer TS target).
+    // Drop emojis/symbols so the voice doesn't read "smiling face…".
     const clean = (s: string) =>
       s.replace(/([\uD800-\uDBFF][\uDC00-\uDFFF])|[←-⇿☀-➿⬀-⯿️]/g, '')
         .replace(/\s+/g, ' ')
         .trim()
-    // Split on paragraphs AND sentence ends so the engine honours the pauses.
-    const chunks = parts.flatMap(p => p.split(/\n+/)).map(clean).filter(Boolean)
-    if (!chunks.length) return
+    // Break into SENTENCES (incl. CJK punctuation) — we speak them one at a
+    // time with a real pause between, so it never runs on in a flat monotone.
+    const sentences = parts
+      .flatMap(p => p.split(/\n+/))
+      .flatMap(p => p.match(/[^.!?…。！？；]+[.!?…。！？；]*/g) || [p])
+      .map(clean)
+      .filter(Boolean)
+    if (!sentences.length) return
     setSpeaking(true)
-    chunks.forEach((text, i) => {
-      const u = new SpeechSynthesisUtterance(text)
+
+    let i = 0
+    const speakNext = () => {
+      if (cancelledRef.current) return
+      if (i >= sentences.length) { setSpeaking(false); return }
+      const u = new SpeechSynthesisUtterance(sentences[i])
       if (voice) u.voice = voice
       u.lang = voice?.lang || lang
-      u.rate = 1.02
-      u.pitch = 0.6 // low pitch = the funny robotic Loquendo feel
+      u.rate = 1.06
+      // Gentle sing-song alternation so it's lively and funny, not a flat drone.
+      u.pitch = i % 2 === 0 ? 0.95 : 0.82
       u.volume = 1
-      if (i === chunks.length - 1) u.onend = () => setSpeaking(false)
+      u.onend = () => { timerRef.current = setTimeout(speakNext, 300) } // the pause
       u.onerror = () => setSpeaking(false)
+      i++
       window.speechSynthesis.speak(u)
-    })
+    }
+    speakNext()
   }
 
   return (

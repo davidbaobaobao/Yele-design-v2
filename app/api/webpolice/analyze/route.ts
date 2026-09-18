@@ -215,6 +215,10 @@ Score each aspect 0–100 where HIGHER IS BETTER, and BE STRICT:
 - 75–90 = excellent, distinctive custom design.
 - 90–100 = exceptional, world-class.
 
+FIRST, a hard gate — is this even a real website to judge?
+If the screenshot is NOT an actual website homepage — e.g. a security / bot check ("Verify you are human", "Checking your browser", Cloudflare "Just a moment", a CAPTCHA), an error page (403/404/500, "Access denied"), a pure login/paywall wall, a cookie-consent full-page interstitial with nothing behind it, or an essentially blank/broken page — then DO NOT score it and DO NOT critique that page. Instead return exactly {"unusable": true, "reason": "<a few plain words: security check / error page / blank>"} and nothing else. Never roast Cloudflare, a CAPTCHA or an error page — they aren't the site's design.
+Otherwise ("unusable": false) score it as below.
+
 Punish hard, specifically:
 - Obvious STOCK PHOTOS or obviously fake/AI-generated images → imagery must score 20–35. This is a big tell of a template.
 - Average, "safe", forgettable template designs (even if tidy) → keep the overall in the 35–50 band. "Inoffensive but generic" is NOT a 60.
@@ -243,8 +247,8 @@ Also produce these, all in the same language and voice:
 - "personality": one conceptual, unhinged-but-funny metaphor for what this site IS — NOT technical. (e.g. "A regional insurance company trying to look like a Silicon Valley startup." / "A PowerPoint that escaped onto the internet.") Return just the descriptor, no "Your website is".
 - "designYear": the year this design LOOKS like it is from, as an integer (e.g. 2014). "designYearWhy": one short sentence explaining the giveaway, understandable to a non-designer.
 
-Return ONLY compact JSON, no markdown:
-{"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"...","colors":["#hex","#hex"]},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny sentence","rant":"1-2 short funny paragraphs","saysHears":{"says":"...","hears":"..."},"personality":"one funny metaphor","designYear":2014,"designYearWhy":"one sentence"}`
+Return ONLY compact JSON, no markdown. If unusable: {"unusable":true,"reason":"..."}. Otherwise:
+{"unusable":false,"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"...","colors":["#hex","#hex"]},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny sentence","rant":"1-2 short funny paragraphs","saysHears":{"says":"...","hears":"..."},"personality":"one funny metaphor","designYear":2014,"designYearWhy":"one sentence"}`
 
 type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; rant: string; colorBg?: string; saysHears?: { says: string; hears: string }; personality?: string; designYear?: number | null; designYearWhy?: string }
 type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
@@ -271,6 +275,11 @@ async function visionAnalyze(images: { data: string; mime: string }[], hints: st
     const j = await res.json()
     const out: string = j?.content?.[0]?.text ?? ''
     const parsed = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1))
+    // The captured page isn't a real site (Cloudflare/CAPTCHA/error/blank) —
+    // don't score it; signal the caller to show a "couldn't analyze" message.
+    if (parsed.unusable === true || parsed.unusable === 'true') {
+      return { ok: false, reason: `unusable: ${String(parsed.reason || 'not a real page').slice(0, 80)}` }
+    }
     const aspects = {} as Record<Aspect, { score: number; reason: string }>
     for (const a of ASPECTS) {
       const raw = parsed[a] ?? {}
@@ -378,6 +387,11 @@ export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
   // Vision is the ONLY source of truth now — no deterministic fallback.
   if (!vision.ok) {
     console.warn('[webpolice] vision failed:', vision.reason)
+    // The screenshot was a Cloudflare/CAPTCHA/error/blank page, not the real
+    // site — say we couldn't reach/analyze it (don't roast the block page).
+    if (vision.reason.startsWith('unusable')) {
+      return { ok: false, status: 502, error: wp.errBlocked }
+    }
     return { ok: false, status: 502, error: wp.errAiFailed }
   }
 
