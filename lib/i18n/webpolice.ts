@@ -15,6 +15,9 @@ export type WPStrings = {
   placeholder: string
   loadingLines: string[]
   loadingNote: string
+  listen: string
+  stopListen: string
+  ttsLang: string
   errWall: string
   reportLabel: string
   caseFile: string
@@ -75,6 +78,9 @@ const en: WPStrings = {
   placeholder: 'type your website',
   loadingLines: ['Sending in the gorilla unit…', 'Judging your font choices…', 'Checking for stolen stock photos…', 'Measuring the amount of purple…', 'Comparing it to actual good websites…', 'Trying not to laugh…'],
   loadingNote: 'This takes around 30 seconds — there’s some serious stuff happening on this site.',
+  listen: 'Read the verdict aloud',
+  stopListen: 'Stop',
+  ttsLang: 'en-US',
   errWall: 'The investigation hit a wall. Try another URL.',
   reportLabel: 'Web Police report',
   caseFile: 'Case file:',
@@ -145,6 +151,9 @@ const es: WPStrings = {
   placeholder: 'escribe tu web',
   loadingLines: ['Enviando a la unidad gorila…', 'Juzgando tus tipografías…', 'Buscando fotos de stock robadas…', 'Midiendo la cantidad de morado…', 'Comparándola con webs de verdad buenas…', 'Intentando no reírnos…'],
   loadingNote: 'Esto tarda unos 30 segundos — aquí está pasando algo serio.',
+  listen: 'Escuchar el veredicto',
+  stopListen: 'Parar',
+  ttsLang: 'es-ES',
   errWall: 'La investigación chocó con un muro. Prueba otra URL.',
   reportLabel: 'Informe de la Policía Web',
   caseFile: 'Expediente:',
@@ -215,6 +224,9 @@ const zh: WPStrings = {
   placeholder: '输入你的网址',
   loadingLines: ['大猩猩小队已出警，正在赶来…', '正在数你首页到底叠了几层渐变…', '正在检测「微软雅黑」含量是否超标…', '正在核对这张图是不是全网都在用…', '正在闻一闻这股班味从哪来…', '正在拉几个真好看的网站来做对比…', '正在努力憋笑，请稍候…'],
   loadingNote: '大概需要 30 秒 —— 这个网站背后有不少「大动作」要处理。',
+  listen: '朗读判决',
+  stopListen: '停止',
+  ttsLang: 'zh-CN',
   errWall: '调查卡住了，换个网址再试试。',
   reportLabel: '网页警察出警报告',
   caseFile: '案卷：',

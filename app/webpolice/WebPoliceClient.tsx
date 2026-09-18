@@ -584,6 +584,92 @@ const ICONS: Record<string, string> = {
   instagram: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z',
 }
 
+// Reads the verdict + rant aloud with a deliberately robotic, Loquendo-ish
+// voice (Web Speech API — free, on-device, no server cost). Click to start,
+// click again to stop.
+function RantSpeaker({ parts, lang, t }: { parts: string[]; lang: string; t: WPStrings }) {
+  const [speaking, setSpeaking] = useState(false)
+  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window
+
+  // Warm up the voice list (some browsers populate it lazily) and always stop
+  // any narration when this leaves the screen.
+  useEffect(() => {
+    if (!supported) return
+    const warm = () => window.speechSynthesis.getVoices()
+    warm()
+    window.speechSynthesis.addEventListener?.('voiceschanged', warm)
+    return () => {
+      window.speechSynthesis.removeEventListener?.('voiceschanged', warm)
+      window.speechSynthesis.cancel()
+    }
+  }, [supported])
+
+  if (!supported) return null
+
+  const pickVoice = (): SpeechSynthesisVoice | null => {
+    const voices = window.speechSynthesis.getVoices()
+    if (!voices.length) return null
+    const base = lang.split('-')[0]
+    // Prefer a classic robotic engine (Loquendo/eSpeak/Microsoft) in the right
+    // language; otherwise any voice for that language.
+    const inLang = voices.filter(v => v.lang === lang || v.lang.startsWith(base))
+    const robotic = inLang.find(v => /loquendo|espeak|microsoft|jorge|pablo|helena/i.test(v.name))
+    return robotic || inLang[0] || null
+  }
+
+  const stop = () => { window.speechSynthesis.cancel(); setSpeaking(false) }
+
+  const start = () => {
+    window.speechSynthesis.cancel()
+    const voice = pickVoice()
+    // Drop emojis/symbols (astral-plane surrogate pairs + common symbol blocks)
+    // so the voice doesn't read "smiling face…". Avoids \p{} (needs newer TS target).
+    const clean = (s: string) =>
+      s.replace(/([\uD800-\uDBFF][\uDC00-\uDFFF])|[←-⇿☀-➿⬀-⯿️]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+    // Split on paragraphs AND sentence ends so the engine honours the pauses.
+    const chunks = parts.flatMap(p => p.split(/\n+/)).map(clean).filter(Boolean)
+    if (!chunks.length) return
+    setSpeaking(true)
+    chunks.forEach((text, i) => {
+      const u = new SpeechSynthesisUtterance(text)
+      if (voice) u.voice = voice
+      u.lang = voice?.lang || lang
+      u.rate = 1.02
+      u.pitch = 0.6 // low pitch = the funny robotic Loquendo feel
+      u.volume = 1
+      if (i === chunks.length - 1) u.onend = () => setSpeaking(false)
+      u.onerror = () => setSpeaking(false)
+      window.speechSynthesis.speak(u)
+    })
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => (speaking ? stop() : start())}
+      aria-label={speaking ? t.stopListen : t.listen}
+      title={speaking ? t.stopListen : t.listen}
+      className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
+        speaking
+          ? 'border-[#D46FC8]/60 bg-[#D46FC8]/20 text-[#DE85D2]'
+          : 'border-white/15 bg-white/[0.05] text-white/85 hover:text-white hover:bg-white/15 hover:border-white/30'
+      }`}
+    >
+      {speaking ? (
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
+      ) : (
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M11 5 6 9H3v6h3l5 4V5z" fill="currentColor" stroke="none" />
+          <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+          <path d="M18.5 6a9 9 0 0 1 0 12" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 function ShareBar({ result, t, basePath }: { result: Result; t: WPStrings; basePath: string }) {
   const [copied, setCopied] = useState(false)
   const link = typeof window !== 'undefined' ? `${window.location.origin}${basePath}?url=${encodeURIComponent(result.url)}` : ''
@@ -687,6 +773,14 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         <ShareBar result={result} t={t} basePath={basePath} />
 
         {result.summary && <p className="font-body text-lg md:text-2xl text-white/90 mt-8 max-w-xl mx-auto leading-snug">“{result.summary}”</p>}
+
+        <div className="mt-4 flex justify-center">
+          <RantSpeaker
+            parts={[[result.verdict.label, result.summary].filter(Boolean).join('. '), result.rant || '']}
+            lang={t.ttsLang}
+            t={t}
+          />
+        </div>
       </div>
 
       {/* The long roast — always shown, no expand. */}
