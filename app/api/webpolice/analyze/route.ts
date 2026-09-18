@@ -171,18 +171,36 @@ async function normalizeShot(input: Buffer): Promise<ShotResult> {
   }
 }
 
-// Capture: the FREE PageSpeed Insights screenshot is the default (so we don't
-// burn the paid ScreenshotOne quota); ScreenshotOne is only the fallback when
-// PSI fails or returns nothing.
+// thum.io — free, keyless, returns the image directly and already crops to a
+// sane size. Reliable, so it's our default. `wait` lets the page load first.
+async function thumIo(target: string): Promise<ShotResult> {
+  const api = `https://image.thum.io/get/width/1280/crop/2600/noanimate/wait/6/${target}`
+  try {
+    const ctrl = new AbortController()
+    const to = setTimeout(() => ctrl.abort(), 42000)
+    const res = await fetch(api, { signal: ctrl.signal, headers: { 'user-agent': 'Mozilla/5.0 YeleWebPolice/1.0' } })
+    clearTimeout(to)
+    if (!res.ok) return { error: `thumio ${res.status}` }
+    const buf = Buffer.from(await res.arrayBuffer())
+    if (buf.byteLength < 3000) return { error: 'thumio returned a placeholder' }
+    return await normalizeShot(buf) // → capped 1280×2600 JPEG for the vision model
+  } catch (err) {
+    return { error: `thumio failed: ${err instanceof Error ? err.message : String(err)}`.slice(0, 140) }
+  }
+}
+
+// Capture order — all free first: thum.io (reliable, pre-cropped), then the
+// PageSpeed screenshot, then the paid ScreenshotOne only as a last resort.
 async function capture(target: string): Promise<ShotResult> {
+  const t = await thumIo(target)
+  if ('b64' in t) return t
   const p = await psiScreenshot(target)
   if ('b64' in p) return p
   if (process.env.SCREENSHOT_API_KEY) {
     const s = await shot(target, true)
     if ('b64' in s) return s
-    return s
   }
-  return p
+  return t
 }
 
 const ASPECTS = ['typography', 'spacing', 'color', 'clutter', 'hierarchy', 'imagery'] as const
