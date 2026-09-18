@@ -282,8 +282,8 @@ async function visionAnalyze(images: { data: string; mime: string }[], hints: st
         method: 'POST',
         headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
         signal: ctrl.signal,
-        // 900 was too tight for the more verbose Spanish/Chinese output.
-        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 1800, messages: [{ role: 'user', content }] }),
+        // Generous headroom so verbose Spanish/Chinese JSON can't truncate.
+        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 2600, messages: [{ role: 'user', content }] }),
       })
       clearTimeout(to)
       if (!res.ok) {
@@ -353,7 +353,7 @@ function effortTier(quality: number): number {
 
 type CoreResult =
   | { ok: true; payload: Record<string, unknown> }
-  | { ok: false; status: number; error: string }
+  | { ok: false; status: number; error: string; debug?: string }
 
 export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
   const wp = getWP(locale)
@@ -426,7 +426,7 @@ export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
     if (vision.reason.startsWith('unusable')) {
       return { ok: false, status: 502, error: wp.errBlocked }
     }
-    return { ok: false, status: 502, error: wp.errAiFailed }
+    return { ok: false, status: 502, error: wp.errAiFailed, debug: vision.reason }
   }
 
   const mode = 'vision' as const
@@ -616,7 +616,7 @@ export async function POST(request: Request) {
   }
 
   const core = await analyzeCore(u, locale)
-  if (!core.ok) return NextResponse.json({ error: core.error }, { status: core.status })
+  if (!core.ok) return NextResponse.json({ error: core.error, debug: core.debug }, { status: core.status })
   await record(core.payload, false, true)
   return NextResponse.json(core.payload)
 }

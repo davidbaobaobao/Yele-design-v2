@@ -813,6 +813,18 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
               [result.verdict.label, result.summary].filter(Boolean).join('. '),
               result.rant || '',
               result.personality ? `${t.personalityLabel}: ${result.personality}` : '',
+              result.designYear ? `${t.designYearLabel}: ${result.designYear}.${result.designYearWhy ? ' ' + result.designYearWhy : ''}` : '',
+              result.saysHears && (result.saysHears.says || result.saysHears.hears)
+                ? [
+                    result.saysHears.says ? `${t.saysLabel}: ${result.saysHears.says}` : '',
+                    result.saysHears.hears ? `${t.hearsLabel}: ${result.saysHears.hears}` : '',
+                  ].filter(Boolean).join('. ')
+                : '',
+              result.effortLabel ? `${t.looksLikeTook}: ${result.effortLabel}.${result.effortFlavor ? ' ' + result.effortFlavor : ''}` : '',
+              result.charges && result.charges.length
+                ? `${t.mainCharges(Math.min(3, result.crimes))}. ` +
+                  result.charges.slice(0, 3).map(c => `${c.title}. ${c.detail}`).join(' ')
+                : '',
             ].filter(Boolean)}
             lang={t.ttsLang}
             t={t}
