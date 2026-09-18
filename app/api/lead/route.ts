@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     // backward-compatible: the shared LeadForm (/start, /websites,
     // /newwebsite) never sends these, so they simply render as "(not
     // provided)" / are omitted from the email for those pages.
-    const { businessName, currentWebsite, needs, packageInterest, timeline, leadSource, welcome } = body as {
+    const { businessName, currentWebsite, needs, packageInterest, timeline, leadSource, welcome, locale } = body as {
       businessName?: string
       currentWebsite?: string
       needs?: string[]
@@ -52,7 +52,9 @@ export async function POST(request: Request) {
       timeline?: string
       leadSource?: string
       welcome?: boolean
+      locale?: string
     }
+    const emailLocale: 'en' | 'es' | 'zh' = locale === 'es' || locale === 'zh' ? locale : 'en'
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -147,13 +149,13 @@ export async function POST(request: Request) {
           'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         }
         try {
-          const ack = contactAckEmail({ firstName, email })
+          const ack = contactAckEmail({ firstName, email, locale: emailLocale })
           await resend.emails.send({ from: 'Yele <noreply@yele.design>', to: [email], subject: ack.subject, html: ack.html, text: ack.text, headers: unsubHeaders })
         } catch (err) {
           console.error('[lead] ack email failed', err)
         }
         try {
-          const w = welcomeCheckoutEmail({ name, email, company, plan: planFromPackageInterest(packageInterest) ?? undefined })
+          const w = welcomeCheckoutEmail({ name, email, company, plan: planFromPackageInterest(packageInterest) ?? undefined, locale: emailLocale })
           await resend.emails.send({ from: 'Yele <noreply@yele.design>', to: [email], subject: w.subject, html: w.html, text: w.text, headers: unsubHeaders })
         } catch (err) {
           console.error('[lead] welcome email failed', err)

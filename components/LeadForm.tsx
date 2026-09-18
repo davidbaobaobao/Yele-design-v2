@@ -235,6 +235,7 @@ export default function LeadForm({
         source: platform,
         leadSource,
         welcome: sendWelcome,
+        locale,
         fbc: metaCookies.fbc,
         fbp: metaCookies.fbp,
       }),
