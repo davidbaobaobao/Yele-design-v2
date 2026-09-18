@@ -13,7 +13,7 @@ const PRICE_IDS_USD: Record<string, string> = {
 }
 
 const PRICE_IDS_EUR: Record<string, string> = {
-  launch: process.env.STRIPE_PRICE_LAUNCH_FIRST_EUR ?? 'price_1UGowuJUBlsgtyU8BsLC9nmB',
+  launch: process.env.STRIPE_PRICE_LAUNCH_FIRST_EUR ?? 'price_1UGowuJUBlsgtyU8BsLC9nm8',
   business: process.env.STRIPE_PRICE_BUSINESS_FIRST_EUR ?? 'price_1UGozcJUBlsgtyU8PqoBviMy',
   pro: process.env.STRIPE_PRICE_PRO_FIRST_EUR ?? 'price_1UGp1nJUBlsgtyU84fgVJ7Ch',
 }
@@ -47,6 +47,12 @@ async function createSession({ plan, name, email, company, locale }: { plan: str
   if (company) cancelParams.set('company', company)
   if (locale) cancelParams.set('locale', locale)
 
+  // Stripe Tax: with the products set to "tax not included" (exclusive), IVA/VAT
+  // is added ON TOP at checkout based on the address the customer enters — so
+  // the "+ IVA" on the site becomes a real line on the Stripe page. Needs Stripe
+  // Tax active on the account; set STRIPE_AUTOMATIC_TAX=0 to turn it off.
+  const automaticTax = process.env.STRIPE_AUTOMATIC_TAX !== '0'
+
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
@@ -56,6 +62,8 @@ async function createSession({ plan, name, email, company, locale }: { plan: str
     cancel_url: `${baseUrl}/payment-failed?${cancelParams.toString()}`,
     locale: 'auto',
     allow_promotion_codes: true,
+    automatic_tax: { enabled: automaticTax },
+    billing_address_collection: 'required',
     metadata: { flow: 'build_first_payment', plan, planLabel: PLAN_LABEL[plan] ?? plan, name, email, company, locale },
     payment_intent_data: { metadata: { flow: 'build_first_payment', plan, name, email, company } },
   })
