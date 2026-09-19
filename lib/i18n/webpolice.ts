@@ -168,7 +168,7 @@ const es: WPStrings = {
   heroCursive: 'objetivamente',
   heroPost: ' fea?',
   questions: ['¿Mi web es fea? ¿genérica? 🍌', '¿Me mintió mi desarrollador? 👨‍💻', '¿Usó ChatGPT para generar mi web en 10 min? 🤖'],
-  ctaIdle: 'Web poli',
+  ctaIdle: 'Llama al web poli',
   ctaLoading: 'Enviando patrulla…',
   placeholder: 'escribe tu web',
   loadingLines: ['Enviando a la unidad gorila…', 'Juzgando tus tipografías…', 'Buscando fotos de stock robadas…', 'Midiendo la cantidad de morado…', 'Comparándola con webs de verdad buenas…', 'Intentando no reírnos…'],
