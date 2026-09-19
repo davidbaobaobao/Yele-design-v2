@@ -613,7 +613,9 @@ export async function POST(request: Request) {
   if (cachedResult) {
     const shotRes = process.env.SCREENSHOT_API_KEY ? await capture(target) : { error: 'skipped' }
     const payload = { ...cachedResult, screenshot: 'b64' in shotRes ? `data:${shotRes.mime};base64,${shotRes.b64}` : null }
-    await record(payload, true, false)
+    // Store the text on cached re-serves too (cheap — no API cost) so the daily
+    // report's "view result" link always resolves, even for repeat searches.
+    await record(payload, true, true)
     return NextResponse.json(payload)
   }
 

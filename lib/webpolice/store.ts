@@ -233,6 +233,19 @@ export async function getScanResult(id: string): Promise<ScanRow | null> {
   return (data as unknown as ScanRow) ?? null
 }
 
+/** Most recent scan of this URL+locale that actually has a stored text result —
+ *  used as a fallback when a report link points at a resultless (cached) row. */
+export async function findLatestResultByUrl(url: string, locale: string): Promise<ScanRow | null> {
+  const supabase = db()
+  if (!supabase) return null
+  const { data, error } = await supabase.from(TABLE)
+    .select('url, host, locale, quality, verdict, created_at, result, screenshot_url')
+    .eq('url', url).eq('locale', locale).not('result', 'is', null)
+    .order('created_at', { ascending: false }).limit(1).maybeSingle()
+  if (error) { console.error('[webpolice] findLatestResultByUrl failed:', error.message); return null }
+  return (data as unknown as ScanRow) ?? null
+}
+
 /** All real (non-seed) scans in the last `windowMs`, newest first — for the
  *  once-a-day owner digest. */
 export async function scansSince(windowMs: number): Promise<ScanRow[]> {

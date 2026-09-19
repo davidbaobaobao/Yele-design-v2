@@ -4,7 +4,7 @@
 // automated analysis (e.g. an email artifact).
 
 import { NextResponse } from 'next/server'
-import { getScanResult } from '@/lib/webpolice/store'
+import { getScanResult, findLatestResultByUrl } from '@/lib/webpolice/store'
 
 export const runtime = 'nodejs'
 
@@ -15,7 +15,13 @@ export async function GET(request: Request) {
   const id = url.searchParams.get('id') ?? ''
   if (!/^[0-9a-f-]{8,40}$/i.test(id)) return NextResponse.json({ error: 'bad id' }, { status: 400 })
 
-  const row = await getScanResult(id)
+  let row = await getScanResult(id)
+  // The linked scan may have been a cached re-serve with no stored text — fall
+  // back to the original scan of the same URL that does have the result.
+  if (row && !row.result && row.url) {
+    const alt = await findLatestResultByUrl(row.url, row.locale ?? 'en')
+    if (alt?.result) row = alt
+  }
   if (!row || !row.result) return NextResponse.json({ error: 'not found' }, { status: 404 })
 
   const r = row.result as Record<string, unknown>
