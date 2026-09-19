@@ -615,22 +615,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ...seeded, seeded: true })
   }
 
-  // 3. Throttles: a gap between calls, then per-IP, per-session and global caps.
-  const last = await lastScanAt(ipHash)
-  if (last && Date.now() - last < LIMITS.minGapMs) {
-    return NextResponse.json({ error: msg.slow }, { status: 429 })
-  }
-  const [ipHour, ipDay, sessionDay, globalDay] = await Promise.all([
-    countScans({ ipHash, windowMs: 3600_000 }),
-    countScans({ ipHash, windowMs: 86_400_000 }),
-    sessionId ? countScans({ sessionId, windowMs: 86_400_000 }) : Promise.resolve(0),
-    countScans({ windowMs: 86_400_000 }),
-  ])
-  if (globalDay >= LIMITS.globalDay) return NextResponse.json({ error: msg.closed }, { status: 429 })
-  if (ipHour >= LIMITS.perIpHour || ipDay >= LIMITS.perIpDay || sessionDay >= LIMITS.perSessionDay) {
-    return NextResponse.json({ error: msg.limit }, { status: 429 })
-  }
-
   const record = (payload: Record<string, unknown>, cached: boolean, store: boolean, screenshotUrl: string | null = null) =>
     logScan({
       session_id: sessionId,
@@ -651,8 +635,9 @@ export async function POST(request: Request) {
       screenshot_url: screenshotUrl,
     }).catch(err => console.error('[webpolice] log failed', err))
 
-  // 4. Same URL again today → reuse the verdict, pay only for the (cached)
-  //    screenshot so the report still shows a thumbnail.
+  // 3b. Already analysed this exact URL before (any time, this language)? Reuse
+  //     the stored verdict — no LLM, no vision cost — BEFORE the throttles, so a
+  //     known URL always resolves instantly and never burns the daily quota.
   const cachedResult = await findCachedScan(target, locale)
   if (cachedResult) {
     const shotRes = process.env.SCREENSHOT_API_KEY ? await capture(target) : { error: 'skipped' }
@@ -661,6 +646,23 @@ export async function POST(request: Request) {
     // report's "view result" link always resolves, even for repeat searches.
     await record(payload, true, true)
     return NextResponse.json(payload)
+  }
+
+  // 3. This is a NEW URL that costs an LLM call — now apply the throttles: a gap
+  //    between calls, then per-IP, per-session and global caps.
+  const last = await lastScanAt(ipHash)
+  if (last && Date.now() - last < LIMITS.minGapMs) {
+    return NextResponse.json({ error: msg.slow }, { status: 429 })
+  }
+  const [ipHour, ipDay, sessionDay, globalDay] = await Promise.all([
+    countScans({ ipHash, windowMs: 3600_000 }),
+    countScans({ ipHash, windowMs: 86_400_000 }),
+    sessionId ? countScans({ sessionId, windowMs: 86_400_000 }) : Promise.resolve(0),
+    countScans({ windowMs: 86_400_000 }),
+  ])
+  if (globalDay >= LIMITS.globalDay) return NextResponse.json({ error: msg.closed }, { status: 429 })
+  if (ipHour >= LIMITS.perIpHour || ipDay >= LIMITS.perIpDay || sessionDay >= LIMITS.perSessionDay) {
+    return NextResponse.json({ error: msg.limit }, { status: 429 })
   }
 
   const core = await analyzeCore(u, locale)

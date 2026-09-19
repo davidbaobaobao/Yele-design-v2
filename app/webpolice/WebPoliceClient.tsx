@@ -834,6 +834,9 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
                 ? `${t.mainCharges(Math.min(3, result.crimes))}. ` +
                   result.charges.slice(0, 3).map(c => `${c.title}. ${c.detail}`).join(' ')
                 : '',
+              // Keep reading into the "Now what?" pitch after the roast.
+              t.nowWhatTitle,
+              ...t.nowWhatBody.map(s => s.replace(/\[u\]/g, '')),
             ].filter(Boolean)}
             lang={t.ttsLang}
             t={t}
@@ -968,16 +971,9 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
             .wp-underline:hover { animation: none; }
           }
         `}</style>
-        <div className="flex items-center gap-3">
-          <h2 className="font-display font-bold text-white tracking-tight" style={{ fontSize: 'clamp(2rem, 8vw, 3.4rem)' }}>
-            {t.nowWhatTitle}
-          </h2>
-          <RantSpeaker
-            parts={[t.nowWhatTitle, ...t.nowWhatBody].map(s => s.replace(/\[u\]/g, ''))}
-            lang={t.ttsLang}
-            t={t}
-          />
-        </div>
+        <h2 className="font-display font-bold text-white tracking-tight" style={{ fontSize: 'clamp(2rem, 8vw, 3.4rem)' }}>
+          {t.nowWhatTitle}
+        </h2>
         <div className="mt-4 space-y-4">
           {t.nowWhatBody.map((p, i) => (
             <p

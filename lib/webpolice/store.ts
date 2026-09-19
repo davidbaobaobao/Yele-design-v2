@@ -110,20 +110,26 @@ export async function lastScanAt(ipHash: string): Promise<number | null> {
   return last ? new Date(last.created_at ?? 0).getTime() : null
 }
 
-/** A stored analysis for the same URL+locale inside the cache window. */
-export async function findCachedScan(url: string, locale: string, windowMs = 24 * 3600_000): Promise<Record<string, unknown> | null> {
-  const since = new Date(Date.now() - windowMs).toISOString()
+/**
+ * The most recent stored analysis for this URL+locale. By default it looks
+ * ALL-TIME (windowMs omitted): if we've ever analysed this URL we reuse that
+ * result instead of paying for another screenshot + LLM call. Pass a windowMs
+ * to restrict to a recent window.
+ */
+export async function findCachedScan(url: string, locale: string, windowMs?: number): Promise<Record<string, unknown> | null> {
+  const finite = typeof windowMs === 'number' && Number.isFinite(windowMs)
   const supabase = db()
   if (supabase) {
-    const { data, error } = await supabase.from(TABLE).select('result').eq('url', url).eq('locale', locale)
-      .eq('seed', false).not('result', 'is', null).gte('created_at', since)
-      .order('created_at', { ascending: false }).limit(1).maybeSingle()
+    let q = supabase.from(TABLE).select('result').eq('url', url).eq('locale', locale)
+      .eq('seed', false).not('result', 'is', null)
+    if (finite) q = q.gte('created_at', new Date(Date.now() - windowMs!).toISOString())
+    const { data, error } = await q.order('created_at', { ascending: false }).limit(1).maybeSingle()
     if (error) { console.error('[webpolice] findCachedScan failed:', error.message); return null }
     return (data?.result as Record<string, unknown>) ?? null
   }
   memPrune()
   const hit = [...mem].reverse().find(r => r.url === url && r.locale === locale && r.result && !r.seed &&
-    new Date(r.created_at ?? 0).getTime() >= Date.now() - windowMs)
+    (!finite || new Date(r.created_at ?? 0).getTime() >= Date.now() - windowMs!))
   return (hit?.result as Record<string, unknown>) ?? null
 }
 
