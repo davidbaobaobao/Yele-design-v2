@@ -953,22 +953,32 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
       <div className="mt-12">
         <style>{`
           .wp-underline {
-            background-image: linear-gradient(#D46FC8, #D46FC8);
-            background-repeat: no-repeat;
-            background-position: 0 100%;
-            background-size: 100% 2px;
+            display: inline-block;
             padding-bottom: 2px;
+            background-image: linear-gradient(90deg, #D46FC8, #DE85D2, #F0A6E4, #DE85D2, #D46FC8);
+            background-repeat: no-repeat;
+            background-position: 0% 100%;
+            background-size: 200% 2px;
+            color: inherit;
             cursor: default;
+            transform-origin: center bottom;
+            transition: color .3s ease, transform .3s cubic-bezier(.34,1.56,.64,1), background-size .3s ease;
+            will-change: transform;
           }
-          .wp-underline:hover { animation: wp-underline-sweep 0.55s ease; }
-          @keyframes wp-underline-sweep {
-            0%   { background-size: 100% 2px; background-position: 100% 100%; }
-            45%  { background-size: 0 2px;    background-position: 100% 100%; }
-            55%  { background-size: 0 2px;    background-position: 0 100%; }
-            100% { background-size: 100% 2px; background-position: 0 100%; }
+          .wp-underline:hover {
+            color: #DE85D2;
+            background-size: 200% 3px;
+            transform: translateY(-2px) scale(1.06) rotate(-1.2deg);
+            animation: wp-underline-shimmer 1.1s linear infinite;
+          }
+          /* Slide the wider gradient under the word for a living, shimmering underline. */
+          @keyframes wp-underline-shimmer {
+            from { background-position: 0% 100%; }
+            to   { background-position: 100% 100%; }
           }
           @media (prefers-reduced-motion: reduce) {
-            .wp-underline:hover { animation: none; }
+            .wp-underline { transition: color .3s ease; }
+            .wp-underline:hover { transform: none; animation: none; color: #DE85D2; }
           }
         `}</style>
         <h2 className="font-display font-bold text-white tracking-tight" style={{ fontSize: 'clamp(2rem, 8vw, 3.4rem)' }}>
@@ -1009,8 +1019,8 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
       {/* But seriously — full-bleed gorilla banner (breaks out of the max-w-2xl
           report column), text overlaid on the left. */}
       <div
-        className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-[#EEBFCF]"
-        style={{ backgroundImage: 'url(/media/webpolice/gorilla-suit.jpg)', backgroundPosition: 'right center' }}
+        className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-[#EEBFCF] [background-position:38%_center] md:[background-position:right_center]"
+        style={{ backgroundImage: 'url(/media/webpolice/gorilla-suit.jpg)' }}
       >
         {/* Dark plum scrim on the left so the WHITE copy stays legible over the pink. */}
         <div
