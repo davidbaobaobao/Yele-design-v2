@@ -957,7 +957,15 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
               key={i}
               className={`font-body leading-relaxed ${i === t.nowWhatBody.length - 1 ? 'text-lg md:text-xl font-semibold text-white' : 'text-base md:text-lg text-white/75'}`}
             >
-              {p}
+              {p.split('[u]').map((seg, k) =>
+                k % 2 === 1 ? (
+                  <span key={k} className="underline decoration-[#D46FC8] decoration-2 underline-offset-4">
+                    {seg}
+                  </span>
+                ) : (
+                  seg
+                ),
+              )}
             </p>
           ))}
         </div>
