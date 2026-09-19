@@ -948,6 +948,26 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
 
       {/* Now what? — the point of the whole thing, right before the plug. */}
       <div className="mt-12">
+        <style>{`
+          .wp-underline {
+            background-image: linear-gradient(#D46FC8, #D46FC8);
+            background-repeat: no-repeat;
+            background-position: 0 100%;
+            background-size: 100% 2px;
+            padding-bottom: 2px;
+            cursor: default;
+          }
+          .wp-underline:hover { animation: wp-underline-sweep 0.55s ease; }
+          @keyframes wp-underline-sweep {
+            0%   { background-size: 100% 2px; background-position: 100% 100%; }
+            45%  { background-size: 0 2px;    background-position: 100% 100%; }
+            55%  { background-size: 0 2px;    background-position: 0 100%; }
+            100% { background-size: 100% 2px; background-position: 0 100%; }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .wp-underline:hover { animation: none; }
+          }
+        `}</style>
         <h2 className="font-display font-bold text-white tracking-tight" style={{ fontSize: 'clamp(2rem, 8vw, 3.4rem)' }}>
           {t.nowWhatTitle}
         </h2>
@@ -959,7 +979,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
             >
               {p.split('[u]').map((seg, k) =>
                 k % 2 === 1 ? (
-                  <span key={k} className="underline decoration-[#D46FC8] decoration-2 underline-offset-4">
+                  <span key={k} className="wp-underline">
                     {seg}
                   </span>
                 ) : (
@@ -977,7 +997,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         <h3 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: '#16161A' }}>
           {result.quality >= 60 ? t.plugTitleGood : t.plugTitleBad}
         </h3>
-        <p className="font-body text-base mt-2 mb-6" style={{ color: '#4A4550' }}>
+        <p className="font-body text-base mt-2 mb-6 whitespace-pre-line" style={{ color: '#4A4550' }}>
           {t.plugBody}
         </p>
         <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} />
