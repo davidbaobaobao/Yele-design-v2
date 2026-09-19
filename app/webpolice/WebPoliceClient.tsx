@@ -968,9 +968,16 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
             .wp-underline:hover { animation: none; }
           }
         `}</style>
-        <h2 className="font-display font-bold text-white tracking-tight" style={{ fontSize: 'clamp(2rem, 8vw, 3.4rem)' }}>
-          {t.nowWhatTitle}
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="font-display font-bold text-white tracking-tight" style={{ fontSize: 'clamp(2rem, 8vw, 3.4rem)' }}>
+            {t.nowWhatTitle}
+          </h2>
+          <RantSpeaker
+            parts={[t.nowWhatTitle, ...t.nowWhatBody].map(s => s.replace(/\[u\]/g, ''))}
+            lang={t.ttsLang}
+            t={t}
+          />
+        </div>
         <div className="mt-4 space-y-4">
           {t.nowWhatBody.map((p, i) => (
             <p
