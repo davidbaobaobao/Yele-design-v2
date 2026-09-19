@@ -26,6 +26,7 @@ export type ScanRow = {
   referer: string | null
   result: unknown | null
   created_at?: string
+  id?: string
   seed?: boolean
   screenshot_url?: string | null
   // Set on failed / abandoned attempts (e.g. 'protected', 'ai_failed',
@@ -220,6 +221,18 @@ export async function saveShot(dataUrl: string, host: string): Promise<string | 
   return data?.publicUrl ?? null
 }
 
+/** One stored scan (its full text result) by id — for the "view result" links
+ *  in the daily report. */
+export async function getScanResult(id: string): Promise<ScanRow | null> {
+  const supabase = db()
+  if (!supabase) return null
+  const { data, error } = await supabase.from(TABLE)
+    .select('url, host, locale, quality, verdict, created_at, result, screenshot_url')
+    .eq('id', id).maybeSingle()
+  if (error) { console.error('[webpolice] getScanResult failed:', error.message); return null }
+  return (data as unknown as ScanRow) ?? null
+}
+
 /** All real (non-seed) scans in the last `windowMs`, newest first — for the
  *  once-a-day owner digest. */
 export async function scansSince(windowMs: number): Promise<ScanRow[]> {
@@ -227,7 +240,7 @@ export async function scansSince(windowMs: number): Promise<ScanRow[]> {
   const supabase = db()
   if (supabase) {
     const { data, error } = await supabase.from(TABLE)
-      .select('url, host, locale, quality, verdict, mode, cached, country, created_at, error')
+      .select('id, url, host, locale, quality, verdict, mode, cached, country, created_at, error, screenshot_url')
       .eq('seed', false).gte('created_at', since)
       .order('created_at', { ascending: false })
     if (error) { console.error('[webpolice] scansSince failed:', error.message); return [] }

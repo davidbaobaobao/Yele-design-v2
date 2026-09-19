@@ -33,20 +33,22 @@ export async function GET(request: Request) {
   const errored = rows.filter(r => r.error && r.error !== 'abandoned')
   const abandoned = rows.filter(r => r.error === 'abandoned')
 
-  type Agg = { host: string; url: string; count: number; quality: number | null; verdict: string | null; error: string | null; last: string }
+  type Agg = { host: string; url: string; count: number; quality: number | null; verdict: string | null; error: string | null; last: string; id: string | null }
   const aggregate = (list: typeof rows): Agg[] => {
     const m = new Map<string, Agg>()
     for (const r of list) {
       const cur = m.get(r.host)
       if (cur) {
         cur.count++
-        if (!cur.last || (r.created_at ?? '') > cur.last) { cur.last = r.created_at ?? cur.last; cur.quality = r.quality; cur.verdict = r.verdict; cur.error = r.error ?? null }
+        if (!cur.last || (r.created_at ?? '') > cur.last) { cur.last = r.created_at ?? cur.last; cur.quality = r.quality; cur.verdict = r.verdict; cur.error = r.error ?? null; cur.id = r.id ?? null }
       } else {
-        m.set(r.host, { host: r.host, url: r.url, count: 1, quality: r.quality, verdict: r.verdict, error: r.error ?? null, last: r.created_at ?? '' })
+        m.set(r.host, { host: r.host, url: r.url, count: 1, quality: r.quality, verdict: r.verdict, error: r.error ?? null, last: r.created_at ?? '', id: r.id ?? null })
       }
     }
     return Array.from(m.values()).sort((a, b) => b.count - a.count || (b.last > a.last ? 1 : -1))
   }
+  const BASE = 'https://yele.design'
+  const resultLink = (id: string | null) => (id ? `<a href="${BASE}/api/webpolice/result?id=${id}" style="color:#B8489F">view</a>` : '—')
 
   const sites = aggregate(ok)
   const errSites = aggregate(errored)
@@ -75,6 +77,7 @@ export async function GET(request: Request) {
       <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${s.quality ?? '—'}</td>
       <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(s.verdict ?? '—')}</td>
       <td style="padding:8px 10px;border-bottom:1px solid #eee;font:12px -apple-system,sans-serif;color:#777">${when(s.last)}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${resultLink(s.id)}</td>
     </tr>`).join('')
 
   // Simple list rows for the "errored" and "abandoned" sections.
@@ -120,6 +123,7 @@ export async function GET(request: Request) {
         <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Score</th>
         <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Verdict</th>
         <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Last</th>
+        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Result</th>
       </tr>
       ${tr}
     </table>` : ''}
