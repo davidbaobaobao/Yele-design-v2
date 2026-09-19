@@ -253,8 +253,38 @@ Also produce these, all in the same language and voice:
 - "personality": one conceptual, unhinged-but-funny metaphor for what this site IS — NOT technical. (e.g. "A regional insurance company trying to look like a Silicon Valley startup." / "A PowerPoint that escaped onto the internet.") Return just the descriptor, no "Your website is".
 - "designYear": the year this design LOOKS like it is from, as an integer (e.g. 2014). "designYearWhy": one short sentence explaining the giveaway, understandable to a non-designer.
 
-Return ONLY compact JSON, no markdown. If unusable: {"unusable":true,"reason":"..."}. Otherwise:
-{"unusable":false,"typography":{"score":N,"reason":"one short sentence"},"spacing":{"score":N,"reason":"..."},"color":{"score":N,"reason":"...","colors":["#hex","#hex"]},"clutter":{"score":N,"reason":"..."},"hierarchy":{"score":N,"reason":"..."},"imagery":{"score":N,"reason":"..."},"overall":N,"summary":"one funny sentence","rant":"1-2 short funny paragraphs","sells":"1-2 funny sentences","saysHears":{"says":"...","hears":"..."},"personality":"one funny metaphor","designYear":2014,"designYearWhy":"one sentence"}`
+Report your verdict by calling the "web_police_verdict" tool with every field filled in. If the page is unusable (security check / error / blank), call it with unusable=true and a short reason, and leave the scoring fields out.`
+
+// Structured-output tool. Letting Anthropic build the JSON guarantees it is
+// always syntactically valid — no more truncated/unescaped-quote parse errors,
+// which is what kept breaking the (more verbose) Spanish and Chinese runs.
+const aspectProp = { type: 'object', properties: { score: { type: 'integer' }, reason: { type: 'string' } }, required: ['score', 'reason'] }
+const VERDICT_TOOL = {
+  name: 'web_police_verdict',
+  description: 'Return the Web Police design verdict for the screenshot.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      unusable: { type: 'boolean', description: 'true if the screenshot is a security check / error / blank page, not a real site.' },
+      reason: { type: 'string', description: 'When unusable: a few plain words (security check / error page / blank).' },
+      typography: aspectProp,
+      spacing: aspectProp,
+      color: { type: 'object', properties: { score: { type: 'integer' }, reason: { type: 'string' }, colors: { type: 'array', items: { type: 'string' }, description: 'the two most dominant/clashing hex colors, e.g. ["#39ff14","#7c3aed"]' } }, required: ['score', 'reason'] },
+      clutter: aspectProp,
+      hierarchy: aspectProp,
+      imagery: aspectProp,
+      overall: { type: 'integer' },
+      summary: { type: 'string' },
+      rant: { type: 'string' },
+      sells: { type: 'string' },
+      saysHears: { type: 'object', properties: { says: { type: 'string' }, hears: { type: 'string' } } },
+      personality: { type: 'string' },
+      designYear: { type: 'integer' },
+      designYearWhy: { type: 'string' },
+    },
+    required: ['unusable'],
+  },
+} as const
 
 type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; rant: string; colorBg?: string; sells?: string; saysHears?: { says: string; hears: string }; personality?: string; designYear?: number | null; designYearWhy?: string }
 type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
@@ -283,8 +313,15 @@ async function visionAnalyze(images: { data: string; mime: string }[], hints: st
         method: 'POST',
         headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
         signal: ctrl.signal,
-        // Generous headroom so verbose Spanish/Chinese JSON can't truncate.
-        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 4000, messages: [{ role: 'user', content }] }),
+        // Force structured tool output so the JSON is always valid (no truncated
+        // / unescaped-quote parse failures) — verbose Spanish/Chinese included.
+        body: JSON.stringify({
+          model: 'claude-sonnet-5',
+          max_tokens: 4000,
+          tools: [VERDICT_TOOL],
+          tool_choice: { type: 'tool', name: 'web_police_verdict' },
+          messages: [{ role: 'user', content }],
+        }),
       })
       clearTimeout(to)
       if (!res.ok) {
@@ -297,12 +334,14 @@ async function visionAnalyze(images: { data: string; mime: string }[], hints: st
         return { ok: false, reason: `${lastReason}: ${(await res.text()).slice(0, 140)}` }
       }
       const j = await res.json()
-      const out: string = j?.content?.[0]?.text ?? ''
-      let parsed: Record<string, unknown>
-      try {
-        parsed = JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1))
-      } catch {
-        lastReason = 'vision parse error (truncated?)'
+      // The forced tool call carries the verdict as a ready-made object.
+      const blocks: unknown[] = Array.isArray(j?.content) ? j.content : []
+      const toolUse = blocks.find((b): b is { type: string; input: Record<string, unknown> } =>
+        !!b && typeof b === 'object' && (b as { type?: string }).type === 'tool_use')
+      const parsed: Record<string, unknown> | null = toolUse?.input ?? null
+      if (!parsed) {
+        // A max_tokens truncation stops before the tool block completes — retry.
+        lastReason = j?.stop_reason === 'max_tokens' ? 'vision truncated' : 'vision returned no verdict'
         if (attempt < MAX_ATTEMPTS) { await sleep(600); continue }
         return { ok: false, reason: lastReason }
       }
