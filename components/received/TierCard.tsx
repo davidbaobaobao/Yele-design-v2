@@ -65,7 +65,7 @@ export default function TierCard({
       style={{ rotateX, rotateY, transformPerspective: 1000 }}
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      className={`relative flex flex-col rounded-2xl p-6 shadow-lg will-change-transform ${
+      className={`relative flex h-full flex-col rounded-2xl p-6 shadow-lg will-change-transform ${
         tier.dark
           ? 'bg-[#0D0E12] text-white shadow-black/30'
           : 'bg-white text-ink border border-ink/15 shadow-black/[0.08]'

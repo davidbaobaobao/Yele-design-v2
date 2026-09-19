@@ -94,7 +94,7 @@ export default function ReceivedContent({
           <p className="font-body text-base md:text-lg text-ink/75 leading-relaxed max-w-2xl mb-6">
             {d.dontWaitBody}
           </p>
-          <div className={`grid items-start gap-4 [perspective:1200px] ${single ? 'max-w-sm' : 'grid-cols-1 md:grid-cols-3'}`}>
+          <div className={`grid items-stretch gap-4 [perspective:1200px] ${single ? 'max-w-sm' : 'grid-cols-1 md:grid-cols-3'}`}>
             {shownTiers.map(tier => (
               <TierCard key={tier.plan} tier={tier} name={rawName} email={email} company={company} payLabel={d.pay50} payVerb={PAY_VERB[locale]} locale={locale} />
             ))}
