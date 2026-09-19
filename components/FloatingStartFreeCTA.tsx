@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { CTAButton } from '@/components/ui/cta-button'
+import { useLang } from '@/context/LanguageContext'
 
 // Visible only while scrollY is within [top of #tryforfree, bottom of
 // #faq] — hidden on every section above TryForFreeSection and below FAQ.
@@ -10,6 +11,7 @@ import { CTAButton } from '@/components/ui/cta-button'
 // uses (querySelectorAll on a data attribute) just with getElementById
 // since there's exactly one of each here.
 export default function FloatingStartFreeCTA() {
+  const { t } = useLang()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function FloatingStartFreeCTA() {
       aria-hidden={!visible}
     >
       <CTAButton href="/start" variant="pink" className="shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
-        Start for free
+        {t('Empieza gratis', 'Start for free')}
       </CTAButton>
     </div>
   )

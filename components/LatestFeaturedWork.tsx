@@ -8,6 +8,17 @@ import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import { useEarlyLoad } from '@/hooks/useEarlyLoad'
 import PosterVideo from '@/components/ui/poster-video'
 import { useOptionalDealFade } from '@/components/DealFadeContext'
+import { useLang } from '@/context/LanguageContext'
+
+// Spanish portfolio blurbs, keyed by project name (names stay as-is).
+const BLURB_ES: Record<string, string> = {
+  'Blackcrest': 'Ventanas y puertas arquitectónicas de alta gama. Una web centrada en producto con precios instantáneos según medidas — presupuesta cualquier hueco en segundos.',
+  'Clark Fork': 'Casas de madera y troncos a medida, construidas en Montana desde 1993. Una web sobria y editorial que deja hablar al oficio y al paisaje.',
+  'Clear Cool Water': 'Una marca de agua de manantial de Florida vendida por cajas. Una tienda limpia y centrada en producto, con origen, datos de pureza y pedido en un toque.',
+  'Reptile Roadshow': 'Espectáculos de animales exóticos y encuentros con reptiles. Una web atrevida de tonos selváticos con paquetes por niveles y reserva instantánea.',
+  'Duna': 'Branding de producto completo para Duna — dátiles medjool ecológicos.',
+  'Marketasa': 'Una agencia de marketing de resultados. Una web editorial de alto contraste que presenta sus casos como una revista.',
+}
 
 // Structure/spacing/behavior mirrors the reference bundle exactly (track
 // padding 40px 40px 0, 16px gaps, calc(50% - 8px) stack cells, 52px title,
@@ -256,8 +267,10 @@ function NudgeButton({
   )
 }
 
-export default function LatestFeaturedWork({ forceDark = false, title = 'Latest featured work' }: { forceDark?: boolean; title?: string } = {}) {
+export default function LatestFeaturedWork({ forceDark = false, title }: { forceDark?: boolean; title?: string } = {}) {
   const reduceMotion = !!useHydratedReducedMotion()
+  const { t, lang } = useLang()
+  const heading = title ?? t('Trabajos destacados', 'Latest featured work')
   // Homepage: reads the shared DealFadeProvider group (BeyondWebsite +
   // StatsBold flip in sync). Standalone (/letsbuild, forceDark): no provider,
   // no white->black flip — always dark, using a local no-op state so the same
@@ -421,7 +434,7 @@ export default function LatestFeaturedWork({ forceDark = false, title = 'Latest 
         animate={{ color: titleColor }}
         transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
       >
-        {title}
+        {heading}
       </motion.h2>
 
       {/* Track wrapper — holds the scroll strip and its edge-hover pan zones.
@@ -538,7 +551,7 @@ export default function LatestFeaturedWork({ forceDark = false, title = 'Latest 
             animate={{ color: blurbColor }}
             transition={reduceMotion ? { duration: 0 } : FLIP_TRANSITION}
           >
-            {project.blurb}
+            {lang === 'es' ? BLURB_ES[project.name] ?? project.blurb : project.blurb}
           </motion.p>
         </div>
 

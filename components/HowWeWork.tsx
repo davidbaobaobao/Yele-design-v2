@@ -8,6 +8,7 @@ import { useEarlyReveal } from '@/hooks/useEarlyReveal'
 import { useEarlyLoad } from '@/hooks/useEarlyLoad'
 import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import PosterVideo from '@/components/ui/poster-video'
+import { useLang } from '@/context/LanguageContext'
 
 const MEDIA_DIR = '/media/howwework2'
 
@@ -104,6 +105,47 @@ const STEPS: StepData[] = [
         lead: 'Growing with you',
         description: 'Ongoing improvements and marketing so your site keeps getting better every month.',
       },
+    ],
+    videoBase: 'howvideo4',
+  },
+]
+
+const STEPS_ES: StepData[] = [
+  {
+    n: '01',
+    title: 'Cuéntanos sobre ti',
+    points: [
+      { lead: 'Rellena un formulario corto', description: 'Qué haces, a quién te diriges y el estilo que quieres. Diez minutos, sin reuniones.' },
+      { lead: 'Envía lo que tengas', description: 'Logo, fotos, textos — o nada. Si no lo tienes, lo creamos por ti.' },
+    ],
+    videoBase: 'howvideo1',
+  },
+  {
+    n: '02',
+    title: 'Lo diseñamos y desarrollamos',
+    points: [
+      { lead: 'Diseño a medida, hecho por nosotros', description: 'Creado desde cero para tu negocio. Tú revisas, nosotros pulimos.' },
+      { lead: 'Contenido incluido', description: 'Fotos, textos y visuales creados para ti, para que tu web se vea completa desde el primer día.' },
+      { lead: 'Primera propuesta en una semana', description: 'Después la pulimos juntos hasta que esté perfecta y lista para publicar.' },
+    ],
+    videoBase: 'howvideo2-2',
+  },
+  {
+    n: '03',
+    title: 'Sales online',
+    points: [
+      { lead: 'Online desde el primer día', description: 'Tú apruebas, nosotros publicamos. Tu web está online y funcionando desde el primer día.' },
+      { lead: 'Funcionando desde el primer día', description: 'Optimizada para Google y móvil, para que tu web empiece a traer clientes de inmediato.' },
+      { lead: 'Hecha para captar clientes', description: 'Rápida, mobile-first y lista para buscadores, diseñada para convertir visitas en llamadas y reservas.' },
+    ],
+    videoBase: 'howvideo3',
+  },
+  {
+    n: '04',
+    title: 'La seguimos mejorando',
+    points: [
+      { lead: 'Siempre online', description: 'Hosting, seguridad y monitorización gestionados las 24 horas. Tu web nunca se cae y tú no tocas nada.' },
+      { lead: 'Creciendo contigo', description: 'Mejoras continuas y marketing para que tu web sea mejor cada mes.' },
     ],
     videoBase: 'howvideo4',
   },
@@ -334,6 +376,8 @@ function HowWeWorkStep({
 
 export default function HowWeWork() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const { t, lang } = useLang()
+  const steps = lang === 'es' ? STEPS_ES : STEPS
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLHeadingElement>(null)
   const headerPageTopRef = useRef(0)
@@ -419,13 +463,13 @@ export default function HowWeWork() {
       <section id="how-it-works" className="bg-white py-28 px-6 scroll-mt-24">
         <div className="max-w-6xl mx-auto" style={{ transform: 'translateY(-40px)' }}>
           <span className="block font-mono text-sm mb-4" style={{ color: LIGHT_SECONDARY }}>
-            HOW IT WORKS
+            {t('CÓMO FUNCIONA', 'HOW IT WORKS')}
           </span>
           <h2 className="font-display text-[clamp(1.75rem,2.8vw,2.75rem)] leading-tight mb-20" style={{ color: LIGHT_TEXT }}>
-            From brief to live in <TextGradient as="span">one week</TextGradient>. Then we keep it growing.
+            {t('Del brief a online en ', 'From brief to live in ')}<TextGradient as="span">{t('una semana', 'one week')}</TextGradient>{t('. Y luego la hacemos crecer.', '. Then we keep it growing.')}
           </h2>
 
-          {STEPS.map((step, i) => (
+          {steps.map((step, i) => (
             <HowWeWorkStep
               key={step.n}
               step={step}
@@ -465,7 +509,7 @@ export default function HowWeWork() {
           animate={{ color: secondaryColor }}
           transition={FLIP_TRANSITION}
         >
-          HOW IT WORKS
+          {t('CÓMO FUNCIONA', 'HOW IT WORKS')}
         </motion.span>
         <motion.h2
           ref={headerRef}
@@ -473,10 +517,10 @@ export default function HowWeWork() {
           animate={{ color: primaryColor }}
           transition={FLIP_TRANSITION}
         >
-          From brief to live in <TextGradient as="span">one week</TextGradient>. Then we keep it growing.
+          {t('Del brief a online en ', 'From brief to live in ')}<TextGradient as="span">{t('una semana', 'one week')}</TextGradient>{t('. Y luego la hacemos crecer.', '. Then we keep it growing.')}
         </motion.h2>
 
-        {STEPS.map((step, i) => (
+        {steps.map((step, i) => (
           <HowWeWorkStep
             key={step.n}
             step={step}

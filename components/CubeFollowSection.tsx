@@ -7,6 +7,7 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { TextGradient } from '@/components/ui/text-gradient'
+import { useLang } from '@/context/LanguageContext'
 
 const SRC = '/media/howwefind/8cubesfollow.html'
 // No portrait variant shot yet — same poster serves both the always-on
@@ -35,22 +36,23 @@ function tuneCubeScene(iframe: HTMLIFrameElement) {
 // AgencyIntro.tsx/HowYeleAnimations' shared h2 token), not the larger
 // hero-scale sizing.
 function Headline({ reduceMotion }: { reduceMotion: boolean }) {
+  const { t } = useLang()
   return (
     <h2
       className="font-display leading-tight text-center text-[clamp(1.5rem,2.6vw,2.75rem)]"
       style={{ color: '#F2F0EB' }}
     >
-      <span className="sr-only">We choose the best design for your website.</span>
+      <span className="sr-only">{t('Elegimos el mejor diseño para tu web.', 'We choose the best design for your website.')}</span>
       <span aria-hidden="true">
-        <span className="block">We choose</span>
+        <span className="block">{t('Elegimos', 'We choose')}</span>
         <motion.span
           className="block"
           animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}
           transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <TextGradient as="span">the best design</TextGradient>
+          <TextGradient as="span">{t('el mejor diseño', 'the best design')}</TextGradient>
         </motion.span>
-        <span className="block whitespace-nowrap">for your website</span>
+        <span className="block whitespace-nowrap">{t('para tu web', 'for your website')}</span>
       </span>
     </h2>
   )

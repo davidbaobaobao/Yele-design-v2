@@ -9,6 +9,7 @@ import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
 import { CTAButton } from '@/components/ui/cta-button'
 import ReputationBadge from '@/components/ReputationBadge'
+import { useLang } from '@/context/LanguageContext'
 
 // WebGL, canvas-drawn textures — client/browser only, no useful SSR output.
 const CubesScene = dynamic(() => import('@/components/CubesScene'), { ssr: false })
@@ -102,6 +103,7 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
 }
 
 const REASSURANCES = ['From $699', 'No tasteless templates', 'No DIY']
+const REASSURANCES_ES = ['Desde 699€', 'Sin plantillas sosas', 'Sin hazlo-tú-mismo']
 
 // ffmpeg -i hero_poster.jpeg -vf "scale=2560:-2,gblur=sigma=1.5" -q:v 3 hero_poster.jpg —
 // source was a 1.3MB 2752x1536 export; higher res + a light blur pass (masks
@@ -110,6 +112,7 @@ const POSTER = '/media/hero_new2/hero_poster.jpg'
 const WHITE = '#F2F0EB'
 
 const WORDS = ['Last', 'Stand out', 'Perform', 'Convert', 'Endure', 'Grow']
+const WORDS_ES = ['Perduran', 'Destacan', 'Rinden', 'Convierten', 'Duran', 'Crecen']
 
 // /agency is a Google Ads landing page rendering the same shared HomePage
 // (see app/agency/page.tsx) — variant swaps just the subhead/CTAs/badges
@@ -119,6 +122,9 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
   const reduceMotion = !!useHydratedReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
   const showCubes = useDeferredCubes(sectionRef)
+  const { t, lang } = useLang()
+  const words = lang === 'es' ? WORDS_ES : WORDS
+  const reassurances = lang === 'es' ? REASSURANCES_ES : REASSURANCES
 
   return (
     <section ref={sectionRef} id="hero" className="relative h-screen w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
@@ -169,12 +175,12 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
                 purely decorative and hidden from assistive tech so its
                 rapidly-changing partial-word states are never announced. */}
             <span className="sr-only">
-              Delivering websites that last, stand out, perform, convert, endure, and grow.
+              {t('Creamos webs que perduran, destacan, rinden, convierten, duran y crecen.', 'Delivering websites that last, stand out, perform, convert, endure, and grow.')}
             </span>
             <span aria-hidden="true">
-              Delivering
+              {t('Creamos', 'Delivering')}
               <br />
-              Websites
+              {t('Webs', 'Websites')}
               <br />
               {/* whitespace-nowrap so "that" and the word can't wrap apart;
                   expandRight on TypewriterWord so the word isn't given a
@@ -182,7 +188,7 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
                   grows to the right as shorter/longer words cycle through,
                   instead of the whole line staying a fixed centered width. */}
               <span className="whitespace-nowrap">
-                that <TypewriterWord words={WORDS} reduceMotion={reduceMotion} expandRight />
+                {t('que ', 'that ')}<TypewriterWord words={words} reduceMotion={reduceMotion} expandRight />
               </span>
             </span>
           </h1>
@@ -196,22 +202,22 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
               </>
             ) : (
               <>
-                Website design, maintenance &amp; content creation.
+                {t('Diseño web, mantenimiento y creación de contenido.', 'Website design, maintenance & content creation.')}
                 <br />
-                From $699.
+                {t('Desde 699€.', 'From $699.')}
               </>
             )}
           </p>
 
           <div className="flex flex-wrap items-center gap-4 mt-8">
             <CTAButton href="/start" variant="white">
-              {variant === 'agency' ? 'Get started — nothing upfront' : 'Start now'}
+              {variant === 'agency' ? 'Get started — nothing upfront' : t('Empezar ahora', 'Start now')}
             </CTAButton>
             <a
               href={variant === 'agency' ? '#precios' : '#contacto'}
               className="inline-block font-body text-sm font-medium text-white px-6 py-3 rounded-full cursor-pointer border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
             >
-              {variant === 'agency' ? 'See pricing' : 'Contact us'}
+              {variant === 'agency' ? 'See pricing' : t('Contáctanos', 'Contact us')}
             </a>
           </div>
 
@@ -249,7 +255,7 @@ export default function Hero({ variant = 'default' }: { variant?: 'default' | 'a
               className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-10 font-body font-semibold text-base md:text-lg"
               style={{ color: '#EDEAE3' }}
             >
-              {REASSURANCES.map((phrase, i) => (
+              {reassurances.map((phrase, i) => (
                 <span key={phrase} className="inline-flex items-center gap-4">
                   {i > 0 && <span aria-hidden="true" className="hidden sm:inline opacity-60">·</span>}
                   <span className="inline-flex items-center gap-2">

@@ -9,6 +9,7 @@ import { TextGradient } from '@/components/ui/text-gradient'
 import { useEarlyLoad } from '@/hooks/useEarlyLoad'
 import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import PosterVideo from '@/components/ui/poster-video'
+import { useLang } from '@/context/LanguageContext'
 
 const CARD_BG = '#16171C'
 const VIDEO_DIR = '/media/wesection'
@@ -104,6 +105,45 @@ const CARDS: CardData[] = [
     capabilities: ['24/7 SUPPORT', 'UPDATES INCLUDED', 'SECURITY', 'ALWAYS IMPROVING'],
     videoBase: 'wevideo4',
     accent: '#5B4B9E', // violet-indigo
+  },
+]
+
+const CARDS_ES: CardData[] = [
+  {
+    n: '01',
+    title: 'Diseñamos',
+    text: '#FFFFFF',
+    description: 'Atrevido, a medida, sin plantillas. Una web diseñada desde cero para tu negocio y para nadie más.',
+    capabilities: ['DIRECCIÓN DE ARTE', 'UX Y LAYOUT', 'BRANDING', 'MOBILE-FIRST'],
+    videoBase: 'wevideo1',
+    accent: '#7B8CDE',
+  },
+  {
+    n: '02',
+    title: 'Desarrollamos',
+    text: '#FFFFFF',
+    description: 'Rápida, fiable, lista para SEO. Online en una semana, hecha para rendir desde el primer día.',
+    capabilities: ['STACK DE ÚLTIMA GEN', 'SEO LOCAL', 'RENDIMIENTO', 'HOSTING Y DOMINIO'],
+    videoBase: 'wevideo2',
+    accent: '#D46FC8',
+  },
+  {
+    n: '03',
+    title: 'Creamos',
+    text: '#FFFFFF',
+    description: 'Fotografía, vídeo, textos e ilustración. Contenido que hace destacar tu web — incluido.',
+    capabilities: ['FOTO Y VÍDEO', 'COPYWRITING', 'ILUSTRACIÓN', 'ASSETS SOCIALES'],
+    videoBase: 'wevideo3',
+    accent: '#C7488F',
+  },
+  {
+    n: '04',
+    title: 'Mantenemos',
+    text: '#FFFFFF',
+    description: 'Hosting, seguridad, actualizaciones y cada cambio que necesites. Para siempre — de eso se trata.',
+    capabilities: ['SOPORTE 24/7', 'ACTUALIZACIONES INCLUIDAS', 'SEGURIDAD', 'SIEMPRE MEJORANDO'],
+    videoBase: 'wevideo4',
+    accent: '#5B4B9E',
   },
 ]
 
@@ -410,6 +450,8 @@ export default function WhatWeDo() {
   const reduceMotion = !!useHydratedReducedMotion()
   const isMobile = useIsMobile()
   const viewportWidthPx = useViewportWidthPx()
+  const { t, lang } = useLang()
+  const cards = lang === 'es' ? CARDS_ES : CARDS
 
   const card2Ref = useRef<HTMLDivElement>(null)
   const card3Ref = useRef<HTMLDivElement>(null)
@@ -450,15 +492,15 @@ export default function WhatWeDo() {
           copy/style, now heading this section instead of standing alone. */}
       <div className="max-w-3xl mx-auto text-center px-6 pt-24 pb-16 md:pt-32 md:pb-20">
         <h2 className="font-display leading-tight text-[clamp(1.5rem,2.6vw,2.75rem)]" style={{ color: '#F2F0EB' }}>
-          All the resources of an Agency
+          {t('Todos los recursos de una agencia', 'All the resources of an Agency')}
           <br />
           <motion.span
             animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}
             transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <TextGradient as="span">at your reach.</TextGradient>
+            <TextGradient as="span">{t('a tu alcance.', 'at your reach.')}</TextGradient>
           </motion.span>{' '}
-          On demand
+          {t('Bajo demanda', 'On demand')}
         </h2>
       </div>
       {/* No shared width wrapper here — each card now carries its own
@@ -468,10 +510,10 @@ export default function WhatWeDo() {
           sticky div itself) rather than introducing a new wrapping box keeps
           the vertical stacking math untouched, exactly like the old shared
           wrapper's horizontal-only inset did. */}
-      <WhatWeDoCard card={CARDS[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
-      <WhatWeDoCard card={CARDS[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
-      <WhatWeDoCard card={CARDS[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
-      <WhatWeDoCard card={CARDS[3]} index={3} videoRef={video4Ref} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
+      <WhatWeDoCard card={cards[0]} index={0} videoRef={video1Ref} dim={reduceMotion ? null : dim1} reduceMotion={reduceMotion} />
+      <WhatWeDoCard card={cards[1]} index={1} videoRef={video2Ref} dim={reduceMotion ? null : dim2} reduceMotion={reduceMotion} rootRef={card2Ref} />
+      <WhatWeDoCard card={cards[2]} index={2} videoRef={video3Ref} dim={reduceMotion ? null : dim3} reduceMotion={reduceMotion} rootRef={card3Ref} />
+      <WhatWeDoCard card={cards[3]} index={3} videoRef={video4Ref} dim={null} reduceMotion={reduceMotion} rootRef={card4Ref} />
       {/* Card 4, as the last child, has its natural bottom coincide exactly
           with the section's own end — giving it zero dwell (verified: it
           releases and scrolls away the instant it arrives, with no buffer).

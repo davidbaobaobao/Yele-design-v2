@@ -44,6 +44,47 @@ const FAQS = [
   },
 ]
 
+const FAQS_ES = [
+  {
+    question: '¿Cuánto cuesta una web?',
+    answer:
+      'Las webs de Yele empiezan en 699€. La mayoría de pequeños negocios eligen el plan Launch (699€) o el plan Business (1.199€). Las webs más avanzadas parten de 2.799€.',
+  },
+  {
+    question: '¿Hay una cuota mensual?',
+    answer:
+      'Sí — Yele Care, nuestro plan de mantenimiento, desde 29€/mes, en tres niveles: Yele Care Lite (29€/mes) — hosting, seguridad y copias de seguridad; Yele Care (49€/mes) — un rediseño anual, actualizamos tu contenido y monitorización; y Yele Care+ (99€/mes) — seguridad avanzada, copias, monitorización y servicios.',
+  },
+  {
+    question: '¿Es obligatorio Yele Care?',
+    answer:
+      'No — pero lo recomendamos encarecidamente. Yele Care incluye un rediseño completo cada año, así que tienes una web renovada cada año y todo sigue funcionando — alojada, segura, con copias, monitorizada y actualizada. Puedes alojar y gestionar la web tú mismo, pero con Yele Care nunca tienes que preocuparte de la parte técnica.',
+  },
+  {
+    question: '¿Tengo que pagarlo todo por adelantado?',
+    answer:
+      'No. Pagas el 50% cuando empezamos. El 50% restante se paga cuando la web está terminada y aprobada para su lanzamiento.',
+  },
+  {
+    question: '¿Soy dueño del diseño?',
+    answer: 'Sí. Eres dueño de los archivos de diseño y tienes los derechos de autor de todo el contenido que creamos para ti.',
+  },
+  {
+    question: '¿Cuánto tarda mi web en estar lista?',
+    answer: 'Nuestro objetivo de entrega es en menos de 4 semanas desde que completas tu formulario de alta.',
+  },
+  {
+    question: '¿El dominio y el hosting están incluidos?',
+    answer:
+      'El hosting está incluido con Yele Care. Podemos proporcionar y gestionar un dominio estándar, o puedes traer el tuyo. Los dominios premium pueden tener un coste adicional.',
+  },
+  {
+    question: '¿El SEO está incluido?',
+    answer:
+      'Cada web incluye una base de SEO — configuración técnica, títulos de página, descripciones, sitemap, indexación, optimización móvil y analítica.',
+  },
+]
+
 export default function FAQ({ noBg, dark }: { noBg?: boolean; dark?: boolean } = {}) {
-  return <FAQClient faqs={FAQS} noBg={noBg} dark={dark} />
+  return <FAQClient faqs={FAQS} faqsEs={FAQS_ES} noBg={noBg} dark={dark} />
 }

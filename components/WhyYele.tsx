@@ -5,6 +5,7 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import { TextGradient } from '@/components/ui/text-gradient'
 import FeatureCard from './FeatureCard'
+import { useLang } from '@/context/LanguageContext'
 
 const VIDEO_DIR = '/media/whyyele3'
 
@@ -45,6 +46,15 @@ const DEFAULT_CARDS: CardData[] = [
     description: 'Add SEO, advertising, content, AI, and automation as your business grows.',
     videoBase: 'whyyele5',
   },
+]
+
+const DEFAULT_CARDS_ES: CardData[] = [
+  { title: 'Rediseño anual', description: 'Un rediseño completo cada año, para que tu web nunca se quede anticuada.', videoBase: 'whyyele1' },
+  { title: 'Asequible y transparente', description: 'Webs profesionales desde 699€, con precios claros y sin presupuestos de agencia confusos.', videoBase: 'whyyele3' },
+  { title: 'A medida', description: 'Diseñada en torno a tu negocio, no una plantilla genérica con tu logo encima.', videoBase: 'whyyele6' },
+  { title: 'Entrega rápida', description: 'Objetivo de entrega en menos de 4 semanas.', videoBase: 'whyyele4' },
+  { title: 'Soporte 24/7', description: 'Seguimos contigo tras el lanzamiento — soporte siempre que lo necesites.', videoBase: 'whyyele2' },
+  { title: 'Pensada para crecer', description: 'Añade SEO, publicidad, contenido, IA y automatización a medida que tu negocio crece.', videoBase: 'whyyele5' },
 ]
 
 // /agency variant — title/description order unchanged; videoBase per slot
@@ -94,7 +104,8 @@ export default function WhyYele({
   // stay dark regardless (they're full-bleed media, not theme surfaces).
   theme?: 'dark' | 'light'
 } = {}) {
-  const CARDS = variant === 'agency' ? AGENCY_CARDS : DEFAULT_CARDS
+  const { t, lang } = useLang()
+  const CARDS = variant === 'agency' ? AGENCY_CARDS : lang === 'es' ? DEFAULT_CARDS_ES : DEFAULT_CARDS
   const isLight = theme === 'light'
   const reduceMotion = !!useHydratedReducedMotion()
 
@@ -118,10 +129,9 @@ export default function WhyYele({
   const heading = (
     <h2 className="font-display leading-tight max-w-4xl text-[clamp(1.5rem,2.6vw,2.75rem)] mb-12">
       <span style={{ color: isLight ? '#16161A' : '#F2F0EB' }}>
-        Building a website used to be a headache — slow, big upfront bills, endless
-        back-and-forth.{' '}
+        {t('Crear una web solía ser un dolor de cabeza — lento, con grandes pagos por adelantado y un ida y vuelta interminable. ', 'Building a website used to be a headache — slow, big upfront bills, endless back-and-forth. ')}
       </span>
-      <TextGradient as="span">Not anymore.</TextGradient>
+      <TextGradient as="span">{t('Ya no.', 'Not anymore.')}</TextGradient>
     </h2>
   )
 

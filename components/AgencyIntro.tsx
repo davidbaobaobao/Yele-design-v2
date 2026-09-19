@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useLang } from '@/context/LanguageContext'
 
 // Short transition beat between WhyYele and the work carousel — same dark
 // bg as both neighbors (#0D0E12) so it reads as continuous, not a section
@@ -16,20 +17,20 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 // the line — no separate type scale.
 export default function AgencyIntro() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const { t } = useLang()
 
   return (
     <section data-nav-dark className="bg-[#0D0E12] py-16 md:py-20 px-6">
       <div className="max-w-6xl mx-auto">
         <h2 className="font-display leading-tight max-w-4xl text-[clamp(1.5rem,2.6vw,2.75rem)]">
           <span style={{ color: '#F2F0EB' }}>
-            An entire agency in your hands. All the web design services you need,
-            in one place.{' '}
+            {t('Toda una agencia en tus manos. Todos los servicios de diseño web que necesitas, en un solo lugar. ', 'An entire agency in your hands. All the web design services you need, in one place. ')}
           </span>
           <motion.span
             animate={reduceMotion ? {} : { opacity: [1, 0.55, 1] }}
             transition={reduceMotion ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <TextGradient as="span">From $699.</TextGradient>
+            <TextGradient as="span">{t('Desde 699€.', 'From $699.')}</TextGradient>
           </motion.span>
         </h2>
       </div>

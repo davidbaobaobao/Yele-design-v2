@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useLang } from '@/context/LanguageContext'
 
 // Image numbers (1-indexed, matching the filenames) rendered in black &
 // white instead of color — a deliberate accent among the color tiles.
@@ -296,6 +297,29 @@ const WANT_CONTENT_MARQUEE_PHRASES: MarqueePhrase[] = [
   { before: 'We ', pink: 'create', after: ' any content' },
 ]
 
+const IMAGE_MARQUEE_PHRASES_ES: MarqueePhrase[] = [
+  { before: 'Damos vida a tus ', pink: 'ideas' },
+  { before: 'Creamos ', pink: 'imágenes', after: ' increíbles para ti' },
+]
+const VIDEO_MARQUEE_PHRASES_ES: MarqueePhrase[] = [
+  { before: 'Damos vida a tu ', pink: 'historia' },
+  { before: 'Creamos ', pink: 'vídeos', after: ' a medida para ti' },
+]
+const WANT_CONTENT_MARQUEE_PHRASES_ES: MarqueePhrase[] = [
+  { before: 'Potenciamos tu ', pink: 'marca' },
+  { before: 'Creamos ', pink: 'cualquier', after: ' contenido' },
+]
+
+// Pick the phrase set for the active locale (Spanish or English default).
+function phrasesFor(lang: string) {
+  const es = lang === 'es'
+  return {
+    image: es ? IMAGE_MARQUEE_PHRASES_ES : IMAGE_MARQUEE_PHRASES,
+    video: es ? VIDEO_MARQUEE_PHRASES_ES : VIDEO_MARQUEE_PHRASES,
+    want: es ? WANT_CONTENT_MARQUEE_PHRASES_ES : WANT_CONTENT_MARQUEE_PHRASES,
+  }
+}
+
 // "*"-separated seamless loop driven by a phrase list (each with at most
 // one pink word). Shared by all three marquees on this page (the two
 // pre-grid ones and WantContentMarquee below) so they're never near-
@@ -342,13 +366,13 @@ function PhraseMarquee({ phrases }: { phrases: MarqueePhrase[] }) {
 // #0D0E12 as every other dark section, so it flows straight off the video
 // grid instead of reading as its own light beat. Same PhraseMarqueeRun
 // engine as the two marquees above, same symmetric py-* too.
-function WantContentMarquee() {
+function WantContentMarquee({ phrases }: { phrases: MarqueePhrase[] }) {
   const reduceMotion = !!useHydratedReducedMotion()
   return (
     <section className="relative overflow-hidden py-2 md:py-3" style={{ backgroundColor: SECTION_BG }}>
       <div className="want-content-marquee-track flex items-center" style={{ width: 'max-content' }}>
-        <PhraseMarqueeRun phrases={WANT_CONTENT_MARQUEE_PHRASES} reduceMotion={reduceMotion} />
-        <PhraseMarqueeRun phrases={WANT_CONTENT_MARQUEE_PHRASES} reduceMotion={reduceMotion} />
+        <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
+        <PhraseMarqueeRun phrases={phrases} reduceMotion={reduceMotion} />
       </div>
     </section>
   )
@@ -457,6 +481,8 @@ function StaticPhraseBlock({ phrases }: { phrases: MarqueePhrase[] }) {
 // reveal, just the finished grids and text in normal document flow.
 function ContentShowcaseReduced() {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+  const { lang } = useLang()
+  const P = phrasesFor(lang)
 
   useEffect(() => {
     const videos = videoRefs.current.filter((v): v is HTMLVideoElement => !!v)
@@ -500,7 +526,7 @@ function ContentShowcaseReduced() {
     <>
       {/* Static stand-ins for the two pre-grid marquees — same wrapped-row
           treatment as the "Want content?" one below. */}
-      <StaticPhraseBlock phrases={IMAGE_MARQUEE_PHRASES} />
+      <StaticPhraseBlock phrases={P.image} />
 
       <section className="relative py-24 px-6" style={{ backgroundColor: SECTION_BG }}>
         <div className="max-w-6xl mx-auto">
@@ -523,7 +549,7 @@ function ContentShowcaseReduced() {
         </div>
       </section>
 
-      <StaticPhraseBlock phrases={VIDEO_MARQUEE_PHRASES} />
+      <StaticPhraseBlock phrases={P.video} />
 
       <section className="relative py-24 px-6" style={{ backgroundColor: SECTION_BG }}>
         <div className="max-w-6xl mx-auto">
@@ -556,22 +582,24 @@ function ContentShowcaseReduced() {
       {/* Static (no scrolling) stand-in for the marquee above — same
           wrapped-row treatment LogoMarquee uses for reduced motion. Sits
           after the video grid now, matching the animated version. */}
-      <StaticPhraseBlock phrases={WANT_CONTENT_MARQUEE_PHRASES} />
+      <StaticPhraseBlock phrases={P.want} />
     </>
   )
 }
 
 export default function ContentShowcase() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const { lang } = useLang()
+  const P = phrasesFor(lang)
   if (reduceMotion) return <ContentShowcaseReduced />
 
   return (
     <>
-      <PhraseMarquee phrases={IMAGE_MARQUEE_PHRASES} />
+      <PhraseMarquee phrases={P.image} />
       <PinnedImageGrid />
-      <PhraseMarquee phrases={VIDEO_MARQUEE_PHRASES} />
+      <PhraseMarquee phrases={P.video} />
       <PinnedVideoGrid />
-      <WantContentMarquee />
+      <WantContentMarquee phrases={P.want} />
     </>
   )
 }

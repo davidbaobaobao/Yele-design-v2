@@ -7,6 +7,7 @@ import { useCappedVideoPlayback } from '@/hooks/useCappedVideoPlayback'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useDealFade } from '@/components/DealFadeContext'
 import FeatureCard from './FeatureCard'
+import { useLang } from '@/context/LanguageContext'
 
 const MEDIA_DIR = '/media/beyond'
 
@@ -66,9 +67,20 @@ const CARDS: CardData[] = [
   },
 ]
 
+const CARDS_ES: CardData[] = [
+  { title: 'SEO', description: 'Posiciónate más alto en Google y que te encuentren más clientes locales.', videoBase: 'SEO' },
+  { title: 'Google Ads', description: 'Campañas gestionadas que atraen visitantes listos para comprar.', videoBase: 'ADS' },
+  { title: 'Campañas de marketing', description: 'Contenido y promociones continuas, hechas por nosotros.', videoBase: 'Marketing' },
+  { title: 'Recepcionista con IA', description: 'Una recepcionista con IA que atiende llamadas 24/7.', videoBase: 'AIcall' },
+  { title: 'Automatizaciones', description: 'Seguimientos, reservas y recordatorios en piloto automático.', videoBase: 'automate' },
+  { title: 'Agentes y chat con IA', description: 'Un asistente inteligente que responde a tus visitantes al instante.', videoBase: 'AIchat' },
+]
+
 export default function BeyondWebsite() {
   const reduceMotion = !!useHydratedReducedMotion()
   const { pastThreshold } = useDealFade()
+  const { t, lang } = useLang()
+  const cards = lang === 'es' ? CARDS_ES : CARDS
 
   const videoRefs = [
     useRef<HTMLVideoElement>(null),
@@ -90,14 +102,14 @@ export default function BeyondWebsite() {
     return (
       <section className="relative bg-white py-28 px-6">
         <div className="max-w-6xl mx-auto">
-          <span className="block font-mono text-sm text-muted mb-4">BEYOND THE WEBSITE</span>
+          <span className="block font-mono text-sm text-muted mb-4">{t('MÁS ALLÁ DE LA WEB', 'BEYOND THE WEBSITE')}</span>
           <h2 className="font-display text-ink text-[clamp(1.75rem,2.5vw,2.5rem)] leading-tight">
-            Everything that makes your website work <TextGradient as="span">harder</TextGradient>.
+            {t('Todo lo que hace que tu web trabaje ', 'Everything that makes your website work ')}<TextGradient as="span">{t('más duro', 'harder')}</TextGradient>.
           </h2>
           <div className="border-t border-hairline mt-8" />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
-            {CARDS.map((card, i) => (
+            {cards.map((card, i) => (
               <FeatureCard
                 key={card.videoBase}
                 card={{
@@ -139,19 +151,19 @@ export default function BeyondWebsite() {
           animate={{ color: secondaryColor }}
           transition={FLIP_TRANSITION}
         >
-          BEYOND THE WEBSITE
+          {t('MÁS ALLÁ DE LA WEB', 'BEYOND THE WEBSITE')}
         </motion.span>
         <motion.h2
           className="font-display text-[clamp(1.75rem,2.5vw,2.5rem)] leading-tight"
           animate={{ color: primaryColor }}
           transition={FLIP_TRANSITION}
         >
-          Everything that makes your website work <TextGradient as="span">harder</TextGradient>.
+          {t('Todo lo que hace que tu web trabaje ', 'Everything that makes your website work ')}<TextGradient as="span">{t('más duro', 'harder')}</TextGradient>.
         </motion.h2>
         <motion.div className="border-t mt-8" animate={{ borderColor: hairlineColor }} transition={FLIP_TRANSITION} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mt-16">
-          {CARDS.map((card, i) => (
+          {cards.map((card, i) => (
             <FeatureCard
               key={card.videoBase}
               card={{

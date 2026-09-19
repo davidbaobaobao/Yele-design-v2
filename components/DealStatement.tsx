@@ -3,6 +3,7 @@
 import { motion, type Transition, type Variants } from 'framer-motion'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
+import { useLang } from '@/context/LanguageContext'
 
 // Fixed dark section — no fade of its own anymore. It sits right after
 // LatestFeaturedWork, which now owns the white->black flip shared with
@@ -29,6 +30,7 @@ const CONTAINER_VARIANTS: Variants = {
 
 export default function DealStatement() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const { t } = useLang()
 
   const lineClass = 'font-display text-left leading-tight text-[clamp(1.75rem,3vw,3rem)]'
 
@@ -37,14 +39,14 @@ export default function DealStatement() {
       <section data-nav-dark className="relative py-32 px-6" style={{ backgroundColor: BG }}>
         <div className="max-w-4xl mx-auto" style={{ color: TEXT }}>
           <p className={lineClass}>
-            Here&apos;s the <TextGradient as="span">deal</TextGradient>:
+            {t('Este es el ', 'Here’s the ')}<TextGradient as="span">{t('trato', 'deal')}</TextGradient>:
           </p>
-          <p className={lineClass}>we become your website team.</p>
-          <p className={lineClass}>We design it, fill it with content, keep it fast and secure —</p>
+          <p className={lineClass}>{t('nos convertimos en tu equipo web.', 'we become your website team.')}</p>
+          <p className={lineClass}>{t('La diseñamos, la llenamos de contenido, la mantenemos rápida y segura —', 'We design it, fill it with content, keep it fast and secure —')}</p>
           <p className={lineClass}>
-            <TextGradient as="span">month after month</TextGradient>.
+            <TextGradient as="span">{t('mes tras mes', 'month after month')}</TextGradient>.
           </p>
-          <p className={lineClass}>You run your business. We run the website.</p>
+          <p className={lineClass}>{t('Tú llevas tu negocio. Nosotros llevamos la web.', 'You run your business. We run the website.')}</p>
         </div>
       </section>
     )
@@ -61,19 +63,19 @@ export default function DealStatement() {
         viewport={{ once: true, amount: 0.4 }}
       >
         <motion.p className={lineClass} variants={LINE_VARIANTS}>
-          Here&apos;s the <TextGradient as="span">deal</TextGradient>:
+          {t('Este es el ', 'Here’s the ')}<TextGradient as="span">{t('trato', 'deal')}</TextGradient>:
         </motion.p>
         <motion.p className={lineClass} variants={LINE_VARIANTS}>
-          we become your website team.
+          {t('nos convertimos en tu equipo web.', 'we become your website team.')}
         </motion.p>
         <motion.p className={lineClass} variants={LINE_VARIANTS}>
-          We design it, fill it with content, keep it fast and secure —
+          {t('La diseñamos, la llenamos de contenido, la mantenemos rápida y segura —', 'We design it, fill it with content, keep it fast and secure —')}
         </motion.p>
         <motion.p className={lineClass} variants={LINE_VARIANTS}>
-          <TextGradient as="span">month after month</TextGradient>.
+          <TextGradient as="span">{t('mes tras mes', 'month after month')}</TextGradient>.
         </motion.p>
         <motion.p className={lineClass} variants={LINE_VARIANTS}>
-          You run your business. We run the website.
+          {t('Tú llevas tu negocio. Nosotros llevamos la web.', 'You run your business. We run the website.')}
         </motion.p>
       </motion.div>
     </section>

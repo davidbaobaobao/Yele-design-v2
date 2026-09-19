@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
+import { useLang } from '@/context/LanguageContext'
 
 // ffmpeg -i public/media/conveyor/conveyor.mp4 -vframes 1 -q:v 3 conveyor_poster.jpg
 // then cwebp -q 70 conveyor_poster.jpg -o conveyor_poster.webp — first-frame
@@ -18,6 +19,7 @@ const POSTER = '/media/conveyor_poster.webp'
 const VIDEO_SRC = '/media/conveyor.mp4'
 
 const WORDS = ['Fast', 'Secure', 'Reliable', 'Responsive']
+const WORDS_ES = ['Rápida', 'Segura', 'Fiable', 'Adaptable']
 
 // Sits right after ContentShowcase (the animation section) — replaces the
 // temporarily-disabled ConveyorCards WebGL embed at that exact spot (see
@@ -26,6 +28,7 @@ const WORDS = ['Fast', 'Secure', 'Reliable', 'Responsive']
 // page entirely.
 export default function ConveyorVideoSection() {
   const reduceMotion = !!useHydratedReducedMotion()
+  const { t, lang } = useLang()
   const videoRef = useRef<HTMLVideoElement>(null)
 
   // Belt-and-suspenders alongside the `muted` attribute below — iOS Safari
@@ -86,11 +89,11 @@ export default function ConveyorVideoSection() {
           section-header size, not the hero's own larger scale. */}
       <div className="relative z-10 h-full flex items-start pt-28 md:pt-36 pl-8 sm:pl-16 md:pl-28 lg:pl-40 xl:pl-48 pr-6 md:pr-8 pointer-events-none">
         <h2 className="font-display leading-tight text-[clamp(1.5rem,2.6vw,2.75rem)]" style={{ color: '#F2F0EB' }}>
-          <span className="sr-only">We make your website fast, secure, reliable, responsive.</span>
+          <span className="sr-only">{t('Hacemos tu web rápida, segura, fiable y adaptable.', 'We make your website fast, secure, reliable, responsive.')}</span>
           <span aria-hidden="true">
-            We make your website
+            {t('Hacemos tu web', 'We make your website')}
             <br />
-            <TypewriterWord words={WORDS} reduceMotion={reduceMotion} />
+            <TypewriterWord words={lang === 'es' ? WORDS_ES : WORDS} reduceMotion={reduceMotion} />
           </span>
         </h2>
       </div>

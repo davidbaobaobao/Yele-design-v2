@@ -6,6 +6,7 @@ import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsLowPowerDevice } from '@/hooks/useIsLowPowerDevice'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
+import { useLang } from '@/context/LanguageContext'
 
 const SRC = '/media/8rubik/8rubik.html'
 // No portrait variant shot yet — same poster serves both the always-on
@@ -14,6 +15,7 @@ const SRC = '/media/8rubik/8rubik.html'
 const POSTER = '/media/8rubik/poster.jpeg'
 
 const WORDS = ['Improve', 'Upgrade', 'Optimize', 'Refine']
+const WORDS_ES = ['Mejoramos', 'Potenciamos', 'Optimizamos', 'Perfeccionamos']
 
 // Same-origin only — reaches into the iframe's own contentWindow, purely
 // to forward wheel so the page scrolls over the iframe instead of the
@@ -38,20 +40,22 @@ function tuneRubikScene(iframe: HTMLIFrameElement) {
 // longest word's width; there's no centered content around it to keep
 // stable, the word just grows into the column's own generous right inset.
 function Headline({ reduceMotion }: { reduceMotion: boolean }) {
+  const { t, lang } = useLang()
+  const words = lang === 'es' ? WORDS_ES : WORDS
   return (
     <h2
       className="font-display leading-tight text-[clamp(1.5rem,2.6vw,2.75rem)]"
       style={{ color: '#F2F0EB' }}
     >
-      <span className="sr-only">We improve your website month after month.</span>
+      <span className="sr-only">{t('Mejoramos tu web mes tras mes.', 'We improve your website month after month.')}</span>
       <span aria-hidden="true">
         <span className="whitespace-nowrap">
-          We <TypewriterWord words={WORDS} reduceMotion={reduceMotion} expandRight />
+          {t('', 'We ')}<TypewriterWord words={words} reduceMotion={reduceMotion} expandRight />
         </span>
         <br />
-        your website
+        {t('tu web', 'your website')}
         <br />
-        <span className="whitespace-nowrap">month after month</span>
+        <span className="whitespace-nowrap">{t('mes tras mes', 'month after month')}</span>
       </span>
     </h2>
   )

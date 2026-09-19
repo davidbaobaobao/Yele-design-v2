@@ -16,15 +16,18 @@ export type FAQItem = {
 // untouched. Only the homepage passes `dark`.
 export default function FAQClient({
   faqs,
+  faqsEs,
   noBg,
   dark,
 }: {
   faqs: FAQItem[]
+  faqsEs?: FAQItem[]
   noBg?: boolean
   dark?: boolean
 }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const [open, setOpen] = useState<number | null>(null)
+  const items = lang === 'es' && faqsEs ? faqsEs : faqs
 
   const primaryText = dark ? 'text-bone' : 'text-ink'
   const secondaryText = dark ? 'text-bone/60' : 'text-muted'
@@ -56,7 +59,7 @@ export default function FAQClient({
         </motion.div>
 
         <div className={`flex flex-col divide-y ${divider}`}>
-          {faqs.map((faq, i) => (
+          {items.map((faq, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 16 }}

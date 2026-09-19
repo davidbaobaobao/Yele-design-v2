@@ -5,6 +5,7 @@ import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 import { useHydratedReducedMotion } from '@/hooks/useHydratedReducedMotion'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { TypewriterWord } from '@/components/ui/typewriter-word'
+import { useLang } from '@/context/LanguageContext'
 
 const VIDEO_DIR = '/media/hero6'
 const POSTER = `${VIDEO_DIR}/hero6_poster.jpg`
@@ -19,6 +20,16 @@ const WORDS = [
   'smooth',
   'engaging',
   'balanced',
+]
+const WORDS_ES = [
+  'memorable',
+  'profesional',
+  'fiable',
+  'icónica',
+  'depurada',
+  'fluida',
+  'atractiva',
+  'equilibrada',
 ]
 
 // ffmpeg -i hero6.mp4 -vf "scale=1280:-2" -c:v libx264 -profile:v main
@@ -45,6 +56,7 @@ const MOBILE_SRC = `${VIDEO_DIR}/hero6_mobile.mp4`
 export default function WebsiteWordsVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const reduceMotion = !!useHydratedReducedMotion()
+  const { t, lang } = useLang()
   const isMobile = useIsMobile()
 
   useVideoAutoplay(videoRef)
@@ -91,12 +103,12 @@ export default function WebsiteWordsVideo() {
               purely decorative and hidden from assistive tech so its
               rapidly-changing partial-word states are never announced. */}
           <span className="sr-only">
-            We make your website memorable, professional, trustworthy, iconic, streamlined, smooth, engaging, and balanced.
+            {t('Hacemos tu web memorable, profesional, fiable, icónica, depurada, fluida, atractiva y equilibrada.', 'We make your website memorable, professional, trustworthy, iconic, streamlined, smooth, engaging, and balanced.')}
           </span>
           <span aria-hidden="true">
-            We make your website
+            {t('Hacemos tu web', 'We make your website')}
             <br />
-            <TypewriterWord words={WORDS} reduceMotion={reduceMotion} />
+            <TypewriterWord words={lang === 'es' ? WORDS_ES : WORDS} reduceMotion={reduceMotion} />
           </span>
         </h2>
       </div>

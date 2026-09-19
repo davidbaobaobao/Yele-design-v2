@@ -4,7 +4,7 @@ import Hero from '@/components/Hero'
 // Mission is disabled for now (see below) — component kept in the codebase,
 // just not imported/rendered. Re-add this import when it's wanted again.
 // import Mission from '@/components/Mission'
-import { EnLangProvider } from '@/components/LangProvider'
+import { LanguageProvider } from '@/context/LanguageContext'
 import { DealFadeProvider } from '@/components/DealFadeContext'
 
 // Below-fold sections — code-split into separate chunks to reduce initial JS
@@ -37,9 +37,9 @@ const Footer               = dynamic(() => import('@/components/Footer'))
 // copy-pasting section markup. `variant="agency"` swaps just the hero and
 // six-feature-card copy for that route (see Hero.tsx / WhyYele.tsx) —
 // everything else stays pixel-identical between the two routes.
-export default function HomePage({ variant = 'default' }: { variant?: 'default' | 'agency' } = {}) {
+export default function HomePage({ variant = 'default', locale = 'en' }: { variant?: 'default' | 'agency'; locale?: 'en' | 'es' | 'zh' } = {}) {
   return (
-    <EnLangProvider>
+    <LanguageProvider initialLang={locale}>
       <Nav />
       <main id="main-content">
         <div id="dark-zone">
@@ -76,12 +76,12 @@ export default function HomePage({ variant = 'default' }: { variant?: 'default' 
         <div style={{ backgroundColor: '#0D0E12' }} className="h-20 md:h-32" aria-hidden="true" />
         <ContactForm />
         <WhatWeDo />
-        <Testimonios noBg />
+        <Testimonios noBg locale={locale} />
         <FAQ dark />
         <VideoSnapController />
       </main>
       <Footer />
       <FloatingStartFreeCTA />
-    </EnLangProvider>
+    </LanguageProvider>
   )
 }
