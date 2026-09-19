@@ -290,12 +290,17 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
     // answer comes back instantly (e.g. a precomputed showcase/random site).
     const MIN_LOADING_MS = 5000
     const timer = setInterval(() => setLine(l => (l + 1) % loadingLines.length), 1400)
-    // Smooth, always-moving progress that asymptotes toward 98% over time
-    // (≈63% at 6s, 86% at 12s, 95% at 18s) — never jumps then freezes.
+    // Mostly-LINEAR progress so it doesn't shoot to ~98 then freeze (looks
+    // glitched). Climbs steadily to 92% over the expected duration, then keeps
+    // creeping slowly (never fully stalls) until the answer arrives → 100.
+    const EXPECTED_MS = 26000
     progRef.current = setInterval(() => {
       const elapsed = Date.now() - started
-      setProgress(Math.min(98, Math.round(100 * (1 - Math.exp(-elapsed / 6000)))))
-    }, 150)
+      const p = elapsed < EXPECTED_MS
+        ? (elapsed / EXPECTED_MS) * 92
+        : 92 + (1 - Math.exp(-(elapsed - EXPECTED_MS) / 9000)) * 7 // 92 → 99 slow creep
+      setProgress(Math.min(99, Math.round(p)))
+    }, 120)
     try {
       const res = await fetch('/api/webpolice/analyze', {
         method: 'POST',
@@ -369,18 +374,19 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
 
   return (
     <main className="relative">
-      <section className="relative min-h-screen overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
+      <section className="relative min-h-[100svh] overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
       <Gorilla side="left" vref={leftVid} hidden={moved} />
       <Gorilla side="right" vref={rightVid} hidden={moved} />
 
       {/* Hero — bottom half on mobile (gorillas take the top half); centered
-          on desktop. Slides fully up when the case opens. */}
+          on desktop. Uses 100svh so the bottom (chips) isn't hidden behind the
+          mobile browser UI. Slides fully up when the case opens. */}
       <div
-        className={`relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-end md:justify-center px-6 pb-[5vh] md:pb-0 text-center transition-transform duration-500 ease-in ${
+        className={`relative z-10 mx-auto flex min-h-[100svh] max-w-3xl flex-col items-center justify-end md:justify-center px-6 pb-[2.5vh] md:pb-0 text-center transition-transform duration-500 ease-in ${
           moved ? '-translate-y-[110vh]' : 'translate-y-0'
         }`}
       >
-        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.05]" style={{ fontSize: 'clamp(2rem, 5.4vw, 3.6rem)', textShadow: '0 6px 20px rgba(120,40,90,0.18), 0 2px 4px rgba(0,0,0,0.08)' }}>
+        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.05]" style={{ fontSize: 'clamp(1.7rem, 5.4vw, 3.6rem)', textShadow: '0 6px 20px rgba(120,40,90,0.18), 0 2px 4px rgba(0,0,0,0.08)' }}>
           {t.heroPre}
           <span className="font-normal italic" style={{ fontFamily: '"Snell Roundhand", "Brush Script MT", "Segoe Script", cursive' }}>
             {t.heroCursive}
@@ -388,16 +394,16 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
           {t.heroPost}
         </h1>
 
-        <ul className="mt-6 mx-auto inline-flex flex-col gap-2.5 text-left">
+        <ul className="mt-3 md:mt-6 mx-auto inline-flex flex-col gap-1.5 md:gap-2.5 text-left">
           {t.questions.map(q => (
             <li key={q} className="flex items-start gap-2.5">
               <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#16161A] font-body text-xs font-bold text-white shadow-[0_4px_10px_rgba(0,0,0,0.20)]">?</span>
-              <span className="font-body font-semibold text-[#16161A]/80 leading-snug" style={{ fontSize: 'clamp(0.95rem, 2.4vw, 1.2rem)', textShadow: '0 2px 8px rgba(120,40,90,0.12)' }}>{q}</span>
+              <span className="font-body font-semibold text-[#16161A]/80 leading-snug" style={{ fontSize: 'clamp(0.92rem, 2.4vw, 1.2rem)', textShadow: '0 2px 8px rgba(120,40,90,0.12)' }}>{q}</span>
             </li>
           ))}
         </ul>
 
-        <div className="mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3">
+        <div className="mt-4 md:mt-8 flex w-full max-w-lg flex-col sm:flex-row gap-3">
           <input
             type="text"
             value={url}
@@ -445,7 +451,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
         </p>
 
         {/* Known sites to try in one tap — good ones and famously rough ones. */}
-        <div className="mt-4 flex w-full max-w-lg flex-wrap items-center gap-2">
+        <div className="mt-3 md:mt-4 flex w-full max-w-lg flex-wrap items-center gap-2">
           <span className="font-body text-xs text-[#16161A]/55">{t.tryLabel}</span>
           {showcaseFor(locale).map(sIt => (
             <button
