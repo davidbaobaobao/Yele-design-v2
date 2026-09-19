@@ -28,6 +28,7 @@ const AUTO_ACCEPT_TIMEOUT_MS = 5000
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [isEu, setIsEu] = useState(true)
   const [prefs, setPrefs] = useState<Prefs>({ analytics: true, marketing: true })
   const bannerRef = useRef<HTMLDivElement>(null)
   // Guards against the explicit-click path and an auto-accept trigger both
@@ -41,11 +42,15 @@ export default function CookieBanner() {
 
   useEffect(() => {
     if (localStorage.getItem(CONSENT_KEY)) return
-    // Show the privacy/cookie banner for EU/EEA/UK visitors. The middleware
-    // sets `yele_eu` from geo — '0' means detected non-EU (e.g. US), where we
-    // suppress it; anything else (including unknown/no cookie yet) shows it.
-    const isKnownNonEu = document.cookie.split('; ').some(c => c === 'yele_eu=0')
-    if (!isKnownNonEu) setVisible(true)
+    // The middleware sets `yele_eu` from geo — '0' means detected non-EU (e.g.
+    // US). We now show the banner to EVERYONE, but the behaviour differs:
+    //  • Non-EU (US): a light, semitransparent notice that dismisses itself the
+    //    moment the visitor keeps going (scroll / type / click / route / timeout)
+    //    — implied consent.
+    //  • EU/unknown: the banner STAYS until an explicit Accept or Reject.
+    const nonEu = document.cookie.split('; ').some(c => c === 'yele_eu=0')
+    setIsEu(!nonEu)
+    setVisible(true)
   }, [])
 
   function commit(p: Prefs) {
@@ -81,7 +86,9 @@ export default function CookieBanner() {
   // down the already-granted default so this banner doesn't reappear next
   // visit. Nothing here needs to grant anything that wasn't already true.
   useEffect(() => {
-    if (!visible) return
+    // EU/unknown: no passive dismissal — the banner stays until an explicit
+    // Accept or Reject. Only non-EU (US) gets the implied "kept browsing" model.
+    if (!visible || isEu) return
     const persistDefault = () => commit({ analytics: true, marketing: true })
 
     const onScroll = () => {
@@ -91,8 +98,11 @@ export default function CookieBanner() {
       if (bannerRef.current?.contains(e.target as Node)) return
       persistDefault()
     }
+    // Typing anywhere (e.g. the Web Police search box) also counts as "kept going".
+    const onKey = () => persistDefault()
     const timer = setTimeout(persistDefault, AUTO_ACCEPT_TIMEOUT_MS)
 
+    window.addEventListener('keydown', onKey)
     window.addEventListener('scroll', onScroll, { passive: true })
     // Capture phase, not bubble: an in-banner click (e.g. "Manage") can
     // synchronously swap the collapsed view for the expanded panel before a
@@ -103,27 +113,28 @@ export default function CookieBanner() {
     // top-down before React's own handler, so e.target is still attached.
     document.addEventListener('click', onClick, true)
     return () => {
+      window.removeEventListener('keydown', onKey)
       window.removeEventListener('scroll', onScroll)
       document.removeEventListener('click', onClick, true)
       clearTimeout(timer)
     }
-  }, [visible])
+  }, [visible, isEu])
 
   // Route-change trigger — separate effect since it only needs to react to
   // pathname actually changing, not fire on mount like the others above.
   useEffect(() => {
-    if (!visible) return
+    if (!visible || isEu) return
     if (pathname !== firstPathnameRef.current) {
       commit({ analytics: true, marketing: true })
     }
-  }, [pathname, visible])
+  }, [pathname, visible, isEu])
 
   if (!visible) return null
 
   return (
     <div
       ref={bannerRef}
-      className="fixed bottom-0 left-0 right-0 z-[60] bg-white/96 backdrop-blur-md border-t border-hairline shadow-[0_-2px_20px_rgba(0,0,0,0.06)]"
+      className="fixed bottom-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-xl border-t border-hairline shadow-[0_-2px_20px_rgba(0,0,0,0.06)]"
     >
       {expanded ? (
         <div className="max-w-2xl mx-auto px-4 py-4">
@@ -196,7 +207,9 @@ export default function CookieBanner() {
       ) : (
         <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center gap-3">
           <p className="font-body text-xs text-muted flex-1 min-w-0 truncate">
-            By continuing to browse, you agree to our use of cookies.
+            {isEu
+              ? 'We use cookies to analyse traffic and improve the site. Your choice, your call.'
+              : 'By continuing to browse, you agree to our use of cookies.'}
           </p>
           <div className="flex items-center gap-1.5 shrink-0">
             <a
@@ -216,6 +229,12 @@ export default function CookieBanner() {
               className="font-body text-xs text-muted hover:text-ink transition-colors px-2 py-1.5"
             >
               Reject
+            </button>
+            <button
+              onClick={() => save({ analytics: true, marketing: true })}
+              className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
+            >
+              Accept
             </button>
           </div>
         </div>

@@ -77,6 +77,7 @@ export async function GET(request: Request) {
     ['Pressed play (read aloud)', fs('speaker_click')],
     ['Scrolled to mid (design-year)', fs('scroll_mid')],
     ['Reached the plug form', fs('plug_view')],
+    ['Pressed a share button', fs('share_click')],
     ['Clicked “Check out our site”', fs('letsbuild_click')],
   ]
   const funnelHasData = funnelSteps.some(([, n]) => n > 0)

@@ -31,20 +31,54 @@ function sessionId(): string {
   }
 }
 
-// ── Lightweight funnel telemetry ─────────────────────────────────────────────
+// ── Lightweight funnel telemetry (consent-aware) ─────────────────────────────
 // Fire-and-forget via sendBeacon so it never blocks or slows the page. Each
-// event is sent at most once per page load (deduped here), which is all the
-// daily report needs to count distinct visitors at each step.
+// event is sent at most once per page load (deduped here).
+//
+// Consent model, matching the cookie banner:
+//  • Non-EU (US): implied consent — events send immediately.
+//  • EU + explicit Accept: events send immediately (+ any buffered ones flush).
+//  • EU + explicit Reject: nothing is ever sent.
+//  • EU + no choice yet: events are BUFFERED locally and only sent at the end of
+//    the session (pagehide) if the visitor hasn't rejected by then.
 const firedEvents = new Set<string>()
-function track(event: string, locale: string) {
+const eventBuffer: { event: string; locale: string }[] = []
+
+function isEuVisitor(): boolean {
+  // The middleware sets `yele_eu=0` for detected non-EU (e.g. US). Anything
+  // else (incl. unknown) is treated as EU for the stricter consent path.
+  try { return !document.cookie.split('; ').some(c => c === 'yele_eu=0') } catch { return true }
+}
+function analyticsConsent(): 'accept' | 'reject' | 'none' {
   try {
-    if (firedEvents.has(event)) return
-    firedEvents.add(event)
+    const raw = localStorage.getItem('cookie-consent')
+    if (!raw) return 'none'
+    return JSON.parse(raw).analytics ? 'accept' : 'reject'
+  } catch { return 'none' }
+}
+function sendEvent(event: string, locale: string) {
+  try {
     const payload = JSON.stringify({ event, locale, sessionId: sessionId() })
     const blob = new Blob([payload], { type: 'application/json' })
     if (!navigator.sendBeacon?.('/api/webpolice/event', blob)) {
       fetch('/api/webpolice/event', { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true }).catch(() => {})
     }
+  } catch { /* best-effort */ }
+}
+// Flush any buffered EU events — unless the visitor has explicitly rejected.
+function flushEventBuffer() {
+  if (analyticsConsent() === 'reject') { eventBuffer.length = 0; return }
+  while (eventBuffer.length) { const e = eventBuffer.shift()!; sendEvent(e.event, e.locale) }
+}
+function dropEventBuffer() { eventBuffer.length = 0 }
+function track(event: string, locale: string) {
+  try {
+    if (firedEvents.has(event)) return
+    firedEvents.add(event)
+    const consent = analyticsConsent()
+    if (consent === 'reject') return                          // never send
+    if (!isEuVisitor() || consent === 'accept') { sendEvent(event, locale); return }
+    eventBuffer.push({ event, locale })                       // EU, undecided → hold
   } catch { /* best-effort, never throws into the UI */ }
 }
 
@@ -415,6 +449,20 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
     return () => window.removeEventListener('pagehide', onLeave)
   }, [locale])
 
+  // Consent-aware flush of buffered funnel events (EU visitors who hadn't yet
+  // chosen). On an explicit choice: Accept flushes, Reject discards. At session
+  // end (pagehide): flush unless they rejected.
+  useEffect(() => {
+    const onConsent = () => (analyticsConsent() === 'reject' ? dropEventBuffer() : flushEventBuffer())
+    const onHide = () => flushEventBuffer()
+    window.addEventListener('cookie-consent-updated', onConsent)
+    window.addEventListener('pagehide', onHide)
+    return () => {
+      window.removeEventListener('cookie-consent-updated', onConsent)
+      window.removeEventListener('pagehide', onHide)
+    }
+  }, [])
+
   // Shared link support: /webpolice?url=example.com auto-runs on load.
   useEffect(() => {
     track('page_view', locale)
@@ -748,7 +796,7 @@ function RantSpeaker({ parts, lang, t, onPlay }: { parts: string[]; lang: string
   )
 }
 
-function ShareBar({ result, t, basePath }: { result: Result; t: WPStrings; basePath: string }) {
+function ShareBar({ result, t, basePath, locale }: { result: Result; t: WPStrings; basePath: string; locale: string }) {
   const [copied, setCopied] = useState(false)
   const link = typeof window !== 'undefined' ? `${window.location.origin}${basePath}?url=${encodeURIComponent(result.url)}` : ''
   const text = t.shareText(result.quality)
@@ -784,11 +832,11 @@ function ShareBar({ result, t, basePath }: { result: Result; t: WPStrings; baseP
       <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40 mb-3">{t.shareTitle}</p>
       <div className="flex flex-wrap items-center justify-center gap-2.5">
         {targets.map(t => (
-          <button key={t.key} type="button" onClick={t.go} className={iconBtn} aria-label={`Share on ${t.label}`}>
+          <button key={t.key} type="button" onClick={() => { track('share_click', locale); t.go() }} className={iconBtn} aria-label={`Share on ${t.label}`}>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d={ICONS[t.key]} /></svg>
           </button>
         ))}
-        <button type="button" onClick={copy} className={iconBtn} aria-label="Copy link">
+        <button type="button" onClick={() => { track('share_click', locale); copy() }} className={iconBtn} aria-label="Copy link">
           {copied ? (
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
           ) : (
@@ -848,7 +896,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
           {host}
         </a>
 
-        <ShareBar result={result} t={t} basePath={basePath} />
+        <ShareBar result={result} t={t} basePath={basePath} locale={locale} />
 
         {result.summary && <p className="font-body text-lg md:text-2xl text-white/90 mt-8 max-w-xl mx-auto leading-snug">“{result.summary}”</p>}
 

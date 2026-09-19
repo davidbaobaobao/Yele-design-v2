@@ -18,6 +18,7 @@ const ALLOWED = new Set([
   'speaker_click',  // pressed the read-aloud button
   'scroll_mid',     // scrolled to the "What year your website feels" area
   'plug_view',      // reached the shameless-plug form
+  'share_click',    // pressed a share / copy-link button
   'letsbuild_click',// clicked the "Check out our site" link
 ])
 
