@@ -31,6 +31,39 @@ function sessionId(): string {
   }
 }
 
+// ── Lightweight funnel telemetry ─────────────────────────────────────────────
+// Fire-and-forget via sendBeacon so it never blocks or slows the page. Each
+// event is sent at most once per page load (deduped here), which is all the
+// daily report needs to count distinct visitors at each step.
+const firedEvents = new Set<string>()
+function track(event: string, locale: string) {
+  try {
+    if (firedEvents.has(event)) return
+    firedEvents.add(event)
+    const payload = JSON.stringify({ event, locale, sessionId: sessionId() })
+    const blob = new Blob([payload], { type: 'application/json' })
+    if (!navigator.sendBeacon?.('/api/webpolice/event', blob)) {
+      fetch('/api/webpolice/event', { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true }).catch(() => {})
+    }
+  } catch { /* best-effort, never throws into the UI */ }
+}
+
+// An invisible 1px sentinel that fires a funnel event the first time it scrolls
+// into view (IntersectionObserver — cheap, no scroll listeners).
+function TrackSeen({ event, locale }: { event: string; locale: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { track(event, locale); io.disconnect() }
+    }, { threshold: 0.01 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [event, locale])
+  return <div ref={ref} aria-hidden="true" className="h-px w-full" />
+}
+
 
 // A full-page screenshot can be several thousand pixels tall. The card keeps a
 // fixed height and the image is dragged inside it, so a long site can't push
@@ -309,6 +342,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   async function run(override?: string) {
     const value = (override ?? url).trim()
     if (!value || phase === 'loading') return
+    track('search', locale)
     if (override && override !== url) setUrl(override)
     setError('')
     setResult(null)
@@ -352,6 +386,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
         if (wait > 0) await new Promise(r => setTimeout(r, wait))
         setResult(data)
         setPhase('done')
+        track('result_view', locale)
       }
     } catch {
       setError(t.errWall)
@@ -382,6 +417,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
 
   // Shared link support: /webpolice?url=example.com auto-runs on load.
   useEffect(() => {
+    track('page_view', locale)
     const p = new URLSearchParams(window.location.search).get('url')
     if (p) run(p)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -589,7 +625,7 @@ const ICONS: Record<string, string> = {
 // Reads the verdict + rant aloud with a deliberately robotic, Loquendo-ish
 // voice (Web Speech API — free, on-device, no server cost). Click to start,
 // click again to stop.
-function RantSpeaker({ parts, lang, t }: { parts: string[]; lang: string; t: WPStrings }) {
+function RantSpeaker({ parts, lang, t, onPlay }: { parts: string[]; lang: string; t: WPStrings; onPlay?: () => void }) {
   const [speaking, setSpeaking] = useState(false)
   const supported = typeof window !== 'undefined' && 'speechSynthesis' in window
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -649,6 +685,7 @@ function RantSpeaker({ parts, lang, t }: { parts: string[]; lang: string; t: WPS
   }
 
   const start = () => {
+    onPlay?.()
     window.speechSynthesis.cancel()
     cancelledRef.current = false
     const voice = pickVoice()
@@ -840,6 +877,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
             ].filter(Boolean)}
             lang={t.ttsLang}
             t={t}
+            onPlay={() => track('speaker_click', locale)}
           />
         </div>
       </div>
@@ -869,7 +907,8 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         </TiltCard>
       )}
 
-      {/* Estimated design year */}
+      {/* Estimated design year — mid-page marker for the funnel report */}
+      <TrackSeen event="scroll_mid" locale={locale} />
       {result.designYear && (
         <TiltCard className="mt-4 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">{t.designYearLabel}</p>
@@ -1005,6 +1044,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
       </div>
 
       {/* Shameless plug + form — light card to highlight */}
+      <TrackSeen event="plug_view" locale={locale} />
       <TiltCard className="mt-6 rounded-3xl bg-[#F7F6F3] p-6 md:p-8 shadow-2xl shadow-black/30">
         <p className="font-mono text-xs uppercase tracking-[0.16em] mb-2" style={{ color: '#B23FA3' }}>{t.plugKicker}</p>
         <h3 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: '#16161A' }}>
@@ -1038,6 +1078,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
             </p>
             <a
               href={locale === 'en' ? '/letsbuild' : `/${locale}/letsbuild`}
+              onClick={() => track('letsbuild_click', locale)}
               className="mt-5 inline-flex items-center font-body font-semibold text-white underline underline-offset-4 decoration-white/50 hover:decoration-white transition-colors"
               style={{ fontSize: 'clamp(0.95rem, 3vw, 1.2rem)' }}
             >

@@ -268,3 +268,39 @@ export async function scansSince(windowMs: number): Promise<ScanRow[]> {
   memPrune()
   return mem.filter(r => !r.seed && r.mode !== 'seed' && new Date(r.created_at ?? 0).getTime() >= Date.now() - windowMs)
 }
+
+// ── Lightweight funnel events (webpolice_events) ─────────────────────────────
+// Fire-and-forget UX events (page_view, search, result_view, speaker, etc.)
+// sent from the client via navigator.sendBeacon. No IP, no PII — just an opaque
+// session id, so the daily report can count distinct visitors at each step.
+const EVENTS = 'webpolice_events'
+
+export async function logEvent(e: { session_id: string | null; locale: string; event: string; meta?: unknown }): Promise<void> {
+  const supabase = db()
+  if (!supabase) return
+  const { error } = await supabase.from(EVENTS).insert({
+    session_id: e.session_id, locale: e.locale, event: e.event, meta: e.meta ?? null,
+  })
+  if (error) console.error('[webpolice] logEvent failed:', error.message)
+}
+
+export type FunnelCounts = Record<string, { total: number; sessions: number }>
+
+/** Per-event totals and distinct-session counts since `sinceIso`. */
+export async function eventFunnelSince(sinceIso: string): Promise<FunnelCounts> {
+  const supabase = db()
+  if (!supabase) return {}
+  const { data, error } = await supabase.from(EVENTS)
+    .select('event, session_id').gte('created_at', sinceIso).limit(100_000)
+  if (error) { console.error('[webpolice] eventFunnelSince failed:', error.message); return {} }
+  const out: FunnelCounts = {}
+  const seen: Record<string, Set<string>> = {}
+  for (const r of (data ?? []) as { event: string; session_id: string | null }[]) {
+    const ev = r.event
+    if (!out[ev]) { out[ev] = { total: 0, sessions: 0 }; seen[ev] = new Set() }
+    out[ev].total++
+    const s = r.session_id ?? ''
+    if (s && !seen[ev].has(s)) { seen[ev].add(s); out[ev].sessions++ }
+  }
+  return out
+}

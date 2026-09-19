@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { scansSince } from '@/lib/webpolice/store'
+import { scansSince, eventFunnelSince } from '@/lib/webpolice/store'
 
 export const runtime = 'nodejs'
 
@@ -65,6 +65,38 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: true, sent: false, sites: sites.length })
   }
 
+  // ── Visitor funnel (from the lightweight webpolice_events beacons) ──────────
+  const funnel = await eventFunnelSince(new Date(Date.now() - 24 * 3600_000).toISOString())
+  const fs = (k: string) => funnel[k]?.sessions ?? 0
+  const visitors = fs('page_view')
+  const pctOf = (n: number) => (visitors ? Math.round((n / visitors) * 100) : 0)
+  const funnelSteps: [string, number][] = [
+    ['Opened the page', visitors],
+    ['Ran a search', fs('search')],
+    ['Saw a result', fs('result_view')],
+    ['Pressed play (read aloud)', fs('speaker_click')],
+    ['Scrolled to mid (design-year)', fs('scroll_mid')],
+    ['Reached the plug form', fs('plug_view')],
+    ['Clicked “Check out our site”', fs('letsbuild_click')],
+  ]
+  const funnelHasData = funnelSteps.some(([, n]) => n > 0)
+  const funnelBlock = funnelHasData ? `
+    <h3 style="margin:26px 0 2px;font-size:15px">📊 Visitor funnel (last 24h)</h3>
+    <p style="margin:0 0 8px;color:#6F6373;font-size:12px">Distinct visitors reaching each step. % is of everyone who opened the page.</p>
+    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
+      <tr>
+        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Step</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Visitors</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">% of opened</th>
+      </tr>
+      ${funnelSteps.map(([label, n], i) => `
+      <tr>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(label)}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${n}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center;color:${i === 0 ? '#16161A' : '#6F6373'}">${i === 0 ? '100%' : pctOf(n) + '%'}</td>
+      </tr>`).join('')}
+    </table>` : ''
+
   const when = (iso?: string) =>
     new Date(iso ?? Date.now()).toLocaleString('en-GB', { timeZone: 'Europe/Madrid', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
 
@@ -116,6 +148,7 @@ export async function GET(request: Request) {
     <p style="margin:0 0 18px;color:#6F6373;font-size:13px">
       ${totalScans} completed search${totalScans === 1 ? '' : 'es'}${avg !== null ? ` · avg score ${avg}/100` : ''}${errSites.length ? ` · ${errored.length} errored` : ''}${abSites.length ? ` · ${abandoned.length} abandoned` : ''}
     </p>
+    ${funnelBlock}
     ${sites.length ? `<table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
       <tr>
         <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Site</th>

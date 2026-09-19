@@ -21,6 +21,7 @@ const site = (name: string, domain: string, tone?: 'good' | 'rough', url?: strin
 /** The six chips under the hero search box. */
 export const SHOWCASE: SiteRef[] = [
   site('Apple', 'apple.com', 'good'),
+  site('ChatGPT', 'chatgpt.com', 'good', 'https://chatgpt.com/'),
   site('Google', 'google.com', 'good'),
   site('The Boring Company', 'boringcompany.com', 'rough'),
   site('Berkshire Hathaway', 'berkshirehathaway.com', 'rough', 'https://www.berkshirehathaway.com/'),
@@ -92,6 +93,8 @@ export const POOL: SiteRef[] = [
 /** The chips shown under the search box on /es/webpolice. Recognisable AND
  *  actually capturable (many big Spanish sites are Cloudflare/DataDome-walled). */
 export const SHOWCASE_ES: SiteRef[] = [
+  site('ChatGPT', 'chatgpt.com', 'good', 'https://chatgpt.com/'),
+  site('SpanishDict', 'spanishdict.com', 'good', 'https://www.spanishdict.com/'),
   site('Mercadona', 'mercadona.es', 'rough', 'https://www.mercadona.es/'),
   site('Zara', 'zara.com', 'good', 'https://www.zara.com/es/'),
   site('Marca', 'marca.com', 'rough', 'https://www.marca.com/'),
