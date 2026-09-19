@@ -57,6 +57,8 @@ export default function ReceivedContent({
   const shownTiers = selected.length > 0 ? selected : allTiers
   const single = shownTiers.length === 1
   const foot = getFunnelDict(locale).footer
+  // Spanish gets its own /es/* legal pages; other locales use the English ones.
+  const legalPrefix = locale === 'es' ? '/es' : ''
 
   return (
     <div className="min-h-screen bg-white flex justify-center px-6 py-16">
@@ -131,13 +133,13 @@ export default function ReceivedContent({
             © {new Date().getFullYear()} Yele. {foot.rights}
           </p>
           <nav className="flex flex-wrap gap-x-6 gap-y-2">
-            <Link href="/terms" className="font-body text-sm text-muted hover:text-ink transition-colors">
+            <Link href={legalPrefix + '/terms'} className="font-body text-sm text-muted hover:text-ink transition-colors">
               {foot.terms}
             </Link>
-            <Link href="/privacy-policy" className="font-body text-sm text-muted hover:text-ink transition-colors">
+            <Link href={legalPrefix + '/privacy-policy'} className="font-body text-sm text-muted hover:text-ink transition-colors">
               {foot.privacy}
             </Link>
-            <Link href="/legal-notice" className="font-body text-sm text-muted hover:text-ink transition-colors">
+            <Link href={legalPrefix + '/legal-notice'} className="font-body text-sm text-muted hover:text-ink transition-colors">
               {foot.legal}
             </Link>
           </nav>

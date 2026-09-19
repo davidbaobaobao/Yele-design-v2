@@ -41,6 +41,8 @@ const DARK = '#0D0E12'
 // defaults to 'en' so the existing English pages render exactly as before.
 export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSource?: string; locale?: Locale }) {
   const d = getFunnelDict(locale)
+  // Spanish gets its own /es/* legal pages; other locales use the English ones.
+  const legalPrefix = locale === 'es' ? '/es' : ''
   const planOptions = d.pricing.tiers.map(t => t.planValue)
 
   return (
@@ -298,13 +300,13 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
               © {new Date().getFullYear()} Yele. {d.footer.rights}
             </p>
             <nav className="flex flex-wrap gap-x-6 gap-y-2">
-              <Link href="/terms" className="font-body text-sm text-white/60 hover:text-white transition-colors">
+              <Link href={legalPrefix + '/terms'} className="font-body text-sm text-white/60 hover:text-white transition-colors">
                 {d.footer.terms}
               </Link>
-              <Link href="/privacy-policy" className="font-body text-sm text-white/60 hover:text-white transition-colors">
+              <Link href={legalPrefix + '/privacy-policy'} className="font-body text-sm text-white/60 hover:text-white transition-colors">
                 {d.footer.privacy}
               </Link>
-              <Link href="/legal-notice" className="font-body text-sm text-white/60 hover:text-white transition-colors">
+              <Link href={legalPrefix + '/legal-notice'} className="font-body text-sm text-white/60 hover:text-white transition-colors">
                 {d.footer.legal}
               </Link>
             </nav>

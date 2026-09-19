@@ -138,14 +138,31 @@ export default function TermsAndConditions() {
             </section>
 
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">12. Changes to These Terms</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">12. Web Police Tool (yele.design/webpolice)</h2>
+              <p className="text-muted mb-3">
+                Yele offers a free, satirical tool called &ldquo;Web Police&rdquo; that reviews the design of a website you submit. The tool is provided <span className="text-ink font-medium">free of charge, &ldquo;as is&rdquo; and for entertainment and informational purposes only</span>. The scores, verdicts, &ldquo;charges&rdquo;, and commentary it produces are <span className="text-ink font-medium">subjective opinion, parody and satire generated automatically</span> — they are not a professional design audit, certification, or statement of fact about any website, business or person, and must not be relied upon as such.
+              </p>
+              <p className="text-muted mb-3">
+                By submitting a website address to the tool you confirm that doing so does not breach any law or third-party right, and you acknowledge that Yele <span className="text-ink font-medium">stores the submitted URL, a screenshot of the public homepage, the generated analysis and related technical metadata</span> in its database, and may retain and use them to operate and improve the tool and Yele&rsquo;s services and to study website-design trends, as described in our{' '}
+                <a href="/privacy-policy" className="text-[#0066CC] hover:underline">Privacy Policy</a>.
+              </p>
+              <p className="text-muted mb-3">
+                Where a submitted site is a business website, Yele may review the business&rsquo;s <span className="text-ink font-medium">publicly available business contact details</span> and may contact the business, during normal business hours and in accordance with applicable law, about its website and Yele&rsquo;s services. Any such recipient may opt out at any time as described in the Privacy Policy. You agree not to use the tool unlawfully, to overload or abuse it, or to submit sites for the purpose of harassing, defaming or harming any third party.
+              </p>
+              <p className="text-muted">
+                To the fullest extent permitted by law, Yele accepts no liability arising from the use of, or reliance on, the Web Police tool or its output.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">13. Changes to These Terms</h2>
               <p className="text-muted">
                 Yele may modify these Terms with at least 15 days&rsquo; notice by email. Continued use after that period constitutes acceptance of the updated Terms.
               </p>
             </section>
 
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">13. Governing Law</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">14. Governing Law</h2>
               <p className="text-muted">
                 These Terms are governed by Spanish law. Any dispute arising from the service will be subject to the competent courts, without prejudice to any mandatory consumer-protection rights available to you under the laws of your place of residence. Yele operates internationally and serves clients including in the United States.
               </p>

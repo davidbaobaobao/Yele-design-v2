@@ -66,6 +66,26 @@ export default function PrivacyPolicy() {
             </section>
 
             <section>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">The Web Police Tool</h2>
+              <p className="text-muted mb-3">
+                &ldquo;Web Police&rdquo; is a free, satirical tool at yele.design/webpolice that reviews the design of a website you submit. When you or anyone submits a website address (URL) to the tool, we process and store: the URL, a screenshot of its publicly accessible homepage, the automated design analysis we generate from it, and technical metadata about the request (such as a truncated/derived identifier of the requesting device and the approximate country). We keep these submissions and analyses in our database so that we can operate the tool, serve repeat results without re-processing, study website design trends, and improve our own products and services.
+              </p>
+              <p className="text-muted mb-3">
+                Where a submitted website is a <span className="text-ink font-medium">business</span> website, it typically displays that business&rsquo;s own <span className="text-ink font-medium">publicly available contact details</span> (for example a business name, a public business phone number, a public business email address, or links to public social-media profiles). We may collect, store and review these publicly available business contact details together with our design analysis, and we may use them to <span className="text-ink font-medium">contact the business about its website and about our design services</span> (business-to-business direct marketing). We do this only for business/organisation contact points, using the channels the business itself has made public — which may include email, telephone, WhatsApp or other messaging apps, SMS, and public social-media accounts — and we carry out any such outreach only during normal local business hours and in accordance with applicable law and the terms of the platform used.
+              </p>
+              <p className="text-muted mb-3">
+                <span className="text-ink font-medium">Legal basis.</span> For operating the tool and for business-to-business outreach we rely on our <span className="text-ink font-medium">legitimate interests</span> (Art. 6.1.f GDPR; see Recital 47, which recognises direct marketing as a possible legitimate interest), balanced against the rights and interests of the people concerned. Where a particular channel legally requires prior consent — for example automated or AI/prerecorded calls, marketing SMS, or marketing email in jurisdictions that require it — we will not use that channel without the consent required by law. We do not knowingly target the private, personal contact details of individuals, and we do not submit or profile special categories of data.
+              </p>
+              <p className="text-muted mb-3">
+                <span className="text-ink font-medium">Your choices and right to object.</span> A business (or person) may object to this processing and to any direct marketing at any time, with no need to give a reason (Art. 21 GDPR). To stop all outreach, be removed from our contact list and, if you wish, have the related record deleted, email{' '}
+                <a href="mailto:info@yele.design" className="text-[#0066CC] hover:underline">info@yele.design</a>; you may also reply <span className="text-ink font-medium">STOP</span> to any text message or tell us during any call. We honour these requests promptly and add the contact to a suppression list so we do not reach out again. We also honour applicable do-not-contact registries (such as Spain&rsquo;s <span className="text-ink font-medium">Lista Robinson</span>).
+              </p>
+              <p className="text-muted">
+                The design analysis produced by Web Police is subjective satire and opinion generated automatically; it is not a professional audit or a statement of fact about the business or its work.
+              </p>
+            </section>
+
+            <section>
               <h2 className="font-display font-semibold text-xl text-ink mb-3">Legal Basis (GDPR)</h2>
               <p className="text-muted">
                 We process personal data based on your consent (Art. 6.1.a GDPR), the performance of our service agreement with you (Art. 6.1.b GDPR), and our legitimate interest in operating and improving our service (Art. 6.1.f GDPR).
@@ -99,6 +119,9 @@ export default function PrivacyPolicy() {
                 </li>
                 <li>
                   <span className="text-ink font-medium">Groq, Inc.</span> — powers our AI chat assistant; messages you send to the assistant are processed by Groq to generate responses.
+                </li>
+                <li>
+                  <span className="text-ink font-medium">Anthropic, PBC</span> — the AI model that generates the Web Police design analysis from a screenshot of the site you submit.
                 </li>
                 <li>
                   <span className="text-ink font-medium">Resend</span> — transactional and notification emails.

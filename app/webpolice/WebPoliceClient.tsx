@@ -480,9 +480,9 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
         {/* Consent note under the CTA */}
         <p className="mt-2.5 max-w-lg text-center font-body text-[11px] leading-snug text-[#16161A]/45">
           {t.consentPre}{' '}
-          <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#16161A]/70">{t.consentTerms}</a>
+          <a href={locale === 'es' ? '/es/terms' : '/terms'} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#16161A]/70">{t.consentTerms}</a>
           {' '}{t.consentAnd}{' '}
-          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#16161A]/70">{t.consentPrivacy}</a>.
+          <a href={locale === 'es' ? '/es/privacy-policy' : '/privacy-policy'} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#16161A]/70">{t.consentPrivacy}</a>.
         </p>
 
         {/* Known sites to try in one tap — good ones and famously rough ones. */}

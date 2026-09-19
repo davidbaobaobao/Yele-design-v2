@@ -66,6 +66,9 @@ function useTypewriter(words: string[]) {
 export default function Footer() {
   const { t } = useLang()
   const pathname = usePathname()
+  // Spanish routes have their own /es/* legal pages; everything else (incl. zh,
+  // which has no localized legal pages) uses the English ones at the root.
+  const legalPrefix = pathname.startsWith('/es') ? '/es' : ''
   // Same as Nav.tsx: only / and /agency actually render these section ids
   // (both render HomePage.tsx) — everywhere else (e.g. /services) they
   // navigate to "/#id" instead of silently no-oping.
@@ -195,22 +198,22 @@ export default function Footer() {
                   </p>
                   <div className="flex flex-col gap-2">
                     <a
-                      href="/legal-notice"
+                      href={`${legalPrefix}/legal-notice`}
                       className="font-body text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
-                      Legal Notice
+                      {t('Aviso Legal', 'Legal Notice')}
                     </a>
                     <a
-                      href="/privacy-policy"
+                      href={`${legalPrefix}/privacy-policy`}
                       className="font-body text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
-                      Privacy Policy
+                      {t('Política de Privacidad', 'Privacy Policy')}
                     </a>
                     <a
-                      href="/terms"
+                      href={`${legalPrefix}/terms`}
                       className="font-body text-sm text-white/60 hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0066CC]"
                     >
-                      Terms and Conditions
+                      {t('Términos y Condiciones', 'Terms and Conditions')}
                     </a>
                   </div>
                 </nav>

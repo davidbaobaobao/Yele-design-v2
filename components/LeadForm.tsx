@@ -433,7 +433,7 @@ export default function LeadForm({
 
       <p className={fineprintClass}>
         {f.consentPre}
-        <Link href="/privacy-policy" className={linkClass}>
+        <Link href={locale === 'es' ? '/es/privacy-policy' : '/privacy-policy'} className={linkClass}>
           {f.privacy}
         </Link>
         .
