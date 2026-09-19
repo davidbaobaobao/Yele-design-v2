@@ -166,6 +166,7 @@ type Result = {
   verdict: { level: 'guilty' | 'suspicious' | 'cleared'; label: string }
   summary?: string
   rant?: string
+  sells?: string
   saysHears?: { says: string; hears: string } | null
   personality?: string
   designYear?: number | null
@@ -819,6 +820,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
             parts={[
               [result.verdict.label, result.summary].filter(Boolean).join('. '),
               result.rant || '',
+              result.sells ? `${t.sellsLabel}: ${result.sells}` : '',
               result.personality ? `${t.personalityLabel}: ${result.personality}` : '',
               result.designYear ? `${t.designYearLabel}: ${result.designYear}.${result.designYearWhy ? ' ' + result.designYearWhy : ''}` : '',
               result.saysHears && (result.saysHears.says || result.saysHears.hears)
@@ -848,9 +850,17 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         </div>
       )}
 
+      {/* What I think you sell — guessed only from hero/CTA/images (white card) */}
+      {result.sells && (
+        <TiltCard className="mt-8 rounded-3xl bg-white p-6 md:p-7 shadow-2xl shadow-black/30">
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] mb-2" style={{ color: '#B23FA3' }}>{t.sellsLabel}</p>
+          <p className="font-display font-bold text-xl md:text-2xl leading-snug tracking-tight" style={{ color: '#16161A' }}>“{result.sells}”</p>
+        </TiltCard>
+      )}
+
       {/* Website personality diagnosis */}
       {result.personality && (
-        <TiltCard className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-7">
+        <TiltCard className="mt-4 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-7">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40 mb-2">{t.personalityLabel}</p>
           <p className="font-display font-bold text-xl md:text-2xl text-white leading-snug tracking-tight">“{result.personality}”</p>
         </TiltCard>
@@ -936,8 +946,25 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         </button>
       )}
 
+      {/* Now what? — the point of the whole thing, right before the plug. */}
+      <div className="mt-12">
+        <h2 className="font-display font-bold text-white tracking-tight" style={{ fontSize: 'clamp(2rem, 8vw, 3.4rem)' }}>
+          {t.nowWhatTitle}
+        </h2>
+        <div className="mt-4 space-y-4">
+          {t.nowWhatBody.map((p, i) => (
+            <p
+              key={i}
+              className={`font-body leading-relaxed ${i === t.nowWhatBody.length - 1 ? 'text-lg md:text-xl font-semibold text-white' : 'text-base md:text-lg text-white/75'}`}
+            >
+              {p}
+            </p>
+          ))}
+        </div>
+      </div>
+
       {/* Shameless plug + form — light card to highlight */}
-      <TiltCard className="mt-10 rounded-3xl bg-[#F7F6F3] p-6 md:p-8 shadow-2xl shadow-black/30">
+      <TiltCard className="mt-6 rounded-3xl bg-[#F7F6F3] p-6 md:p-8 shadow-2xl shadow-black/30">
         <p className="font-mono text-xs uppercase tracking-[0.16em] mb-2" style={{ color: '#B23FA3' }}>{t.plugKicker}</p>
         <h3 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: '#16161A' }}>
           {result.quality >= 60 ? t.plugTitleGood : t.plugTitleBad}

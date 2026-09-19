@@ -49,8 +49,11 @@ export type WPStrings = {
   signatureIntro: string
   saysLabel: string
   hearsLabel: string
+  sellsLabel: string
   personalityLabel: string
   designYearLabel: string
+  nowWhatTitle: string
+  nowWhatBody: string[]
   seriouslyLead: string
   seriouslyBody: string
   seriouslyCta: string
@@ -117,8 +120,17 @@ const en: WPStrings = {
   signatureIntro: 'And here’s the bit that could become your signature — what your site thinks it says vs. what visitors actually hear:',
   saysLabel: 'Your website says',
   hearsLabel: 'Visitors hear',
+  sellsLabel: 'What I think you sell',
   personalityLabel: 'Website personality diagnosis',
-  designYearLabel: 'Estimated design year',
+  designYearLabel: 'What year your website feels',
+  nowWhatTitle: 'Now what?',
+  nowWhatBody: [
+    'Did that sting a little? Good — it means some of it landed. But the part that actually matters isn’t the jokes.',
+    'A clean, confident website earns trust in about a second. An ugly one loses it just as fast — visitors feel it whether they can put it into words or not. There’s a way to be objectively not-ugly, and when a site has it, a robot and a human both notice instantly.',
+    'The bigger question is whether your homepage makes your goal obvious: what you do, who it’s for, why anyone should care. If I — with a frankly absurd amount of compute — couldn’t tell what you’re selling from your hero, a real person giving you five seconds has no chance. And if the message doesn’t land, nothing else does.',
+    'Remember this is often a customer’s very first contact with you. The quiet math in their head is brutal: “Is this legit? Can they even afford a decent website?… and if the site looks like this, is the actual work any better?” A great site kills that doubt before it forms.',
+    'Maybe it’s time to step up.',
+  ],
   seriouslyLead: 'But seriously…',
   seriouslyBody: 'We try our best so your website looks good.',
   seriouslyCta: 'Check out our site →',
@@ -195,8 +207,17 @@ const es: WPStrings = {
   signatureIntro: 'Y aquí va lo que podría ser tu sello — lo que tu web cree que dice vs. lo que la gente entiende de verdad:',
   saysLabel: 'Tu web dice',
   hearsLabel: 'La gente entiende',
+  sellsLabel: 'Lo que creo que vendes',
   personalityLabel: 'Diagnóstico de personalidad de la web',
-  designYearLabel: 'Año de diseño estimado',
+  designYearLabel: 'El año que aparenta tu web',
+  nowWhatTitle: 'Y ahora, ¿qué?',
+  nowWhatBody: [
+    '¿Te ha escocido un poco? Bien — significa que algo ha dado en el clavo. Pero lo que de verdad importa no son los chistes.',
+    'Una web limpia y con seguridad genera confianza en un segundo. Una fea la pierde igual de rápido — tus visitantes lo notan, aunque no sepan explicar por qué. Hay una forma de ser objetivamente no-feo, y cuando una web la tiene, tanto un robot como una persona lo detectan al instante.',
+    'La pregunta más importante es si tu portada deja claro tu objetivo: qué haces, para quién y por qué debería importarle a alguien. Si yo —con una cantidad absurda de potencia de cálculo— no he sido capaz de entender qué vendes con tu hero, una persona que te dedica cinco segundos no tiene ninguna posibilidad. Y si el mensaje no llega, nada más llega.',
+    'Recuerda que esta suele ser la primera toma de contacto de un cliente contigo. Y la cuenta silenciosa que hace en su cabeza es brutal: «¿Esto es serio? ¿Pueden permitirse una web decente?… y si la web se ve así, ¿su trabajo será mejor?». Una buena web mata esa duda antes de que nazca.',
+    'Quizá es hora de dar el paso.',
+  ],
   seriouslyLead: 'Pero en serio…',
   seriouslyBody: 'Hacemos todo lo posible para que tu web se vea bien.',
   seriouslyCta: 'Visita nuestra web →',
@@ -273,8 +294,17 @@ const zh: WPStrings = {
   signatureIntro: '还有一个点，说不定能成为你的招牌 —— 你的网站以为自己在说什么 vs. 访客其实听到了什么：',
   saysLabel: '你的网站说',
   hearsLabel: '访客听到的是',
+  sellsLabel: '我猜你在卖什么',
   personalityLabel: '网站人格诊断',
-  designYearLabel: '预估设计年份',
+  designYearLabel: '你的网站感觉像哪一年',
+  nowWhatTitle: '那，接下来呢？',
+  nowWhatBody: [
+    '有点扎心？那就对了 —— 说明有些话说到了点上。但真正重要的，不是这些玩笑。',
+    '一个干净、有底气的网站，一秒钟就能赢得信任；一个丑网站，也会同样快地把信任丢光 —— 访客能感觉到，哪怕说不清为什么。「客观上不丑」是有办法做到的，一旦做到了，机器和真人都能一眼看出来。',
+    '更关键的问题是：你的首页有没有把目标讲清楚 —— 你是做什么的、给谁做的、别人为什么要在乎。如果连我 —— 带着夸张到离谱的算力 —— 都没能从你的首屏看懂你在卖什么，那给你五秒钟的真人就更没戏了。信息传达不到位，别的都白搭。',
+    '别忘了，这往往是客户第一次接触你。他心里那笔账很残酷：「这家靠谱吗？他们连个像样的网站都做不起？……网站都长这样，活儿能好到哪去？」一个好网站，能在这种疑虑冒头之前就把它摁下去。',
+    '也许，是时候认真升级一下了。',
+  ],
   seriouslyLead: '不过说正经的……',
   seriouslyBody: '我们是真的用心，想让你的网站好看。',
   seriouslyCta: '来看看我们的网站 →',
