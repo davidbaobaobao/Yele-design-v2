@@ -6,6 +6,7 @@ import LeadForm from '@/components/LeadForm'
 import { getWP, type WPStrings, type Locale } from '@/lib/i18n/webpolice'
 import { showcaseFor, poolFor, faviconUrl } from '@/lib/webpolice/examples'
 import { getFunnelDict } from '@/lib/i18n/funnel'
+import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
 
 // A visitor session id, so every site checked in one sitting is emailed as a
 // single digest instead of one message per search. Lives in sessionStorage:
@@ -190,6 +191,10 @@ const VERDICT_TEXT: Record<string, string> = {
 // what reset the videos while typing.
 function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.RefObject<HTMLVideoElement>; hidden: boolean }) {
   const slide = hidden ? (side === 'left' ? 'translateX(-150%)' : 'translateX(150%)') : 'translateX(0)'
+  // iOS won't autoplay from the React attributes alone — force the muted
+  // attribute + play() with the shared hook. Low threshold so the gorillas,
+  // which sit partly off the screen edges, still count as "visible".
+  useVideoAutoplay(vref, 0.05)
   return (
     <video
       ref={vref}
@@ -214,6 +219,35 @@ function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.R
       }
     >
       <source src="/media/webpolice/gorilla.mp4" type="video/mp4" />
+    </video>
+  )
+}
+
+// The running gorilla shown during analysis — its own component so the autoplay
+// hook runs when the loading state mounts it (iOS-safe).
+function LoadingGorilla() {
+  const ref = useRef<HTMLVideoElement>(null)
+  useVideoAutoplay(ref, 0.05)
+  return (
+    <video
+      ref={ref}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      className="w-[70vw] max-w-[320px]"
+      style={
+        {
+          maskImage: `${MASK_H}, ${MASK_V}`,
+          maskComposite: 'intersect',
+          WebkitMaskImage: `${MASK_H}, ${MASK_V}`,
+          WebkitMaskComposite: 'source-in',
+        } as React.CSSProperties
+      }
+    >
+      <source src="/media/webpolice/gorilla-run.mp4" type="video/mp4" />
     </video>
   )
 }
@@ -490,25 +524,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
           <p className="mb-4 font-display font-bold text-[#16161A] text-center leading-snug" style={{ fontSize: 'clamp(1.1rem, 3vw, 1.6rem)' }}>
             {loadingLines[line]}
           </p>
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            aria-hidden="true"
-            className="w-[70vw] max-w-[320px]"
-            style={
-              {
-                maskImage: `${MASK_H}, ${MASK_V}`,
-                maskComposite: 'intersect',
-                WebkitMaskImage: `${MASK_H}, ${MASK_V}`,
-                WebkitMaskComposite: 'source-in',
-              } as React.CSSProperties
-            }
-          >
-            <source src="/media/webpolice/gorilla-run.mp4" type="video/mp4" />
-          </video>
+          <LoadingGorilla />
           <div className="relative mt-5 h-16 w-16">
             <svg viewBox="0 0 40 40" className="h-16 w-16 -rotate-90" aria-hidden="true">
               <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(22,22,26,0.15)" strokeWidth="3.5" />
