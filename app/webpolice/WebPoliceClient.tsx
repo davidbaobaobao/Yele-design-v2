@@ -71,10 +71,14 @@ function flushEventBuffer() {
   while (eventBuffer.length) { const e = eventBuffer.shift()!; sendEvent(e.event, e.locale) }
 }
 function dropEventBuffer() { eventBuffer.length = 0 }
-function track(event: string, locale: string) {
+function track(event: string, locale: string, opts?: { repeat?: boolean }) {
   try {
-    if (firedEvents.has(event)) return
-    firedEvents.add(event)
+    // `repeat` events (e.g. each search) are counted every time; everything else
+    // fires at most once per page load.
+    if (!opts?.repeat) {
+      if (firedEvents.has(event)) return
+      firedEvents.add(event)
+    }
     const consent = analyticsConsent()
     if (consent === 'reject') return                          // never send
     if (!isEuVisitor() || consent === 'accept') { sendEvent(event, locale); return }
@@ -376,7 +380,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   async function run(override?: string) {
     const value = (override ?? url).trim()
     if (!value || phase === 'loading') return
-    track('search', locale)
+    track('search', locale, { repeat: true })
     if (override && override !== url) setUrl(override)
     setError('')
     setResult(null)
@@ -799,23 +803,26 @@ function RantSpeaker({ parts, lang, t, onPlay }: { parts: string[]; lang: string
 function ShareBar({ result, t, basePath, locale }: { result: Result; t: WPStrings; basePath: string; locale: string }) {
   const [copied, setCopied] = useState(false)
   const link = typeof window !== 'undefined' ? `${window.location.origin}${basePath}?url=${encodeURIComponent(result.url)}` : ''
-  const text = t.shareText(result.quality)
+  const headline = t.shareHeadline(result.quality)
+  const subtitle = t.shareSubtitle(result.quality)
+  const text = `${headline} ${subtitle}` // for web-intent channels that take one text field
 
   const open = (u: string) => window.open(u, '_blank', 'noopener,noreferrer')
-  // Instagram has no web share URL. On mobile, the native share sheet (which
-  // includes Instagram / Stories / DM) is the real "share to Instagram"; on
-  // desktop we copy the link and open Instagram so it can be pasted.
+  // The native OS share sheet reliably attaches the link and lets the visitor
+  // pick any app (Instagram, Stories, DMs, Messages…). It exists on mobile
+  // Safari/Chrome, so we PREFER it there for every button; on desktop (no
+  // navigator.share) we fall back to each network's own web-intent URL.
   const shareNative = async (): Promise<boolean> => {
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-      try { await navigator.share({ title: 'Web Police', text, url: link }); return true } catch { return false }
+      try { await navigator.share({ title: headline, text: subtitle, url: link }); return true } catch { return false }
     }
     return false
   }
   const targets: { key: string; label: string; go: () => void }[] = [
     { key: 'instagram', label: 'Instagram', go: async () => { if (await shareNative()) return; try { await navigator.clipboard.writeText(link) } catch { /* ignore */ } open('https://www.instagram.com/') } },
-    { key: 'whatsapp', label: 'WhatsApp', go: () => open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + link)}`) },
-    { key: 'facebook', label: 'Facebook', go: () => open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}&quote=${encodeURIComponent(text)}`) },
-    { key: 'x', label: 'X', go: () => open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`) },
+    { key: 'whatsapp', label: 'WhatsApp', go: async () => { if (await shareNative()) return; open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + link)}`) } },
+    { key: 'facebook', label: 'Facebook', go: async () => { if (await shareNative()) return; open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}&quote=${encodeURIComponent(text)}`) } },
+    { key: 'x', label: 'X', go: async () => { if (await shareNative()) return; open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`) } },
   ]
   const copy = async () => {
     try {

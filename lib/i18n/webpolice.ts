@@ -35,7 +35,8 @@ export type WPStrings = {
   consentAnd: string
   consentPrivacy: string
   shareTitle: string
-  shareText: (q: number) => string
+  shareHeadline: (q: number) => string
+  shareSubtitle: (q: number) => string
   plugKicker: string
   plugTitleGood: string
   plugTitleBad: string
@@ -106,7 +107,10 @@ const en: WPStrings = {
   consentAnd: 'and',
   consentPrivacy: 'Privacy Policy',
   shareTitle: 'Share the verdict',
-  shareText: q => `IS MY WEBSITE UGLY? 🚨 I scored ${q}/100 on the Web Police. Judge yours:`,
+  shareHeadline: q => (q < 50 ? 'My website is ugly AF 🚨' : q < 65 ? 'My website is… not winning any awards' : 'My website survived the Web Police 🎉'),
+  shareSubtitle: q => (q < 65
+    ? 'I did a design test of my website and the results are not great. I got roasted hard. Judge yours:'
+    : 'I ran my website through an AI design roast and it actually held up. Judge yours:'),
   plugKicker: 'Shameless plug',
   plugTitleGood: 'We’ll build you a great website — just like this one, from $699.',
   plugTitleBad: 'We’ll build you a much better website — from $699.',
@@ -193,7 +197,10 @@ const es: WPStrings = {
   consentAnd: 'y la',
   consentPrivacy: 'Política de Privacidad',
   shareTitle: 'Comparte el veredicto',
-  shareText: q => `¿MI WEB ES FEA? 🚨 Saqué ${q}/100 en la Policía Web. Juzga la tuya:`,
+  shareHeadline: q => (q < 50 ? 'Mi página web es fea de cojones 🚨' : q < 65 ? 'Mi página web no está para tirar cohetes' : 'Mi web sobrevivió a la Policía Web 🎉'),
+  shareSubtitle: q => (q < 65
+    ? 'Hice un test de diseño sobre mi página web y no salió muy bien. Me puso a parir de lo lindo. Juzga la tuya:'
+    : 'Pasé mi web por un test de diseño con IA y la verdad es que aguantó bien. Juzga la tuya:'),
   plugKicker: 'Publicidad descarada',
   plugTitleGood: 'Te hacemos una web genial — igual que esta, desde 699€.',
   plugTitleBad: 'Te hacemos una web mucho mejor — desde 699€.',
@@ -280,7 +287,10 @@ const zh: WPStrings = {
   consentAnd: '和',
   consentPrivacy: '隐私政策',
   shareTitle: '把判决书发出去',
-  shareText: q => `我的网站丑吗？🚨 我在「网页警察」只拿了 ${q}/100。来看看你的：`,
+  shareHeadline: q => (q < 50 ? '我的网站丑到爆 🚨' : q < 65 ? '我的网站……只能说很一般' : '我的网站扛住了网页警察 🎉'),
+  shareSubtitle: q => (q < 65
+    ? '我拿网站做了个设计测试，结果不太妙，被狠狠吐槽了一顿。来看看你的：'
+    : '我把网站丢给 AI 做了设计测评，居然还挺能打。来看看你的：'),
   plugKicker: '恰饭时间',
   plugTitleGood: '我们也能给你做个这么好看的 —— €699 起。',
   plugTitleBad: '这个我们能给你做得好看得多 —— €699 起。',

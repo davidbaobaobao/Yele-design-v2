@@ -96,7 +96,15 @@ export async function GET(request: Request) {
         <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${n}</td>
         <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center;color:${i === 0 ? '#16161A' : '#6F6373'}">${i === 0 ? '100%' : pctOf(n) + '%'}</td>
       </tr>`).join('')}
-    </table>` : ''
+    </table>
+    ${(() => {
+      const searchTotal = funnel['search']?.total ?? 0
+      const searchers = fs('search')
+      if (searchers === 0) return ''
+      const avg = (searchTotal / searchers).toFixed(1)
+      const repeats = searchTotal - searchers
+      return `<p style="margin:8px 0 0;color:#6F6373;font-size:12px">${searchTotal} total searches from ${searchers} visitor${searchers === 1 ? '' : 's'} · avg ${avg} each${repeats > 0 ? ` · ${repeats} repeat search${repeats === 1 ? '' : 'es'} (people checking more than one site)` : ''}</p>`
+    })()}` : ''
 
   const when = (iso?: string) =>
     new Date(iso ?? Date.now()).toLocaleString('en-GB', { timeZone: 'Europe/Madrid', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
