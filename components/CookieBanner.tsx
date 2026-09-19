@@ -39,6 +39,10 @@ export default function CookieBanner() {
   const decidedRef = useRef(false)
   const pathname = usePathname()
   const firstPathnameRef = useRef(pathname)
+  // The banner lives above the page's LanguageProvider, so it derives its own
+  // language from the path (/es, /zh) to match the page it's shown on.
+  const locale = pathname.startsWith('/es') ? 'es' : pathname.startsWith('/zh') ? 'zh' : 'en'
+  const tt = (es: string, en: string, zh?: string) => (locale === 'es' ? es : locale === 'zh' ? (zh ?? en) : en)
 
   useEffect(() => {
     if (localStorage.getItem(CONSENT_KEY)) return
@@ -139,7 +143,7 @@ export default function CookieBanner() {
       {expanded ? (
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="font-body text-sm font-semibold text-ink">Cookie preferences</p>
+            <p className="font-body text-sm font-semibold text-ink">{tt('Preferencias de cookies', 'Cookie preferences', 'Cookie 偏好设置')}</p>
             <button
               onClick={() => setExpanded(false)}
               aria-label="Collapse"
@@ -153,17 +157,17 @@ export default function CookieBanner() {
             {/* Essential */}
             <div className="flex items-center justify-between px-3 py-2.5 border-b border-hairline bg-black/[0.01]">
               <div>
-                <p className="font-body text-xs font-medium text-ink">Essential</p>
-                <p className="font-body text-[11px] text-muted">Required for the site to function.</p>
+                <p className="font-body text-xs font-medium text-ink">{tt('Esenciales', 'Essential', '必要')}</p>
+                <p className="font-body text-[11px] text-muted">{tt('Necesarias para que el sitio funcione.', 'Required for the site to function.', '网站运行所必需。')}</p>
               </div>
-              <span className="font-body text-[11px] text-[#34C759] font-medium shrink-0 ml-4">Always on</span>
+              <span className="font-body text-[11px] text-[#34C759] font-medium shrink-0 ml-4">{tt('Siempre activas', 'Always on', '始终开启')}</span>
             </div>
 
             {/* Analytics */}
             <div className="flex items-center justify-between px-3 py-2.5 border-b border-hairline">
               <div>
-                <p className="font-body text-xs font-medium text-ink">Analytics</p>
-                <p className="font-body text-[11px] text-muted">Help us improve the website.</p>
+                <p className="font-body text-xs font-medium text-ink">{tt('Analítica', 'Analytics', '分析')}</p>
+                <p className="font-body text-[11px] text-muted">{tt('Nos ayudan a mejorar el sitio web.', 'Help us improve the website.', '帮助我们改进网站。')}</p>
               </div>
               <button
                 role="switch"
@@ -178,8 +182,8 @@ export default function CookieBanner() {
             {/* Marketing */}
             <div className="flex items-center justify-between px-3 py-2.5">
               <div>
-                <p className="font-body text-xs font-medium text-ink">Marketing</p>
-                <p className="font-body text-[11px] text-muted">Personalised advertising.</p>
+                <p className="font-body text-xs font-medium text-ink">{tt('Marketing', 'Marketing', '营销')}</p>
+                <p className="font-body text-[11px] text-muted">{tt('Publicidad personalizada.', 'Personalised advertising.', '个性化广告。')}</p>
               </div>
               <button
                 role="switch"
@@ -193,14 +197,14 @@ export default function CookieBanner() {
           </div>
 
           <div className="flex items-center justify-between">
-            <a href="/privacy-policy" className="font-body text-[11px] text-muted hover:text-ink transition-colors underline underline-offset-2">
-              Privacy policy
+            <a href={locale === 'es' ? '/es/privacy-policy' : '/privacy-policy'} className="font-body text-[11px] text-muted hover:text-ink transition-colors underline underline-offset-2">
+              {tt('Política de privacidad', 'Privacy policy', '隐私政策')}
             </a>
             <button
               onClick={() => save(prefs)}
               className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
             >
-              Save selection
+              {tt('Guardar selección', 'Save selection', '保存选择')}
             </button>
           </div>
         </div>
@@ -208,33 +212,33 @@ export default function CookieBanner() {
         <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center gap-3">
           <p className="font-body text-xs text-muted flex-1 min-w-0 truncate">
             {isEu
-              ? 'We use cookies to analyse traffic and improve the site. Your choice, your call.'
-              : 'By continuing to browse, you agree to our use of cookies.'}
+              ? tt('Usamos cookies para analizar el tráfico y mejorar el sitio. Tú decides.', 'We use cookies to analyse traffic and improve the site. Your choice, your call.', '我们使用 Cookie 来分析流量并改进网站。由你决定。')
+              : tt('Al seguir navegando, aceptas nuestro uso de cookies.', 'By continuing to browse, you agree to our use of cookies.', '继续浏览即表示你同意我们使用 Cookie。')}
           </p>
           <div className="flex items-center gap-1.5 shrink-0">
             <a
-              href="/privacy-policy"
+              href={locale === 'es' ? '/es/privacy-policy' : '/privacy-policy'}
               className="font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-2 px-2 py-1.5"
             >
-              Privacy Policy
+              {tt('Política de privacidad', 'Privacy Policy', '隐私政策')}
             </a>
             <button
               onClick={() => setExpanded(true)}
               className="font-body text-xs text-muted hover:text-ink transition-colors flex items-center gap-0.5 px-2 py-1.5"
             >
-              Manage <ChevronUp size={11} />
+              {tt('Gestionar', 'Manage', '管理')} <ChevronUp size={11} />
             </button>
             <button
               onClick={() => save({ analytics: false, marketing: false })}
               className="font-body text-xs text-muted hover:text-ink transition-colors px-2 py-1.5"
             >
-              Reject
+              {tt('Rechazar', 'Reject', '拒绝')}
             </button>
             <button
               onClick={() => save({ analytics: true, marketing: true })}
               className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
             >
-              Accept
+              {tt('Aceptar', 'Accept', '接受')}
             </button>
           </div>
         </div>
