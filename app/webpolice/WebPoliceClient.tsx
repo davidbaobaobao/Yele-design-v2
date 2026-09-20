@@ -310,40 +310,66 @@ function shuffled<T>(arr: T[]): T[] {
   return a
 }
 
-function LoadingReel() {
-  const ref = useRef<HTMLVideoElement>(null)
-  const order = useRef(shuffled(LOADING_CLIPS))
-  // `tick` counts advances and drives the element key, so EVERY clip change
-  // remounts the <video> and autoplays from frame 1 — even across the loop
-  // boundary where the same clip could otherwise repeat and freeze.
-  const [tick, setTick] = useState(0)
-  const len = order.current.length
-  const name = order.current[tick % len]
-  useVideoAutoplay(ref, 0.01)
+const clipSrc = (name: string) => `/media/webpolice/loading/${name}.mp4`
 
-  const next = () => {
-    // Reshuffle for a fresh order each time we complete a full pass through all
-    // the clips, then loop back to the start — ~60s of clips, endlessly.
-    if ((tick + 1) % len === 0) order.current = shuffled(LOADING_CLIPS)
-    setTick(t => t + 1)
+// Two stacked <video> buffers: one plays while the other silently PRELOADS the
+// next clip, then they swap with a quick crossfade. Because the next clip is
+// already buffered, there's no black gap — the clips run back-to-back like one
+// continuous film, in a fresh random order that loops forever.
+function LoadingReel() {
+  const aRef = useRef<HTMLVideoElement>(null)
+  const bRef = useRef<HTMLVideoElement>(null)
+  const [active, setActive] = useState(0) // 0 = A visible, 1 = B visible
+  const queue = useRef<string[]>([])
+  const started = useRef(false)
+
+  const nextClip = () => {
+    if (queue.current.length === 0) queue.current = shuffled(LOADING_CLIPS)
+    return queue.current.shift() as string
+  }
+  const prime = (v: HTMLVideoElement | null, name: string) => {
+    if (!v) return
+    v.setAttribute('muted', '')
+    v.setAttribute('playsinline', '')
+    v.muted = true
+    v.src = clipSrc(name)
+    v.load()
+  }
+  const playFromStart = (v: HTMLVideoElement | null) => {
+    if (!v) return
+    v.muted = true
+    try { v.currentTime = 0 } catch { /* not seekable yet, fine */ }
+    v.play().catch(() => setTimeout(() => v.play().catch(() => {}), 250))
   }
 
+  useEffect(() => {
+    if (started.current) return
+    started.current = true
+    prime(aRef.current, nextClip()) // now playing
+    prime(bRef.current, nextClip()) // preloaded, waiting
+    playFromStart(aRef.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const onEnded = (which: 0 | 1) => {
+    const nextVid = which === 0 ? bRef.current : aRef.current
+    const finished = which === 0 ? aRef.current : bRef.current
+    setActive(which === 0 ? 1 : 0)
+    playFromStart(nextVid) // already buffered → starts instantly
+    // Reload the just-finished buffer with the NEXT clip only after the
+    // crossfade, so its last frame stays put while it fades out.
+    setTimeout(() => prime(finished, nextClip()), 220)
+  }
+
+  const cls = 'absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ease-linear'
   return (
-    <video
-      key={tick}
-      ref={ref}
-      autoPlay
-      muted
-      playsInline
-      preload="auto"
-      aria-hidden="true"
-      onEnded={next}
-      poster={`/media/webpolice/loading/${name}_poster.jpg`}
-      className="w-[92vw] max-w-[760px] rounded-2xl object-cover shadow-2xl shadow-black/40"
-      style={{ aspectRatio: '1280 / 732' }}
+    <div
+      className="relative w-[92vw] max-w-[760px] overflow-hidden rounded-2xl shadow-2xl shadow-black/40"
+      style={{ aspectRatio: '1280 / 732', backgroundColor: '#0D0E12' }}
     >
-      <source src={`/media/webpolice/loading/${name}.mp4`} type="video/mp4" />
-    </video>
+      <video ref={aRef} muted playsInline preload="auto" aria-hidden="true" onEnded={() => onEnded(0)} className={`${cls} ${active === 0 ? 'opacity-100' : 'opacity-0'}`} />
+      <video ref={bRef} muted playsInline preload="auto" aria-hidden="true" onEnded={() => onEnded(1)} className={`${cls} ${active === 1 ? 'opacity-100' : 'opacity-0'}`} />
+    </div>
   )
 }
 
