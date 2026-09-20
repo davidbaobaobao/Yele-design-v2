@@ -7,7 +7,7 @@ import PricingCards from '@/components/letsbuild/PricingCards'
 import { isNavJumping } from '@/lib/nav-scroll'
 
 export default function PreciosIndexSection() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function PreciosIndexSection() {
           </p>
         </motion.div>
 
-        <PricingCards ctaHref="/start" />
+        <PricingCards ctaHref="/start" locale={lang} />
 
         <p className="text-center font-body text-sm font-bold text-bone mt-6">
           {t(

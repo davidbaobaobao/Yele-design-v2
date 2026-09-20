@@ -241,7 +241,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
         </section>
 
         {/* ---- TESTIMONIALS (same section as the homepage) ---- */}
-        <Testimonios />
+        <Testimonios locale={locale} />
 
         <StartNowMarquee />
 

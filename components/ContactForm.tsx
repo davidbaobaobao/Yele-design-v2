@@ -67,7 +67,10 @@ function IconCard({ href, icon, label }: { href: string; icon: ReactNode; label:
 }
 
 export default function ContactForm() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
+  // Spanish/Chinese visitors see the Spain number; English sees the US line.
+  const phoneHref = lang === 'en' ? 'tel:+18882648656' : 'tel:+34655517760'
+  const phoneDisplay = lang === 'en' ? '+1 (888) 264-8656' : '+34 655 517 760'
   const [formState, setFormState] = useState<FormState>('idle')
   const [form, setForm] = useState({ nombre: '', email: '', mensaje: '' })
   // Guards the Ads conversion against firing twice — the form is replaced
@@ -147,11 +150,11 @@ export default function ContactForm() {
               info@yele.design
             </a>
             <a
-              href="tel:+18882648656"
+              href={phoneHref}
               onClick={() => trackContactCall()}
               className="font-display text-2xl md:text-3xl text-white/90 hover:text-white transition-colors"
             >
-              +1 (888) 264-8656
+              {phoneDisplay}
             </a>
           </div>
 

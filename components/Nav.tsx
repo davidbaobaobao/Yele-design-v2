@@ -8,6 +8,7 @@ import { Menu, X } from 'lucide-react'
 import { useLang } from '@/context/LanguageContext'
 import { CTAButton } from '@/components/ui/cta-button'
 import { scrollToSection } from '@/lib/nav-scroll'
+import NavLangPill from '@/components/NavLangPill'
 
 // href starting with '#' is a same-page scroll anchor on pages that
 // actually render these sections (/ and /agency, HomePage's two routes —
@@ -172,6 +173,7 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
+            <NavLangPill dark={showBoneText} />
             {isSectionsPage ? (
               <CTAButton
                 type="button"
@@ -234,6 +236,9 @@ export default function Nav({ hasHero = true }: { hasHero?: boolean }) {
                 </Link>
               )
             })}
+            <div className="pt-3">
+              <NavLangPill />
+            </div>
             <div className="flex items-center gap-3 pt-3">
               {isSectionsPage ? (
                 <CTAButton
