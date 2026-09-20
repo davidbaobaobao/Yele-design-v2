@@ -297,29 +297,52 @@ function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.R
 
 // The running gorilla shown during analysis — its own component so the autoplay
 // hook runs when the loading state mounts it (iOS-safe).
-function LoadingGorilla() {
+// The user's own short clips, played BIG in a random order while a scan runs so
+// the wait is entertaining — a fresh shuffle each session means the reel opens
+// on a different clip every time.
+const LOADING_CLIPS = ['esperando', 'agencias', 'gato', 'informatico', 'chase']
+function shuffled<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+function LoadingReel() {
   const ref = useRef<HTMLVideoElement>(null)
-  useVideoAutoplay(ref, 0.05)
+  const order = useRef(shuffled(LOADING_CLIPS))
+  // `tick` counts advances and drives the element key, so EVERY clip change
+  // remounts the <video> and autoplays from frame 1 — even across the loop
+  // boundary where the same clip could otherwise repeat and freeze.
+  const [tick, setTick] = useState(0)
+  const len = order.current.length
+  const name = order.current[tick % len]
+  useVideoAutoplay(ref, 0.01)
+
+  const next = () => {
+    // Reshuffle for a fresh order each time we complete a full pass through all
+    // the clips, then loop back to the start — ~60s of clips, endlessly.
+    if ((tick + 1) % len === 0) order.current = shuffled(LOADING_CLIPS)
+    setTick(t => t + 1)
+  }
+
   return (
     <video
+      key={tick}
       ref={ref}
       autoPlay
-      loop
       muted
       playsInline
       preload="auto"
       aria-hidden="true"
-      className="w-[70vw] max-w-[320px]"
-      style={
-        {
-          maskImage: `${MASK_H}, ${MASK_V}`,
-          maskComposite: 'intersect',
-          WebkitMaskImage: `${MASK_H}, ${MASK_V}`,
-          WebkitMaskComposite: 'source-in',
-        } as React.CSSProperties
-      }
+      onEnded={next}
+      poster={`/media/webpolice/loading/${name}_poster.jpg`}
+      className="w-[92vw] max-w-[760px] rounded-2xl object-cover shadow-2xl shadow-black/40"
+      style={{ aspectRatio: '1280 / 732' }}
     >
-      <source src="/media/webpolice/gorilla-run.mp4" type="video/mp4" />
+      <source src={`/media/webpolice/loading/${name}.mp4`} type="video/mp4" />
     </video>
   )
 }
@@ -610,35 +633,41 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
       {/* SEO content — crawlable copy + FAQ, visible on scroll in the idle state */}
       <SeoSection t={t} />
 
-      {/* Loading — funny text on top, the police gorilla runs to the scene,
-          plus a circular spinner. Plays ≥2.4s. */}
+      {/* Loading — funny text on top, a BIG random reel of clips in the middle,
+          the progress indicator pinned at the bottom. */}
       {phase === 'loading' && (
-        <div className="fixed inset-0 z-20 flex flex-col items-center justify-center px-6 pointer-events-none">
-          <p className="mb-4 font-display font-bold text-[#16161A] text-center leading-snug" style={{ fontSize: 'clamp(1.1rem, 3vw, 1.6rem)' }}>
+        <div className="fixed inset-0 z-20 flex flex-col items-center px-4 py-6 md:py-8 pointer-events-none">
+          <p className="shrink-0 font-display font-bold text-[#16161A] text-center leading-snug" style={{ fontSize: 'clamp(1.2rem, 3.6vw, 2rem)' }}>
             {loadingLines[line]}
           </p>
-          <LoadingGorilla />
-          <div className="relative mt-5 h-16 w-16">
-            <svg viewBox="0 0 40 40" className="h-16 w-16 -rotate-90" aria-hidden="true">
-              <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(22,22,26,0.15)" strokeWidth="3.5" />
-              <circle
-                cx="20"
-                cy="20"
-                r="17"
-                fill="none"
-                stroke="#16161A"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                strokeDasharray={2 * Math.PI * 17}
-                strokeDashoffset={2 * Math.PI * 17 * (1 - Math.min(progress, 100) / 100)}
-                style={{ transition: 'stroke-dashoffset 0.15s linear' }}
-              />
-            </svg>
-            <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-semibold text-[#16161A]">
-              {Math.round(progress)}%
-            </span>
+
+          <div className="flex min-h-0 flex-1 items-center justify-center py-4 w-full">
+            <LoadingReel />
           </div>
-          <p className="mt-4 max-w-xs text-center font-body text-sm text-[#16161A]/60">{t.loadingNote}</p>
+
+          <div className="shrink-0 flex flex-col items-center">
+            <div className="relative h-14 w-14 md:h-16 md:w-16">
+              <svg viewBox="0 0 40 40" className="h-full w-full -rotate-90" aria-hidden="true">
+                <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(22,22,26,0.15)" strokeWidth="3.5" />
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="17"
+                  fill="none"
+                  stroke="#16161A"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 17}
+                  strokeDashoffset={2 * Math.PI * 17 * (1 - Math.min(progress, 100) / 100)}
+                  style={{ transition: 'stroke-dashoffset 0.15s linear' }}
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-semibold text-[#16161A]">
+                {Math.round(progress)}%
+              </span>
+            </div>
+            <p className="mt-3 max-w-xs text-center font-body text-sm text-[#16161A]/60">{t.loadingNote}</p>
+          </div>
         </div>
       )}
 
