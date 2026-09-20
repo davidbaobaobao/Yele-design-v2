@@ -45,14 +45,21 @@ export default function CookieBanner() {
   const tt = (es: string, en: string, zh?: string) => (locale === 'es' ? es : locale === 'zh' ? (zh ?? en) : en)
 
   useEffect(() => {
-    if (localStorage.getItem(CONSENT_KEY)) return
+    // localStorage can THROW in some in-app browsers (Instagram/Facebook
+    // WebView, iOS private mode). If we don't guard it, the whole effect
+    // throws before setVisible() runs and the banner silently never appears —
+    // exactly the "no banner from a Meta ad on iPhone" case. Treat any failure
+    // as "no stored choice yet" so we still show it.
+    let stored: string | null = null
+    try { stored = localStorage.getItem(CONSENT_KEY) } catch { stored = null }
+    if (stored) return
     // The middleware sets `yele_eu` from geo — '0' means detected non-EU (e.g.
-    // US). We now show the banner to EVERYONE, but the behaviour differs:
+    // US). We show the banner to EVERYONE, but the behaviour differs:
     //  • Non-EU (US): a light, semitransparent notice that dismisses itself the
-    //    moment the visitor keeps going (scroll / type / click / route / timeout)
-    //    — implied consent.
+    //    moment the visitor keeps going (scroll / type / click / route / timeout).
     //  • EU/unknown: the banner STAYS until an explicit Accept or Reject.
-    const nonEu = document.cookie.split('; ').some(c => c === 'yele_eu=0')
+    let nonEu = false
+    try { nonEu = document.cookie.split('; ').some(c => c === 'yele_eu=0') } catch { nonEu = false }
     setIsEu(!nonEu)
     setVisible(true)
   }, [])
@@ -60,7 +67,7 @@ export default function CookieBanner() {
   function commit(p: Prefs) {
     if (decidedRef.current) return
     decidedRef.current = true
-    localStorage.setItem(CONSENT_KEY, JSON.stringify({ essential: true, ...p }))
+    try { localStorage.setItem(CONSENT_KEY, JSON.stringify({ essential: true, ...p })) } catch { /* storage may be blocked in in-app browsers */ }
     // Re-affirms consent with the user's actual choice — layout.tsx already
     // granted implied consent on load, this updates it once they've made an
     // explicit selection (matters most for a Reject, where Clarity needs to
@@ -138,7 +145,7 @@ export default function CookieBanner() {
   return (
     <div
       ref={bannerRef}
-      className="fixed bottom-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-xl border-t border-hairline shadow-[0_-2px_20px_rgba(0,0,0,0.06)]"
+      className="fixed bottom-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-xl border-t border-hairline shadow-[0_-2px_20px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]"
     >
       {expanded ? (
         <div className="max-w-2xl mx-auto px-4 py-4">
