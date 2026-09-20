@@ -42,7 +42,7 @@ function sessionId(): string {
 //  • EU + no choice yet: events are BUFFERED locally and only sent at the end of
 //    the session (pagehide) if the visitor hasn't rejected by then.
 const firedEvents = new Set<string>()
-const eventBuffer: { event: string; locale: string }[] = []
+const eventBuffer: { event: string; locale: string; url?: string }[] = []
 
 function isEuVisitor(): boolean {
   // The middleware sets `yele_eu=0` for detected non-EU (e.g. US). Anything
@@ -56,9 +56,9 @@ function analyticsConsent(): 'accept' | 'reject' | 'none' {
     return JSON.parse(raw).analytics ? 'accept' : 'reject'
   } catch { return 'none' }
 }
-function sendEvent(event: string, locale: string) {
+function sendEvent(event: string, locale: string, url?: string) {
   try {
-    const payload = JSON.stringify({ event, locale, sessionId: sessionId() })
+    const payload = JSON.stringify({ event, locale, sessionId: sessionId(), url })
     const blob = new Blob([payload], { type: 'application/json' })
     if (!navigator.sendBeacon?.('/api/webpolice/event', blob)) {
       fetch('/api/webpolice/event', { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true }).catch(() => {})
@@ -68,10 +68,10 @@ function sendEvent(event: string, locale: string) {
 // Flush any buffered EU events — unless the visitor has explicitly rejected.
 function flushEventBuffer() {
   if (analyticsConsent() === 'reject') { eventBuffer.length = 0; return }
-  while (eventBuffer.length) { const e = eventBuffer.shift()!; sendEvent(e.event, e.locale) }
+  while (eventBuffer.length) { const e = eventBuffer.shift()!; sendEvent(e.event, e.locale, e.url) }
 }
 function dropEventBuffer() { eventBuffer.length = 0 }
-function track(event: string, locale: string, opts?: { repeat?: boolean }) {
+function track(event: string, locale: string, opts?: { repeat?: boolean; url?: string }) {
   try {
     // `repeat` events (e.g. each search) are counted every time; everything else
     // fires at most once per page load.
@@ -81,24 +81,24 @@ function track(event: string, locale: string, opts?: { repeat?: boolean }) {
     }
     const consent = analyticsConsent()
     if (consent === 'reject') return                          // never send
-    if (!isEuVisitor() || consent === 'accept') { sendEvent(event, locale); return }
-    eventBuffer.push({ event, locale })                       // EU, undecided → hold
+    if (!isEuVisitor() || consent === 'accept') { sendEvent(event, locale, opts?.url); return }
+    eventBuffer.push({ event, locale, url: opts?.url })       // EU, undecided → hold
   } catch { /* best-effort, never throws into the UI */ }
 }
 
 // An invisible 1px sentinel that fires a funnel event the first time it scrolls
 // into view (IntersectionObserver — cheap, no scroll listeners).
-function TrackSeen({ event, locale }: { event: string; locale: string }) {
+function TrackSeen({ event, locale, url }: { event: string; locale: string; url?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const el = ref.current
     if (!el || typeof IntersectionObserver === 'undefined') return
     const io = new IntersectionObserver((entries) => {
-      if (entries.some(e => e.isIntersecting)) { track(event, locale); io.disconnect() }
+      if (entries.some(e => e.isIntersecting)) { track(event, locale, { url }); io.disconnect() }
     }, { threshold: 0.01 })
     io.observe(el)
     return () => io.disconnect()
-  }, [event, locale])
+  }, [event, locale, url])
   return <div ref={ref} aria-hidden="true" className="h-px w-full" />
 }
 
@@ -488,7 +488,11 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
   function pickRandom(): string {
     const full = poolFor(locale)
     const set = seededSet.current
-    const source = set && set.size ? full.filter(s => set.has(normKey(s.url))) : full
+    // Prefer the instant/free precomputed set only when it's big enough to give
+    // real variety (English has ~50). When it's small (Spanish currently), roll
+    // the WHOLE pool instead so the dice stops repeating the same handful — an
+    // uncached pick analyses once and then caches, so the pool self-warms.
+    const source = set && set.size >= 30 ? full.filter(s => set.has(normKey(s.url))) : full
     const pool = source.length ? source : full
     const avail = pool.filter(s => s.url !== lastRandom.current)
     const list = avail.length ? avail : pool
@@ -963,7 +967,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
       )}
 
       {/* Estimated design year — mid-page marker for the funnel report */}
-      <TrackSeen event="scroll_mid" locale={locale} />
+      <TrackSeen event="scroll_mid" locale={locale} url={result.url} />
       {result.designYear && (
         <TiltCard className="mt-4 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-7 text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40">{t.designYearLabel}</p>
@@ -1099,7 +1103,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
       </div>
 
       {/* Shameless plug + form — light card to highlight */}
-      <TrackSeen event="plug_view" locale={locale} />
+      <TrackSeen event="plug_view" locale={locale} url={result.url} />
       <TiltCard className="mt-6 rounded-3xl bg-[#F7F6F3] p-6 md:p-8 shadow-2xl shadow-black/30">
         <p className="font-mono text-xs uppercase tracking-[0.16em] mb-2" style={{ color: '#B23FA3' }}>{t.plugKicker}</p>
         <h3 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: '#16161A' }}>

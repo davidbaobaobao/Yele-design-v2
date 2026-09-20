@@ -304,3 +304,22 @@ export async function eventFunnelSince(sinceIso: string): Promise<FunnelCounts> 
   }
   return out
 }
+
+/** Per-URL distinct-session counts for one event since `sinceIso` (desc). */
+export async function eventUrlBreakdown(event: string, sinceIso: string): Promise<{ url: string; sessions: number }[]> {
+  const supabase = db()
+  if (!supabase) return []
+  const { data, error } = await supabase.from(EVENTS)
+    .select('session_id, meta').eq('event', event).gte('created_at', sinceIso).limit(100_000)
+  if (error) { console.error('[webpolice] eventUrlBreakdown failed:', error.message); return [] }
+  const bySite: Record<string, Set<string>> = {}
+  for (const r of (data ?? []) as { session_id: string | null; meta: { url?: string } | null }[]) {
+    const url = r.meta?.url
+    if (!url) continue
+    if (!bySite[url]) bySite[url] = new Set()
+    if (r.session_id) bySite[url].add(r.session_id)
+  }
+  return Object.entries(bySite)
+    .map(([url, s]) => ({ url, sessions: s.size }))
+    .sort((a, b) => b.sessions - a.sessions)
+}

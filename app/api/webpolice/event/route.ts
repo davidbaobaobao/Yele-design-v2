@@ -41,7 +41,13 @@ export async function POST(request: Request) {
     ? (body.sessionId as string)
     : null
 
-  await logEvent({ session_id: sessionId, locale: toLocale(body.locale), event })
+  // Optional URL context — recorded for the funnel steps that name a site
+  // (scroll_mid, plug_view) so the daily report can show which sites people
+  // scrolled through / reached the form on.
+  const url = typeof body.url === 'string' && body.url.length <= 2000 ? body.url : null
+  const meta = url ? { url } : undefined
+
+  await logEvent({ session_id: sessionId, locale: toLocale(body.locale), event, meta })
     .catch(err => console.error('[webpolice] event log failed', err))
 
   return NextResponse.json({ ok: true })

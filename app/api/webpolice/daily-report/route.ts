@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { scansSince, eventFunnelSince } from '@/lib/webpolice/store'
+import { scansSince, eventFunnelSince, eventUrlBreakdown } from '@/lib/webpolice/store'
 
 export const runtime = 'nodejs'
 
@@ -66,7 +66,12 @@ export async function GET(request: Request) {
   }
 
   // ── Visitor funnel (from the lightweight webpolice_events beacons) ──────────
-  const funnel = await eventFunnelSince(new Date(Date.now() - 24 * 3600_000).toISOString())
+  const sinceEvents = new Date(Date.now() - 24 * 3600_000).toISOString()
+  const funnel = await eventFunnelSince(sinceEvents)
+  const [scrollMidSites, plugSites] = await Promise.all([
+    eventUrlBreakdown('scroll_mid', sinceEvents),
+    eventUrlBreakdown('plug_view', sinceEvents),
+  ])
   const fs = (k: string) => funnel[k]?.sessions ?? 0
   const visitors = fs('page_view')
   const pctOf = (n: number) => (visitors ? Math.round((n / visitors) * 100) : 0)
@@ -105,6 +110,28 @@ export async function GET(request: Request) {
       const repeats = searchTotal - searchers
       return `<p style="margin:8px 0 0;color:#6F6373;font-size:12px">${searchTotal} total searches from ${searchers} visitor${searchers === 1 ? '' : 's'} · avg ${avg} each${repeats > 0 ? ` · ${repeats} repeat search${repeats === 1 ? '' : 'es'} (people checking more than one site)` : ''}</p>`
     })()}` : ''
+
+  // Per-URL breakdown for the two milestone steps: which sites people scrolled
+  // through to the middle, and which they reached the plug form on.
+  const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, '') } catch { return u } }
+  const siteRows = (rows: { url: string; sessions: number }[]) =>
+    rows.slice(0, 25).map(r => `
+      <tr>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif"><a href="${esc(r.url)}" style="color:#B8489F">${esc(hostOf(r.url))}</a></td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${r.sessions}</td>
+      </tr>`).join('')
+  const siteBlock = (title: string, note: string, rows: { url: string; sessions: number }[]) => rows.length ? `
+    <h3 style="margin:26px 0 2px;font-size:15px">${title}</h3>
+    <p style="margin:0 0 8px;color:#6F6373;font-size:12px">${note}</p>
+    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
+      <tr>
+        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Site</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Visitors</th>
+      </tr>
+      ${siteRows(rows)}
+    </table>` : ''
+  const scrollMidBlock = siteBlock('🧭 Sites people read to the middle', 'Reached the “What year your website feels” section — visitors who actually engaged with the verdict.', scrollMidSites)
+  const plugBlock = siteBlock('📮 Sites that reached the plug form', 'Visitors who scrolled all the way to the “get a better website” form — the warmest signal.', plugSites)
 
   const when = (iso?: string) =>
     new Date(iso ?? Date.now()).toLocaleString('en-GB', { timeZone: 'Europe/Madrid', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
@@ -158,6 +185,8 @@ export async function GET(request: Request) {
       ${totalScans} completed search${totalScans === 1 ? '' : 'es'}${avg !== null ? ` · avg score ${avg}/100` : ''}${errSites.length ? ` · ${errored.length} errored` : ''}${abSites.length ? ` · ${abandoned.length} abandoned` : ''}
     </p>
     ${funnelBlock}
+    ${scrollMidBlock}
+    ${plugBlock}
     ${sites.length ? `<table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
       <tr>
         <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Site</th>
