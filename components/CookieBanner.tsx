@@ -43,6 +43,12 @@ export default function CookieBanner() {
   // language from the path (/es, /zh) to match the page it's shown on.
   const locale = pathname.startsWith('/es') ? 'es' : pathname.startsWith('/zh') ? 'zh' : 'en'
   const tt = (es: string, en: string, zh?: string) => (locale === 'es' ? es : locale === 'zh' ? (zh ?? en) : en)
+  // The banner must STAY until an explicit Accept/Reject (no scroll/timeout
+  // auto-dismiss) for EU visitors AND for any localized page (/es, /zh) — a
+  // Spanish/Chinese page is a European/stricter audience by default. Only the
+  // English pages for detected non-EU visitors get the implied "kept browsing"
+  // dismissal.
+  const stayUntilChoice = isEu || locale !== 'en'
 
   useEffect(() => {
     // localStorage can THROW in some in-app browsers (Instagram/Facebook
@@ -97,9 +103,10 @@ export default function CookieBanner() {
   // down the already-granted default so this banner doesn't reappear next
   // visit. Nothing here needs to grant anything that wasn't already true.
   useEffect(() => {
-    // EU/unknown: no passive dismissal — the banner stays until an explicit
-    // Accept or Reject. Only non-EU (US) gets the implied "kept browsing" model.
-    if (!visible || isEu) return
+    // EU + localized pages: no passive dismissal — the banner stays until an
+    // explicit Accept or Reject. Only non-EU English pages get the implied
+    // "kept browsing" model.
+    if (!visible || stayUntilChoice) return
     const persistDefault = () => commit({ analytics: true, marketing: true })
 
     const onScroll = () => {
@@ -129,16 +136,16 @@ export default function CookieBanner() {
       document.removeEventListener('click', onClick, true)
       clearTimeout(timer)
     }
-  }, [visible, isEu])
+  }, [visible, stayUntilChoice])
 
   // Route-change trigger — separate effect since it only needs to react to
   // pathname actually changing, not fire on mount like the others above.
   useEffect(() => {
-    if (!visible || isEu) return
+    if (!visible || stayUntilChoice) return
     if (pathname !== firstPathnameRef.current) {
       commit({ analytics: true, marketing: true })
     }
-  }, [pathname, visible, isEu])
+  }, [pathname, visible, stayUntilChoice])
 
   if (!visible) return null
 
@@ -218,7 +225,7 @@ export default function CookieBanner() {
       ) : (
         <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center gap-3">
           <p className="font-body text-xs text-muted flex-1 min-w-0 truncate">
-            {isEu
+            {stayUntilChoice
               ? tt('Usamos cookies para analizar el tráfico y mejorar el sitio. Tú decides.', 'We use cookies to analyse traffic and improve the site. Your choice, your call.', '我们使用 Cookie 来分析流量并改进网站。由你决定。')
               : tt('Al seguir navegando, aceptas nuestro uso de cookies.', 'By continuing to browse, you agree to our use of cookies.', '继续浏览即表示你同意我们使用 Cookie。')}
           </p>
