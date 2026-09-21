@@ -298,17 +298,14 @@ function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.R
 // The entertaining reel shown BIG while a scan runs — the user's own clips
 // stitched into one continuous ~60s movie (iOS-safe autoplay hook runs on mount).
 
-// All five clips are pre-stitched server-side into ~60s single-file reels (one
-// continuous movie), each a different order. We loop ONE random reel — a single
-// video with the native `loop` attribute has ZERO gap between clips or at the
-// wrap, and the poster covers the first-frame decode so the screen is never
+// The five clips are pre-stitched server-side into ONE continuous ~60s movie
+// (order: esperando → chase → agencias → informatico → gato) and looped. A
+// single video with the native `loop` attribute has ZERO gap between clips or at
+// the wrap, and the poster covers the first-frame decode so the screen is never
 // empty. (Client-side buffer-swapping left black gaps because Safari throttles
 // a second decoding <video>.)
-const LOADING_REELS = ['reel1', 'reel2', 'reel3']
-
 function LoadingReel() {
   const ref = useRef<HTMLVideoElement>(null)
-  const reel = useRef(LOADING_REELS[Math.floor(Math.random() * LOADING_REELS.length)])
   useVideoAutoplay(ref, 0.01)
   return (
     <video
@@ -319,11 +316,11 @@ function LoadingReel() {
       playsInline
       preload="auto"
       aria-hidden="true"
-      poster={`/media/webpolice/loading/${reel.current}_poster.jpg`}
+      poster="/media/webpolice/loading/reel_poster.jpg"
       className="w-[92vw] max-w-[760px] rounded-2xl object-cover shadow-2xl shadow-black/40"
       style={{ aspectRatio: '1280 / 732', backgroundColor: '#0D0E12' }}
     >
-      <source src={`/media/webpolice/loading/${reel.current}.mp4`} type="video/mp4" />
+      <source src="/media/webpolice/loading/reel.mp4" type="video/mp4" />
     </video>
   )
 }
