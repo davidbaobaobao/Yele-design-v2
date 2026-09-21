@@ -40,3 +40,6 @@ next-env.d.ts
 /media/
 /public/video/
 .env*
+
+# webpolice loading reel concat lists (build artifacts)
+public/media/webpolice/loading/l*.txt

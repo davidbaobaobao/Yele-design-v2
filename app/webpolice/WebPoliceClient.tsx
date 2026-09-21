@@ -295,81 +295,36 @@ function Gorilla({ side, vref, hidden }: { side: 'left' | 'right'; vref: React.R
   )
 }
 
-// The running gorilla shown during analysis — its own component so the autoplay
-// hook runs when the loading state mounts it (iOS-safe).
-// The user's own short clips, played BIG in a random order while a scan runs so
-// the wait is entertaining — a fresh shuffle each session means the reel opens
-// on a different clip every time.
-const LOADING_CLIPS = ['esperando', 'agencias', 'gato', 'informatico', 'chase']
-function shuffled<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
+// The entertaining reel shown BIG while a scan runs — the user's own clips
+// stitched into one continuous ~60s movie (iOS-safe autoplay hook runs on mount).
 
-const clipSrc = (name: string) => `/media/webpolice/loading/${name}.mp4`
+// All five clips are pre-stitched server-side into ~60s single-file reels (one
+// continuous movie), each a different order. We loop ONE random reel — a single
+// video with the native `loop` attribute has ZERO gap between clips or at the
+// wrap, and the poster covers the first-frame decode so the screen is never
+// empty. (Client-side buffer-swapping left black gaps because Safari throttles
+// a second decoding <video>.)
+const LOADING_REELS = ['reel1', 'reel2', 'reel3']
 
-// Two stacked <video> buffers: one plays while the other silently PRELOADS the
-// next clip, then they swap with a quick crossfade. Because the next clip is
-// already buffered, there's no black gap — the clips run back-to-back like one
-// continuous film, in a fresh random order that loops forever.
 function LoadingReel() {
-  const aRef = useRef<HTMLVideoElement>(null)
-  const bRef = useRef<HTMLVideoElement>(null)
-  const [active, setActive] = useState(0) // 0 = A visible, 1 = B visible
-  const queue = useRef<string[]>([])
-  const started = useRef(false)
-
-  const nextClip = () => {
-    if (queue.current.length === 0) queue.current = shuffled(LOADING_CLIPS)
-    return queue.current.shift() as string
-  }
-  const prime = (v: HTMLVideoElement | null, name: string) => {
-    if (!v) return
-    v.setAttribute('muted', '')
-    v.setAttribute('playsinline', '')
-    v.muted = true
-    v.src = clipSrc(name)
-    v.load()
-  }
-  const playFromStart = (v: HTMLVideoElement | null) => {
-    if (!v) return
-    v.muted = true
-    try { v.currentTime = 0 } catch { /* not seekable yet, fine */ }
-    v.play().catch(() => setTimeout(() => v.play().catch(() => {}), 250))
-  }
-
-  useEffect(() => {
-    if (started.current) return
-    started.current = true
-    prime(aRef.current, nextClip()) // now playing
-    prime(bRef.current, nextClip()) // preloaded, waiting
-    playFromStart(aRef.current)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const onEnded = (which: 0 | 1) => {
-    const nextVid = which === 0 ? bRef.current : aRef.current
-    const finished = which === 0 ? aRef.current : bRef.current
-    setActive(which === 0 ? 1 : 0)
-    playFromStart(nextVid) // already buffered → starts instantly
-    // Reload the just-finished buffer with the NEXT clip only after the
-    // crossfade, so its last frame stays put while it fades out.
-    setTimeout(() => prime(finished, nextClip()), 220)
-  }
-
-  const cls = 'absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ease-linear'
+  const ref = useRef<HTMLVideoElement>(null)
+  const reel = useRef(LOADING_REELS[Math.floor(Math.random() * LOADING_REELS.length)])
+  useVideoAutoplay(ref, 0.01)
   return (
-    <div
-      className="relative w-[92vw] max-w-[760px] overflow-hidden rounded-2xl shadow-2xl shadow-black/40"
+    <video
+      ref={ref}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      poster={`/media/webpolice/loading/${reel.current}_poster.jpg`}
+      className="w-[92vw] max-w-[760px] rounded-2xl object-cover shadow-2xl shadow-black/40"
       style={{ aspectRatio: '1280 / 732', backgroundColor: '#0D0E12' }}
     >
-      <video ref={aRef} muted playsInline preload="auto" aria-hidden="true" onEnded={() => onEnded(0)} className={`${cls} ${active === 0 ? 'opacity-100' : 'opacity-0'}`} />
-      <video ref={bRef} muted playsInline preload="auto" aria-hidden="true" onEnded={() => onEnded(1)} className={`${cls} ${active === 1 ? 'opacity-100' : 'opacity-0'}`} />
-    </div>
+      <source src={`/media/webpolice/loading/${reel.current}.mp4`} type="video/mp4" />
+    </video>
   )
 }
 
