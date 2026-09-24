@@ -557,10 +557,10 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
     <div className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white/85 p-1 shadow-lg backdrop-blur">
       <style>{`
         @keyframes wpFunBlink {
-          0%, 49%   { background-color: transparent; color: rgba(11,11,13,0.45); }
-          50%, 100% { background-color: #D46FC8; color: #ffffff; }
+          0%, 49%   { background-color: transparent; color: rgba(11,11,13,0.45); border-color: rgba(11,11,13,0.15); }
+          50%, 100% { background-color: #D46FC8; color: #ffffff; border-color: #D46FC8; }
         }
-        .wp-fun-blink { animation: wpFunBlink 0.5s steps(1, end) infinite; }
+        .wp-fun-blink { border: 1.5px solid transparent; animation: wpFunBlink 1s steps(1, end) infinite; }
         @media (prefers-reduced-motion: reduce) { .wp-fun-blink { animation: none; } }
       `}</style>
       {(['serious', 'fun'] as Mode[]).map(m => {
@@ -1247,7 +1247,7 @@ function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { r
           with the "Pero en serio…" text + CTA anchored to the bottom. */}
       {serious && (
         <div
-          className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-[#c9c9c9] [background-position:72%_center] md:[background-position:center]"
+          className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-center bg-[#c9c9c9]"
           style={{ backgroundImage: 'url(/media/webpolice/cat-suit.jpg)' }}
         >
           {/* Bottom dim so the copy stays legible over the light photo. */}
