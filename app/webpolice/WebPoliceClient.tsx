@@ -1243,20 +1243,32 @@ function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { r
         <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} onSubmitted={() => track('wp_submit', locale)} />
       </TiltCard>
 
-      {/* Serious mode: a plain dark CTA banner (no gorilla). */}
+      {/* Serious mode: full-bleed cat-in-a-suit banner, dimmed at the bottom,
+          with the "Pero en serio…" text + CTA anchored to the bottom. */}
       {serious && (
-        <div className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-[#111114] border-y border-white/10">
-          <div className="mx-auto max-w-2xl px-6 py-16 text-center">
-            <p className="font-bold tracking-tight text-[#F2F0EB] leading-tight" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.4rem)' }}>{t.seriouslyLead}</p>
-            <p className="font-body text-white/70 mt-2 leading-snug" style={{ fontSize: 'clamp(1rem, 3.2vw, 1.3rem)' }}>{t.seriouslyBody}</p>
-            <a
-              href={locale === 'en' ? '/letsbuild' : `/${locale}/letsbuild`}
-              onClick={() => track('letsbuild_click', locale)}
-              className="mt-6 inline-flex items-center rounded-full bg-white px-6 py-3 font-body font-semibold text-[#0B0B0D] hover:bg-white/90 transition-colors"
-              style={{ fontSize: 'clamp(0.95rem, 3vw, 1.15rem)' }}
-            >
-              {t.seriouslyCta}
-            </a>
+        <div
+          className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-[#c9c9c9] [background-position:72%_center] md:[background-position:center]"
+          style={{ backgroundImage: 'url(/media/webpolice/cat-suit.jpg)' }}
+        >
+          {/* Bottom dim so the copy stays legible over the light photo. */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            aria-hidden="true"
+            style={{ background: 'linear-gradient(to top, rgba(8,8,10,0.94) 0%, rgba(8,8,10,0.72) 20%, rgba(8,8,10,0.15) 42%, rgba(8,8,10,0) 60%)' }}
+          />
+          <div className="relative z-10 mx-auto flex min-h-[86vh] md:min-h-screen max-w-3xl items-end px-6 md:px-10 pb-10 md:pb-16">
+            <div className="w-full text-center">
+              <p className="font-bold tracking-tight text-white leading-tight" style={{ fontSize: 'clamp(1.5rem, 5.2vw, 2.7rem)' }}>{t.seriouslyLead}</p>
+              <p className="font-body text-white/85 mt-2 leading-snug max-w-xl mx-auto" style={{ fontSize: 'clamp(1rem, 3.2vw, 1.35rem)' }}>{t.seriouslyBody}</p>
+              <a
+                href={locale === 'en' ? '/letsbuild' : `/${locale}/letsbuild`}
+                onClick={() => track('letsbuild_click', locale)}
+                className="mt-6 inline-flex items-center rounded-full bg-white px-7 py-3.5 font-body font-semibold text-black hover:bg-white/90 transition-colors"
+                style={{ fontSize: 'clamp(0.95rem, 3vw, 1.2rem)' }}
+              >
+                {t.seriouslyCta}
+              </a>
+            </div>
           </div>
         </div>
       )}
