@@ -73,7 +73,9 @@ export type WPStrings = {
   personalityLabel: string
   designYearLabel: string
   nowWhatTitle: string
-  nowWhatBody: string[]
+  nowWhatBody: string[]        // fun mode, score < 70
+  nowWhatSerious: string[]     // serious mode, score < 70
+  nowWhatHigh: string[]        // both modes, score >= 70
   seriouslyLead: string
   seriouslyBody: string
   seriouslyCta: string
@@ -153,7 +155,7 @@ const en: WPStrings = {
     ? 'I did a design test of my website and the results are not great. I got roasted hard. Judge yours:'
     : 'I ran my website through an AI design roast and it actually held up. Judge yours:'),
   plugKicker: 'Shameless plug',
-  plugTitleGood: 'We’ll build you a great website — just like this one, from $699.',
+  plugTitleGood: 'We’ll optimise your website — from $699.',
   plugTitleBad: 'We’ll build you a much better website — from $699.',
   plugBody: 'Custom-designed, no template, no AI crap.\nIt passes the Web Police test — we checked.',
   plugCta: 'I want a better website',
@@ -175,6 +177,15 @@ const en: WPStrings = {
     'The bigger question is whether your homepage makes your [u]goal[u] obvious: what you do, who it’s for, why anyone should care. If I — with a frankly absurd amount of compute power — couldn’t tell what you’re selling from your site, a real person giving you five seconds has no chance. And if the [u]message doesn’t land[u], nothing else does.',
     'Remember this is often a customer’s very [u]first contact with you.[u] The quiet math in their head is brutal: “Is this legit? Can they even afford a decent website?… and if the site looks like this, is the actual work any better?” A great site kills that doubt before it forms.',
     'Maybe it’s time to step up.',
+  ],
+  nowWhatSerious: [
+    'This site is dated and no longer competitive. It would be a good moment to look at options for bringing it up to today’s standards.',
+    'A well-designed website earns trust in about a second. An ugly one loses it just as fast — visitors feel it whether they can put it into words or not. There’s a way to be objectively not-ugly, and when a site has it, a robot and a human both notice instantly.',
+    'The bigger question is whether your homepage makes your goal obvious: what you do, who it’s for, why anyone should care. If I — with a frankly absurd amount of compute power — couldn’t tell what you’re selling from your site, a real person giving you five seconds has no chance. And if the message doesn’t land, nothing else does.',
+    'Remember this is often a customer’s very first contact with you. The quiet math in their head is brutal: “Is this legit? Can they even afford a decent website?… and if the site looks like this, is the actual work any better?” A great site kills that doubt before it forms.',
+  ],
+  nowWhatHigh: [
+    'The site itself is fine and could hold up for another couple of years. Even so, it could improve at the strategy and structure level to deliver a clearer message and increase clicks and conversions. On the design side, the gains would be marginal.',
   ],
   seriouslyLead: 'But seriously…',
   seriouslyBody: 'We try our best so your website looks good.',
@@ -265,7 +276,7 @@ const es: WPStrings = {
     ? 'Hice un test de diseño sobre mi página web y no salió muy bien. Me puso a parir de lo lindo. Juzga la tuya:'
     : 'Pasé mi web por un test de diseño con IA y la verdad es que aguantó bien. Juzga la tuya:'),
   plugKicker: 'Publicidad descarada',
-  plugTitleGood: 'Te hacemos una web genial — igual que esta, desde 699€.',
+  plugTitleGood: 'Te optimizamos la página web — desde 699€.',
   plugTitleBad: 'Te hacemos una web mucho mejor — desde 699€.',
   plugBody: 'Diseño a medida, sin plantillas, sin IA cutre.\nPasa el test de la Poli Web — lo comprobamos.',
   plugCta: 'Quiero una web mejor',
@@ -287,6 +298,15 @@ const es: WPStrings = {
     'La pregunta más importante es si tu portada deja claro tu [u]objetivo[u]: qué haces, para quién y por qué debería importarle a alguien. Si yo —con una cantidad absurda de potencia de cálculo— no he sido capaz de entender qué vendes con tu web, una persona que te dedica cinco segundos no tiene ninguna posibilidad. Y [u]si el mensaje no llega[u], nada más llega.',
     'Recuerda que esta suele ser la [u]primera toma de contacto[u] de un cliente contigo. Y la reflexión silenciosa que hace en su cabeza es brutal: «¿Esto es serio? ¿Pueden permitirse una web decente?… y si la web se ve así, ¿su trabajo será mejor?». Una buena web mata esa duda antes de que nazca.',
     'Quizá es hora de dar el paso.',
+  ],
+  nowWhatSerious: [
+    'Esta página ya está obsoleta y no es competitiva. Sería un buen momento para ver opciones para renovar la web a los estándares de hoy en día.',
+    'Una web bien diseñada genera confianza en un segundo. Una fea la pierde igual de rápido — tus visitantes lo notan, aunque no sepan explicar por qué. Hay una forma de ser objetivamente no-feo, y cuando una web la tiene, tanto un robot como una persona lo detectan al instante.',
+    'La pregunta más importante es si tu portada deja claro tu objetivo: qué haces, para quién y por qué debería importarle a alguien. Si yo —con una cantidad absurda de potencia de cálculo— no he sido capaz de entender qué vendes con tu web, una persona que te dedica cinco segundos no tiene ninguna posibilidad. Y si el mensaje no llega, nada más llega.',
+    'Recuerda que esta suele ser la primera toma de contacto de un cliente contigo. Y la reflexión silenciosa que hace en su cabeza es brutal: «¿Esto es serio? ¿Pueden permitirse una web decente?… y si la web se ve así, ¿su trabajo será mejor?». Una buena web mata esa duda antes de que nazca.',
+  ],
+  nowWhatHigh: [
+    'La página en sí está bien y puede aguantar un par de años más. Aún así, se podría mejorar a nivel de estrategia y estructura para ofrecer un mejor mensaje y aumentar los clics y la conversión. A nivel de diseño se obtendría una mejora marginal.',
   ],
   seriouslyLead: 'Pero en serio…',
   seriouslyBody: 'Hacemos todo lo posible para que tu web se vea bien.',
@@ -377,7 +397,7 @@ const zh: WPStrings = {
     ? '我拿网站做了个设计测试，结果不太妙，被狠狠吐槽了一顿。来看看你的：'
     : '我把网站丢给 AI 做了设计测评，居然还挺能打。来看看你的：'),
   plugKicker: '恰饭时间',
-  plugTitleGood: '我们也能给你做个这么好看的 —— €699 起。',
+  plugTitleGood: '我们帮你优化网站 —— €699 起。',
   plugTitleBad: '这个我们能给你做得好看得多 —— €699 起。',
   plugBody: '纯定制设计，不套模板，不用 AI 糊弄。我们自己的网站也送去测过了 —— 警察没敢开罚单。',
   plugCta: '我也要一个',
@@ -399,6 +419,15 @@ const zh: WPStrings = {
     '更关键的问题是：你的首页有没有把目标讲清楚 —— 你是做什么的、给谁做的、别人为什么要在乎。如果连我 —— 带着夸张到离谱的算力 —— 都没能从你的首屏看懂你在卖什么，那给你五秒钟的真人就更没戏了。信息传达不到位，别的都白搭。',
     '别忘了，这往往是客户第一次接触你。他心里那笔账很残酷：「这家靠谱吗？他们连个像样的网站都做不起？……网站都长这样，活儿能好到哪去？」一个好网站，能在这种疑虑冒头之前就把它摁下去。',
     '也许，是时候认真升级一下了。',
+  ],
+  nowWhatSerious: [
+    '这个网站已经过时，缺乏竞争力。现在是个不错的时机，可以考虑把它更新到今天的标准。',
+    '一个设计得当的网站，一秒钟就能赢得信任；一个丑网站，也会同样快地把信任丢光 —— 访客能感觉到，哪怕说不清为什么。「客观上不丑」是有办法做到的，一旦做到了，机器和真人都能一眼看出来。',
+    '更关键的问题是：你的首页有没有把目标讲清楚 —— 你是做什么的、给谁做的、别人为什么要在乎。如果连我 —— 带着夸张到离谱的算力 —— 都没能从你的首屏看懂你在卖什么，那给你五秒钟的真人就更没戏了。信息传达不到位，别的都白搭。',
+    '别忘了，这往往是客户第一次接触你。他心里那笔账很残酷：「这家靠谱吗？他们连个像样的网站都做不起？……网站都长这样，活儿能好到哪去？」一个好网站，能在这种疑虑冒头之前就把它摁下去。',
+  ],
+  nowWhatHigh: [
+    '网站本身没问题，再撑一两年没问题。不过在策略和结构层面仍有提升空间，可以让信息更清晰、提升点击和转化。设计层面能提升的空间不大。',
   ],
   seriouslyLead: '不过说正经的……',
   seriouslyBody: '我们是真的用心，想让你的网站好看。',

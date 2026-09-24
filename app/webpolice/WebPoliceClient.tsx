@@ -329,6 +329,29 @@ function LoadingReel() {
   )
 }
 
+// Serious-mode loading clip (the cat). Poster shows the first frame, then it
+// autoplays and loops while the analysis runs.
+function SeriousCat() {
+  const ref = useRef<HTMLVideoElement>(null)
+  useVideoAutoplay(ref, 0.01)
+  return (
+    <video
+      ref={ref}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      poster="/media/webpolice/loading/cat_poster.jpg"
+      className="w-[86vw] max-w-[520px] rounded-2xl object-cover shadow-2xl shadow-black/50"
+      style={{ aspectRatio: '1934 / 1080', backgroundColor: '#0B0B0D' }}
+    >
+      <source src="/media/webpolice/loading/cat.mp4" type="video/mp4" />
+    </video>
+  )
+}
+
 // Crawlable, keyword-rich SEO content shown below the tool. It renders in the
 // server HTML (client components still SSR), so search engines index it.
 function SeoSection({ t }: { t: WPStrings }) {
@@ -520,8 +543,29 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
 
   const modeLabel = (m: Mode) =>
     m === 'serious'
-      ? (locale === 'es' ? 'Serio' : locale === 'zh' ? '正经' : 'Serious')
-      : (locale === 'es' ? 'Con humor' : locale === 'zh' ? '搞笑' : 'Fun')
+      ? (locale === 'es' ? 'Modo serio' : locale === 'zh' ? '认真模式' : 'Serious mode')
+      : (locale === 'es' ? 'Modo divertido' : locale === 'zh' ? '搞笑模式' : 'Fun mode')
+
+  // Reusable toggle — black text, white active for serious, soft-pink for fun.
+  const modeToggle = (
+    <div className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white/85 p-1 shadow-lg backdrop-blur">
+      {(['serious', 'fun'] as Mode[]).map(m => (
+        <button
+          key={m}
+          type="button"
+          onClick={() => setMode(m)}
+          aria-current={mode === m}
+          className={`rounded-full px-4 py-2 font-body text-sm font-bold text-[#0B0B0D] transition-colors ${
+            mode === m
+              ? m === 'serious' ? 'bg-white shadow-sm' : 'bg-[#F4C9DE] shadow-sm'
+              : 'bg-transparent text-[#0B0B0D]/45 hover:text-[#0B0B0D]'
+          }`}
+        >
+          {modeLabel(m)}
+        </button>
+      ))}
+    </div>
+  )
 
   return (
     <main className={`relative ${serious ? archivo.className : ''}`}>
@@ -532,29 +576,6 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
       {!serious && <Gorilla side="left" vref={leftVid} hidden={moved} />}
       {!serious && <Gorilla side="right" vref={rightVid} hidden={moved} />}
 
-      {/* Big mode toggle — serious (default) vs fun. Hidden once a scan starts. */}
-      {phase === 'idle' && (
-        <div className="absolute left-1/2 top-4 z-30 -translate-x-1/2 md:top-6">
-          <div className={`flex items-center gap-1 rounded-full border p-1 shadow-lg backdrop-blur ${serious ? 'border-white/20 bg-white/10 shadow-black/40' : 'border-[#16161A]/15 bg-white/70 shadow-[0_8px_24px_rgba(120,40,90,0.18)]'}`}>
-            {(['serious', 'fun'] as Mode[]).map(m => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMode(m)}
-                aria-current={mode === m}
-                className={`rounded-full px-5 py-2 font-body text-sm font-bold transition-colors ${
-                  mode === m
-                    ? serious ? 'bg-white text-[#0B0B0D]' : 'bg-[#16161A] text-white'
-                    : serious ? 'text-white/60 hover:text-white' : 'text-[#16161A]/55 hover:text-[#16161A]'
-                }`}
-              >
-                {modeLabel(m)}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Hero — bottom half on mobile (gorillas take the top half); centered
           on desktop. Uses 100svh so the bottom (chips) isn't hidden behind the
           mobile browser UI. Slides fully up when the case opens. */}
@@ -563,6 +584,8 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
           moved ? '-translate-y-[110vh]' : 'translate-y-0'
         }`}
       >
+        <div className="mb-4 md:mb-6">{modeToggle}</div>
+
         <h1
           className={`font-bold tracking-tight leading-[1.08] ${serious ? 'text-[#F2F0EB]' : 'font-display text-[#16161A]'}`}
           style={{ fontSize: 'clamp(1.7rem, 5.4vw, 3.6rem)', ...(serious ? {} : { textShadow: '0 6px 20px rgba(120,40,90,0.18), 0 2px 4px rgba(0,0,0,0.08)' }) }}
@@ -668,10 +691,11 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
           ring, no video, on the black theme. */}
       {phase === 'loading' && (
         serious ? (
-          <div className={`fixed inset-0 z-20 flex flex-col items-center justify-center gap-8 bg-[#0B0B0D] px-6 pointer-events-none ${archivo.className}`}>
+          <div className={`fixed inset-0 z-20 flex flex-col items-center justify-center gap-6 bg-[#0B0B0D] px-6 pointer-events-none ${archivo.className}`}>
             <p className="font-bold text-[#F2F0EB] text-center leading-snug" style={{ fontSize: 'clamp(1.2rem, 3.6vw, 2rem)' }}>
               {loadingLines[line]}
             </p>
+            <SeriousCat />
             <div className="relative h-16 w-16">
               <svg viewBox="0 0 40 40" className="h-full w-full -rotate-90" aria-hidden="true">
                 <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(242,240,235,0.18)" strokeWidth="3.5" />
@@ -944,6 +968,9 @@ function ShareBar({ result, t, basePath, locale }: { result: Result; t: WPString
 function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { result: Result; t: WPStrings; locale: Locale; mode: Mode; planOptions: string[]; basePath: string; onReset: () => void }) {
   const [showAll, setShowAll] = useState(false)
   const serious = mode === 'serious'
+  // "Now what?" copy depends on score AND mode: >=70 → positive (both modes);
+  // <70 → serious gets the professional block, fun keeps the roast block.
+  const nowWhat = result.quality >= 70 ? t.nowWhatHigh : serious ? t.nowWhatSerious : t.nowWhatBody
   const host = result.url.replace(/^https?:\/\//, '').replace(/\/$/, '')
   const main = result.charges.slice(0, 3)
   const extra = result.charges.slice(3, 8)
@@ -1015,7 +1042,7 @@ function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { r
                 : '',
               // Keep reading into the "Now what?" pitch after the roast.
               t.nowWhatTitle,
-              ...t.nowWhatBody.map(s => s.replace(/\[u\]/g, '')),
+              ...nowWhat.map(s => s.replace(/\[u\]/g, '')),
             ].filter(Boolean)}
             lang={t.ttsLang}
             t={t}
@@ -1166,7 +1193,7 @@ function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { r
           {t.nowWhatTitle}
         </h2>
         <div className="mt-4 space-y-4">
-          {t.nowWhatBody.map((p, i) => (
+          {nowWhat.map((p, i) => (
             <p
               key={i}
               className={`font-body leading-relaxed ${i === t.nowWhatBody.length - 1 ? 'text-lg md:text-xl font-semibold text-white' : 'text-base md:text-lg text-white/75'}`}
@@ -1190,7 +1217,7 @@ function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { r
       <TiltCard className="mt-6 rounded-3xl bg-[#F7F6F3] p-6 md:p-8 shadow-2xl shadow-black/30">
         <p className="font-mono text-xs uppercase tracking-[0.16em] mb-2" style={{ color: '#B23FA3' }}>{t.plugKicker}</p>
         <h3 className="font-display font-bold text-2xl md:text-3xl tracking-tight" style={{ color: '#16161A' }}>
-          {result.quality >= 60 ? t.plugTitleGood : t.plugTitleBad}
+          {result.quality >= 70 ? t.plugTitleGood : t.plugTitleBad}
         </h3>
         <p className="font-body text-base mt-2 mb-6 whitespace-pre-line" style={{ color: '#4A4550' }}>
           {t.plugBody}
