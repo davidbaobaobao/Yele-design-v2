@@ -7,7 +7,11 @@
     },
     {
       "path": "/api/webpolice/daily-report",
-      "schedule": "0 7 * * *"
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/webpolice/daily-report",
+      "schedule": "0 12 * * *"
     }
   ]
 }

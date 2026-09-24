@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
 import { trackMetaLead, getMetaCookies } from '@/lib/metaPixel'
+import { funnelBeacon } from '@/lib/webpolice/funnelBeacon'
 import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
 
 type FormData = {
@@ -38,10 +39,17 @@ export default function LeadForm({
   leadSource,
   sendWelcome,
   locale = 'en',
+  onSubmitted,
+  submitBeacon,
 }: {
   variant?: 'light' | 'dark'
   ctaLabel?: string
   id?: string
+  // Fired once when a submit succeeds — used for funnel "form filled" telemetry.
+  onSubmitted?: () => void
+  // Serializable alternative to onSubmitted (works from server components):
+  // fires a consent-aware funnel beacon on successful submit.
+  submitBeacon?: { event: string; page: string }
   // Funnel locale for all labels/copy in this form. Defaults to 'en' so every
   // existing caller renders exactly as before.
   locale?: Locale
@@ -262,6 +270,8 @@ export default function LeadForm({
       if (platform === 'google') {
         trackOnboardingFormSubmit(formData.email)
       }
+      try { onSubmitted?.() } catch { /* best-effort telemetry */ }
+      if (submitBeacon) funnelBeacon(submitBeacon.event, submitBeacon.page, { locale })
     }
 
     const params = new URLSearchParams({

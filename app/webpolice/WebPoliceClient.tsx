@@ -47,6 +47,9 @@ function sessionId(): string {
 //    the session (pagehide) if the visitor hasn't rejected by then.
 const firedEvents = new Set<string>()
 const eventBuffer: { event: string; locale: string; url?: string }[] = []
+// Current analysis mode, so every webpolice funnel event is tagged serious/fun
+// and the daily report can split the funnel by group. Set from the component.
+let trackTone: Mode = 'serious'
 
 function isEuVisitor(): boolean {
   // The middleware sets `yele_eu=0` for detected non-EU (e.g. US). Anything
@@ -62,7 +65,7 @@ function analyticsConsent(): 'accept' | 'reject' | 'none' {
 }
 function sendEvent(event: string, locale: string, url?: string) {
   try {
-    const payload = JSON.stringify({ event, locale, sessionId: sessionId(), url })
+    const payload = JSON.stringify({ event, locale, sessionId: sessionId(), url, tone: trackTone })
     const blob = new Blob([payload], { type: 'application/json' })
     if (!navigator.sendBeacon?.('/api/webpolice/event', blob)) {
       fetch('/api/webpolice/event', { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true }).catch(() => {})
@@ -320,11 +323,11 @@ function LoadingReel() {
       playsInline
       preload="auto"
       aria-hidden="true"
-      poster="/media/webpolice/loading/reel_poster.jpg"
+      poster="/media/webpolice/loading/funloop_poster.jpg"
       className="w-[92vw] max-w-[760px] rounded-2xl object-cover shadow-2xl shadow-black/40"
-      style={{ aspectRatio: '1280 / 732', backgroundColor: '#0D0E12' }}
+      style={{ aspectRatio: '1888 / 1080', backgroundColor: '#0D0E12' }}
     >
-      <source src="/media/webpolice/loading/reel.mp4" type="video/mp4" />
+      <source src="/media/webpolice/loading/funloop.mp4" type="video/mp4" />
     </video>
   )
 }
@@ -380,6 +383,7 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
   const t = getWP(locale)
   const [mode, setModeState] = useState<Mode>(initialMode)
   const serious = mode === 'serious'
+  trackTone = mode // keep funnel events tagged with the current group (serious/fun)
   const mc = t.modes[mode]
   const sc = t.modes.serious // serious-only labels
   const loadingLines = serious ? sc.loadingLines : t.loadingLines
@@ -547,23 +551,37 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
       : (locale === 'es' ? 'Modo divertido' : locale === 'zh' ? '搞笑模式' : 'Fun mode')
 
   // Reusable toggle — black text, white active for serious, soft-pink for fun.
+  // In serious mode the inactive "Fun" side blinks (2×/sec) between grey and
+  // pink+white to nudge people toward fun mode.
   const modeToggle = (
     <div className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white/85 p-1 shadow-lg backdrop-blur">
-      {(['serious', 'fun'] as Mode[]).map(m => (
-        <button
-          key={m}
-          type="button"
-          onClick={() => setMode(m)}
-          aria-current={mode === m}
-          className={`rounded-full px-4 py-2 font-body text-sm font-bold text-[#0B0B0D] transition-colors ${
-            mode === m
-              ? m === 'serious' ? 'bg-white shadow-sm' : 'bg-[#F4C9DE] shadow-sm'
-              : 'bg-transparent text-[#0B0B0D]/45 hover:text-[#0B0B0D]'
-          }`}
-        >
-          {modeLabel(m)}
-        </button>
-      ))}
+      <style>{`
+        @keyframes wpFunBlink {
+          0%, 49%   { background-color: transparent; color: rgba(11,11,13,0.45); }
+          50%, 100% { background-color: #D46FC8; color: #ffffff; }
+        }
+        .wp-fun-blink { animation: wpFunBlink 0.5s steps(1, end) infinite; }
+        @media (prefers-reduced-motion: reduce) { .wp-fun-blink { animation: none; } }
+      `}</style>
+      {(['serious', 'fun'] as Mode[]).map(m => {
+        const active = mode === m
+        const blink = serious && m === 'fun' // serious active → nudge the fun side
+        return (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMode(m)}
+            aria-current={active}
+            className={`rounded-full px-4 py-2 font-body text-sm font-bold text-[#0B0B0D] transition-colors ${
+              active
+                ? m === 'serious' ? 'bg-white shadow-sm' : 'bg-[#F4C9DE] shadow-sm'
+                : blink ? 'wp-fun-blink' : 'bg-transparent text-[#0B0B0D]/45 hover:text-[#0B0B0D]'
+            }`}
+          >
+            {modeLabel(m)}
+          </button>
+        )
+      })}
     </div>
   )
 
@@ -624,7 +642,7 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
               type="button"
               onClick={() => run()}
               disabled={phase === 'loading'}
-              className={`inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full px-7 py-3.5 font-body font-semibold text-base transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${serious ? 'bg-white text-[#0B0B0D] hover:bg-white/90 shadow-[0_12px_30px_rgba(0,0,0,0.4)]' : 'bg-[#16161A] text-white shadow-[0_12px_30px_rgba(0,0,0,0.28)] hover:animate-[wpSirenBtn_0.6s_linear_infinite]'}`}
+              className={`inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full px-7 py-3.5 font-body font-semibold text-base transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${serious ? 'bg-white text-black hover:bg-white/90 shadow-[0_12px_30px_rgba(0,0,0,0.4)]' : 'bg-[#16161A] text-white shadow-[0_12px_30px_rgba(0,0,0,0.28)] hover:animate-[wpSirenBtn_0.6s_linear_infinite]'}`}
             >
               {phase === 'loading' ? t.ctaLoading : mc.cta}
             </button>
@@ -1222,7 +1240,7 @@ function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { r
         <p className="font-body text-base mt-2 mb-6 whitespace-pre-line" style={{ color: '#4A4550' }}>
           {t.plugBody}
         </p>
-        <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} />
+        <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} onSubmitted={() => track('wp_submit', locale)} />
       </TiltCard>
 
       {/* Serious mode: a plain dark CTA banner (no gorilla). */}

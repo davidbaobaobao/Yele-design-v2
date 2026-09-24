@@ -310,6 +310,27 @@ export async function eventFunnelSince(sinceIso: string, page: string = 'webpoli
   return out
 }
 
+/** webpolice funnel split by tone (serious vs fun), distinct sessions per step. */
+export async function eventFunnelByTone(sinceIso: string): Promise<{ serious: FunnelCounts; fun: FunnelCounts }> {
+  const empty = { serious: {} as FunnelCounts, fun: {} as FunnelCounts }
+  const supabase = db()
+  if (!supabase) return empty
+  const { data, error } = await supabase.from(EVENTS)
+    .select('event, session_id, tone').eq('page', 'webpolice').gte('created_at', sinceIso).limit(100_000)
+  if (error) { console.error('[webpolice] eventFunnelByTone failed:', error.message); return empty }
+  const out = { serious: {} as FunnelCounts, fun: {} as FunnelCounts }
+  const seen = { serious: {} as Record<string, Set<string>>, fun: {} as Record<string, Set<string>> }
+  for (const r of (data ?? []) as { event: string; session_id: string | null; tone: string | null }[]) {
+    const g: 'serious' | 'fun' = r.tone === 'serious' ? 'serious' : 'fun'
+    const ev = r.event
+    if (!out[g][ev]) { out[g][ev] = { total: 0, sessions: 0 }; seen[g][ev] = new Set() }
+    out[g][ev].total++
+    const s = r.session_id ?? ''
+    if (s && !seen[g][ev].has(s)) { seen[g][ev].add(s); out[g][ev].sessions++ }
+  }
+  return out
+}
+
 /** Per-URL distinct-session counts for one event since `sinceIso` (desc). */
 export async function eventUrlBreakdown(event: string, sinceIso: string): Promise<{ url: string; sessions: number }[]> {
   const supabase = db()

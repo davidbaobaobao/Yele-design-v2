@@ -108,7 +108,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
               </div>
 
               <div className="md:ml-auto md:w-full md:max-w-md">
-                <LeadForm variant="dark" ctaLabel={d.form.cta} id="lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} />
+                <LeadForm variant="dark" ctaLabel={d.form.cta} id="lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} submitBeacon={{ event: 'lb_submit', page: 'letsbuild' }} />
 
                 <div className="text-center mt-2.5">
                   {d.form.whatsapp ? (

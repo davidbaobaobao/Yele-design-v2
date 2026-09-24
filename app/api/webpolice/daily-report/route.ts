@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { scansSince, eventFunnelSince, eventUrlBreakdown } from '@/lib/webpolice/store'
+import { scansSince, eventFunnelSince, eventFunnelByTone, eventUrlBreakdown } from '@/lib/webpolice/store'
 
 export const runtime = 'nodejs'
 
@@ -22,6 +22,15 @@ export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET
   if (secret && request.headers.get('authorization') !== `Bearer ${secret}`) {
     return NextResponse.json({ ok: false }, { status: 401 })
+  }
+
+  // Exactly ONE send per day at 13:00 Madrid, DST-safe: two UTC crons (11:00 &
+  // 12:00) fire, but only the one that lands on 13:00 local Madrid time sends —
+  // 11:00 UTC in summer (CEST), 12:00 UTC in winter (CET). `?force=1` bypasses.
+  const force = new URL(request.url).searchParams.get('force') === '1'
+  const madridHour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', hour12: false }).format(new Date()))
+  if (!force && madridHour !== 13) {
+    return NextResponse.json({ ok: true, sent: false, reason: `not 13:00 Madrid (currently ${madridHour}:00)` })
   }
 
   const rows = await scansSince(24 * 3600_000)
@@ -57,6 +66,7 @@ export async function GET(request: Request) {
   const seriousOk = ok.filter(r => r.tone === 'serious')
   const funOk = ok.filter(r => (r.tone ?? 'fun') !== 'serious')
   const seriousSites = aggregate(seriousOk)
+  const funSites = aggregate(funOk)
   const totalScans = ok.length
   const scored = ok.filter(r => typeof r.quality === 'number') as { quality: number }[]
   const avg = scored.length ? Math.round(scored.reduce((s, r) => s + r.quality, 0) / scored.length) : null
@@ -71,7 +81,40 @@ export async function GET(request: Request) {
 
   // ── Visitor funnel (from the lightweight webpolice_events beacons) ──────────
   const sinceEvents = new Date(Date.now() - 24 * 3600_000).toISOString()
-  const funnel = await eventFunnelSince(sinceEvents)
+  const wpTone = await eventFunnelByTone(sinceEvents)
+  // Total searches (both groups) for a repeat-search note.
+  const searchTotal = (wpTone.serious['search']?.total ?? 0) + (wpTone.fun['search']?.total ?? 0)
+  const searchers = (wpTone.serious['search']?.sessions ?? 0) + (wpTone.fun['search']?.sessions ?? 0)
+  const ws = (g: 'serious' | 'fun', ev: string) => wpTone[g][ev]?.sessions ?? 0
+  const wpSteps: [string, string][] = [
+    ['Opened the page', 'page_view'],
+    ['Ran a search', 'search'],
+    ['Saw a result', 'result_view'],
+    ['Read to the middle', 'scroll_mid'],
+    ['Reached the form', 'plug_view'],
+    ['Filled the form ✅', 'wp_submit'],
+    ['Pressed play', 'speaker_click'],
+    ['Shared', 'share_click'],
+    ['Clicked “Check out our site”', 'letsbuild_click'],
+  ]
+  const wpFunnelHasData = wpSteps.some(([, ev]) => ws('serious', ev) + ws('fun', ev) > 0)
+  const wpFunnelBlock = wpFunnelHasData ? `
+    <h3 style="margin:22px 0 2px;font-size:15px">📊 Funnel by group (last 24h)</h3>
+    <p style="margin:0 0 8px;color:#6F6373;font-size:12px">Distinct visitors reaching each step, split by the mode they were in.</p>
+    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
+      <tr>
+        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Step</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">🧐 Serious</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">🐒 Fun</th>
+      </tr>
+      ${wpSteps.map(([label, ev]) => `
+      <tr>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(label)}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${ws('serious', ev)}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${ws('fun', ev)}</td>
+      </tr>`).join('')}
+    </table>
+    ${searchers > 0 ? `<p style="margin:8px 0 0;color:#6F6373;font-size:12px">${searchTotal} total searches from ${searchers} visitor${searchers === 1 ? '' : 's'} · avg ${(searchTotal / searchers).toFixed(1)} each${searchTotal - searchers > 0 ? ` · ${searchTotal - searchers} repeat (people checking more than one site)` : ''}</p>` : ''}` : ''
   const [scrollMidSites, plugSites] = await Promise.all([
     eventUrlBreakdown('scroll_mid', sinceEvents),
     eventUrlBreakdown('plug_view', sinceEvents),
@@ -86,6 +129,7 @@ export async function GET(request: Request) {
     ['Scrolled to the first form', lbs('lb_form')],
     ['Scrolled to “why Yele”', lbs('lb_porque')],
     ['Scrolled into the FAQ', lbs('lb_faq')],
+    ['Submitted the form ✅', lbs('lb_submit')],
   ]
   const lbHasData = lbSteps.some(([, n]) => n > 0)
   const lbPct = (n: number) => (lbLoaded ? Math.round((n / lbLoaded) * 100) : 0)
@@ -105,45 +149,6 @@ export async function GET(request: Request) {
         <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center;color:${i === 0 ? '#16161A' : '#6F6373'}">${i === 0 ? '100%' : lbPct(n) + '%'}</td>
       </tr>`).join('')}
     </table>` : ''
-  const fs = (k: string) => funnel[k]?.sessions ?? 0
-  const visitors = fs('page_view')
-  const pctOf = (n: number) => (visitors ? Math.round((n / visitors) * 100) : 0)
-  const funnelSteps: [string, number][] = [
-    ['Opened the page', visitors],
-    ['Ran a search', fs('search')],
-    ['Saw a result', fs('result_view')],
-    ['Pressed play (read aloud)', fs('speaker_click')],
-    ['Scrolled to mid (design-year)', fs('scroll_mid')],
-    ['Reached the plug form', fs('plug_view')],
-    ['Pressed a share button', fs('share_click')],
-    ['Clicked “Check out our site”', fs('letsbuild_click')],
-  ]
-  const funnelHasData = funnelSteps.some(([, n]) => n > 0)
-  const funnelBlock = funnelHasData ? `
-    <h3 style="margin:26px 0 2px;font-size:15px">📊 Visitor funnel (last 24h)</h3>
-    <p style="margin:0 0 8px;color:#6F6373;font-size:12px">Distinct visitors reaching each step. % is of everyone who opened the page.</p>
-    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
-      <tr>
-        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Step</th>
-        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Visitors</th>
-        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">% of opened</th>
-      </tr>
-      ${funnelSteps.map(([label, n], i) => `
-      <tr>
-        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(label)}</td>
-        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${n}</td>
-        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center;color:${i === 0 ? '#16161A' : '#6F6373'}">${i === 0 ? '100%' : pctOf(n) + '%'}</td>
-      </tr>`).join('')}
-    </table>
-    ${(() => {
-      const searchTotal = funnel['search']?.total ?? 0
-      const searchers = fs('search')
-      if (searchers === 0) return ''
-      const avg = (searchTotal / searchers).toFixed(1)
-      const repeats = searchTotal - searchers
-      return `<p style="margin:8px 0 0;color:#6F6373;font-size:12px">${searchTotal} total searches from ${searchers} visitor${searchers === 1 ? '' : 's'} · avg ${avg} each${repeats > 0 ? ` · ${repeats} repeat search${repeats === 1 ? '' : 'es'} (people checking more than one site)` : ''}</p>`
-    })()}` : ''
-
   // Per-URL breakdown for the two milestone steps: which sites people scrolled
   // through to the middle, and which they reached the plug form on.
   const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, '') } catch { return u } }
@@ -168,18 +173,6 @@ export async function GET(request: Request) {
 
   const when = (iso?: string) =>
     new Date(iso ?? Date.now()).toLocaleString('en-GB', { timeZone: 'Europe/Madrid', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
-
-  const tr = sites.map(s => `
-    <tr>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">
-        <a href="${esc(s.url)}" style="color:#B8489F">${esc(s.host)}</a>
-      </td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${s.count}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${s.quality ?? '—'}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(s.verdict ?? '—')}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:12px -apple-system,sans-serif;color:#777">${when(s.last)}</td>
-      <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${resultLink(s.id)}</td>
-    </tr>`).join('')
 
   // Simple list rows for the "errored" and "abandoned" sections.
   const listRow = (s: Agg, third: string) => `
@@ -209,20 +202,26 @@ export async function GET(request: Request) {
     ['Site', 'Tries', '', 'Left'],
     abSites.map(s => listRow(s, '')).join(''),
   )
-  // Serious-mode scans get their own section — these visitors wanted a real,
-  // professional assessment (higher-intent), so worth a closer look.
-  const seriousBlock = section(
-    `🧐 ${seriousSites.length} site${seriousSites.length === 1 ? '' : 's'} analysed in SERIOUS mode`,
-    'Professional-mode scans — higher-intent visitors who wanted a real assessment.',
-    ['Site', 'Searches', 'Score', 'Verdict', 'Result'],
-    seriousSites.map(s => `
+  // Per-group site lists: which URLs each group (serious / fun) searched.
+  const siteScoreRows = (list: Agg[]) => list.map(s => `
       <tr>
         <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif"><a href="${esc(s.url)}" style="color:#B8489F">${esc(s.host)}</a></td>
         <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${s.count}</td>
         <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${s.quality ?? '—'}</td>
         <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(s.verdict ?? '—')}</td>
         <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${resultLink(s.id)}</td>
-      </tr>`).join(''),
+      </tr>`).join('')
+  const seriousBlock = section(
+    `🧐 ${seriousSites.length} site${seriousSites.length === 1 ? '' : 's'} — SERIOUS group`,
+    'Professional-mode scans — higher-intent visitors who wanted a real assessment.',
+    ['Site', 'Searches', 'Score', 'Verdict', 'Result'],
+    siteScoreRows(seriousSites),
+  )
+  const funBlock = section(
+    `🐒 ${funSites.length} site${funSites.length === 1 ? '' : 's'} — FUN group`,
+    'Fun-mode scans — they came for the roast.',
+    ['Site', 'Searches', 'Score', 'Verdict', 'Result'],
+    siteScoreRows(funSites),
   )
 
   const html = `
@@ -233,25 +232,21 @@ export async function GET(request: Request) {
       ${totalScans} completed search${totalScans === 1 ? '' : 'es'}${avg !== null ? ` · avg score ${avg}/100` : ''}${errSites.length ? ` · ${errored.length} errored` : ''}${abSites.length ? ` · ${abandoned.length} abandoned` : ''}
     </p>
     <p style="margin:0 0 18px;color:#16161A;font-size:13px;font-weight:600">🧐 ${seriousOk.length} serious &nbsp;·&nbsp; 🐒 ${funOk.length} fun</p>
-    ${funnelBlock}
+
+    <h2 style="margin:26px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">🔍 /webpolice</h2>
+    ${wpFunnelBlock}
+    ${seriousBlock}
+    ${funBlock}
     ${scrollMidBlock}
     ${plugBlock}
-    ${sites.length ? `<table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
-      <tr>
-        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Site</th>
-        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Searches</th>
-        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Score</th>
-        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Verdict</th>
-        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Last</th>
-        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Result</th>
-      </tr>
-      ${tr}
-    </table>` : ''}
-    ${seriousBlock}
-    ${lbBlock}
     ${errBlock}
     ${abBlock}
-    <p style="margin:18px 0 0;color:#6F6373;font-size:12px">Low scores are the warm leads — they just watched a robot call their site ugly.</p>
+
+    <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">🏗️ /letsbuild</h2>
+    ${lbHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /letsbuild visits recorded in the last 24h.</p>'}
+    ${lbBlock}
+
+    <p style="margin:22px 0 0;color:#6F6373;font-size:12px">Low scores are the warm leads — they just watched a robot call their site ugly.</p>
   </div>`
 
   try {

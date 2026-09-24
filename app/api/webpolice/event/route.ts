@@ -20,12 +20,14 @@ const ALLOWED = new Set([
   'plug_view',      // reached the shameless-plug form
   'share_click',    // pressed a share / copy-link button
   'letsbuild_click',// clicked the "Check out our site" link
+  'wp_submit',      // filled + submitted the plug form on webpolice
   // /letsbuild funnel (page='letsbuild')
   'lb_hero',        // loaded the hero
   'lb_precios',     // scrolled to pricing
   'lb_form',        // scrolled to the first form
   'lb_porque',      // scrolled to "why Yele"
   'lb_faq',         // scrolled into the FAQ
+  'lb_submit',      // filled + submitted the lead form
 ])
 const PAGES = new Set(['webpolice', 'letsbuild'])
 
