@@ -53,6 +53,10 @@ export async function GET(request: Request) {
   const sites = aggregate(ok)
   const errSites = aggregate(errored)
   const abSites = aggregate(abandoned)
+  // Serious vs fun split (from the tone column).
+  const seriousOk = ok.filter(r => r.tone === 'serious')
+  const funOk = ok.filter(r => (r.tone ?? 'fun') !== 'serious')
+  const seriousSites = aggregate(seriousOk)
   const totalScans = ok.length
   const scored = ok.filter(r => typeof r.quality === 'number') as { quality: number }[]
   const avg = scored.length ? Math.round(scored.reduce((s, r) => s + r.quality, 0) / scored.length) : null
@@ -72,6 +76,35 @@ export async function GET(request: Request) {
     eventUrlBreakdown('scroll_mid', sinceEvents),
     eventUrlBreakdown('plug_view', sinceEvents),
   ])
+  // /letsbuild scroll funnel (separate page='letsbuild').
+  const lbFunnel = await eventFunnelSince(sinceEvents, 'letsbuild')
+  const lbs = (k: string) => lbFunnel[k]?.sessions ?? 0
+  const lbLoaded = lbs('lb_hero')
+  const lbSteps: [string, number][] = [
+    ['Loaded /letsbuild', lbLoaded],
+    ['Scrolled to pricing', lbs('lb_precios')],
+    ['Scrolled to the first form', lbs('lb_form')],
+    ['Scrolled to “why Yele”', lbs('lb_porque')],
+    ['Scrolled into the FAQ', lbs('lb_faq')],
+  ]
+  const lbHasData = lbSteps.some(([, n]) => n > 0)
+  const lbPct = (n: number) => (lbLoaded ? Math.round((n / lbLoaded) * 100) : 0)
+  const lbBlock = lbHasData ? `
+    <h3 style="margin:26px 0 2px;font-size:15px">🏗️ /letsbuild funnel (last 24h)</h3>
+    <p style="margin:0 0 8px;color:#6F6373;font-size:12px">Distinct visitors reaching each section. % is of everyone who loaded the page.</p>
+    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
+      <tr>
+        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Step</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Visitors</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">% of loaded</th>
+      </tr>
+      ${lbSteps.map(([label, n], i) => `
+      <tr>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(label)}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${n}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center;color:${i === 0 ? '#16161A' : '#6F6373'}">${i === 0 ? '100%' : lbPct(n) + '%'}</td>
+      </tr>`).join('')}
+    </table>` : ''
   const fs = (k: string) => funnel[k]?.sessions ?? 0
   const visitors = fs('page_view')
   const pctOf = (n: number) => (visitors ? Math.round((n / visitors) * 100) : 0)
@@ -176,6 +209,21 @@ export async function GET(request: Request) {
     ['Site', 'Tries', '', 'Left'],
     abSites.map(s => listRow(s, '')).join(''),
   )
+  // Serious-mode scans get their own section — these visitors wanted a real,
+  // professional assessment (higher-intent), so worth a closer look.
+  const seriousBlock = section(
+    `🧐 ${seriousSites.length} site${seriousSites.length === 1 ? '' : 's'} analysed in SERIOUS mode`,
+    'Professional-mode scans — higher-intent visitors who wanted a real assessment.',
+    ['Site', 'Searches', 'Score', 'Verdict', 'Result'],
+    seriousSites.map(s => `
+      <tr>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif"><a href="${esc(s.url)}" style="color:#B8489F">${esc(s.host)}</a></td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${s.count}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${s.quality ?? '—'}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(s.verdict ?? '—')}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${resultLink(s.id)}</td>
+      </tr>`).join(''),
+  )
 
   const html = `
   <div style="max-width:680px;margin:0 auto;font:14px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#16161A">
@@ -184,6 +232,7 @@ export async function GET(request: Request) {
     <p style="margin:0 0 18px;color:#6F6373;font-size:13px">
       ${totalScans} completed search${totalScans === 1 ? '' : 'es'}${avg !== null ? ` · avg score ${avg}/100` : ''}${errSites.length ? ` · ${errored.length} errored` : ''}${abSites.length ? ` · ${abandoned.length} abandoned` : ''}
     </p>
+    <p style="margin:0 0 18px;color:#16161A;font-size:13px;font-weight:600">🧐 ${seriousOk.length} serious &nbsp;·&nbsp; 🐒 ${funOk.length} fun</p>
     ${funnelBlock}
     ${scrollMidBlock}
     ${plugBlock}
@@ -198,6 +247,8 @@ export async function GET(request: Request) {
       </tr>
       ${tr}
     </table>` : ''}
+    ${seriousBlock}
+    ${lbBlock}
     ${errBlock}
     ${abBlock}
     <p style="margin:18px 0 0;color:#6F6373;font-size:12px">Low scores are the warm leads — they just watched a robot call their site ugly.</p>

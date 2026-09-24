@@ -28,6 +28,9 @@ export type ScanRow = {
   created_at?: string
   id?: string
   seed?: boolean
+  // 'serious' | 'fun' — the analysis tone. Cache is keyed by tone so the two
+  // modes don't serve each other's (differently-worded) results.
+  tone?: string
   screenshot_url?: string | null
   // Set on failed / abandoned attempts (e.g. 'protected', 'ai_failed',
   // 'blocked', 'abandoned') so the daily report can list what went wrong.
@@ -116,11 +119,11 @@ export async function lastScanAt(ipHash: string): Promise<number | null> {
  * result instead of paying for another screenshot + LLM call. Pass a windowMs
  * to restrict to a recent window.
  */
-export async function findCachedScan(url: string, locale: string, windowMs?: number): Promise<Record<string, unknown> | null> {
+export async function findCachedScan(url: string, locale: string, tone: string = 'fun', windowMs?: number): Promise<Record<string, unknown> | null> {
   const finite = typeof windowMs === 'number' && Number.isFinite(windowMs)
   const supabase = db()
   if (supabase) {
-    let q = supabase.from(TABLE).select('result').eq('url', url).eq('locale', locale)
+    let q = supabase.from(TABLE).select('result').eq('url', url).eq('locale', locale).eq('tone', tone)
       .eq('seed', false).not('result', 'is', null)
     if (finite) q = q.gte('created_at', new Date(Date.now() - windowMs!).toISOString())
     const { data, error } = await q.order('created_at', { ascending: false }).limit(1).maybeSingle()
@@ -128,7 +131,7 @@ export async function findCachedScan(url: string, locale: string, windowMs?: num
     return (data?.result as Record<string, unknown>) ?? null
   }
   memPrune()
-  const hit = [...mem].reverse().find(r => r.url === url && r.locale === locale && r.result && !r.seed &&
+  const hit = [...mem].reverse().find(r => r.url === url && r.locale === locale && (r.tone ?? 'fun') === tone && r.result && !r.seed &&
     (!finite || new Date(r.created_at ?? 0).getTime() >= Date.now() - windowMs!))
   return (hit?.result as Record<string, unknown>) ?? null
 }
@@ -140,12 +143,13 @@ export async function findCachedScan(url: string, locale: string, windowMs?: num
 const seedMem = new Map<string, Record<string, unknown>>()
 const seedKey = (url: string, locale: string) => `${locale}::${url}`
 
-/** A precomputed result for this URL+locale, or null. No expiry. */
-export async function getSeed(url: string, locale: string): Promise<Record<string, unknown> | null> {
+/** A precomputed result for this URL+locale+tone, or null. No expiry. Seeds are
+ *  'fun' tone, so serious mode (tone='serious') gets none and analyses fresh. */
+export async function getSeed(url: string, locale: string, tone: string = 'fun'): Promise<Record<string, unknown> | null> {
   const supabase = db()
   if (supabase) {
     const { data, error } = await supabase.from(TABLE).select('result')
-      .eq('url', url).eq('locale', locale).eq('seed', true).not('result', 'is', null)
+      .eq('url', url).eq('locale', locale).eq('tone', tone).eq('seed', true).not('result', 'is', null)
       .order('created_at', { ascending: false }).limit(1).maybeSingle()
     if (error) { console.error('[webpolice] getSeed failed:', error.message); return null }
     return (data?.result as Record<string, unknown>) ?? null
@@ -259,7 +263,7 @@ export async function scansSince(windowMs: number): Promise<ScanRow[]> {
   const supabase = db()
   if (supabase) {
     const { data, error } = await supabase.from(TABLE)
-      .select('id, url, host, locale, quality, verdict, mode, cached, country, created_at, error, screenshot_url')
+      .select('id, url, host, locale, tone, quality, verdict, mode, cached, country, created_at, error, screenshot_url')
       .eq('seed', false).gte('created_at', since)
       .order('created_at', { ascending: false })
     if (error) { console.error('[webpolice] scansSince failed:', error.message); return [] }
@@ -275,23 +279,24 @@ export async function scansSince(windowMs: number): Promise<ScanRow[]> {
 // session id, so the daily report can count distinct visitors at each step.
 const EVENTS = 'webpolice_events'
 
-export async function logEvent(e: { session_id: string | null; locale: string; event: string; meta?: unknown }): Promise<void> {
+export async function logEvent(e: { session_id: string | null; locale: string; event: string; meta?: unknown; page?: string; tone?: string }): Promise<void> {
   const supabase = db()
   if (!supabase) return
   const { error } = await supabase.from(EVENTS).insert({
     session_id: e.session_id, locale: e.locale, event: e.event, meta: e.meta ?? null,
+    page: e.page ?? 'webpolice', tone: e.tone ?? null,
   })
   if (error) console.error('[webpolice] logEvent failed:', error.message)
 }
 
 export type FunnelCounts = Record<string, { total: number; sessions: number }>
 
-/** Per-event totals and distinct-session counts since `sinceIso`. */
-export async function eventFunnelSince(sinceIso: string): Promise<FunnelCounts> {
+/** Per-event totals and distinct-session counts since `sinceIso`, one page. */
+export async function eventFunnelSince(sinceIso: string, page: string = 'webpolice'): Promise<FunnelCounts> {
   const supabase = db()
   if (!supabase) return {}
   const { data, error } = await supabase.from(EVENTS)
-    .select('event, session_id').gte('created_at', sinceIso).limit(100_000)
+    .select('event, session_id').eq('page', page).gte('created_at', sinceIso).limit(100_000)
   if (error) { console.error('[webpolice] eventFunnelSince failed:', error.message); return {} }
   const out: FunnelCounts = {}
   const seen: Record<string, Set<string>> = {}
@@ -310,7 +315,7 @@ export async function eventUrlBreakdown(event: string, sinceIso: string): Promis
   const supabase = db()
   if (!supabase) return []
   const { data, error } = await supabase.from(EVENTS)
-    .select('session_id, meta').eq('event', event).gte('created_at', sinceIso).limit(100_000)
+    .select('session_id, meta').eq('event', event).eq('page', 'webpolice').gte('created_at', sinceIso).limit(100_000)
   if (error) { console.error('[webpolice] eventUrlBreakdown failed:', error.message); return [] }
   const bySite: Record<string, Set<string>> = {}
   for (const r of (data ?? []) as { session_id: string | null; meta: { url?: string } | null }[]) {

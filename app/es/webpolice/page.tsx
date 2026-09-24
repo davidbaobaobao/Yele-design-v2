@@ -26,14 +26,15 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: OG_TITLE, description: OG_DESC, images: [OG_IMG] },
 }
 
-export default function WebPoliceEsPage() {
+export default function WebPoliceEsPage({ searchParams }: { searchParams?: { mode?: string } }) {
+  const mode = searchParams?.mode === 'fun' ? 'fun' : 'serious'
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPoliceJsonLd('es', 'https://yele.design/es/webpolice', 'Web Police — Analizador de diseño web')) }}
       />
-      <WebPoliceClient locale="es" />
+      <WebPoliceClient locale="es" mode={mode} />
     </>
   )
 }

@@ -5,7 +5,26 @@
 import type { Locale } from './funnel'
 export type { Locale }
 
+export type Mode = 'serious' | 'fun'
+
+// Hero copy per mode. `title` may contain a single [u]...[u] span to underline.
+type ModeHero = { title: string; questions: string[]; cta: string }
+// Extra strings only the serious mode needs (professional labels + plain loading).
+type SeriousCopy = ModeHero & {
+  loadingLines: string[]
+  verdict: { strong: string; solid: string; average: string; weak: string }
+  assessmentTitle: string
+  improveTitle: string
+  strengthsTitle: string
+  clarityTitle: string
+  offersTitle: string
+  eraTitle: string
+  saysL: string
+  hearsL: string
+}
+
 export type WPStrings = {
+  modes: { serious: SeriousCopy; fun: ModeHero }
   heroPre: string
   heroCursive: string
   heroPost: string
@@ -78,6 +97,28 @@ export type WPStrings = {
 }
 
 const en: WPStrings = {
+  modes: {
+    serious: {
+      title: 'Is your website still fresh, or is it [u]dated[u]?',
+      questions: ['Does it look well-designed?', 'Does it clearly describe your business?'],
+      cta: 'Analyze page',
+      loadingLines: ['Capturing your homepage…', 'Analysing the design…', 'Assessing clarity and structure…', 'Writing your report…'],
+      verdict: { strong: 'Strong, modern design', solid: 'Solid, professional design', average: 'Average / dated design', weak: 'Needs a redesign' },
+      assessmentTitle: 'Assessment',
+      improveTitle: 'What to improve',
+      strengthsTitle: 'What works',
+      clarityTitle: 'Message clarity',
+      offersTitle: 'What your site communicates',
+      eraTitle: 'Design era',
+      saysL: 'Your site says',
+      hearsL: 'A visitor understands',
+    },
+    fun: {
+      title: 'Is your website decent, or [u]butt-ugly[u]?',
+      questions: ['Is your website generic as hell? 🍌', 'Is your site so abstract nobody knows if you sell lawnmowers or spiritual massages? 🥔', 'Did your developer use ChatGPT to build it in 10 minutes? 🤖'],
+      cta: 'Analyze with the monkey',
+    },
+  },
   heroPre: 'Is my website ',
   heroCursive: 'objectively',
   heroPost: ' ugly?',
@@ -168,6 +209,28 @@ const en: WPStrings = {
 }
 
 const es: WPStrings = {
+  modes: {
+    serious: {
+      title: 'Tu web aún está guay, ¿o ya está [u]anticuada[u]?',
+      questions: ['¿Tiene un buen diseño?', '¿Describe claramente tu negocio?'],
+      cta: 'Analizar página',
+      loadingLines: ['Capturando tu página…', 'Analizando el diseño…', 'Evaluando claridad y estructura…', 'Redactando tu informe…'],
+      verdict: { strong: 'Diseño moderno y sólido', solid: 'Diseño profesional y correcto', average: 'Diseño mediocre / anticuado', weak: 'Necesita un rediseño' },
+      assessmentTitle: 'Valoración',
+      improveTitle: 'Qué mejorar',
+      strengthsTitle: 'Qué funciona',
+      clarityTitle: 'Claridad del mensaje',
+      offersTitle: 'Qué comunica tu web',
+      eraTitle: 'Época del diseño',
+      saysL: 'Tu web dice',
+      hearsL: 'El visitante entiende',
+    },
+    fun: {
+      title: '¿Tu página web está decente o es [u]fea de c*jones[u]?',
+      questions: ['¿Tu web es genérica del montón? 🍌', '¿Tu web es tan abstracta que no saben si vendes cortacésped o masaje espiritual? 🥔', '¿Tu programador usó ChatGPT para generar tu web en 10 min? 🤖'],
+      cta: 'Analiza con el mono',
+    },
+  },
   heroPre: '¿Mi web es ',
   heroCursive: 'objetivamente',
   heroPost: ' fea?',
@@ -258,6 +321,28 @@ const es: WPStrings = {
 }
 
 const zh: WPStrings = {
+  modes: {
+    serious: {
+      title: '你的网站还时髦，还是已经[u]过时[u]了？',
+      questions: ['设计够好吗？', '有清楚说明你的业务吗？'],
+      cta: '分析网页',
+      loadingLines: ['正在截取你的主页…', '正在分析设计…', '正在评估清晰度与结构…', '正在生成报告…'],
+      verdict: { strong: '现代且出色的设计', solid: '专业稳健的设计', average: '普通 / 过时的设计', weak: '需要重新设计' },
+      assessmentTitle: '评估',
+      improveTitle: '需要改进',
+      strengthsTitle: '做得好的地方',
+      clarityTitle: '信息清晰度',
+      offersTitle: '你的网站传达了什么',
+      eraTitle: '设计年代',
+      saysL: '你的网站说',
+      hearsL: '访客理解为',
+    },
+    fun: {
+      title: '你的网站还行，还是[u]丑到爆[u]？',
+      questions: ['你的网站是不是烂大街的模板？🍌', '你的网站抽象到没人知道你是卖割草机还是做灵性按摩？🥔', '你的程序员是不是用 ChatGPT 十分钟糊了个网站？🤖'],
+      cta: '让猩猩来分析',
+    },
+  },
   heroPre: '我的网站是不是 ',
   heroCursive: '客观上',
   heroPost: ' 就很丑？',

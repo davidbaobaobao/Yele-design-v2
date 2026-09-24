@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import LeadForm from '@/components/LeadForm'
-import { getWP, type WPStrings, type Locale } from '@/lib/i18n/webpolice'
+import { Archivo } from 'next/font/google'
+import { getWP, type WPStrings, type Locale, type Mode } from '@/lib/i18n/webpolice'
+
+// Serious mode uses Archivo (a clean grotesque, close to Sinkin Sans).
+const archivo = Archivo({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], display: 'swap' })
 import { showcaseFor, poolFor, faviconUrl } from '@/lib/webpolice/examples'
 import { getFunnelDict } from '@/lib/i18n/funnel'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'
@@ -349,9 +353,23 @@ function SeoSection({ t }: { t: WPStrings }) {
   )
 }
 
-export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) {
+export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'serious' }: { locale?: Locale; mode?: Mode }) {
   const t = getWP(locale)
-  const loadingLines = t.loadingLines
+  const [mode, setModeState] = useState<Mode>(initialMode)
+  const serious = mode === 'serious'
+  const mc = t.modes[mode]
+  const sc = t.modes.serious // serious-only labels
+  const loadingLines = serious ? sc.loadingLines : t.loadingLines
+  // Big toggle switches mode and reflects it in the URL (?mode=fun) without a reload.
+  const setMode = (m: Mode) => {
+    setModeState(m)
+    try {
+      const u = new URL(window.location.href)
+      if (m === 'fun') u.searchParams.set('mode', 'fun')
+      else u.searchParams.delete('mode')
+      window.history.replaceState(null, '', u.pathname + u.search)
+    } catch { /* ignore */ }
+  }
   const planOptions = getFunnelDict(locale).pricing.tiers.map(x => x.planValue)
   const [url, setUrl] = useState('')
   const [phase, setPhase] = useState<'idle' | 'loading' | 'done'>('idle')
@@ -413,7 +431,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
       const res = await fetch('/api/webpolice/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: value, locale, sessionId: sessionId() }),
+        body: JSON.stringify({ url: value, locale, mode, sessionId: sessionId() }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -500,11 +518,42 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
     return list[Math.floor(Math.random() * list.length)].url
   }
 
+  const modeLabel = (m: Mode) =>
+    m === 'serious'
+      ? (locale === 'es' ? 'Serio' : locale === 'zh' ? '正经' : 'Serious')
+      : (locale === 'es' ? 'Con humor' : locale === 'zh' ? '搞笑' : 'Fun')
+
   return (
-    <main className="relative">
-      <section className="relative min-h-[100svh] overflow-hidden" style={{ background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}>
-      <Gorilla side="left" vref={leftVid} hidden={moved} />
-      <Gorilla side="right" vref={rightVid} hidden={moved} />
+    <main className={`relative ${serious ? archivo.className : ''}`}>
+      <section
+        className="relative min-h-[100svh] overflow-hidden"
+        style={serious ? { backgroundColor: '#0B0B0D' } : { background: `linear-gradient(180deg, ${PINK_TOP} 0%, ${PINK_BOTTOM} 100%)` }}
+      >
+      {!serious && <Gorilla side="left" vref={leftVid} hidden={moved} />}
+      {!serious && <Gorilla side="right" vref={rightVid} hidden={moved} />}
+
+      {/* Big mode toggle — serious (default) vs fun. Hidden once a scan starts. */}
+      {phase === 'idle' && (
+        <div className="absolute left-1/2 top-4 z-30 -translate-x-1/2 md:top-6">
+          <div className={`flex items-center gap-1 rounded-full border p-1 shadow-lg backdrop-blur ${serious ? 'border-white/20 bg-white/10 shadow-black/40' : 'border-[#16161A]/15 bg-white/70 shadow-[0_8px_24px_rgba(120,40,90,0.18)]'}`}>
+            {(['serious', 'fun'] as Mode[]).map(m => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                aria-current={mode === m}
+                className={`rounded-full px-5 py-2 font-body text-sm font-bold transition-colors ${
+                  mode === m
+                    ? serious ? 'bg-white text-[#0B0B0D]' : 'bg-[#16161A] text-white'
+                    : serious ? 'text-white/60 hover:text-white' : 'text-[#16161A]/55 hover:text-[#16161A]'
+                }`}
+              >
+                {modeLabel(m)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Hero — bottom half on mobile (gorillas take the top half); centered
           on desktop. Uses 100svh so the bottom (chips) isn't hidden behind the
@@ -514,19 +563,22 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
           moved ? '-translate-y-[110vh]' : 'translate-y-0'
         }`}
       >
-        <h1 className="font-display font-bold text-[#16161A] tracking-tight leading-[1.05]" style={{ fontSize: 'clamp(1.7rem, 5.4vw, 3.6rem)', textShadow: '0 6px 20px rgba(120,40,90,0.18), 0 2px 4px rgba(0,0,0,0.08)' }}>
-          {t.heroPre}
-          <span className="font-normal italic" style={{ fontFamily: '"Snell Roundhand", "Brush Script MT", "Segoe Script", cursive' }}>
-            {t.heroCursive}
-          </span>
-          {t.heroPost}
+        <h1
+          className={`font-bold tracking-tight leading-[1.08] ${serious ? 'text-[#F2F0EB]' : 'font-display text-[#16161A]'}`}
+          style={{ fontSize: 'clamp(1.7rem, 5.4vw, 3.6rem)', ...(serious ? {} : { textShadow: '0 6px 20px rgba(120,40,90,0.18), 0 2px 4px rgba(0,0,0,0.08)' }) }}
+        >
+          {mc.title.split('[u]').map((seg, k) =>
+            k % 2 === 1
+              ? <span key={k} className="underline decoration-2 underline-offset-[6px]">{seg}</span>
+              : seg,
+          )}
         </h1>
 
         <ul className="mt-3 md:mt-6 mx-auto inline-flex flex-col gap-1.5 md:gap-2.5 text-left">
-          {t.questions.map(q => (
+          {mc.questions.map(q => (
             <li key={q} className="flex items-start gap-2.5">
-              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#16161A] font-body text-xs font-bold text-white shadow-[0_4px_10px_rgba(0,0,0,0.20)]">?</span>
-              <span className="font-body font-semibold text-[#16161A]/80 leading-snug" style={{ fontSize: 'clamp(0.92rem, 2.4vw, 1.2rem)', textShadow: '0 2px 8px rgba(120,40,90,0.12)' }}>{q}</span>
+              <span className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full font-body text-xs font-bold shadow-[0_4px_10px_rgba(0,0,0,0.20)] ${serious ? 'bg-white text-[#0B0B0D]' : 'bg-[#16161A] text-white'}`}>?</span>
+              <span className={`font-body font-semibold leading-snug ${serious ? 'text-[#F2F0EB]/85' : 'text-[#16161A]/80'}`} style={{ fontSize: 'clamp(0.92rem, 2.4vw, 1.2rem)', ...(serious ? {} : { textShadow: '0 2px 8px rgba(120,40,90,0.12)' }) }}>{q}</span>
             </li>
           ))}
         </ul>
@@ -538,8 +590,8 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
             onChange={e => setUrl(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && run()}
             placeholder={t.placeholder}
-            style={{ color: '#16161A', caretColor: '#16161A' }}
-            className="flex-1 rounded-full bg-white/85 backdrop-blur border border-white/60 px-5 py-3.5 font-body text-base placeholder-[#16161A]/40 shadow-[0_12px_32px_rgba(120,40,90,0.16)] focus:outline-none focus:border-[#16161A]/40 transition-colors"
+            style={serious ? { color: '#F2F0EB', caretColor: '#F2F0EB' } : { color: '#16161A', caretColor: '#16161A' }}
+            className={`flex-1 rounded-full backdrop-blur px-5 py-3.5 font-body text-base focus:outline-none transition-colors ${serious ? 'bg-white/10 border border-white/25 placeholder-white/40 focus:border-white/60' : 'bg-white/85 border border-white/60 placeholder-[#16161A]/40 shadow-[0_12px_32px_rgba(120,40,90,0.16)] focus:border-[#16161A]/40'}`}
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
@@ -549,9 +601,9 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
               type="button"
               onClick={() => run()}
               disabled={phase === 'loading'}
-              className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full bg-[#16161A] px-7 py-3.5 font-body font-semibold text-base text-white shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition-colors hover:animate-[wpSirenBtn_0.6s_linear_infinite] disabled:opacity-70 disabled:cursor-not-allowed"
+              className={`inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-full px-7 py-3.5 font-body font-semibold text-base transition-colors disabled:opacity-70 disabled:cursor-not-allowed ${serious ? 'bg-white text-[#0B0B0D] hover:bg-white/90 shadow-[0_12px_30px_rgba(0,0,0,0.4)]' : 'bg-[#16161A] text-white shadow-[0_12px_30px_rgba(0,0,0,0.28)] hover:animate-[wpSirenBtn_0.6s_linear_infinite]'}`}
             >
-              {phase === 'loading' ? t.ctaLoading : t.ctaIdle}
+              {phase === 'loading' ? t.ctaLoading : mc.cta}
             </button>
             <button
               type="button"
@@ -563,7 +615,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
               disabled={phase === 'loading'}
               title={t.randomCta}
               aria-label={t.randomCta}
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-[#16161A]/15 bg-white/80 px-4 py-3.5 font-body font-semibold text-base text-[#16161A]/80 shadow-[0_10px_26px_rgba(120,40,90,0.16)] backdrop-blur transition-colors hover:border-[#16161A]/40 hover:text-[#16161A] disabled:opacity-60 disabled:cursor-not-allowed"
+              className={`inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-3.5 font-body font-semibold text-base backdrop-blur transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${serious ? 'border border-white/20 bg-white/10 text-white/80 hover:border-white/40 hover:text-white' : 'border border-[#16161A]/15 bg-white/80 text-[#16161A]/80 shadow-[0_10px_26px_rgba(120,40,90,0.16)] hover:border-[#16161A]/40 hover:text-[#16161A]'}`}
             >
               <span aria-hidden>🎲</span>
             </button>
@@ -571,23 +623,23 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
         </div>
 
         {/* Consent note under the CTA */}
-        <p className="mt-2.5 max-w-lg text-center font-body text-[11px] leading-snug text-[#16161A]/45">
+        <p className={`mt-2.5 max-w-lg text-center font-body text-[11px] leading-snug ${serious ? 'text-white/40' : 'text-[#16161A]/45'}`}>
           {t.consentPre}{' '}
-          <a href={locale === 'es' ? '/es/terms' : '/terms'} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#16161A]/70">{t.consentTerms}</a>
+          <a href={locale === 'es' ? '/es/terms' : '/terms'} target="_blank" rel="noopener noreferrer" className={`underline underline-offset-2 ${serious ? 'hover:text-white/70' : 'hover:text-[#16161A]/70'}`}>{t.consentTerms}</a>
           {' '}{t.consentAnd}{' '}
-          <a href={locale === 'es' ? '/es/privacy-policy' : '/privacy-policy'} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#16161A]/70">{t.consentPrivacy}</a>.
+          <a href={locale === 'es' ? '/es/privacy-policy' : '/privacy-policy'} target="_blank" rel="noopener noreferrer" className={`underline underline-offset-2 ${serious ? 'hover:text-white/70' : 'hover:text-[#16161A]/70'}`}>{t.consentPrivacy}</a>.
         </p>
 
         {/* Known sites to try in one tap — good ones and famously rough ones. */}
         <div className="mt-3 md:mt-4 flex w-full max-w-lg flex-wrap items-center gap-2">
-          <span className="font-body text-xs text-[#16161A]/55">{t.tryLabel}</span>
+          <span className={`font-body text-xs ${serious ? 'text-white/55' : 'text-[#16161A]/55'}`}>{t.tryLabel}</span>
           {showcaseFor(locale).map(sIt => (
             <button
               key={sIt.url}
               type="button"
               onClick={() => run(sIt.url)}
               disabled={phase === 'loading'}
-              className="inline-flex items-center gap-1.5 font-body text-xs font-medium text-[#16161A]/70 transition-colors hover:text-[#16161A] disabled:opacity-60 disabled:cursor-not-allowed"
+              className={`inline-flex items-center gap-1.5 font-body text-xs font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${serious ? 'text-white/70 hover:text-white' : 'text-[#16161A]/70 hover:text-[#16161A]'}`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- third-party favicon */}
               <img
@@ -611,9 +663,30 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
       {/* SEO content — crawlable copy + FAQ, visible on scroll in the idle state */}
       <SeoSection t={t} />
 
-      {/* Loading — funny text on top, a BIG random reel of clips in the middle,
-          the progress indicator pinned at the bottom. */}
+      {/* Loading. Fun: funny text on top, a BIG reel of clips in the middle,
+          progress pinned at the bottom. Serious: plain — just text + a progress
+          ring, no video, on the black theme. */}
       {phase === 'loading' && (
+        serious ? (
+          <div className={`fixed inset-0 z-20 flex flex-col items-center justify-center gap-8 bg-[#0B0B0D] px-6 pointer-events-none ${archivo.className}`}>
+            <p className="font-bold text-[#F2F0EB] text-center leading-snug" style={{ fontSize: 'clamp(1.2rem, 3.6vw, 2rem)' }}>
+              {loadingLines[line]}
+            </p>
+            <div className="relative h-16 w-16">
+              <svg viewBox="0 0 40 40" className="h-full w-full -rotate-90" aria-hidden="true">
+                <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(242,240,235,0.18)" strokeWidth="3.5" />
+                <circle cx="20" cy="20" r="17" fill="none" stroke="#F2F0EB" strokeWidth="3.5" strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 17}
+                  strokeDashoffset={2 * Math.PI * 17 * (1 - Math.min(progress, 100) / 100)}
+                  style={{ transition: 'stroke-dashoffset 0.15s linear' }} />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-semibold text-[#F2F0EB]">
+                {Math.round(progress)}%
+              </span>
+            </div>
+            <p className="max-w-xs text-center font-body text-sm text-white/50">{t.loadingNote}</p>
+          </div>
+        ) : (
         <div className="fixed inset-0 z-20 flex flex-col items-center px-4 py-6 md:py-8 pointer-events-none">
           <p className="shrink-0 font-display font-bold text-[#16161A] text-center leading-snug" style={{ fontSize: 'clamp(1.2rem, 3.6vw, 2rem)' }}>
             {loadingLines[line]}
@@ -647,6 +720,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
             <p className="mt-3 max-w-xs text-center font-body text-sm text-[#16161A]/60">{t.loadingNote}</p>
           </div>
         </div>
+        )
       )}
 
       {/* Report — full-screen panel that slides up to cover everything */}
@@ -661,6 +735,7 @@ export default function WebPoliceClient({ locale = 'en' }: { locale?: Locale }) 
               result={result}
               t={t}
               locale={locale}
+              mode={mode}
               planOptions={planOptions}
               basePath={basePath}
               onReset={() => {
@@ -866,17 +941,18 @@ function ShareBar({ result, t, basePath, locale }: { result: Result; t: WPString
   )
 }
 
-function Report({ result, t, locale, planOptions, basePath, onReset }: { result: Result; t: WPStrings; locale: Locale; planOptions: string[]; basePath: string; onReset: () => void }) {
+function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { result: Result; t: WPStrings; locale: Locale; mode: Mode; planOptions: string[]; basePath: string; onReset: () => void }) {
   const [showAll, setShowAll] = useState(false)
+  const serious = mode === 'serious'
   const host = result.url.replace(/^https?:\/\//, '').replace(/\/$/, '')
   const main = result.charges.slice(0, 3)
   const extra = result.charges.slice(3, 8)
   const shown = showAll ? [...main, ...extra] : main
 
   return (
-    <div>
+    <div className={serious ? archivo.className : ''}>
       <div className="mb-6 flex items-center justify-between">
-        <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/40">🚨 {t.reportLabel}</span>
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/40">{serious ? '' : '🚨 '}{t.reportLabel}</span>
         <button
           type="button"
           onClick={onReset}
@@ -965,8 +1041,8 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         </TiltCard>
       )}
 
-      {/* Website personality diagnosis */}
-      {result.personality && (
+      {/* Website personality diagnosis — theatrical, so fun mode only */}
+      {!serious && result.personality && (
         <TiltCard className="mt-4 rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-7">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/40 mb-2">{t.personalityLabel}</p>
           <p className="font-display font-bold text-xl md:text-2xl text-white leading-snug tracking-tight">“{result.personality}”</p>
@@ -1122,8 +1198,26 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
         <LeadForm variant="light" ctaLabel={t.plugCta} planOptions={planOptions} leadSource="Web Police" sendWelcome locale={locale} />
       </TiltCard>
 
-      {/* But seriously — full-bleed gorilla banner (breaks out of the max-w-2xl
-          report column), text overlaid on the left. */}
+      {/* Serious mode: a plain dark CTA banner (no gorilla). */}
+      {serious && (
+        <div className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-[#111114] border-y border-white/10">
+          <div className="mx-auto max-w-2xl px-6 py-16 text-center">
+            <p className="font-bold tracking-tight text-[#F2F0EB] leading-tight" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.4rem)' }}>{t.seriouslyLead}</p>
+            <p className="font-body text-white/70 mt-2 leading-snug" style={{ fontSize: 'clamp(1rem, 3.2vw, 1.3rem)' }}>{t.seriouslyBody}</p>
+            <a
+              href={locale === 'en' ? '/letsbuild' : `/${locale}/letsbuild`}
+              onClick={() => track('letsbuild_click', locale)}
+              className="mt-6 inline-flex items-center rounded-full bg-white px-6 py-3 font-body font-semibold text-[#0B0B0D] hover:bg-white/90 transition-colors"
+              style={{ fontSize: 'clamp(0.95rem, 3vw, 1.15rem)' }}
+            >
+              {t.seriouslyCta}
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* But seriously — full-bleed gorilla banner (fun mode only). */}
+      {!serious && (
       <div
         className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-[#EEBFCF] [background-position:38%_center] md:[background-position:right_center]"
         style={{ backgroundImage: 'url(/media/webpolice/gorilla-suit.jpg)' }}
@@ -1153,6 +1247,7 @@ function Report({ result, t, locale, planOptions, basePath, onReset }: { result:
           </div>
         </div>
       </div>
+      )}
 
       <p className="font-body text-xs text-white/30 mt-8 text-center">
         {t.footer}

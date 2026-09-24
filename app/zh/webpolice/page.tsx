@@ -26,14 +26,15 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: OG_TITLE, description: OG_DESC, images: [OG_IMG] },
 }
 
-export default function WebPoliceZhPage() {
+export default function WebPoliceZhPage({ searchParams }: { searchParams?: { mode?: string } }) {
+  const mode = searchParams?.mode === 'fun' ? 'fun' : 'serious'
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPoliceJsonLd('zh', 'https://yele.design/zh/webpolice', 'Web Police — 网站设计检查器')) }}
       />
-      <WebPoliceClient locale="zh" />
+      <WebPoliceClient locale="zh" mode={mode} />
     </>
   )
 }

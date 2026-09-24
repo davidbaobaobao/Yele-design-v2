@@ -8,6 +8,7 @@ import PricingCards from '@/components/letsbuild/PricingCards'
 import CareVideo from '@/components/letsbuild/CareVideo'
 import StartNowMarquee from '@/components/letsbuild/StartNowMarquee'
 import LocaleSwitcher from '@/components/letsbuild/LocaleSwitcher'
+import { LbHeroPing, LbSeen } from '@/components/letsbuild/LbTrack'
 import WhatsAppLink from '@/components/WhatsAppLink'
 import { EnLangProvider } from '@/components/LangProvider'
 import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
@@ -49,6 +50,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
     <EnLangProvider>
       <main className="overflow-x-hidden" style={{ backgroundColor: DARK }}>
         <LocaleSwitcher current={locale} />
+        <LbHeroPing />
 
         {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg. ---- */}
         <LetsBuildHero locale={locale} />
@@ -58,6 +60,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
         <LatestFeaturedWork forceDark title={d.featuredTitle} />
 
         {/* ---- PRICING ---- */}
+        <LbSeen event="lb_precios" />
         <section id="pricing" className="bg-white px-6 pt-20 md:pt-28 pb-10 md:pb-12">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
@@ -73,6 +76,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
 
         {/* ---- QUICK LEAD FORM — left values + testimonial pills, right form.
              Sits between Pricing and Yele Care. ---- */}
+        <LbSeen event="lb_form" />
         <section className="px-6 py-16 md:py-24 border-t border-white/10 scroll-mt-8" style={{ backgroundColor: DARK }}>
           <div className="mx-auto w-full max-w-md md:max-w-5xl">
             <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
@@ -202,6 +206,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
         </section>
 
         {/* ---- WHY BUSINESSES CHOOSE YELE ---- */}
+        <LbSeen event="lb_porque" />
         <section className="px-6 py-16 md:py-24 border-t border-white/10">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
@@ -245,6 +250,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
 
         <StartNowMarquee />
 
+        <LbSeen event="lb_faq" />
         <LetsBuildFAQ locale={locale} />
 
         {/* ---- LEAD FORM (detailed) ---- */}

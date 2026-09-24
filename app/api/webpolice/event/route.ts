@@ -20,7 +20,14 @@ const ALLOWED = new Set([
   'plug_view',      // reached the shameless-plug form
   'share_click',    // pressed a share / copy-link button
   'letsbuild_click',// clicked the "Check out our site" link
+  // /letsbuild funnel (page='letsbuild')
+  'lb_hero',        // loaded the hero
+  'lb_precios',     // scrolled to pricing
+  'lb_form',        // scrolled to the first form
+  'lb_porque',      // scrolled to "why Yele"
+  'lb_faq',         // scrolled into the FAQ
 ])
+const PAGES = new Set(['webpolice', 'letsbuild'])
 
 function sameOrigin(request: Request): boolean {
   if (process.env.NODE_ENV !== 'production') return true
@@ -46,8 +53,10 @@ export async function POST(request: Request) {
   // scrolled through / reached the form on.
   const url = typeof body.url === 'string' && body.url.length <= 2000 ? body.url : null
   const meta = url ? { url } : undefined
+  const page = typeof body.page === 'string' && PAGES.has(body.page) ? body.page : 'webpolice'
+  const tone = body.tone === 'serious' || body.tone === 'fun' ? (body.tone as string) : undefined
 
-  await logEvent({ session_id: sessionId, locale: toLocale(body.locale), event, meta })
+  await logEvent({ session_id: sessionId, locale: toLocale(body.locale), event, meta, page, tone })
     .catch(err => console.error('[webpolice] event log failed', err))
 
   return NextResponse.json({ ok: true })

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getWP, type Locale } from '@/lib/i18n/webpolice'
+import { getWP, type Locale, type Mode } from '@/lib/i18n/webpolice'
 import { logScan, logMiss, findCachedScan, countScans, lastScanAt, hashIp, clientIp, getSeed, saveShot } from '@/lib/webpolice/store'
 
 function toLocale(v: unknown): Locale {
@@ -102,7 +102,7 @@ async function shot(target: string, fullPage: boolean): Promise<ShotResult> {
   api.searchParams.set('cache_ttl', '86400')
   if (fullPage) {
     api.searchParams.set('full_page', 'true')
-    api.searchParams.set('full_page_max_height', '2600')
+    api.searchParams.set('full_page_max_height', '4000')
   }
   try {
     const ctrl = new AbortController()
@@ -152,7 +152,9 @@ async function psiScreenshot(target: string): Promise<ShotResult> {
 // Downscale + top-crop a screenshot so it always fits the vision model's limits.
 async function normalizeShot(input: Buffer): Promise<ShotResult> {
   const MAX_W = 1280
-  const MAX_H = 2600
+  // Taller capture → more of the page (hero + several sections) is analysed, so
+  // structure / message-clarity judgements are more accurate.
+  const MAX_H = 4000
   try {
     const sharp = (await import('sharp')).default
     let pipe = sharp(input, { failOn: 'none' }).resize({ width: MAX_W, withoutEnlargement: true })
@@ -174,7 +176,7 @@ async function normalizeShot(input: Buffer): Promise<ShotResult> {
 // thum.io — free, keyless, returns the image directly and already crops to a
 // sane size. Reliable, so it's our default. `wait` lets the page load first.
 async function thumIo(target: string): Promise<ShotResult> {
-  const api = `https://image.thum.io/get/width/1280/crop/2600/noanimate/wait/6/${target}`
+  const api = `https://image.thum.io/get/width/1280/crop/4000/noanimate/wait/7/${target}`
   try {
     const ctrl = new AbortController()
     const to = setTimeout(() => ctrl.abort(), 42000)
@@ -225,7 +227,7 @@ Punish hard, specifically:
 Be fair the other way too: genuinely custom, distinctive, professional sites MUST score high, and clean minimal design is good, not a crime.
 
 IMPORTANT — judge the ACTUAL website, not the screenshot's accidents:
-- If a cookie/consent/GDPR banner, newsletter popup, chat bubble, age-gate or any modal overlay covers part of the page, IGNORE it completely. Do not mention it, do not let it lower any score. Evaluate the real design behind/around it.
+- If a cookie/consent/GDPR banner, newsletter popup, chat bubble, age-gate or any modal overlay covers part of the page, IGNORE it completely. Do not mention it, do not let it lower any score. Evaluate the real design behind/around it. VERY IMPORTANT: many sites DIM, GREY-OUT, DARKEN or BLUR the whole page behind a cookie/consent modal — this is a temporary overlay effect, NOT the site's real colours or contrast. Mentally remove that dimming and judge the page at its true, full-brightness colours. Never penalise a site for looking dark/greyed/low-contrast when that is clearly caused by a consent overlay dimming the background.
 - If areas look blank, grey, or half-rendered (images, cards or sections that clearly just hadn't finished loading when the photo was taken), do NOT treat that as a design crime. Judge the parts that DID render. Never criticize "empty cards" or missing content that is really just a loading artifact.
 
 Aspects (what LOW means):
@@ -289,12 +291,16 @@ const VERDICT_TOOL = {
 type VisionData = { aspects: Record<Aspect, { score: number; reason: string }>; overall: number; summary: string; rant: string; colorBg?: string; sells?: string; saysHears?: { says: string; hears: string }; personality?: string; designYear?: number | null; designYearWhy?: string }
 type VisionResult = { ok: true; data: VisionData } | { ok: false; reason: string }
 
-async function visionAnalyze(images: { data: string; mime: string }[], hints: string[], languageName: string, roastStyle: string): Promise<VisionResult> {
+async function visionAnalyze(images: { data: string; mime: string }[], hints: string[], languageName: string, roastStyle: string, serious: boolean): Promise<VisionResult> {
   const key = process.env.ANTHROPIC_API_KEY
   if (!key) return { ok: false, reason: 'ANTHROPIC_API_KEY not set' }
   if (images.length === 0) return { ok: false, reason: 'no screenshot captured' }
-  const lang = `\n\nWrite every "reason" field, the "summary" and the "rant" in ${languageName}. Do not translate an English joke — write it the way a native speaker would say it.\n\nVOICE: ${roastStyle}`
-  const text = (hints.length ? `${RUBRIC}\n\nHints from the page code: ${hints.join(' ')}` : RUBRIC) + lang
+  // Serious mode overrides the whole comedic persona with professional, plain
+  // feedback; fun mode keeps the local roast voice.
+  const toneText = serious
+    ? `\n\nWrite every "reason" field, the "summary" and the "rant" in ${languageName}.\n\nSERIOUS-MODE OVERRIDE (this takes precedence over any "Web Police", "roast", "funny", "savage" or "playful" instruction above): Write as a professional, constructive web-design consultant giving honest, plain-language feedback a small-business owner can act on. NO jokes, NO slang, NO insults, NO emojis, NO puns, NO persona. "summary" = one clear, professional one-sentence verdict on the design. "rant" = 1–2 short paragraphs of constructive assessment: what works, what to improve, and whether the site's message is clear. "sells" = a plain, accurate one-sentence description of what the site appears to offer (do NOT make a deliberately wrong guess; if it is genuinely unclear, say so plainly). "saysHears": "says" = the site's main claim or call-to-action; "hears" = what a typical visitor actually understands (clear and factual, not a joke). "personality" = an empty string. Keep the scoring bands exactly as defined above.`
+    : `\n\nWrite every "reason" field, the "summary" and the "rant" in ${languageName}. Do not translate an English joke — write it the way a native speaker would say it.\n\nVOICE: ${roastStyle}`
+  const text = (hints.length ? `${RUBRIC}\n\nHints from the page code: ${hints.join(' ')}` : RUBRIC) + toneText
   const content: unknown[] = images.map(img => ({ type: 'image', source: { type: 'base64', media_type: img.mime, data: img.data } }))
   content.push({ type: 'text', text })
 
@@ -396,7 +402,7 @@ type CoreResult =
   | { ok: true; payload: Record<string, unknown> }
   | { ok: false; status: number; error: string; code?: string; reason?: string }
 
-export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
+export async function analyzeCore(u: URL, locale: Locale, analysisMode: Mode = 'fun'): Promise<CoreResult> {
   const wp = getWP(locale)
   const target = u.toString()
 
@@ -458,7 +464,7 @@ export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
 
   const hints = html ? htmlHints(html) : []
   const images = [{ data: imgB64, mime: imgMime }]
-  const vision = await visionAnalyze(images, hints, wp.languageName, wp.roastStyle)
+  const vision = await visionAnalyze(images, hints, wp.languageName, wp.roastStyle, analysisMode === 'serious')
 
   // Vision is the ONLY source of truth now — no deterministic fallback.
   if (!vision.ok) {
@@ -496,13 +502,15 @@ export async function analyzeCore(u: URL, locale: Locale): Promise<CoreResult> {
   const crimes = charges.length
   const { label: effortLabel, flavor: effortFlavor } = wp.effort[effortTier(quality)]
   const passed = quality >= 60
+  const sv = wp.modes.serious.verdict
+  const isSerious = analysisMode === 'serious'
   const verdict = quality >= 75
-    ? { level: 'cleared', label: wp.verdict.gorgeous }
+    ? { level: 'cleared', label: isSerious ? sv.strong : wp.verdict.gorgeous }
     : quality >= 60
-      ? { level: 'cleared', label: wp.verdict.decent }
+      ? { level: 'cleared', label: isSerious ? sv.solid : wp.verdict.decent }
       : quality >= 40
-        ? { level: 'suspicious', label: wp.verdict.average }
-        : { level: 'guilty', label: wp.verdict.ugly }
+        ? { level: 'suspicious', label: isSerious ? sv.average : wp.verdict.average }
+        : { level: 'guilty', label: isSerious ? sv.weak : wp.verdict.ugly }
 
   return {
     ok: true,
@@ -579,6 +587,9 @@ function sameOrigin(request: Request): boolean {
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const locale = toLocale(body?.locale)
+  // Analysis tone/mode — serious is the default; the two are cached separately.
+  const analysisMode: Mode = body?.mode === 'fun' ? 'fun' : 'serious'
+  const tone = analysisMode
   const wp = getWP(locale)
   const msg = GUARD_MSG[locale]
 
@@ -603,10 +614,10 @@ export async function POST(request: Request) {
   // 3a. Precomputed showcase / random result → serve instantly. No LLM, no
   //     screenshot credit, and it doesn't burn the visitor's daily quota, so
   //     the "Try random" button can be clicked freely.
-  const seeded = await getSeed(target, locale)
+  const seeded = await getSeed(target, locale, tone)
   if (seeded) {
     logScan({
-      session_id: sessionId, url: target, host: u.hostname, locale,
+      session_id: sessionId, url: target, host: u.hostname, locale, tone,
       quality: typeof seeded.quality === 'number' ? seeded.quality : null,
       verdict: (seeded.verdict as { label?: string } | undefined)?.label ?? null,
       mode: 'seed', cached: true, ip_hash: ipHash, country,
@@ -621,6 +632,7 @@ export async function POST(request: Request) {
       url: target,
       host: u.hostname,
       locale,
+      tone,
       quality: typeof payload.quality === 'number' ? payload.quality : null,
       verdict: (payload.verdict as { label?: string } | undefined)?.label ?? null,
       mode: typeof payload.mode === 'string' ? payload.mode : null,
@@ -638,7 +650,7 @@ export async function POST(request: Request) {
   // 3b. Already analysed this exact URL before (any time, this language)? Reuse
   //     the stored verdict — no LLM, no vision cost — BEFORE the throttles, so a
   //     known URL always resolves instantly and never burns the daily quota.
-  const cachedResult = await findCachedScan(target, locale)
+  const cachedResult = await findCachedScan(target, locale, tone)
   if (cachedResult) {
     const shotRes = process.env.SCREENSHOT_API_KEY ? await capture(target) : { error: 'skipped' }
     const payload = { ...cachedResult, screenshot: 'b64' in shotRes ? `data:${shotRes.mime};base64,${shotRes.b64}` : null }
@@ -665,7 +677,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: msg.limit }, { status: 429 })
   }
 
-  const core = await analyzeCore(u, locale)
+  const core = await analyzeCore(u, locale, analysisMode)
   if (!core.ok) {
     // Record the miss (site that errored / didn't display) for the daily report.
     logMiss({
