@@ -554,14 +554,19 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
   // In serious mode the inactive "Fun" side blinks (2×/sec) between grey and
   // pink+white to nudge people toward fun mode.
   const modeToggle = (
-    <div className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-white/85 p-1 shadow-lg backdrop-blur">
+    <div className={`inline-flex items-center gap-1 rounded-full border border-black/10 bg-white/85 p-1 shadow-lg backdrop-blur ${serious ? 'wp-toggle-blink' : ''}`}>
       <style>{`
         @keyframes wpFunBlink {
           0%, 49%   { background-color: transparent; color: rgba(11,11,13,0.45); border-color: rgba(11,11,13,0.15); }
           50%, 100% { background-color: #D46FC8; color: #ffffff; border-color: #D46FC8; }
         }
         .wp-fun-blink { border: 1.5px solid transparent; animation: wpFunBlink 1s steps(1, end) infinite; }
-        @media (prefers-reduced-motion: reduce) { .wp-fun-blink { animation: none; } }
+        @keyframes wpToggleBorder {
+          0%, 49%   { border-color: rgba(0,0,0,0.10); }
+          50%, 100% { border-color: #D46FC8; }
+        }
+        .wp-toggle-blink { animation: wpToggleBorder 1s steps(1, end) infinite; }
+        @media (prefers-reduced-motion: reduce) { .wp-fun-blink, .wp-toggle-blink { animation: none; } }
       `}</style>
       {(['serious', 'fun'] as Mode[]).map(m => {
         const active = mode === m
@@ -605,7 +610,7 @@ export default function WebPoliceClient({ locale = 'en', mode: initialMode = 'se
         <div className="mb-4 md:mb-6">{modeToggle}</div>
 
         <h1
-          className={`font-bold tracking-tight leading-[1.08] ${serious ? 'text-[#F2F0EB]' : 'font-display text-[#16161A]'}`}
+          className={`font-bold tracking-tight leading-[1.08] whitespace-pre-line ${serious ? 'text-[#F2F0EB]' : 'font-display text-[#16161A]'}`}
           style={{ fontSize: 'clamp(1.7rem, 5.4vw, 3.6rem)', ...(serious ? {} : { textShadow: '0 6px 20px rgba(120,40,90,0.18), 0 2px 4px rgba(0,0,0,0.08)' }) }}
         >
           {mc.title.split('[u]').map((seg, k) =>

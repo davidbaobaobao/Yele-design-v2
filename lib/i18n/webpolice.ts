@@ -101,7 +101,7 @@ export type WPStrings = {
 const en: WPStrings = {
   modes: {
     serious: {
-      title: 'Is your website still fresh, or is it [u]dated[u]?',
+      title: 'Is your website still fresh,\nor is it [u]dated[u]?',
       questions: ['Does it look well-designed?', 'Does it clearly describe your business?'],
       cta: 'Analyze page',
       loadingLines: ['Capturing your homepage…', 'Analysing the design…', 'Assessing clarity and structure…', 'Writing your report…'],
@@ -222,7 +222,7 @@ const en: WPStrings = {
 const es: WPStrings = {
   modes: {
     serious: {
-      title: 'Tu web aún está guay, ¿o ya está [u]anticuada[u]?',
+      title: 'Tu web aún está guay\n¿o ya está [u]anticuada[u]?',
       questions: ['¿Tiene un buen diseño?', '¿Describe claramente tu negocio?'],
       cta: 'Analizar página',
       loadingLines: ['Capturando tu página…', 'Analizando el diseño…', 'Evaluando claridad y estructura…', 'Redactando tu informe…'],
@@ -343,7 +343,7 @@ const es: WPStrings = {
 const zh: WPStrings = {
   modes: {
     serious: {
-      title: '你的网站还时髦，还是已经[u]过时[u]了？',
+      title: '你的网站还时髦，\n还是已经[u]过时[u]了？',
       questions: ['设计够好吗？', '有清楚说明你的业务吗？'],
       cta: '分析网页',
       loadingLines: ['正在截取你的主页…', '正在分析设计…', '正在评估清晰度与结构…', '正在生成报告…'],
