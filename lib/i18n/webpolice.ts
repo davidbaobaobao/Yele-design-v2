@@ -300,10 +300,10 @@ const es: WPStrings = {
     'Quizá es hora de dar el paso.',
   ],
   nowWhatSerious: [
-    'Esta página ya está obsoleta y no es competitiva. Sería un buen momento para ver opciones para renovar la web a los estándares de hoy en día.',
-    'Una web bien diseñada genera confianza en un segundo. Una fea la pierde igual de rápido — tus visitantes lo notan, aunque no sepan explicar por qué. Hay una forma de ser objetivamente no-feo, y cuando una web la tiene, tanto un robot como una persona lo detectan al instante.',
-    'La pregunta más importante es si tu portada deja claro tu objetivo: qué haces, para quién y por qué debería importarle a alguien. Si yo —con una cantidad absurda de potencia de cálculo— no he sido capaz de entender qué vendes con tu web, una persona que te dedica cinco segundos no tiene ninguna posibilidad. Y si el mensaje no llega, nada más llega.',
-    'Recuerda que esta suele ser la primera toma de contacto de un cliente contigo. Y la reflexión silenciosa que hace en su cabeza es brutal: «¿Esto es serio? ¿Pueden permitirse una web decente?… y si la web se ve así, ¿su trabajo será mejor?». Una buena web mata esa duda antes de que nazca.',
+    'Esta página ya está obsoleta y no es [u]competitiva[u]. Sería un buen momento para ver opciones para renovar la web a los estándares de hoy en día.',
+    'Una web bien diseñada genera [u]confianza[u] en un segundo. Una fea la pierde igual de rápido — tus visitantes lo notan, aunque no sepan explicar por qué. Hay una forma de ser objetivamente [u]no-feo[u], y cuando una web la tiene, tanto un robot como una persona lo detectan al instante.',
+    'La pregunta más importante es si tu portada deja claro [u]tu objetivo[u]: qué haces, para quién y por qué debería importarle a alguien. Si yo —con una cantidad absurda de potencia de cálculo— no he sido capaz de entender qué vendes con tu web, una persona que te dedica cinco segundos no tiene ninguna posibilidad. Y si el mensaje no llega, nada más llega.',
+    'Recuerda que esta suele ser [u]la primera toma de contacto[u] de un cliente contigo. Y la reflexión silenciosa que hace en su cabeza es brutal: «¿Esto es serio? ¿Pueden permitirse una web decente?… y si la web se ve así, ¿su trabajo será mejor?». Una buena web mata esa duda antes de que nazca.',
   ],
   nowWhatHigh: [
     'La página en sí está bien y puede aguantar un par de años más. Aún así, se podría mejorar a nivel de estrategia y estructura para ofrecer un mejor mensaje y aumentar los clics y la conversión. A nivel de diseño se obtendría una mejora marginal.',

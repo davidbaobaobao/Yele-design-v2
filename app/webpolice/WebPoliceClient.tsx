@@ -1219,11 +1219,11 @@ function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { r
           {nowWhat.map((p, i) => (
             <p
               key={i}
-              className={`font-body leading-relaxed ${i === t.nowWhatBody.length - 1 ? 'text-lg md:text-xl font-semibold text-white' : 'text-base md:text-lg text-white/75'}`}
+              className={`font-body leading-relaxed ${i === nowWhat.length - 1 ? 'text-lg md:text-xl font-semibold text-white' : 'text-base md:text-lg text-white/75'}`}
             >
               {p.split('[u]').map((seg, k) =>
                 k % 2 === 1 ? (
-                  <span key={k} className="wp-underline">
+                  <span key={k} className={serious ? 'underline decoration-2 underline-offset-4 decoration-white/70' : 'wp-underline'}>
                     {seg}
                   </span>
                 ) : (
@@ -1253,7 +1253,7 @@ function Report({ result, t, locale, mode, planOptions, basePath, onReset }: { r
       {serious && (
         <div
           className="relative left-1/2 right-1/2 -mx-[50vw] mt-10 w-screen bg-cover bg-no-repeat bg-center bg-[#c9c9c9]"
-          style={{ backgroundImage: 'url(/media/webpolice/cat-suit.jpg)' }}
+          style={{ backgroundImage: 'url(https://fwkatntheesvtjxzmipv.supabase.co/storage/v1/object/public/product-media/test-product/Cat_wearing_office_clothes_20260925003537.jpeg)' }}
         >
           {/* Bottom dim so the copy stays legible over the light photo. */}
           <div
