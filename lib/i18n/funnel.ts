@@ -224,6 +224,7 @@ const en: FunnelDict = {
         blurb: 'For businesses that want more functionality on their website.',
         headline: 'Everything in Launch, plus:',
         features: [
+          { label: 'Cinematic videos and advanced animations' },
           { label: 'Smart AI chatbot', info: 'A 24/7 assistant that answers visitor questions, captures leads and books calls right on your site.' },
           { label: 'Payment acceptance', info: 'Accept secure credit-card payments directly on your website.' },
           { label: 'Small e-commerce', info: 'Ideal for smaller catalogs — up to around 30 products.' },
@@ -407,6 +408,7 @@ const es: FunnelDict = {
         blurb: 'Para negocios que quieren más funcionalidad en su web.',
         headline: 'Todo lo de Launch, y además:',
         features: [
+          { label: 'Videos cinemáticos y animaciones avanzadas' },
           { label: 'Chatbot con IA', info: 'Un asistente 24/7 que responde preguntas, capta clientes y agenda llamadas en tu web.' },
           { label: 'Aceptación de pagos', info: 'Acepta pagos seguros con tarjeta directamente en tu web.' },
           { label: 'E-commerce pequeño', info: 'Ideal para catálogos pequeños — hasta unos 30 productos.' },
@@ -589,6 +591,7 @@ const zh: FunnelDict = {
         blurb: '适合希望网站拥有更多功能的企业。',
         headline: '包含 Launch 的全部，另加：',
         features: [
+          { label: '电影级视频与高级动画' },
           { label: '智能 AI 聊天机器人', info: '全天候助手，直接在你的网站上回答访客问题、获取潜在客户并预约通话。' },
           { label: '支持在线支付', info: '直接在你的网站上安全地接受信用卡付款。' },
           { label: '小型电商', info: '适合较小的目录 — 约 30 个产品以内。' },
