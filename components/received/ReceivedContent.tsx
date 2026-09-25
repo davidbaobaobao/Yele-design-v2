@@ -40,9 +40,12 @@ function buildTiers(locale: Locale): Tier[] {
 export default function ReceivedContent({
   locale = 'en',
   searchParams,
+  hideCalendar = false,
 }: {
   locale?: Locale
   searchParams: { name?: string; email?: string; company?: string; plan?: string }
+  // /received2 variant: no booking calendar — only payments + instructions.
+  hideCalendar?: boolean
 }) {
   const d = getFunnelDict(locale).received
   const rawName = searchParams.name?.trim() ?? ''
@@ -72,24 +75,30 @@ export default function ReceivedContent({
         <h1 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight leading-tight mb-3">
           {name ? d.welcomeName(name) : d.welcome}
         </h1>
-        <p className="font-body text-ink/75 text-lg md:text-xl mb-8">
-          {d.callLead}
-        </p>
+        {!hideCalendar && (
+          <p className="font-body text-ink/75 text-lg md:text-xl mb-8">
+            {d.callLead}
+          </p>
+        )}
 
-        {/* ---- Booking calendar ---- */}
-        <div className="-mx-6 mb-4 md:mx-0 md:h-[430px] md:w-full md:overflow-hidden md:rounded-2xl md:border md:border-hairline">
-          <ReceivedCalEmbed name={rawName} email={email} />
-        </div>
+        {/* ---- Booking calendar (hidden on /received2) ---- */}
+        {!hideCalendar && (
+          <>
+            <div className="-mx-6 mb-4 md:mx-0 md:h-[430px] md:w-full md:overflow-hidden md:rounded-2xl md:border md:border-hairline">
+              <ReceivedCalEmbed name={rawName} email={email} />
+            </div>
 
-        {/* Spanish version: offer WhatsApp as an alternative to the calendar. */}
-        {getFunnelDict(locale).form.whatsapp && (
-          <div className="mb-10 text-center">
-            <WhatsAppLink label={getFunnelDict(locale).form.whatsapp as string} tone="light" prefill="¡Hola! Acabo de reservar/ver la web con Yele." />
-          </div>
+            {/* Spanish version: offer WhatsApp as an alternative to the calendar. */}
+            {getFunnelDict(locale).form.whatsapp && (
+              <div className="mb-10 text-center">
+                <WhatsAppLink label={getFunnelDict(locale).form.whatsapp as string} tone="light" prefill="¡Hola! Acabo de reservar/ver la web con Yele." />
+              </div>
+            )}
+          </>
         )}
 
         {/* ---- Don't want to wait? Pay 50% now ---- */}
-        <div className="border-t border-hairline pt-12">
+        <div className={hideCalendar ? 'pt-2' : 'border-t border-hairline pt-12'}>
           <h2 className="font-display font-bold text-3xl md:text-5xl text-ink tracking-tight mb-3">
             {d.dontWait}
           </h2>
