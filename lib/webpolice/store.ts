@@ -291,12 +291,14 @@ export async function logEvent(e: { session_id: string | null; locale: string; e
 
 export type FunnelCounts = Record<string, { total: number; sessions: number }>
 
-/** Per-event totals and distinct-session counts since `sinceIso`, one page. */
-export async function eventFunnelSince(sinceIso: string, page: string = 'webpolice'): Promise<FunnelCounts> {
+/** Per-event totals and distinct-session counts since `sinceIso`, one page,
+ *  optionally filtered to one locale. */
+export async function eventFunnelSince(sinceIso: string, page: string = 'webpolice', locale?: string): Promise<FunnelCounts> {
   const supabase = db()
   if (!supabase) return {}
-  const { data, error } = await supabase.from(EVENTS)
-    .select('event, session_id').eq('page', page).gte('created_at', sinceIso).limit(100_000)
+  let q = supabase.from(EVENTS).select('event, session_id').eq('page', page).gte('created_at', sinceIso)
+  if (locale) q = q.eq('locale', locale)
+  const { data, error } = await q.limit(100_000)
   if (error) { console.error('[webpolice] eventFunnelSince failed:', error.message); return {} }
   const out: FunnelCounts = {}
   const seen: Record<string, Set<string>> = {}

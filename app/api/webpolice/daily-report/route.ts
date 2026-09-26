@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { scansSince, eventFunnelSince, eventFunnelByTone, eventUrlBreakdown } from '@/lib/webpolice/store'
+import { scansSince, eventFunnelSince, eventFunnelByTone, eventUrlBreakdown, type FunnelCounts } from '@/lib/webpolice/store'
 
 export const runtime = 'nodejs'
 
@@ -119,36 +119,48 @@ export async function GET(request: Request) {
     eventUrlBreakdown('scroll_mid', sinceEvents),
     eventUrlBreakdown('plug_view', sinceEvents),
   ])
-  // /letsbuild scroll funnel (separate page='letsbuild').
-  const lbFunnel = await eventFunnelSince(sinceEvents, 'letsbuild')
-  const lbs = (k: string) => lbFunnel[k]?.sessions ?? 0
-  const lbLoaded = lbs('lb_hero')
-  const lbSteps: [string, number][] = [
-    ['Loaded /letsbuild', lbLoaded],
-    ['Scrolled to pricing', lbs('lb_precios')],
-    ['Scrolled to the first form', lbs('lb_form')],
-    ['Scrolled to “why Yele”', lbs('lb_porque')],
-    ['Scrolled into the FAQ', lbs('lb_faq')],
-    ['Submitted the form ✅', lbs('lb_submit')],
+  // /letsbuild scroll funnel — split by locale so /letsbuild (EN) and
+  // /es/letsbuild (ES) each get their own table.
+  const lbRoutes: { locale: string; url: string }[] = [
+    { locale: 'en', url: '/letsbuild' },
+    { locale: 'es', url: '/es/letsbuild' },
+    { locale: 'zh', url: '/zh/letsbuild' },
   ]
-  const lbHasData = lbSteps.some(([, n]) => n > 0)
-  const lbPct = (n: number) => (lbLoaded ? Math.round((n / lbLoaded) * 100) : 0)
-  const lbBlock = lbHasData ? `
-    <h3 style="margin:26px 0 2px;font-size:15px">🏗️ /letsbuild funnel (last 24h)</h3>
-    <p style="margin:0 0 8px;color:#6F6373;font-size:12px">Distinct visitors reaching each section. % is of everyone who loaded the page.</p>
-    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
-      <tr>
-        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Step</th>
-        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Visitors</th>
-        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">% of loaded</th>
-      </tr>
-      ${lbSteps.map(([label, n], i) => `
-      <tr>
-        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(label)}</td>
-        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${n}</td>
-        <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center;color:${i === 0 ? '#16161A' : '#6F6373'}">${i === 0 ? '100%' : lbPct(n) + '%'}</td>
-      </tr>`).join('')}
-    </table>` : ''
+  const lbFunnelsByLocale = await Promise.all(
+    lbRoutes.map(r => eventFunnelSince(sinceEvents, 'letsbuild', r.locale)),
+  )
+  const lbTable = (url: string, f: FunnelCounts): string => {
+    const g = (k: string) => f[k]?.sessions ?? 0
+    const loaded = g('lb_hero')
+    const steps: [string, number][] = [
+      ['Loaded page', loaded],
+      ['Scrolled to pricing', g('lb_precios')],
+      ['Scrolled to the first form', g('lb_form')],
+      ['Scrolled to “why Yele”', g('lb_porque')],
+      ['Scrolled into the FAQ', g('lb_faq')],
+      ['Submitted the form ✅', g('lb_submit')],
+    ]
+    if (!steps.some(([, n]) => n > 0)) return ''
+    const pct = (n: number) => (loaded ? Math.round((n / loaded) * 100) : 0)
+    return `
+      <h3 style="margin:22px 0 2px;font-size:15px">🏗️ ${esc(url)}</h3>
+      <p style="margin:0 0 8px;color:#6F6373;font-size:12px">Distinct visitors reaching each section. % is of everyone who loaded the page.</p>
+      <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
+        <tr>
+          <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Step</th>
+          <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Visitors</th>
+          <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">% of loaded</th>
+        </tr>
+        ${steps.map(([label, n], i) => `
+        <tr>
+          <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(label)}</td>
+          <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${n}</td>
+          <td style="padding:8px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center;color:${i === 0 ? '#16161A' : '#6F6373'}">${i === 0 ? '100%' : pct(n) + '%'}</td>
+        </tr>`).join('')}
+      </table>`
+  }
+  const lbBlock = lbRoutes.map((r, i) => lbTable(r.url, lbFunnelsByLocale[i])).join('')
+  const lbHasData = lbBlock.length > 0
   // Per-URL breakdown for the two milestone steps: which sites people scrolled
   // through to the middle, and which they reached the plug form on.
   const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, '') } catch { return u } }
