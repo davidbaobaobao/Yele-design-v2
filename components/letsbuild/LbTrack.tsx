@@ -32,13 +32,13 @@ function sessionId(): string {
   } catch { return '' }
 }
 
-function beacon(event: string) {
+function beacon(event: string, page: string) {
   try {
-    if (fired.has(event)) return
-    fired.add(event)
+    if (fired.has(page + event)) return
+    fired.add(page + event)
     if (!consentAllows()) return
     const locale = document.location.pathname.startsWith('/es') ? 'es' : document.location.pathname.startsWith('/zh') ? 'zh' : 'en'
-    const payload = JSON.stringify({ event, page: 'letsbuild', locale, sessionId: sessionId() })
+    const payload = JSON.stringify({ event, page, locale, sessionId: sessionId() })
     const blob = new Blob([payload], { type: 'application/json' })
     if (!navigator.sendBeacon?.('/api/webpolice/event', blob)) {
       fetch('/api/webpolice/event', { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true }).catch(() => {})
@@ -47,22 +47,22 @@ function beacon(event: string) {
 }
 
 /** Fires `lb_hero` on mount (visitor loaded the page). */
-export function LbHeroPing() {
-  useEffect(() => { beacon('lb_hero') }, [])
+export function LbHeroPing({ page = 'letsbuild' }: { page?: string }) {
+  useEffect(() => { beacon('lb_hero', page) }, [page])
   return null
 }
 
 /** Invisible sentinel that fires `event` the first time it scrolls into view. */
-export function LbSeen({ event }: { event: string }) {
+export function LbSeen({ event, page = 'letsbuild' }: { event: string; page?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const el = ref.current
     if (!el || typeof IntersectionObserver === 'undefined') return
     const io = new IntersectionObserver((entries) => {
-      if (entries.some(e => e.isIntersecting)) { beacon(event); io.disconnect() }
+      if (entries.some(e => e.isIntersecting)) { beacon(event, page); io.disconnect() }
     }, { threshold: 0.01 })
     io.observe(el)
     return () => io.disconnect()
-  }, [event])
+  }, [event, page])
   return <div ref={ref} aria-hidden="true" className="h-px w-full" />
 }

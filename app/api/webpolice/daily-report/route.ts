@@ -161,6 +161,13 @@ export async function GET(request: Request) {
   }
   const lbBlock = lbRoutes.map((r, i) => lbTable(r.url, lbFunnelsByLocale[i])).join('')
   const lbHasData = lbBlock.length > 0
+
+  // /es/letsbuildnow — the Meta-ads landing (lead form in the hero). Same
+  // funnel steps, tracked under page='letsbuildnow'. Its own section so ad
+  // performance is easy to read next to the organic /letsbuild funnel.
+  const lbnFunnel = await eventFunnelSince(sinceEvents, 'letsbuildnow', 'es')
+  const lbnBlock = lbTable('/es/letsbuildnow', lbnFunnel)
+  const lbnHasData = lbnBlock.length > 0
   // Per-URL breakdown for the two milestone steps: which sites people scrolled
   // through to the middle, and which they reached the plug form on.
   const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, '') } catch { return u } }
@@ -257,6 +264,10 @@ export async function GET(request: Request) {
     <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">🏗️ /letsbuild</h2>
     ${lbHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /letsbuild visits recorded in the last 24h.</p>'}
     ${lbBlock}
+
+    <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">📣 /es/letsbuildnow (Meta ads)</h2>
+    ${lbnHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /es/letsbuildnow visits recorded in the last 24h.</p>'}
+    ${lbnBlock}
 
     <p style="margin:22px 0 0;color:#6F6373;font-size:12px">Low scores are the warm leads — they just watched a robot call their site ugly.</p>
   </div>`

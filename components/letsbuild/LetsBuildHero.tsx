@@ -68,10 +68,15 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
   return paintedFired && near && !far && !isLowPower
 }
 
-export default function LetsBuildHero({ locale = 'en' }: { locale?: Locale }) {
+export default function LetsBuildHero({ locale = 'en', heroForm }: { locale?: Locale; heroForm?: React.ReactNode }) {
   const sectionRef = useRef<HTMLElement>(null)
   const showCubes = useDeferredCubes(sectionRef)
   const h = getFunnelDict(locale).hero
+  // Ads variant (/es/letsbuildnow): a lead form on the right instead of the
+  // cubes, and the CTAs scroll to Pricing / Projects.
+  const now = !!heroForm
+  const priceLabel = locale === 'es' ? 'Precios' : locale === 'zh' ? '价格' : 'Pricing'
+  const projectsLabel = locale === 'es' ? 'Proyectos' : locale === 'zh' ? '作品' : 'Projects'
 
   return (
     <section
@@ -93,7 +98,7 @@ export default function LetsBuildHero({ locale = 'en' }: { locale?: Locale }) {
       {/* Cubes — full-width/height background layer. The cluster stays
           right-of-center via its own aspect-aware offset (CubesScene.tsx).
           Never mounted on mobile/coarse-pointer or before first paint. */}
-      {showCubes && (
+      {!now && showCubes && (
         <div className="hidden md:block absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
           <CubesScene />
         </div>
@@ -107,51 +112,71 @@ export default function LetsBuildHero({ locale = 'en' }: { locale?: Locale }) {
         aria-hidden="true"
       />
 
-      <div className="relative z-10 min-h-[calc(100svh-132px)] flex items-center px-6 md:px-16 lg:pl-44 xl:pl-60 2xl:pl-72 pt-16 pb-28 md:pb-10">
-        <div className="w-full max-w-2xl">
-          <Link href="/" className="block mb-6 md:mb-8 focus-visible:outline-none" aria-label="yele">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/media/logomedia/mainlogo.svg" alt="" width={120} height={38} className="h-8 md:h-10 w-auto" />
-          </Link>
+      <div
+        className={
+          now
+            ? 'relative z-10 min-h-[calc(100svh-132px)] flex items-center px-6 md:px-12 lg:px-16 xl:px-24 pt-16 pb-28 md:pb-10'
+            : 'relative z-10 min-h-[calc(100svh-132px)] flex items-center px-6 md:px-16 lg:pl-44 xl:pl-60 2xl:pl-72 pt-16 pb-28 md:pb-10'
+        }
+      >
+        <div
+          className={
+            now
+              ? 'w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center'
+              : 'w-full max-w-2xl'
+          }
+        >
+          <div className={now ? 'order-2 md:order-1' : ''}>
+            <Link href="/" className="block mb-6 md:mb-8 focus-visible:outline-none" aria-label="yele">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/media/logomedia/mainlogo.svg" alt="" width={120} height={38} className="h-8 md:h-10 w-auto" />
+            </Link>
 
-          <h1
-            className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
-            style={{ fontSize: 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
-          >
-            {getFunnelDict(locale).heroTitle.split('\n').map((line, i) => (
-              <span key={i}>
-                {i > 0 && <br />}
-                {line}
-              </span>
-            ))}
-          </h1>
-
-          <ul className="space-y-3 md:space-y-3.5 mb-8 md:mb-9">
-            {h.points.map(point => (
-              <li key={point} className="flex items-start gap-3">
-                <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-0.5 md:mt-1" aria-hidden="true" />
-                <span className="font-body text-lg md:text-xl font-semibold text-white/90">{point}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="flex flex-wrap items-center gap-4 mb-8 md:mb-10">
-            <a
-              href="#pricing"
-              className="inline-flex items-center justify-center font-body font-semibold text-base md:text-lg bg-[#F2F0EB] hover:bg-white px-8 py-4 rounded-full transition-colors active:scale-95"
-              style={{ color: '#16161A' }}
+            <h1
+              className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
+              style={{ fontSize: now ? 'clamp(2.4rem, 4.4vw, 4.25rem)' : 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
             >
-              {h.pricing}
-            </a>
-            <a
-              href="#lead-form"
-              className="inline-flex items-center justify-center font-body text-base md:text-lg font-medium text-white px-7 py-4 rounded-full border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
-            >
-              {h.startNow}
-            </a>
+              {getFunnelDict(locale).heroTitle.split('\n').map((line, i) => (
+                <span key={i}>
+                  {i > 0 && <br />}
+                  {line}
+                </span>
+              ))}
+            </h1>
+
+            <ul className="space-y-3 md:space-y-3.5 mb-8 md:mb-9">
+              {h.points.map(point => (
+                <li key={point} className="flex items-start gap-3">
+                  <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-0.5 md:mt-1" aria-hidden="true" />
+                  <span className="font-body text-lg md:text-xl font-semibold text-white/90">{point}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex flex-wrap items-center gap-4 mb-8 md:mb-10">
+              <a
+                href="#pricing"
+                className="inline-flex items-center justify-center font-body font-semibold text-base md:text-lg bg-[#F2F0EB] hover:bg-white px-8 py-4 rounded-full transition-colors active:scale-95"
+                style={{ color: '#16161A' }}
+              >
+                {now ? priceLabel : h.pricing}
+              </a>
+              <a
+                href={now ? '#proyectos' : '#lead-form'}
+                className="inline-flex items-center justify-center font-body text-base md:text-lg font-medium text-white px-7 py-4 rounded-full border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
+              >
+                {now ? projectsLabel : h.startNow}
+              </a>
+            </div>
+
+            <ReputationBadge className="scale-110 origin-left" locale={locale} />
           </div>
 
-          <ReputationBadge className="scale-110 origin-left" locale={locale} />
+          {now && (
+            <div className="order-1 md:order-2 w-full">
+              {heroForm}
+            </div>
+          )}
         </div>
       </div>
 

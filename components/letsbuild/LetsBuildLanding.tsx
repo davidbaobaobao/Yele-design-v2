@@ -40,27 +40,62 @@ const DARK = '#0D0E12'
 // `leadSource` is stamped onto both forms so the lead email says where the
 // lead came from. `locale` drives all funnel copy + the $/€ currency; it
 // defaults to 'en' so the existing English pages render exactly as before.
-export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSource?: string; locale?: Locale }) {
+export default function LetsBuildLanding({
+  leadSource,
+  locale = 'en',
+  trackPage = 'letsbuild',
+  heroForm = false,
+}: {
+  leadSource?: string
+  locale?: Locale
+  // Funnel bucket for telemetry — the ads page tracks under 'letsbuildnow'.
+  trackPage?: string
+  // Ads variant: render a lead form on the right of the hero (instead of the
+  // 3D cubes) and switch the hero CTAs to Precios / Proyectos.
+  heroForm?: boolean
+}) {
   const d = getFunnelDict(locale)
   // Spanish gets its own /es/* legal pages; other locales use the English ones.
   const legalPrefix = locale === 'es' ? '/es' : ''
   const planOptions = d.pricing.tiers.map(t => t.planValue)
 
+  // The hero lead form for the ads variant. A light card so it pops over the
+  // dark hero; fires the same lb_submit funnel event under this page's bucket.
+  const heroFormEl = heroForm ? (
+    <div className="rounded-2xl bg-white shadow-2xl shadow-black/40 ring-1 ring-black/5 p-5 md:p-7">
+      <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-4">
+        {d.form.heading}
+      </h2>
+      <LeadForm variant="light" ctaLabel={d.form.cta} id="hero-lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} submitBeacon={{ event: 'lb_submit', page: trackPage }} />
+      <div className="text-center mt-2.5">
+        {d.form.whatsapp ? (
+          <WhatsAppLink label={d.form.whatsapp} tone="light" prefill="¡Hola! Me interesa una web con Yele." />
+        ) : (
+          <Link href="/schedule" className="font-body text-sm text-muted hover:text-ink transition-colors underline underline-offset-4">
+            {d.form.bookCall}
+          </Link>
+        )}
+      </div>
+    </div>
+  ) : undefined
+
   return (
     <EnLangProvider>
       <main className="overflow-x-hidden" style={{ backgroundColor: DARK }}>
         <LocaleSwitcher current={locale} />
-        <LbHeroPing />
+        <LbHeroPing page={trackPage} />
 
         {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg. ---- */}
-        <LetsBuildHero locale={locale} />
+        <LetsBuildHero locale={locale} heroForm={heroFormEl} />
 
         <LogoMarquee />
 
-        <LatestFeaturedWork forceDark title={d.featuredTitle} />
+        <div id="proyectos" className="scroll-mt-4">
+          <LatestFeaturedWork forceDark title={d.featuredTitle} />
+        </div>
 
         {/* ---- PRICING ---- */}
-        <LbSeen event="lb_precios" />
+        <LbSeen event="lb_precios" page={trackPage} />
         <section id="pricing" className="bg-white px-6 pt-20 md:pt-28 pb-10 md:pb-12">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
@@ -76,7 +111,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
 
         {/* ---- QUICK LEAD FORM — left values + testimonial pills, right form.
              Sits between Pricing and Yele Care. ---- */}
-        <LbSeen event="lb_form" />
+        <LbSeen event="lb_form" page={trackPage} />
         <section className="px-6 py-16 md:py-24 border-t border-white/10 scroll-mt-8" style={{ backgroundColor: DARK }}>
           <div className="mx-auto w-full max-w-md md:max-w-5xl">
             <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
@@ -108,7 +143,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
               </div>
 
               <div className="md:ml-auto md:w-full md:max-w-md">
-                <LeadForm variant="dark" ctaLabel={d.form.cta} id="lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} submitBeacon={{ event: 'lb_submit', page: 'letsbuild' }} />
+                <LeadForm variant="dark" ctaLabel={d.form.cta} id="lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} submitBeacon={{ event: 'lb_submit', page: trackPage }} />
 
                 <div className="text-center mt-2.5">
                   {d.form.whatsapp ? (
@@ -206,7 +241,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
         </section>
 
         {/* ---- WHY BUSINESSES CHOOSE YELE ---- */}
-        <LbSeen event="lb_porque" />
+        <LbSeen event="lb_porque" page={trackPage} />
         <section className="px-6 py-16 md:py-24 border-t border-white/10">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">
@@ -250,7 +285,7 @@ export default function LetsBuildLanding({ leadSource, locale = 'en' }: { leadSo
 
         <StartNowMarquee />
 
-        <LbSeen event="lb_faq" />
+        <LbSeen event="lb_faq" page={trackPage} />
         <LetsBuildFAQ locale={locale} />
 
         {/* ---- LEAD FORM (detailed) ---- */}
