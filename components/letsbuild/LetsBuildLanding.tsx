@@ -63,9 +63,6 @@ export default function LetsBuildLanding({
   // dark hero; fires the same lb_submit funnel event under this page's bucket.
   const heroFormEl = heroForm ? (
     <div className="rounded-2xl bg-white shadow-2xl shadow-black/40 ring-1 ring-black/5 p-5 md:p-7">
-      <h2 className="font-display font-bold text-2xl md:text-3xl text-ink tracking-tight mb-4">
-        {d.form.heading}
-      </h2>
       <LeadForm variant="light" ctaLabel={d.form.cta} id="hero-lead-form" planOptions={planOptions} leadSource={leadSource} sendWelcome locale={locale} submitBeacon={{ event: 'lb_submit', page: trackPage }} />
       <div className="text-center mt-2.5">
         {d.form.whatsapp ? (

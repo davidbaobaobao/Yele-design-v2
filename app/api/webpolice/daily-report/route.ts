@@ -162,11 +162,18 @@ export async function GET(request: Request) {
   const lbBlock = lbRoutes.map((r, i) => lbTable(r.url, lbFunnelsByLocale[i])).join('')
   const lbHasData = lbBlock.length > 0
 
-  // /es/letsbuildnow — the Meta-ads landing (lead form in the hero). Same
-  // funnel steps, tracked under page='letsbuildnow'. Its own section so ad
-  // performance is easy to read next to the organic /letsbuild funnel.
-  const lbnFunnel = await eventFunnelSince(sinceEvents, 'letsbuildnow', 'es')
-  const lbnBlock = lbTable('/es/letsbuildnow', lbnFunnel)
+  // letsbuildnow — the Meta-ads landing (lead form in the hero). Same funnel
+  // steps, tracked under page='letsbuildnow', split by locale so each ad
+  // destination reads on its own. Its own section, next to organic /letsbuild.
+  const lbnRoutes: { locale: string; url: string }[] = [
+    { locale: 'en', url: '/letsbuildnow' },
+    { locale: 'es', url: '/es/letsbuildnow' },
+    { locale: 'zh', url: '/zh/letsbuildnow' },
+  ]
+  const lbnFunnelsByLocale = await Promise.all(
+    lbnRoutes.map(r => eventFunnelSince(sinceEvents, 'letsbuildnow', r.locale)),
+  )
+  const lbnBlock = lbnRoutes.map((r, i) => lbTable(r.url, lbnFunnelsByLocale[i])).join('')
   const lbnHasData = lbnBlock.length > 0
   // Per-URL breakdown for the two milestone steps: which sites people scrolled
   // through to the middle, and which they reached the plug form on.

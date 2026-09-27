@@ -126,7 +126,7 @@ export default function LetsBuildHero({ locale = 'en', heroForm }: { locale?: Lo
               : 'w-full max-w-2xl'
           }
         >
-          <div className={now ? 'order-2 md:order-1' : ''}>
+          <div>
             <Link href="/" className="block mb-6 md:mb-8 focus-visible:outline-none" aria-label="yele">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/media/logomedia/mainlogo.svg" alt="" width={120} height={38} className="h-8 md:h-10 w-auto" />
@@ -173,7 +173,7 @@ export default function LetsBuildHero({ locale = 'en', heroForm }: { locale?: Lo
           </div>
 
           {now && (
-            <div className="order-1 md:order-2 w-full">
+            <div className="w-full">
               {heroForm}
             </div>
           )}
