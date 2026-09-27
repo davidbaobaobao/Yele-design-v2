@@ -169,7 +169,7 @@ export default function LetsBuildHero({ locale = 'en', heroForm }: { locale?: Lo
               </a>
             </div>
 
-            <ReputationBadge className="scale-110 origin-left" locale={locale} />
+            <ReputationBadge className="scale-110 origin-left" locale={locale} align={now ? 'left' : 'auto'} />
           </div>
 
           {now && (

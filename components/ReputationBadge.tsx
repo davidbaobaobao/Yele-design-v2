@@ -8,9 +8,13 @@ const AVATARS = ['/media/miniavatar/1.webp', '/media/miniavatar/2.webp', '/media
 // /newwebsite — same overlapping pink-tinted avatars + white stars + copy
 // everywhere so the trust signal stays consistent across landing pages.
 // `locale` translates the rating line on the funnel; defaults to English.
-export default function ReputationBadge({ className = '', locale = 'en' }: { className?: string; locale?: Locale }) {
+export default function ReputationBadge({ className = '', locale = 'en', align = 'auto' }: { className?: string; locale?: Locale; align?: 'auto' | 'left' }) {
+  // 'auto' centers on mobile then left-aligns from sm up (homepage hero, where
+  // the hero text is centered on mobile). 'left' stays left at every width, for
+  // heroes whose text is left-aligned on mobile too (the ads landing).
+  const justify = align === 'left' ? 'justify-start' : 'justify-center sm:justify-start'
   return (
-    <div className={`flex flex-wrap items-center gap-3 justify-center sm:justify-start ${className}`}>
+    <div className={`flex flex-wrap items-center gap-3 ${justify} ${className}`}>
       <div className="flex items-center" aria-hidden="true">
         {AVATARS.map((src, i) => (
           <div

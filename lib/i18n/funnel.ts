@@ -336,7 +336,7 @@ const es: FunnelDict = {
   heroTitle: 'Empecemos\ncon tu web',
   featuredTitle: 'Últimos proyectos',
   hero: {
-    points: ['Desde 699€', 'Sin plantillas genéricas feas', 'Lo construimos todo por ti', 'Entrega en menos de 4 semanas'],
+    points: ['Desde 699€', 'Sin plantillas genéricas feas', 'Lo construimos todo para ti', 'Entrega en menos de 4 semanas'],
     startNow: 'Empezar ahora',
     pricing: 'Precios',
     scrollDown: 'Desplázate',
