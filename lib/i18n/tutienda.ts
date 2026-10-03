@@ -91,7 +91,7 @@ const es: TuTiendaDict = {
       { feature: 'Comisión para mayor volumen', yele: '0,5 % + 0,02 €', shopify: '1,6 % + 0,30 €' },
       { feature: 'Creación de contenido (imágenes y vídeos)', yele: '0 / 5 / 20 productos al mes', shopify: 'No ofrecido', shopifyNone: true },
       { feature: 'Cuentas de empleados', yele: 'Ilimitadas', shopify: 'Según el plan' },
-      { feature: 'Personalización', yele: 'UI/UX completa', shopify: 'Según el plan y las extensiones' },
+      { feature: 'Personalización', yele: 'UI/UX completa', shopify: 'Plantillas y extensiones de pago' },
     ],
   },
   pricing: {
@@ -214,7 +214,7 @@ const en: TuTiendaDict = {
       { feature: 'Higher-volume fee', yele: '0.5% + 0.02 €', shopify: '1.6% + 0.30 €' },
       { feature: 'Content creation (photos & videos)', yele: '0 / 5 / 20 products per month', shopify: 'Not offered', shopifyNone: true },
       { feature: 'Staff accounts', yele: 'Unlimited', shopify: 'Depends on plan' },
-      { feature: 'Customization', yele: 'Full UI/UX', shopify: 'Depends on plan and apps' },
+      { feature: 'Customization', yele: 'Full UI/UX', shopify: 'Paid templates and extensions' },
     ],
   },
   pricing: {
@@ -330,7 +330,7 @@ const zh: TuTiendaDict = {
       { feature: '大额交易佣金', yele: '0.5% + 0.02 €', shopify: '1.6% + 0.30 €' },
       { feature: '内容创作（图片和视频）', yele: '每月 0 / 5 / 20 个产品', shopify: '不提供', shopifyNone: true },
       { feature: '员工账户', yele: '无限', shopify: '视套餐而定' },
-      { feature: '定制化', yele: '完整 UI/UX', shopify: '视套餐和插件而定' },
+      { feature: '定制化', yele: '完整 UI/UX', shopify: '付费模板和插件' },
     ],
   },
   pricing: {

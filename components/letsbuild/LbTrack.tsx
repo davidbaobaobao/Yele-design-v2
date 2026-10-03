@@ -9,15 +9,17 @@ import { useEffect, useRef } from 'react'
 const fired = new Set<string>()
 
 function consentAllows(): boolean {
+  // Opt-OUT model — matches the site-wide Meta Pixel (lib/metaPixel.ts
+  // hasMarketingConsent): default GRANTED on arrival so EU ad traffic that
+  // hasn't clicked "Accept" is still counted; only an explicit Reject
+  // (analytics:false) stops it. Keeps the funnel counts in line with Meta's
+  // own visit numbers. Events are first-party and PII-free (opaque session
+  // id in sessionStorage, no IP).
   try {
     const raw = localStorage.getItem('cookie-consent')
-    const consent = raw ? (JSON.parse(raw).analytics ? 'accept' : 'reject') : 'none'
-    if (consent === 'reject') return false
-    // EU visitors who haven't chosen yet: don't send (stricter, simplest).
-    const eu = !document.cookie.split('; ').some(c => c === 'yele_eu=0')
-    if (eu && consent !== 'accept') return false
-    return true
-  } catch { return false }
+    if (!raw) return true
+    return JSON.parse(raw).analytics !== false
+  } catch { return true }
 }
 
 function sessionId(): string {

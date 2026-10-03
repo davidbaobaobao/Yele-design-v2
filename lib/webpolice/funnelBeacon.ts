@@ -1,19 +1,16 @@
 // Shared, consent-aware funnel beacon used across pages (webpolice, letsbuild).
-// Fire-and-forget via sendBeacon; respects the cookie-consent choice the same
-// way the rest of the funnel does (reject → never; EU undecided → don't send).
+// Fire-and-forget via sendBeacon. Opt-OUT model — matches the site-wide Meta
+// Pixel (lib/metaPixel.ts hasMarketingConsent): default GRANTED on arrival so
+// EU ad traffic that hasn't clicked "Accept" is still counted; only an explicit
+// Reject (analytics:false) stops it. Events are first-party and PII-free.
 
 export function funnelBeacon(event: string, page: string, extra?: { locale?: string; tone?: string; url?: string }): void {
   if (typeof window === 'undefined') return
   try {
-    let consent: 'accept' | 'reject' | 'none' = 'none'
     try {
       const raw = localStorage.getItem('cookie-consent')
-      if (raw) consent = JSON.parse(raw).analytics ? 'accept' : 'reject'
-    } catch { /* ignore */ }
-    if (consent === 'reject') return
-    let eu = true
-    try { eu = !document.cookie.split('; ').some(c => c === 'yele_eu=0') } catch { /* ignore */ }
-    if (eu && consent !== 'accept') return
+      if (raw && JSON.parse(raw).analytics === false) return
+    } catch { /* ignore → allow (opt-out default) */ }
 
     let sid = ''
     try {
