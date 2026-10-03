@@ -134,7 +134,11 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
                         <span className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#D46FC8]" aria-hidden="true">
                           <Check size={10} className="text-white" strokeWidth={3} />
                         </span>
-                        <span className="font-body text-[13px] text-ink font-medium leading-snug">{r.yele}</span>
+                        <span className="font-body text-[13px] text-ink font-medium leading-snug">
+                          {r.yele.split(' · ').map(part => (
+                            <span key={part} className="block">{part}</span>
+                          ))}
+                        </span>
                       </div>
                       <div className="px-3.5 py-3 flex items-start gap-2">
                         {r.shopifyNone && (
@@ -142,7 +146,11 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
                             <X size={10} className="text-white" strokeWidth={3} />
                           </span>
                         )}
-                        <span className="font-body text-[13px] text-muted leading-snug">{r.shopify}</span>
+                        <span className="font-body text-[13px] text-muted leading-snug">
+                          {r.shopify.split(' · ').map(part => (
+                            <span key={part} className="block">{part}</span>
+                          ))}
+                        </span>
                       </div>
                     </div>
                   </div>

@@ -88,7 +88,7 @@ const es: TuTiendaDict = {
     rows: [
       { feature: 'Cuota mensual', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
       { feature: 'Comisión base', yele: '1 % + 0,20 €', shopify: '2,1 % + 0,30 €' },
-      { feature: 'Comisión para mayor volumen', yele: '0,5 % + 0,02 €', shopify: 'Grow: 1,8 % + 0,30 € · Advanced: 1,6 % + 0,30 €' },
+      { feature: 'Comisión para mayor volumen', yele: '0,5 % + 0,02 €', shopify: '1,6 % + 0,30 €' },
       { feature: 'Creación de contenido (imágenes y vídeos)', yele: '0 / 5 / 20 productos al mes', shopify: 'No ofrecido', shopifyNone: true },
       { feature: 'Cuentas de empleados', yele: 'Ilimitadas', shopify: 'Según el plan' },
       { feature: 'Personalización', yele: 'UI/UX completa', shopify: 'Según el plan y las extensiones' },
@@ -211,7 +211,7 @@ const en: TuTiendaDict = {
     rows: [
       { feature: 'Monthly fee', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
       { feature: 'Base transaction fee', yele: '1% + 0.20 €', shopify: '2.1% + 0.30 €' },
-      { feature: 'Higher-volume fee', yele: '0.5% + 0.02 €', shopify: 'Grow: 1.8% + 0.30 € · Advanced: 1.6% + 0.30 €' },
+      { feature: 'Higher-volume fee', yele: '0.5% + 0.02 €', shopify: '1.6% + 0.30 €' },
       { feature: 'Content creation (photos & videos)', yele: '0 / 5 / 20 products per month', shopify: 'Not offered', shopifyNone: true },
       { feature: 'Staff accounts', yele: 'Unlimited', shopify: 'Depends on plan' },
       { feature: 'Customization', yele: 'Full UI/UX', shopify: 'Depends on plan and apps' },
@@ -327,7 +327,7 @@ const zh: TuTiendaDict = {
     rows: [
       { feature: '月费', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
       { feature: '基础交易佣金', yele: '1% + 0.20 €', shopify: '2.1% + 0.30 €' },
-      { feature: '大额交易佣金', yele: '0.5% + 0.02 €', shopify: 'Grow: 1.8% + 0.30 € · Advanced: 1.6% + 0.30 €' },
+      { feature: '大额交易佣金', yele: '0.5% + 0.02 €', shopify: '1.6% + 0.30 €' },
       { feature: '内容创作（图片和视频）', yele: '每月 0 / 5 / 20 个产品', shopify: '不提供', shopifyNone: true },
       { feature: '员工账户', yele: '无限', shopify: '视套餐而定' },
       { feature: '定制化', yele: '完整 UI/UX', shopify: '视套餐和插件而定' },

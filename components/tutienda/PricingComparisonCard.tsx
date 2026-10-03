@@ -53,7 +53,7 @@ export default function PricingComparisonCard({
       <ul className="relative mt-4 flex flex-col gap-2.5">
         {rows.map(r => (
           <li key={r.volume} className="rounded-[18px] border border-white/8 bg-white/[0.04] px-4 py-3.5 transition-colors duration-200 hover:border-[#D46FC8]/30 hover:bg-white/[0.08]">
-            <p className="font-body text-[10px] sm:text-[11px] uppercase tracking-[0.08em] text-white/40 mb-2">{r.volume}</p>
+            <p className="font-body text-[11px] sm:text-xs font-semibold uppercase tracking-[0.08em] text-white/70 mb-2">{r.volume}</p>
             {/* Yele price + savings badge (left) and Shopify price (right), one line. */}
             <div className="flex items-center justify-between gap-2.5">
               <div className="flex items-center gap-2 flex-wrap min-w-0">
