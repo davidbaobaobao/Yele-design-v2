@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { Check, FilePlus2, RefreshCw, Wrench, X } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import TuTiendaHero from '@/components/tutienda/TuTiendaHero'
+import PricingComparisonCard from '@/components/tutienda/PricingComparisonCard'
 import ReputationBadge from '@/components/ReputationBadge'
-import { PricingCard } from '@/components/letsbuild/PricingCards'
+import PlanCTA from '@/components/letsbuild/PlanCTA'
 import CareVideo from '@/components/letsbuild/CareVideo'
 import StartNowMarquee from '@/components/letsbuild/StartNowMarquee'
 import { LbHeroPing, LbSeen } from '@/components/letsbuild/LbTrack'
@@ -69,42 +70,6 @@ const TIENDA_TIERS = [
   },
 ]
 
-// ---- Hero price comparison: what you'd pay monthly, by sales volume. ----
-const HERO_PRICE_ROWS = [
-  { sales: '5.000 €', yele: '99 €', save: '40,7 % menos', shopify: '167 €' },
-  { sales: '20.000 €', yele: '309 €', save: '46,0 % menos', shopify: '572 €' },
-  { sales: '50.000 €', yele: '729 €', save: '43,6 % menos', shopify: '1.292 €' },
-]
-
-function HeroPriceTable() {
-  return (
-    <div className="rounded-2xl bg-white/[0.06] border border-white/12 backdrop-blur p-5 md:p-7 shadow-2xl shadow-black/40">
-      <div className="flex items-baseline justify-between mb-5">
-        <span className="font-display text-lg md:text-xl font-bold text-white">Yele</span>
-        <span className="font-body text-sm text-white/40">vs</span>
-        <span className="font-display text-lg md:text-xl font-semibold text-white/55">Shopify</span>
-      </div>
-      <div className="flex flex-col gap-3">
-        {HERO_PRICE_ROWS.map(r => (
-          <div key={r.sales} className="rounded-xl bg-white/[0.04] border border-white/8 px-4 py-3.5">
-            <p className="font-body text-xs uppercase tracking-wide text-white/45 mb-2">{r.sales} en ventas/mes</p>
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <span className="font-display text-xl md:text-2xl font-bold text-white">{r.yele}</span>
-                <span className="ml-2 font-body text-xs font-semibold text-[#34C759]">{r.save}</span>
-              </div>
-              <span className="font-body text-base text-white/40 pb-0.5">{r.shopify}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <p className="font-body text-[11px] text-white/40 mt-4 leading-relaxed">
-        Estimación sobre comisiones y cuota mensual. Shopify: plan equivalente por volumen.
-      </p>
-    </div>
-  )
-}
-
 // ---- Feature-by-feature comparison (Yele vs Shopify). ----
 const FEATURE_ROWS: { feature: string; yele: string; shopify: string; shopifyNone?: boolean }[] = [
   { feature: 'Cuota mensual', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
@@ -146,8 +111,43 @@ const TIENDA_VALUES = [
 
 const PLAN_OPTIONS = ['Business — 1.199€', 'Pro — 2.799€']
 
-// Spanish micro-copy for the shared PricingCard (Más popular / desde / + IVA).
-const MICRO_ES = { most: 'Más popular', from: 'desde', vat: '+ IVA' }
+// ---- Cómo funciona — ecommerce-specific (3 steps). ----
+const TIENDA_HOW = {
+  kicker: 'Cómo funciona',
+  title: 'De la idea a tu tienda online en tres pasos.',
+  steps: [
+    {
+      title: 'Cuéntanos sobre tu negocio',
+      body: 'Montamos una demo de cómo podemos mejorar tu tienda. Si te encaja, seguimos con el proyecto con el primer pago del 50%.',
+    },
+    {
+      title: 'Revisión',
+      body: 'Escuchamos vuestro feedback y aplicamos las mejoras necesarias.',
+    },
+    {
+      title: 'Publicación',
+      body: 'Apruebas, pagas el 50% restante y tu tienda está online. Nuestro Yele Care mantiene todo funcionando después, mes tras mes.',
+    },
+  ],
+}
+
+// ---- FAQ — ecommerce-specific (passed to the shared FAQ component). ----
+const SERVICES_LINK = { label: 'Ver más en nuestros servicios', href: 'https://yele.design/services' }
+const TIENDA_FAQ = [
+  { q: '¿Cuánto cuesta una tienda online?', a: 'Las tiendas de Yele empiezan en 1.199€. La mayoría elige el plan Business (1.199€); las tiendas más avanzadas, el plan Pro (2.799€). Es un pago único por el desarrollo — sin mensualidades de licencia.' },
+  { q: '¿Hay una cuota mensual?', a: 'Sí — Yele Care para tu tienda, desde 29€/mes, en tres niveles: Basic (29€/mes) — alojamiento, seguridad y copias; Plus (49€/mes) — fotos y vídeos de 5 productos al mes, soporte para modificar/añadir productos y un rediseño anual; y Pro (99€/mes) — fotos y vídeos de 15 productos al mes, rediseño por temporada y soporte prioritario.' },
+  { q: '¿Yele Care es obligatorio?', a: 'No — pero lo recomendamos mucho para una tienda. Mantiene todo funcionando (alojamiento, seguridad, copias y monitorización), renueva el contenido de tus productos cada mes e incluye rediseños para que tu tienda nunca quede anticuada. Puedes gestionarla tú mismo, pero con Yele Care no te preocupas por la parte técnica.' },
+  { q: '¿Puedo añadir productos y actualizar mi tienda más adelante?', a: 'Sí — cuando quieras. Puedes gestionar tu catálogo tú mismo de forma sencilla, y con Plus o Pro añadimos y optimizamos productos por ti cada mes.' },
+  { q: '¿Tengo que pagar todo por adelantado?', a: 'No. Pagas el 50% al empezar. El 50% restante se paga cuando la tienda está terminada y aprobada para su lanzamiento.' },
+  { q: '¿La propiedad del diseño y el contenido es mía?', a: 'Sí. Eres propietario del diseño y de todo el contenido — fotos, vídeos y textos — que creamos para tu tienda.' },
+  { q: '¿Puedo recuperar o exportar mis datos cuando quiera?', a: 'Sí — cuando quieras. Puedes recuperar y exportar tus productos, pedidos y datos de clientes en cualquier momento. Tus datos son tuyos.' },
+  { q: '¿El alojamiento está incluido?', a: 'Sí. El alojamiento está incluido con Yele Care.' },
+  { q: '¿Mi dominio está incluido?', a: 'Podemos proporcionar y gestionar un dominio estándar para tu tienda cuando sea necesario, y también puedes traer tu dominio actual. Los dominios premium o inusualmente caros pueden tener un coste adicional.' },
+  { q: '¿El SEO está incluido?', a: 'Todas las tiendas incluyen una base de SEO: configuración técnica, títulos de página, descripciones, sitemap, indexación, optimización móvil y analítica.' },
+  { q: '¿Podéis crear las fotos y vídeos de mis productos?', a: 'Sí. Creamos y mejoramos las fotos y vídeos de tus productos como parte del proyecto, y cada mes con Yele Care — 5 o 15 productos al mes según tu plan.', link: SERVICES_LINK },
+  { q: '¿Podéis gestionar mi publicidad?', a: 'Sí. Yele puede configurar y gestionar campañas de Google Ads y Meta. La gestión de publicidad y la inversión en anuncios son independientes de tu plan de tienda.', link: SERVICES_LINK },
+  { q: '¿Podéis añadir IA a mi tienda?', a: 'Sí. Podemos añadir chat con IA, recomendador de productos, automatización de clientes y seguimiento posventa, entre otras herramientas.', link: SERVICES_LINK },
+]
 
 // /es/tutienda — ecommerce Meta-ads landing. Reuses the proven /letsbuild
 // section flow (care, how, why, testimonials, FAQ, forms, footer) but with
@@ -161,42 +161,47 @@ export default function TuTiendaLanding() {
       <main className="overflow-x-hidden" style={{ backgroundColor: DARK }}>
         <LbHeroPing page="tutienda" />
 
-        {/* ---- HERO — text + pills + CTAs left, price table right. ---- */}
-        <TuTiendaHero rightPanel={<HeroPriceTable />} />
+        {/* ---- HERO — text + pills + CTAs left, cost-comparison card right. ---- */}
+        <TuTiendaHero rightPanel={<PricingComparisonCard />} />
 
         <LogoMarquee />
 
-        <div id="proyectos" className="scroll-mt-4">
-          <LatestFeaturedWork forceDark title={d.featuredTitle} />
-        </div>
-
-        {/* ---- COMPARATIVA Yele vs Shopify (feature table) ---- */}
-        <section id="comparativa" className="bg-white px-6 py-16 md:py-24 scroll-mt-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-2 text-center">
-              Yele vs Shopify
+        {/* ---- COMPARATIVA Yele vs Shopify (feature table) — dark, pink accent. ---- */}
+        <section id="comparativa" className="px-6 py-16 md:py-24 scroll-mt-4" style={{ backgroundColor: DARK }}>
+          <div className="max-w-5xl mx-auto">
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2 text-center">
+              <span className="text-[#D46FC8]">Yele</span> vs Shopify
             </h2>
-            <p className="font-body text-base text-muted mb-10 text-center">
+            <p className="font-body text-base text-white/70 mb-10 text-center">
               Una tienda hecha a medida, con comisiones mucho más bajas.
             </p>
-            <div className="overflow-hidden rounded-2xl ring-1 ring-black/[0.07] shadow-[0_16px_56px_rgba(0,0,0,0.08)]">
+            <div className="overflow-hidden rounded-2xl border border-white/10">
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-muted px-4 md:px-6 py-4 bg-base/60">Característica</th>
-                    <th className="text-left font-body text-sm font-bold text-[#D46FC8] px-4 md:px-6 py-4 bg-[#D46FC8]/[0.06]">Yele</th>
-                    <th className="text-left font-body text-sm font-semibold text-muted px-4 md:px-6 py-4 bg-base/60">Shopify</th>
+                    <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-white/50 px-4 md:px-6 py-4 bg-white/[0.03]">Característica</th>
+                    <th className="text-left font-body text-sm font-bold text-[#D46FC8] px-4 md:px-6 py-4 bg-[#D46FC8]/[0.08]">Yele</th>
+                    <th className="text-left font-body text-sm font-semibold text-white/50 px-4 md:px-6 py-4 bg-white/[0.03]">Shopify</th>
                   </tr>
                 </thead>
                 <tbody>
                   {FEATURE_ROWS.map(r => (
-                    <tr key={r.feature} className="border-t border-hairline">
-                      <td className="px-4 md:px-6 py-4 font-body text-sm text-ink font-semibold align-top">{r.feature}</td>
-                      <td className="px-4 md:px-6 py-4 font-body text-sm text-ink font-medium align-top bg-[#D46FC8]/[0.04]">{r.yele}</td>
-                      <td className="px-4 md:px-6 py-4 font-body text-sm text-muted align-top">
+                    <tr key={r.feature} className="border-t border-white/8">
+                      <td className="px-4 md:px-6 py-4 font-body text-sm text-white/85 font-semibold align-top">{r.feature}</td>
+                      <td className="px-4 md:px-6 py-4 align-top bg-[#D46FC8]/[0.05]">
+                        <span className="flex items-start gap-2.5">
+                          <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#D46FC8]" aria-hidden="true">
+                            <Check size={12} className="text-white" strokeWidth={3} />
+                          </span>
+                          <span className="font-body text-sm text-white font-medium">{r.yele}</span>
+                        </span>
+                      </td>
+                      <td className="px-4 md:px-6 py-4 font-body text-sm text-white/55 align-top">
                         {r.shopifyNone ? (
-                          <span className="inline-flex items-center gap-1.5">
-                            <X size={15} className="flex-shrink-0 text-red-500" aria-hidden="true" />
+                          <span className="flex items-start gap-2.5">
+                            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-red-500/90" aria-hidden="true">
+                              <X size={12} className="text-white" strokeWidth={3} />
+                            </span>
                             {r.shopify}
                           </span>
                         ) : (
@@ -211,52 +216,97 @@ export default function TuTiendaLanding() {
           </div>
         </section>
 
-        {/* ---- PRECIOS + MANTENIMIENTO (one section) ----
-             Left: Business card. Center: Pro card. Right: the 3 monthly
-             Yele Care plans stacked vertically. ---- */}
+        {/* ---- PRECIOS — group 1: puesta en marcha (pago único),
+             group 2: Yele Care (cuota mensual). ---- */}
         <LbSeen event="lb_precios" page="tutienda" />
-        <section id="pricing" className="bg-white px-6 pt-20 md:pt-28 pb-16 md:pb-24 scroll-mt-4">
+        <section id="pricing" className="px-6 pt-20 md:pt-28 pb-16 md:pb-24 scroll-mt-4" style={{ backgroundColor: DARK }}>
           <div className="max-w-6xl mx-auto">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
+            <h2 className="font-display font-bold text-4xl md:text-5xl text-white tracking-tight text-center mb-10 md:mb-14">
               Precios
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-              <PricingCard tier={TIENDA_TIERS[0]} index={0} sym="€" micro={MICRO_ES} />
-              <PricingCard tier={TIENDA_TIERS[1]} index={1} sym="€" micro={MICRO_ES} />
 
-              {/* Right column — monthly Yele Care plans, stacked. */}
-              <div className="flex flex-col gap-4">
-                <div className="mb-1">
-                  <p className="font-body text-sm font-semibold uppercase tracking-wide text-ink">Mantenimiento mensual</p>
-                  <p className="font-body text-xs text-muted">Yele Care — contenido, soporte y rediseños.</p>
-                </div>
-                {CARE_TIERS.map(t => (
+            {/* Group 1 — one-time build */}
+            <div className="flex items-center gap-3 mb-6">
+              <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8] text-white font-display font-bold flex items-center justify-center">1</span>
+              <h3 className="font-display font-bold text-lg md:text-xl text-white uppercase tracking-wide">Puesta en marcha</h3>
+              <span className="rounded-full bg-white/10 px-3 py-1 font-body text-xs font-medium text-white/70">Pago único</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch mb-14 md:mb-16">
+              {TIENDA_TIERS.map(tier => {
+                const hl = tier.popular
+                return (
                   <div
-                    key={t.name}
-                    className={`rounded-2xl p-5 ${
-                      t.popular ? 'bg-[#1C1D24] text-white shadow-[0_12px_40px_rgba(0,0,0,0.25)]' : 'bg-base ring-1 ring-black/[0.07]'
+                    key={tier.name}
+                    className={`relative flex flex-col rounded-3xl bg-white p-7 md:p-8 ${
+                      hl ? 'border-2 border-[#D46FC8] shadow-[0_24px_64px_rgba(0,0,0,0.35)]' : 'ring-1 ring-black/[0.07] shadow-[0_16px_56px_rgba(0,0,0,0.25)]'
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-2.5">
-                      <span className={`font-body text-sm font-semibold ${t.popular ? 'text-white' : 'text-ink'}`}>{t.name}</span>
-                      <span className={`font-display text-lg font-bold ${t.popular ? 'text-white' : 'text-ink'}`}>
-                        {t.price}
-                        <span className={`font-body text-xs font-normal ${t.popular ? 'text-white/55' : 'text-muted'}`}>/mes</span>
+                    {hl && (
+                      <span className="absolute -top-3.5 left-8 rounded-full bg-[#D46FC8] px-3 py-1 font-body text-xs font-semibold text-white">
+                        Más popular
                       </span>
+                    )}
+                    <p className="font-body text-sm font-medium text-muted mb-2">{tier.name}</p>
+                    <div className="mb-5 flex items-end gap-1.5">
+                      <span className="mb-1 font-body text-2xl font-semibold text-muted">€</span>
+                      <span className="font-display text-5xl font-semibold tracking-tight text-ink">{tier.amount}</span>
+                      <span className="mb-2 font-body text-sm text-muted">+ IVA · pago único</span>
                     </div>
-                    <ul className="flex flex-col gap-1.5">
+                    {tier.headline && <p className="font-body text-sm font-bold text-ink mb-3">{tier.headline}</p>}
+                    <ul className="flex flex-1 flex-col gap-3 mb-6">
+                      {tier.features.map(f => (
+                        <li key={f.label} className="flex items-start gap-2.5">
+                          <Check size={16} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
+                          <span className="font-body text-sm text-ink">{f.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <PlanCTA
+                      plan={tier.planValue}
+                      label={tier.cta}
+                      className="inline-flex w-full cursor-pointer items-center justify-center rounded-full bg-[#1A1A1F] px-6 py-3 font-body text-sm font-medium text-[#F2F0EB] transition-colors hover:bg-[#26262C]"
+                    />
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Group 2 — monthly Yele Care */}
+            <div className="flex items-center gap-3 mb-2">
+              <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8] text-white font-display font-bold flex items-center justify-center">2</span>
+              <h3 className="font-display font-bold text-lg md:text-xl text-white uppercase tracking-wide">Yele Care</h3>
+              <span className="rounded-full bg-white/10 px-3 py-1 font-body text-xs font-medium text-white/70">Cuota mensual</span>
+            </div>
+            <p className="font-body text-sm text-white/60 mb-6 ml-12">Contenido, soporte y rediseños.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+              {CARE_TIERS.map(t => {
+                const hl = t.popular
+                return (
+                  <div
+                    key={t.name}
+                    className={`flex flex-col rounded-3xl p-7 ${
+                      hl ? 'bg-[#FBEAF7] border-2 border-[#D46FC8]' : 'bg-white ring-1 ring-black/[0.07]'
+                    }`}
+                  >
+                    <p className="font-body text-sm font-semibold text-ink mb-2">{t.name}</p>
+                    <div className="mb-5 flex items-end gap-0.5">
+                      <span className="font-display text-4xl font-semibold tracking-tight text-ink">{t.price}</span>
+                      <span className="mb-1.5 font-body text-sm text-muted">/mes</span>
+                    </div>
+                    <ul className="flex flex-1 flex-col gap-2.5">
                       {t.features.map(feat => (
                         <li key={feat} className="flex items-start gap-2">
-                          <Check size={13} className="mt-0.5 flex-shrink-0 text-[#34C759]" aria-hidden="true" />
-                          <span className={`font-body text-xs leading-snug ${t.popular ? 'text-white/80' : 'text-muted'}`}>{feat}</span>
+                          <Check size={15} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
+                          <span className="font-body text-sm text-ink leading-snug">{feat}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
-                ))}
-              </div>
+                )
+              })}
             </div>
-            <p className="max-w-2xl mx-auto text-center font-body text-base text-muted mt-10 leading-relaxed">
+
+            <p className="max-w-2xl mx-auto text-center font-body text-base text-white/60 mt-12 leading-relaxed">
               {d.pricing.payNote}
             </p>
           </div>
@@ -315,6 +365,11 @@ export default function TuTiendaLanding() {
           </div>
         </section>
 
+        {/* ---- ÚLTIMOS PROYECTOS (moved below the first form) ---- */}
+        <div id="proyectos" className="scroll-mt-4">
+          <LatestFeaturedWork forceDark title={d.featuredTitle} />
+        </div>
+
         {/* ---- MANTENIMIENTO CON YELE (care feature cards) ---- */}
         <section className="bg-white px-6 pt-6 md:pt-8 pb-8 md:pb-10">
           <div className="max-w-6xl mx-auto">
@@ -366,10 +421,10 @@ export default function TuTiendaLanding() {
         {/* ---- CÓMO FUNCIONA ---- */}
         <section className="bg-white px-6 pt-8 md:pt-10 pb-16 md:pb-24">
           <div className="max-w-4xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">{d.how.kicker}</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-10">{d.how.title}</h2>
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">{TIENDA_HOW.kicker}</p>
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-10">{TIENDA_HOW.title}</h2>
             <div className="space-y-4">
-              {d.how.steps.map((step, i) => (
+              {TIENDA_HOW.steps.map((step, i) => (
                 <div key={step.title} className="group flex gap-5 rounded-2xl p-4 -mx-4 transition-all duration-300 hover:bg-black/[0.03] hover:translate-x-1">
                   <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#D46FC8]/30">
                     {i + 1}
@@ -420,7 +475,7 @@ export default function TuTiendaLanding() {
         <StartNowMarquee />
 
         <LbSeen event="lb_faq" page="tutienda" />
-        <LetsBuildFAQ locale="es" />
+        <LetsBuildFAQ locale="es" items={TIENDA_FAQ} />
 
         {/* ---- LEAD FORM (detailed, 2nd form) ---- */}
         <section id="build-form" className="px-6 py-16 md:py-24" style={{ backgroundColor: DARK }}>

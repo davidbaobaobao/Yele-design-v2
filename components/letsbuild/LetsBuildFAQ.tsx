@@ -68,9 +68,24 @@ const FAQS_BY_LOCALE: Record<Locale, { kicker: string; title: string; items: Faq
   },
 }
 
-export default function LetsBuildFAQ({ locale = 'en' }: { locale?: Locale }) {
+export default function LetsBuildFAQ({
+  locale = 'en',
+  items,
+  kicker: kickerProp,
+  title: titleProp,
+}: {
+  locale?: Locale
+  // Optional overrides so a page (e.g. /es/tutienda) can supply its own
+  // question set and heading instead of the locale defaults.
+  items?: FaqItem[]
+  kicker?: string
+  title?: string
+}) {
   const [open, setOpen] = useState<number | null>(0)
-  const { kicker, title, items: FAQS } = FAQS_BY_LOCALE[locale] ?? FAQS_BY_LOCALE.en
+  const base = FAQS_BY_LOCALE[locale] ?? FAQS_BY_LOCALE.en
+  const kicker = kickerProp ?? base.kicker
+  const title = titleProp ?? base.title
+  const FAQS = items ?? base.items
 
   return (
     <section className="bg-white py-16 md:py-24">
