@@ -79,7 +79,9 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
               {/* Soft shading beneath the table so it lifts off the black bg. */}
               <div className="pointer-events-none absolute -inset-x-6 bottom-0 h-24 translate-y-1/3 rounded-[50%] bg-black/60 blur-2xl" aria-hidden="true" />
               <div className="pointer-events-none absolute left-1/2 -bottom-6 h-24 w-3/4 -translate-x-1/2 rounded-[50%] bg-[#D46FC8]/10 blur-3xl" aria-hidden="true" />
-              <Parallax distance={22} className="relative overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-20px_rgba(0,0,0,0.75)] ring-1 ring-black/[0.06]">
+
+              {/* Desktop/tablet: 3-column table. */}
+              <Parallax distance={22} className="relative hidden md:block overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-20px_rgba(0,0,0,0.75)] ring-1 ring-black/[0.06]">
                 <table className="w-full border-collapse">
                   <thead>
                     <tr>
@@ -117,6 +119,34 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
                   </tbody>
                 </table>
               </Parallax>
+
+              {/* Mobile: one card per feature, Yele (left, pink) and Shopify
+                  (right) on the same level — no per-row labels. */}
+              <div className="relative md:hidden flex flex-col gap-3.5">
+                {t.feature.rows.map(r => (
+                  <div key={r.feature} className="overflow-hidden rounded-2xl bg-white ring-1 ring-black/[0.06] shadow-[0_16px_40px_-12px_rgba(0,0,0,0.6)]">
+                    <div className="px-4 py-3 border-b border-hairline">
+                      <span className="font-body text-sm font-bold text-ink">{r.feature}</span>
+                    </div>
+                    <div className="grid grid-cols-2 divide-x divide-hairline">
+                      <div className="px-3.5 py-3 bg-[#D46FC8]/[0.05] flex items-start gap-2">
+                        <span className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#D46FC8]" aria-hidden="true">
+                          <Check size={10} className="text-white" strokeWidth={3} />
+                        </span>
+                        <span className="font-body text-[13px] text-ink font-medium leading-snug">{r.yele}</span>
+                      </div>
+                      <div className="px-3.5 py-3 flex items-start gap-2">
+                        {r.shopifyNone && (
+                          <span className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#D46FC8]" aria-hidden="true">
+                            <X size={10} className="text-white" strokeWidth={3} />
+                          </span>
+                        )}
+                        <span className="font-body text-[13px] text-muted leading-snug">{r.shopify}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
