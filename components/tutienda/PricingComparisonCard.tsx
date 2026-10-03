@@ -5,7 +5,7 @@
 // decorative dividers/arrow hidden from screen readers). No logos, no claims.
 import type { CompareRow } from '@/lib/i18n/tutienda'
 
-// Soft-pink pill, reused for the "Más rentable" tag and the savings badges.
+// Soft-pink pill for the savings badges.
 const PINK_PILL = 'border border-[#D46FC8]/35 bg-[#D46FC8]/12 text-[#E8A9DE]'
 
 function SavingBadge({ text }: { text: string }) {
@@ -21,11 +21,9 @@ function SavingBadge({ text }: { text: string }) {
 
 export default function PricingComparisonCard({
   title,
-  masRentable,
   rows,
 }: {
   title: string
-  masRentable: string
   rows: CompareRow[]
 }) {
   return (
@@ -41,18 +39,13 @@ export default function PricingComparisonCard({
         {title}
       </h2>
 
-      {/* Comparison header: Yele (dominant) + pill · VS · Shopify */}
+      {/* Comparison header: Yele (dominant) · VS · Shopify */}
       <div className="relative mt-2.5 flex items-center gap-3">
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="font-display font-bold text-white" style={{ fontSize: 'clamp(1.25rem, 1.9vw, 1.6rem)' }}>Yele</span>
-          <span className={`rounded-full px-2.5 py-0.5 font-body text-[10px] sm:text-[11px] font-semibold whitespace-nowrap ${PINK_PILL}`}>
-            {masRentable}
-          </span>
-        </div>
-        <span className="hidden sm:block flex-1 h-px bg-white/12" aria-hidden="true" />
+        <span className="font-display font-bold text-white flex-shrink-0" style={{ fontSize: 'clamp(1.25rem, 1.9vw, 1.6rem)' }}>Yele</span>
+        <span className="flex-1 h-px bg-white/12" aria-hidden="true" />
         <span className="font-body text-xs font-medium text-white/40" aria-hidden="true">VS</span>
-        <span className="hidden sm:block flex-1 h-px bg-white/12" aria-hidden="true" />
-        <span className="font-display font-medium text-white/45 flex-shrink-0 ml-auto sm:ml-0" style={{ fontSize: 'clamp(1.1rem, 1.7vw, 1.45rem)' }}>
+        <span className="flex-1 h-px bg-white/12" aria-hidden="true" />
+        <span className="font-display font-medium text-white/45 flex-shrink-0" style={{ fontSize: 'clamp(1.1rem, 1.7vw, 1.45rem)' }}>
           Shopify
         </span>
       </div>
@@ -60,28 +53,19 @@ export default function PricingComparisonCard({
       <ul className="relative mt-4 flex flex-col gap-2.5">
         {rows.map(r => (
           <li key={r.volume} className="rounded-[18px] border border-white/8 bg-white/[0.04] px-4 py-3.5 transition-colors duration-200 hover:border-[#D46FC8]/30 hover:bg-white/[0.08]">
-            <div className="flex flex-col sm:flex-row sm:items-center">
-              {/* Left ~60%: volume + Yele price + saving badge */}
-              <div className="sm:w-[60%]">
-                <p className="font-body text-[10px] sm:text-[11px] uppercase tracking-[0.08em] text-white/40 mb-1.5">{r.volume}</p>
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  <span className="sr-only">Yele: </span>
-                  <span className="font-display font-semibold text-white leading-none" style={{ fontSize: 'clamp(1.3rem, 2.1vw, 1.75rem)' }}>
-                    {r.yele}
-                  </span>
-                  <SavingBadge text={r.saving} />
-                </div>
-              </div>
-
-              <span className="hidden sm:block w-px self-stretch bg-white/10 mx-5" aria-hidden="true" />
-
-              {/* Right: Shopify price */}
-              <div className="mt-2.5 sm:mt-0 flex-1 flex items-center justify-between sm:justify-end gap-2 border-t border-white/8 pt-2.5 sm:border-0 sm:pt-0">
-                <span className="sm:hidden font-body text-[11px] uppercase tracking-wide text-white/40">Shopify</span>
-                <span className="font-display font-medium text-white/45" style={{ fontSize: 'clamp(1.05rem, 1.7vw, 1.35rem)' }}>
-                  {r.shopify}
+            <p className="font-body text-[10px] sm:text-[11px] uppercase tracking-[0.08em] text-white/40 mb-2">{r.volume}</p>
+            {/* Yele price + savings badge (left) and Shopify price (right), one line. */}
+            <div className="flex items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2 flex-wrap min-w-0">
+                <span className="sr-only">Yele: </span>
+                <span className="font-display font-semibold text-white leading-none" style={{ fontSize: 'clamp(1.3rem, 2.1vw, 1.7rem)' }}>
+                  {r.yele}
                 </span>
+                <SavingBadge text={r.saving} />
               </div>
+              <span className="font-display font-medium text-white/40 flex-shrink-0" style={{ fontSize: 'clamp(1.05rem, 1.7vw, 1.3rem)' }}>
+                {r.shopify}
+              </span>
             </div>
           </li>
         ))}

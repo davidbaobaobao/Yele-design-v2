@@ -21,8 +21,8 @@ export type FaqItem = { q: string; a: string; link?: { label: string; href: stri
 export type TuTiendaDict = {
   meta: { title: string; description: string }
   leadSource: string
-  hero: { titleLine1: string; titleLine2: string; points: string[]; ctaPrecios: string; ctaDemo: string; scrollLabel: string }
-  compare: { title: string; masRentable: string; rows: CompareRow[] }
+  hero: { titleLine1: string; titleLine2: string; highlight: string; points: string[]; ctaPrecios: string; ctaDemo: string; scrollLabel: string }
+  compare: { title: string; rows: CompareRow[] }
   feature: { vsRest: string; subtitle: string; colFeature: string; rows: FeatureRow[] }
   pricing: {
     title: string
@@ -61,6 +61,7 @@ const es: TuTiendaDict = {
   hero: {
     titleLine1: 'Una tienda de la que presumir.',
     titleLine2: 'A un precio que no asusta.',
+    highlight: 'presumir',
     points: [
       'Sin plantillas genéricas feas',
       '40% menos en comisiones',
@@ -74,11 +75,10 @@ const es: TuTiendaDict = {
   },
   compare: {
     title: 'Comparativa de costes',
-    masRentable: 'Más rentable',
     rows: [
       { volume: '5.000 € EN VENTAS/MES', yele: '99 €', shopify: '167 €', saving: '40,7 % menos' },
       { volume: '20.000 € EN VENTAS/MES', yele: '309 €', shopify: '572 €', saving: '46,0 % menos' },
-      { volume: '50.000 € EN VENTAS/MES', yele: '729 €', shopify: '1.292 €', saving: '43,6 % menos' },
+      { volume: '50.000 € EN VENTAS/MES', yele: '347 €', shopify: '1.292 €', saving: '73,1 % menos' },
     ],
   },
   feature: {
@@ -87,9 +87,9 @@ const es: TuTiendaDict = {
     colFeature: 'Característica',
     rows: [
       { feature: 'Cuota mensual', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
-      { feature: 'Comisión base', yele: '1 % + 0,20 €', shopify: 'Basic: 2,1 % + 0,30 €' },
+      { feature: 'Comisión base', yele: '1 % + 0,20 €', shopify: '2,1 % + 0,30 €' },
       { feature: 'Comisión para mayor volumen', yele: '0,5 % + 0,02 €', shopify: 'Grow: 1,8 % + 0,30 € · Advanced: 1,6 % + 0,30 €' },
-      { feature: 'Creación de contenido (imágenes y vídeos)', yele: '0 / 5 / 15 productos al mes', shopify: 'No ofrecido', shopifyNone: true },
+      { feature: 'Creación de contenido (imágenes y vídeos)', yele: '0 / 5 / 20 productos al mes', shopify: 'No ofrecido', shopifyNone: true },
       { feature: 'Cuentas de empleados', yele: 'Ilimitadas', shopify: 'Según el plan' },
       { feature: 'Personalización', yele: 'UI/UX completa', shopify: 'Según el plan y las extensiones' },
     ],
@@ -126,8 +126,8 @@ const es: TuTiendaDict = {
     ],
     careTiers: [
       { name: 'Basic', price: '29€', popular: false, headline: null, features: ['Alojamiento', 'SSL y seguridad', 'Copias de seguridad'] },
-      { name: 'Plus', price: '49€', popular: true, headline: 'Todo lo de Basic, y además:', features: ['Fotos y vídeos customizados de 5 productos al mes', 'Soporte para modificar/añadir productos', 'Rediseño anual'] },
-      { name: 'Pro', price: '99€', popular: false, headline: 'Todo lo de Plus, y además:', features: ['Fotos y vídeos customizados de 15 productos al mes', 'Rediseño por temporada', 'Soporte prioritario'] },
+      { name: 'Plus', price: '49€', popular: true, headline: 'Todo lo de Basic, y además:', features: ['Creación de fotos y vídeos customizados de 5 productos nuevos al mes', 'Soporte para modificar/añadir productos', 'Rediseño anual'] },
+      { name: 'Pro', price: '99€', popular: false, headline: 'Todo lo de Plus, y además:', features: ['Creación de fotos y vídeos customizados de 20 productos nuevos al mes', 'Rediseño por temporada', 'Soporte prioritario'] },
     ],
   },
   values: {
@@ -151,7 +151,7 @@ const es: TuTiendaDict = {
   },
   faq: [
     { q: '¿Cuánto cuesta una tienda online?', a: 'Las tiendas de Yele empiezan en 1.199€. La mayoría elige el plan Business (1.199€); las tiendas más avanzadas, el plan Pro (2.799€). Es un pago único por el desarrollo — sin mensualidades de licencia.' },
-    { q: '¿Hay una cuota mensual?', a: 'Sí — Yele Care para tu tienda, desde 29€/mes, en tres niveles: Basic (29€/mes) — alojamiento, seguridad y copias; Plus (49€/mes) — fotos y vídeos de 5 productos al mes, soporte para modificar/añadir productos y un rediseño anual; y Pro (99€/mes) — fotos y vídeos de 15 productos al mes, rediseño por temporada y soporte prioritario.' },
+    { q: '¿Hay una cuota mensual?', a: 'Sí — Yele Care para tu tienda, desde 29€/mes, en tres niveles: Basic (29€/mes) — alojamiento, seguridad y copias; Plus (49€/mes) — fotos y vídeos de 5 productos nuevos al mes, soporte para modificar/añadir productos y un rediseño anual; y Pro (99€/mes) — fotos y vídeos de 20 productos nuevos al mes, rediseño por temporada y soporte prioritario.' },
     { q: '¿Yele Care es obligatorio?', a: 'No — pero lo recomendamos mucho para una tienda. Mantiene todo funcionando (alojamiento, seguridad, copias y monitorización), renueva el contenido de tus productos cada mes e incluye rediseños para que tu tienda nunca quede anticuada. Puedes gestionarla tú mismo, pero con Yele Care no te preocupas por la parte técnica.' },
     { q: '¿Puedo añadir productos y actualizar mi tienda más adelante?', a: 'Sí — cuando quieras. Puedes gestionar tu catálogo tú mismo de forma sencilla, y con Plus o Pro añadimos y optimizamos productos por ti cada mes.' },
     { q: '¿Tengo que pagar todo por adelantado?', a: 'No. Pagas el 50% al empezar. El 50% restante se paga cuando la tienda está terminada y aprobada para su lanzamiento.' },
@@ -160,7 +160,7 @@ const es: TuTiendaDict = {
     { q: '¿El alojamiento está incluido?', a: 'Sí. El alojamiento está incluido con Yele Care.' },
     { q: '¿Mi dominio está incluido?', a: 'Podemos proporcionar y gestionar un dominio estándar para tu tienda cuando sea necesario, y también puedes traer tu dominio actual. Los dominios premium o inusualmente caros pueden tener un coste adicional.' },
     { q: '¿El SEO está incluido?', a: 'Todas las tiendas incluyen una base de SEO: configuración técnica, títulos de página, descripciones, sitemap, indexación, optimización móvil y analítica.' },
-    { q: '¿Podéis crear las fotos y vídeos de mis productos?', a: 'Sí. Creamos y mejoramos las fotos y vídeos de tus productos como parte del proyecto, y cada mes con Yele Care — 5 o 15 productos al mes según tu plan.', link: { label: SERVICES.es, href: SERVICES_HREF } },
+    { q: '¿Podéis crear las fotos y vídeos de mis productos?', a: 'Sí. Creamos y mejoramos las fotos y vídeos de tus productos como parte del proyecto, y cada mes con Yele Care — 5 o 20 productos nuevos al mes según tu plan.', link: { label: SERVICES.es, href: SERVICES_HREF } },
     { q: '¿Podéis gestionar mi publicidad?', a: 'Sí. Yele puede configurar y gestionar campañas de Google Ads y Meta. La gestión de publicidad y la inversión en anuncios son independientes de tu plan de tienda.', link: { label: SERVICES.es, href: SERVICES_HREF } },
     { q: '¿Podéis añadir IA a mi tienda?', a: 'Sí. Podemos añadir chat con IA, recomendador de productos, automatización de clientes y seguimiento posventa, entre otras herramientas.', link: { label: SERVICES.es, href: SERVICES_HREF } },
   ],
@@ -184,6 +184,7 @@ const en: TuTiendaDict = {
   hero: {
     titleLine1: 'A store worth showing off.',
     titleLine2: "At a price that won't scare you.",
+    highlight: 'showing off',
     points: [
       'No ugly generic templates',
       '40% lower fees',
@@ -197,11 +198,10 @@ const en: TuTiendaDict = {
   },
   compare: {
     title: 'Cost comparison',
-    masRentable: 'Better value',
     rows: [
       { volume: '€5,000 IN SALES/MONTH', yele: '99 €', shopify: '167 €', saving: '40.7% less' },
       { volume: '€20,000 IN SALES/MONTH', yele: '309 €', shopify: '572 €', saving: '46.0% less' },
-      { volume: '€50,000 IN SALES/MONTH', yele: '729 €', shopify: '1,292 €', saving: '43.6% less' },
+      { volume: '€50,000 IN SALES/MONTH', yele: '347 €', shopify: '1,292 €', saving: '73.1% less' },
     ],
   },
   feature: {
@@ -210,9 +210,9 @@ const en: TuTiendaDict = {
     colFeature: 'Feature',
     rows: [
       { feature: 'Monthly fee', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
-      { feature: 'Base transaction fee', yele: '1% + 0.20 €', shopify: 'Basic: 2.1% + 0.30 €' },
+      { feature: 'Base transaction fee', yele: '1% + 0.20 €', shopify: '2.1% + 0.30 €' },
       { feature: 'Higher-volume fee', yele: '0.5% + 0.02 €', shopify: 'Grow: 1.8% + 0.30 € · Advanced: 1.6% + 0.30 €' },
-      { feature: 'Content creation (photos & videos)', yele: '0 / 5 / 15 products per month', shopify: 'Not offered', shopifyNone: true },
+      { feature: 'Content creation (photos & videos)', yele: '0 / 5 / 20 products per month', shopify: 'Not offered', shopifyNone: true },
       { feature: 'Staff accounts', yele: 'Unlimited', shopify: 'Depends on plan' },
       { feature: 'Customization', yele: 'Full UI/UX', shopify: 'Depends on plan and apps' },
     ],
@@ -249,8 +249,8 @@ const en: TuTiendaDict = {
     ],
     careTiers: [
       { name: 'Basic', price: '29€', popular: false, headline: null, features: ['Hosting', 'SSL & security', 'Backups'] },
-      { name: 'Plus', price: '49€', popular: true, headline: 'Everything in Basic, plus:', features: ['Custom photos & videos for 5 products per month', 'Support to edit/add products', 'Yearly redesign'] },
-      { name: 'Pro', price: '99€', popular: false, headline: 'Everything in Plus, plus:', features: ['Custom photos & videos for 15 products per month', 'Seasonal redesign', 'Priority support'] },
+      { name: 'Plus', price: '49€', popular: true, headline: 'Everything in Basic, plus:', features: ['Creation of custom photos & videos for 5 new products per month', 'Support to edit/add products', 'Yearly redesign'] },
+      { name: 'Pro', price: '99€', popular: false, headline: 'Everything in Plus, plus:', features: ['Creation of custom photos & videos for 20 new products per month', 'Seasonal redesign', 'Priority support'] },
     ],
   },
   values: {
@@ -274,7 +274,7 @@ const en: TuTiendaDict = {
   },
   faq: [
     { q: 'How much does an online store cost?', a: 'Yele stores start at €1,199. Most businesses choose the Business plan (€1,199); more advanced stores go with Pro (€2,799). It’s a one-time payment for the build — no licensing subscriptions.' },
-    { q: 'Is there a monthly fee?', a: 'Yes — Yele Care for your store, from €29/month, in three tiers: Basic (€29/mo) — hosting, security and backups; Plus (€49/mo) — photos and videos for 5 products a month, support to edit/add products and a yearly redesign; and Pro (€99/mo) — photos and videos for 15 products a month, seasonal redesigns and priority support.' },
+    { q: 'Is there a monthly fee?', a: 'Yes — Yele Care for your store, from €29/month, in three tiers: Basic (€29/mo) — hosting, security and backups; Plus (€49/mo) — photos and videos for 5 new products a month, support to edit/add products and a yearly redesign; and Pro (€99/mo) — photos and videos for 20 new products a month, seasonal redesigns and priority support.' },
     { q: 'Is Yele Care compulsory?', a: 'No — but we highly recommend it for a store. It keeps everything running (hosting, security, backups and monitoring), refreshes your product content every month and includes redesigns so your store never looks dated. You can manage it yourself, but with Yele Care you never have to worry about the technical side.' },
     { q: 'Can I add products and update my store later?', a: 'Yes — anytime. You can manage your catalog yourself easily, and with Plus or Pro we add and optimize products for you every month.' },
     { q: 'Do I need to pay everything upfront?', a: 'No. You pay 50% to start. The remaining 50% is paid when the store is finished and approved for launch.' },
@@ -283,7 +283,7 @@ const en: TuTiendaDict = {
     { q: 'Is hosting included?', a: 'Yes. Hosting is included with Yele Care.' },
     { q: 'Is my domain included?', a: 'We can provide and manage a standard domain for your store when needed, and you can also bring your current domain. Premium or unusually expensive domains may cost extra.' },
     { q: 'Is SEO included?', a: 'Every store includes an SEO foundation: technical setup, page titles, descriptions, sitemap, indexing, mobile optimization and analytics.' },
-    { q: 'Can you create my product photos and videos?', a: 'Yes. We create and improve your product photos and videos as part of the build, and every month with Yele Care — 5 or 15 products a month depending on your plan.', link: { label: SERVICES.en, href: SERVICES_HREF } },
+    { q: 'Can you create my product photos and videos?', a: 'Yes. We create and improve your product photos and videos as part of the build, and every month with Yele Care — 5 or 20 new products a month depending on your plan.', link: { label: SERVICES.en, href: SERVICES_HREF } },
     { q: 'Can you manage my advertising?', a: 'Yes. Yele can set up and manage Google Ads and Meta campaigns. Advertising management and ad spend are separate from your store package.', link: { label: SERVICES.en, href: SERVICES_HREF } },
     { q: 'Can you add AI to my store?', a: 'Yes. We can add AI chat, a product recommender, customer automation and post-sale follow-up, among other tools.', link: { label: SERVICES.en, href: SERVICES_HREF } },
   ],
@@ -306,6 +306,7 @@ const zh: TuTiendaDict = {
   hero: {
     titleLine1: '一家值得炫耀的网店。',
     titleLine2: '价格却不吓人。',
+    highlight: '炫耀',
     points: ['没有丑陋的通用模板', '佣金降低 40%', '我们优化你的产品照片和视频', '4 周内交付', '€1,199 起'],
     ctaPrecios: '价格',
     ctaDemo: '预约免费演示',
@@ -313,11 +314,10 @@ const zh: TuTiendaDict = {
   },
   compare: {
     title: '成本对比',
-    masRentable: '更划算',
     rows: [
       { volume: '月销售额 €5,000', yele: '99 €', shopify: '167 €', saving: '少 40.7%' },
       { volume: '月销售额 €20,000', yele: '309 €', shopify: '572 €', saving: '少 46.0%' },
-      { volume: '月销售额 €50,000', yele: '729 €', shopify: '1,292 €', saving: '少 43.6%' },
+      { volume: '月销售额 €50,000', yele: '347 €', shopify: '1,292 €', saving: '少 73.1%' },
     ],
   },
   feature: {
@@ -326,9 +326,9 @@ const zh: TuTiendaDict = {
     colFeature: '功能',
     rows: [
       { feature: '月费', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
-      { feature: '基础交易佣金', yele: '1% + 0.20 €', shopify: 'Basic: 2.1% + 0.30 €' },
+      { feature: '基础交易佣金', yele: '1% + 0.20 €', shopify: '2.1% + 0.30 €' },
       { feature: '大额交易佣金', yele: '0.5% + 0.02 €', shopify: 'Grow: 1.8% + 0.30 € · Advanced: 1.6% + 0.30 €' },
-      { feature: '内容创作（图片和视频）', yele: '每月 0 / 5 / 15 个产品', shopify: '不提供', shopifyNone: true },
+      { feature: '内容创作（图片和视频）', yele: '每月 0 / 5 / 20 个产品', shopify: '不提供', shopifyNone: true },
       { feature: '员工账户', yele: '无限', shopify: '视套餐而定' },
       { feature: '定制化', yele: '完整 UI/UX', shopify: '视套餐和插件而定' },
     ],
@@ -365,8 +365,8 @@ const zh: TuTiendaDict = {
     ],
     careTiers: [
       { name: 'Basic', price: '29€', popular: false, headline: null, features: ['托管', 'SSL 与安全', '备份'] },
-      { name: 'Plus', price: '49€', popular: true, headline: '包含 Basic 的全部，另加：', features: ['每月 5 个产品的定制图片和视频', '修改/新增产品的支持', '每年改版'] },
-      { name: 'Pro', price: '99€', popular: false, headline: '包含 Plus 的全部，另加：', features: ['每月 15 个产品的定制图片和视频', '按季度改版', '优先支持'] },
+      { name: 'Plus', price: '49€', popular: true, headline: '包含 Basic 的全部，另加：', features: ['每月为 5 个新产品创作定制图片和视频', '修改/新增产品的支持', '每年改版'] },
+      { name: 'Pro', price: '99€', popular: false, headline: '包含 Plus 的全部，另加：', features: ['每月为 20 个新产品创作定制图片和视频', '按季度改版', '优先支持'] },
     ],
   },
   values: {
@@ -390,7 +390,7 @@ const zh: TuTiendaDict = {
   },
   faq: [
     { q: '做一家网店要多少钱？', a: 'Yele 网店 €1,199 起。大多数企业选择 Business 方案（€1,199）；更进阶的网店选择 Pro（€2,799）。开发是一次性付款 — 没有授权月费。' },
-    { q: '有月费吗？', a: '有 — 面向网店的 Yele Care，€29/月起，分三个等级：Basic（€29/月）— 托管、安全和备份；Plus（€49/月）— 每月 5 个产品的图片和视频、修改/新增产品的支持以及每年一次改版；Pro（€99/月）— 每月 15 个产品的图片和视频、按季度改版和优先支持。' },
+    { q: '有月费吗？', a: '有 — 面向网店的 Yele Care，€29/月起，分三个等级：Basic（€29/月）— 托管、安全和备份；Plus（€49/月）— 每月 5 个新产品的图片和视频、修改/新增产品的支持以及每年一次改版；Pro（€99/月）— 每月 20 个新产品的图片和视频、按季度改版和优先支持。' },
     { q: 'Yele Care 是必须的吗？', a: '不是 — 但我们强烈推荐网店使用。它让一切照常运行（托管、安全、备份和监控），每月更新你的产品内容，并包含改版，让你的网店永不过时。你也可以自己管理，但有了 Yele Care，你无需操心技术层面。' },
     { q: '之后我可以新增产品、更新网店吗？', a: '可以 — 随时都行。你可以自己轻松管理商品目录，使用 Plus 或 Pro 时，我们每月为你新增并优化产品。' },
     { q: '需要一次性付清吗？', a: '不需要。开始时支付 50%，剩余 50% 在网店完成并确认上线时支付。' },
@@ -399,7 +399,7 @@ const zh: TuTiendaDict = {
     { q: '包含托管吗？', a: '包含。托管已包含在 Yele Care 中。' },
     { q: '包含域名吗？', a: '需要时，我们可以为你的网店提供并管理一个标准域名，你也可以使用现有域名。高级或异常昂贵的域名可能需要额外费用。' },
     { q: '包含 SEO 吗？', a: '每个网店都包含 SEO 基础：技术设置、页面标题、描述、站点地图、收录、移动端优化和分析。' },
-    { q: '你们能制作我的产品图片和视频吗？', a: '可以。作为建站的一部分，我们会制作并优化你的产品图片和视频，并通过 Yele Care 每月更新 — 根据套餐每月 5 或 15 个产品。', link: { label: SERVICES.zh, href: SERVICES_HREF } },
+    { q: '你们能制作我的产品图片和视频吗？', a: '可以。作为建站的一部分，我们会制作并优化你的产品图片和视频，并通过 Yele Care 每月更新 — 根据套餐每月 5 或 20 个新产品。', link: { label: SERVICES.zh, href: SERVICES_HREF } },
     { q: '你们能管理我的广告吗？', a: '可以。Yele 可以设置和管理 Google Ads 与 Meta 广告。广告管理和广告支出与你的网店方案是分开的。', link: { label: SERVICES.zh, href: SERVICES_HREF } },
     { q: '你们能给我的网店加入 AI 吗？', a: '可以。我们可以加入 AI 聊天、产品推荐、客户自动化和售后跟进等工具。', link: { label: SERVICES.zh, href: SERVICES_HREF } },
   ],

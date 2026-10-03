@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { Check, ChevronDown } from 'lucide-react'
 import ReputationBadge from '@/components/ReputationBadge'
 import type { Locale } from '@/lib/i18n/funnel'
@@ -9,6 +10,35 @@ import type { TuTiendaDict } from '@/lib/i18n/tutienda'
 
 // Same instant-painting poster the other funnel heroes use as the LCP bg.
 const POSTER = '/media/hero_new2/hero_poster.jpg'
+
+// Pink fade-glow highlight for one word in the hero title — mirrors the
+// index's PinkPulse (pink + slow opacity pulse) with an added soft glow.
+function PinkWord({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.span
+      className="motion-reduce:animate-none"
+      style={{ color: '#D46FC8', textShadow: '0 0 28px rgba(212,111,200,0.6)' }}
+      animate={{ opacity: [1, 0.6, 1] }}
+      transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      {children}
+    </motion.span>
+  )
+}
+
+// Render a title line, wrapping the `highlight` word (first occurrence) in the
+// pink glow. Falls back to the plain line when the word isn't present.
+function TitleLine({ line, highlight }: { line: string; highlight: string }) {
+  const i = highlight ? line.indexOf(highlight) : -1
+  if (i === -1) return <>{line}</>
+  return (
+    <>
+      {line.slice(0, i)}
+      <PinkWord>{highlight}</PinkWord>
+      {line.slice(i + highlight.length)}
+    </>
+  )
+}
 
 // Ecommerce Meta-ads hero for /tutienda. Text + pills + CTAs on the left,
 // a Yele-vs-Shopify cost-comparison card on the right (instead of the
@@ -47,7 +77,7 @@ export default function TuTiendaHero({
               className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
               style={{ fontSize: 'clamp(1.8rem, 2.9vw, 2.3rem)' }}
             >
-              {t.titleLine1}
+              <TitleLine line={t.titleLine1} highlight={t.highlight} />
               <br />
               {t.titleLine2}
             </h1>

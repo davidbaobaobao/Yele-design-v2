@@ -61,7 +61,7 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
           locale={locale}
           rightPanel={
             <Parallax distance={18}>
-              <PricingComparisonCard title={t.compare.title} masRentable={t.compare.masRentable} rows={t.compare.rows} />
+              <PricingComparisonCard title={t.compare.title} rows={t.compare.rows} />
             </Parallax>
           }
         />
@@ -76,9 +76,10 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
             </h2>
             <p className="font-body text-base text-white/70 mb-10 text-center">{t.feature.subtitle}</p>
             <div className="relative">
-              {/* Soft shading beneath the table so it lifts off the black bg. */}
-              <div className="pointer-events-none absolute -inset-x-6 bottom-0 h-24 translate-y-1/3 rounded-[50%] bg-black/60 blur-2xl" aria-hidden="true" />
-              <div className="pointer-events-none absolute left-1/2 -bottom-6 h-24 w-3/4 -translate-x-1/2 rounded-[50%] bg-[#D46FC8]/10 blur-3xl" aria-hidden="true" />
+              {/* Shading + pink bloom so the table reads as levitating, not flat. */}
+              <div className="pointer-events-none absolute inset-0 rounded-[32px] bg-[#D46FC8]/15 blur-[80px] scale-95 translate-y-6" aria-hidden="true" />
+              <div className="pointer-events-none absolute -inset-x-8 -bottom-2 h-28 translate-y-1/2 rounded-[50%] bg-black/70 blur-2xl" aria-hidden="true" />
+              <div className="pointer-events-none absolute left-1/2 -bottom-4 h-24 w-3/4 -translate-x-1/2 rounded-[50%] bg-[#D46FC8]/20 blur-3xl" aria-hidden="true" />
 
               {/* Desktop/tablet: 3-column table. */}
               <Parallax distance={22} className="relative hidden md:block overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-20px_rgba(0,0,0,0.75)] ring-1 ring-black/[0.06]">
@@ -163,7 +164,7 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
             <div className="flex items-center gap-3 mb-6">
               <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8] text-white font-display font-bold flex items-center justify-center">1</span>
               <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">{t.pricing.group1}</h3>
-              <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">{t.pricing.pagoUnico}</span>
+              <span className="rounded-full bg-[#D46FC8]/12 border border-[#D46FC8]/30 px-3 py-1 font-body text-xs font-semibold text-[#B5479F]">{t.pricing.pagoUnico}</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
               {t.pricing.tiers.map((tier, i) => {
@@ -219,7 +220,7 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
             <div className="flex items-center gap-3 mb-2">
               <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8] text-white font-display font-bold flex items-center justify-center">2</span>
               <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">{t.pricing.group2}</h3>
-              <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">{t.pricing.cuotaMensual}</span>
+              <span className="rounded-full bg-[#D46FC8]/12 border border-[#D46FC8]/30 px-3 py-1 font-body text-xs font-semibold text-[#B5479F]">{t.pricing.cuotaMensual}</span>
             </div>
             <p className="font-body text-sm text-muted mb-6 ml-12">{t.pricing.careSubtitle}</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
@@ -232,7 +233,7 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
                     className={`relative flex flex-col rounded-3xl p-7 ${
                       hl
                         ? 'bg-[#1C1D24] text-white border-2 border-[#D46FC8] shadow-[0_20px_56px_rgba(0,0,0,0.28)]'
-                        : 'bg-white ring-1 ring-black/[0.07]'
+                        : 'bg-white ring-1 ring-black/[0.07] shadow-[0_16px_56px_rgba(0,0,0,0.12)]'
                     }`}
                   >
                     <p className={`relative font-body text-sm font-semibold mb-2 ${hl ? 'text-white' : 'text-ink'}`}>{care.name}</p>
