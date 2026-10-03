@@ -39,7 +39,7 @@ type Tier = {
 // the dark highlighted middle card (#1C1D24) between two light bg-base cards,
 // green check marks, and the shared click-to-open FeatureTooltip. Data + CTAs
 // (plan-select dispatch) stay letsbuild-specific.
-function PricingCard({ tier, index, ctaHref, sym, micro }: { tier: Tier; index: number; ctaHref?: string; sym: string; micro: { most: string; from: string; vat: string } }) {
+export function PricingCard({ tier, index, ctaHref, sym, micro }: { tier: Tier; index: number; ctaHref?: string; sym: string; micro: { most: string; from: string; vat: string } }) {
   const ref = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)

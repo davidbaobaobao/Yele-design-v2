@@ -14,8 +14,8 @@ const POSTER = '/media/hero_new2/hero_poster.jpg'
 export default function TuTiendaHero({ rightPanel }: { rightPanel: React.ReactNode }) {
   const points = [
     'Sin plantillas genéricas feas',
-    '60% menos en comisiones',
-    'Creamos fotos y vídeos de tus productos',
+    '40% menos en comisiones',
+    'Mejoramos tus fotos y vídeos de los productos',
     'Entrega en menos de 4 semanas',
     'Desde 1.199€',
   ]
@@ -41,7 +41,7 @@ export default function TuTiendaHero({ rightPanel }: { rightPanel: React.ReactNo
 
             <h1
               className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
-              style={{ fontSize: 'clamp(2rem, 3.2vw, 2.6rem)' }}
+              style={{ fontSize: 'clamp(1.8rem, 2.9vw, 2.3rem)' }}
             >
               Una tienda de la que presumir.
               <br />
@@ -69,7 +69,7 @@ export default function TuTiendaHero({ rightPanel }: { rightPanel: React.ReactNo
                 href="#tienda-form"
                 className="inline-flex items-center justify-center font-body text-base md:text-lg font-medium text-white px-7 py-4 rounded-full border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
               >
-                Contactar
+                Pide demo gratis
               </a>
             </div>
 
