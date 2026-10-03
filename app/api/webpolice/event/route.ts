@@ -29,7 +29,7 @@ const ALLOWED = new Set([
   'lb_faq',         // scrolled into the FAQ
   'lb_submit',      // filled + submitted the lead form
 ])
-const PAGES = new Set(['webpolice', 'letsbuild', 'letsbuildnow'])
+const PAGES = new Set(['webpolice', 'letsbuild', 'letsbuildnow', 'tutienda'])
 
 function sameOrigin(request: Request): boolean {
   if (process.env.NODE_ENV !== 'production') return true

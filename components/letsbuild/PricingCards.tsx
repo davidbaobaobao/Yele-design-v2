@@ -139,12 +139,15 @@ function PricingCard({ tier, index, ctaHref, sym, micro }: { tier: Tier; index: 
   )
 }
 
-export default function PricingCards({ ctaHref, locale = 'en' }: { ctaHref?: string; locale?: Locale } = {}) {
-  const tiers = getFunnelDict(locale).pricing.tiers as Tier[]
+export default function PricingCards({ ctaHref, locale = 'en', tiers: tiersProp }: { ctaHref?: string; locale?: Locale; tiers?: Tier[] } = {}) {
+  const tiers = tiersProp ?? (getFunnelDict(locale).pricing.tiers as Tier[])
   const sym = currencySymbol(locale)
   const micro = MICRO[locale]
+  // 3-up by default; a 2-tier set (e.g. the /es/tutienda ecommerce page)
+  // centers in a narrower 2-up grid so the cards don't stretch.
+  const cols = tiers.length === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'
   return (
-    <div className="grid items-center gap-6 md:grid-cols-3">
+    <div className={`grid items-center gap-6 ${cols}`}>
       {tiers.map((tier, i) => (
         <PricingCard key={tier.name} tier={tier} index={i} ctaHref={ctaHref} sym={sym} micro={micro} />
       ))}

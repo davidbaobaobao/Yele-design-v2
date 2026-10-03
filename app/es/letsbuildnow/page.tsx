@@ -28,6 +28,7 @@ export default function LetsBuildNowEsPage() {
       locale="es"
       trackPage="letsbuildnow"
       heroForm
+      heroTitle={'Una web de la que presumir.\nA un precio que no asusta.'}
     />
   )
 }

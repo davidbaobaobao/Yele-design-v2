@@ -45,6 +45,7 @@ export default function LetsBuildLanding({
   locale = 'en',
   trackPage = 'letsbuild',
   heroForm = false,
+  heroTitle,
 }: {
   leadSource?: string
   locale?: Locale
@@ -53,6 +54,9 @@ export default function LetsBuildLanding({
   // Ads variant: render a lead form on the right of the hero (instead of the
   // 3D cubes) and switch the hero CTAs to Precios / Proyectos.
   heroForm?: boolean
+  // Optional hero-title override (\n for a line break). Falls back to the
+  // locale dictionary's default heroTitle when omitted.
+  heroTitle?: string
 }) {
   const d = getFunnelDict(locale)
   // Spanish gets its own /es/* legal pages; other locales use the English ones.
@@ -83,7 +87,7 @@ export default function LetsBuildLanding({
         <LbHeroPing page={trackPage} />
 
         {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg. ---- */}
-        <LetsBuildHero locale={locale} heroForm={heroFormEl} />
+        <LetsBuildHero locale={locale} heroForm={heroFormEl} titleOverride={heroTitle} />
 
         <LogoMarquee />
 

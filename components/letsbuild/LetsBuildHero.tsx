@@ -68,7 +68,7 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
   return paintedFired && near && !far && !isLowPower
 }
 
-export default function LetsBuildHero({ locale = 'en', heroForm }: { locale?: Locale; heroForm?: React.ReactNode }) {
+export default function LetsBuildHero({ locale = 'en', heroForm, titleOverride }: { locale?: Locale; heroForm?: React.ReactNode; titleOverride?: string }) {
   const sectionRef = useRef<HTMLElement>(null)
   const showCubes = useDeferredCubes(sectionRef)
   const h = getFunnelDict(locale).hero
@@ -134,9 +134,9 @@ export default function LetsBuildHero({ locale = 'en', heroForm }: { locale?: Lo
 
             <h1
               className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
-              style={{ fontSize: now ? 'clamp(2.4rem, 4.4vw, 4.25rem)' : 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
+              style={{ fontSize: now ? 'clamp(2rem, 3.2vw, 2.6rem)' : 'clamp(2.6rem, 5.6vw, 5.25rem)' }}
             >
-              {getFunnelDict(locale).heroTitle.split('\n').map((line, i) => (
+              {(titleOverride ?? getFunnelDict(locale).heroTitle).split('\n').map((line, i) => (
                 <span key={i}>
                   {i > 0 && <br />}
                   {line}

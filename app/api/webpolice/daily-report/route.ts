@@ -175,6 +175,12 @@ export async function GET(request: Request) {
   )
   const lbnBlock = lbnRoutes.map((r, i) => lbTable(r.url, lbnFunnelsByLocale[i])).join('')
   const lbnHasData = lbnBlock.length > 0
+
+  // /es/tutienda — the ecommerce Meta-ads landing. Same funnel steps, tracked
+  // under page='tutienda' (Spanish only).
+  const ttFunnel = await eventFunnelSince(sinceEvents, 'tutienda', 'es')
+  const ttBlock = lbTable('/es/tutienda', ttFunnel)
+  const ttHasData = ttBlock.length > 0
   // Per-URL breakdown for the two milestone steps: which sites people scrolled
   // through to the middle, and which they reached the plug form on.
   const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, '') } catch { return u } }
@@ -275,6 +281,10 @@ export async function GET(request: Request) {
     <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">📣 /es/letsbuildnow (Meta ads)</h2>
     ${lbnHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /es/letsbuildnow visits recorded in the last 24h.</p>'}
     ${lbnBlock}
+
+    <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">🛒 /es/tutienda (Meta ads)</h2>
+    ${ttHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /es/tutienda visits recorded in the last 24h.</p>'}
+    ${ttBlock}
 
     <p style="margin:22px 0 0;color:#6F6373;font-size:12px">Low scores are the warm leads — they just watched a robot call their site ugly.</p>
   </div>`
