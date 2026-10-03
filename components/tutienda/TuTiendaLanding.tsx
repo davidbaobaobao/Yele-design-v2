@@ -4,6 +4,7 @@ import { Check, FilePlus2, RefreshCw, Wrench, X } from 'lucide-react'
 import LeadForm from '@/components/LeadForm'
 import TuTiendaHero from '@/components/tutienda/TuTiendaHero'
 import PricingComparisonCard from '@/components/tutienda/PricingComparisonCard'
+import Parallax from '@/components/tutienda/Parallax'
 import ReputationBadge from '@/components/ReputationBadge'
 import PlanCTA from '@/components/letsbuild/PlanCTA'
 import CareVideo from '@/components/letsbuild/CareVideo'
@@ -75,29 +76,32 @@ const FEATURE_ROWS: { feature: string; yele: string; shopify: string; shopifyNon
   { feature: 'Cuota mensual', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
   { feature: 'Comisión base', yele: '1 % + 0,20 €', shopify: 'Basic: 2,1 % + 0,30 €' },
   { feature: 'Comisión para mayor volumen', yele: '0,5 % + 0,02 €', shopify: 'Grow: 1,8 % + 0,30 € · Advanced: 1,6 % + 0,30 €' },
-  { feature: 'Creación de contenido (imágenes y vídeos)', yele: '5 / 15 productos al mes', shopify: 'No ofrecido', shopifyNone: true },
+  { feature: 'Creación de contenido (imágenes y vídeos)', yele: '0 / 5 / 15 productos al mes', shopify: 'No ofrecido', shopifyNone: true },
   { feature: 'Cuentas de empleados', yele: 'Ilimitadas', shopify: 'Según el plan' },
   { feature: 'Personalización', yele: 'UI/UX completa', shopify: 'Según el plan y las extensiones' },
 ]
 
 // ---- Yele Care maintenance plans for ecommerce. ----
-const CARE_TIERS = [
+const CARE_TIERS: { name: string; price: string; popular: boolean; headline: string | null; features: string[] }[] = [
   {
     name: 'Basic',
     price: '29€',
     popular: false,
+    headline: null,
     features: ['Alojamiento', 'SSL y seguridad', 'Copias de seguridad'],
   },
   {
     name: 'Plus',
     price: '49€',
-    popular: true,
+    popular: false,
+    headline: 'Todo lo de Basic, y además:',
     features: ['Fotos y vídeos customizados de 5 productos al mes', 'Soporte para modificar/añadir productos', 'Rediseño anual'],
   },
   {
     name: 'Pro',
     price: '99€',
-    popular: false,
+    popular: true,
+    headline: 'Todo lo de Plus, y además:',
     features: ['Fotos y vídeos customizados de 15 productos al mes', 'Rediseño por temporada', 'Soporte prioritario'],
   },
 ]
@@ -155,6 +159,13 @@ const TIENDA_FAQ = [
 export default function TuTiendaLanding() {
   const d = getFunnelDict('es')
   const leadSource = "Tu Tienda (ES)"
+  // Ecommerce override for the "Asequible y transparente" why-card (price +
+  // wording tailored to stores instead of the shared 699€ website copy).
+  const whyItems = d.why.items.map(w =>
+    w.title === 'Asequible y transparente'
+      ? { ...w, body: 'Ecommerce profesionales desde 1199€, con precios claros y sin presupuestos de agencia confusos.' }
+      : w,
+  )
 
   return (
     <EnLangProvider>
@@ -162,7 +173,7 @@ export default function TuTiendaLanding() {
         <LbHeroPing page="tutienda" />
 
         {/* ---- HERO — text + pills + CTAs left, cost-comparison card right. ---- */}
-        <TuTiendaHero rightPanel={<PricingComparisonCard />} />
+        <TuTiendaHero rightPanel={<Parallax distance={18}><PricingComparisonCard /></Parallax>} />
 
         <LogoMarquee />
 
@@ -175,31 +186,31 @@ export default function TuTiendaLanding() {
             <p className="font-body text-base text-white/70 mb-10 text-center">
               Una tienda hecha a medida, con comisiones mucho más bajas.
             </p>
-            <div className="overflow-hidden rounded-2xl border border-white/10">
+            <Parallax distance={22} className="overflow-hidden rounded-2xl bg-white shadow-[0_24px_64px_rgba(0,0,0,0.4)] ring-1 ring-black/[0.06]">
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-white/50 px-4 md:px-6 py-4 bg-white/[0.03]">Característica</th>
-                    <th className="text-left font-body text-sm font-bold text-[#D46FC8] px-4 md:px-6 py-4 bg-[#D46FC8]/[0.08]">Yele</th>
-                    <th className="text-left font-body text-sm font-semibold text-white/50 px-4 md:px-6 py-4 bg-white/[0.03]">Shopify</th>
+                    <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-muted px-4 md:px-6 py-4 bg-base/70">Característica</th>
+                    <th className="text-left font-body text-sm font-bold text-[#D46FC8] px-4 md:px-6 py-4 bg-[#D46FC8]/[0.07]">Yele</th>
+                    <th className="text-left font-body text-sm font-semibold text-muted px-4 md:px-6 py-4 bg-base/70">Shopify</th>
                   </tr>
                 </thead>
                 <tbody>
                   {FEATURE_ROWS.map(r => (
-                    <tr key={r.feature} className="border-t border-white/8">
-                      <td className="px-4 md:px-6 py-4 font-body text-sm text-white/85 font-semibold align-top">{r.feature}</td>
-                      <td className="px-4 md:px-6 py-4 align-top bg-[#D46FC8]/[0.05]">
+                    <tr key={r.feature} className="border-t border-hairline">
+                      <td className="px-4 md:px-6 py-4 font-body text-sm text-ink font-semibold align-top">{r.feature}</td>
+                      <td className="px-4 md:px-6 py-4 align-top bg-[#D46FC8]/[0.04]">
                         <span className="flex items-start gap-2.5">
                           <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#D46FC8]" aria-hidden="true">
                             <Check size={12} className="text-white" strokeWidth={3} />
                           </span>
-                          <span className="font-body text-sm text-white font-medium">{r.yele}</span>
+                          <span className="font-body text-sm text-ink font-medium">{r.yele}</span>
                         </span>
                       </td>
-                      <td className="px-4 md:px-6 py-4 font-body text-sm text-white/55 align-top">
+                      <td className="px-4 md:px-6 py-4 font-body text-sm text-muted align-top">
                         {r.shopifyNone ? (
                           <span className="flex items-start gap-2.5">
-                            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-red-500/90" aria-hidden="true">
+                            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-red-500" aria-hidden="true">
                               <X size={12} className="text-white" strokeWidth={3} />
                             </span>
                             {r.shopify}
@@ -212,33 +223,35 @@ export default function TuTiendaLanding() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </Parallax>
           </div>
         </section>
 
         {/* ---- PRECIOS — group 1: puesta en marcha (pago único),
              group 2: Yele Care (cuota mensual). ---- */}
         <LbSeen event="lb_precios" page="tutienda" />
-        <section id="pricing" className="px-6 pt-20 md:pt-28 pb-16 md:pb-24 scroll-mt-4" style={{ backgroundColor: DARK }}>
+        <section id="pricing" className="bg-white px-6 pt-20 md:pt-28 pb-16 md:pb-24 scroll-mt-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="font-display font-bold text-4xl md:text-5xl text-white tracking-tight text-center mb-10 md:mb-14">
+            <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
               Precios
             </h2>
 
             {/* Group 1 — one-time build */}
             <div className="flex items-center gap-3 mb-6">
               <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8] text-white font-display font-bold flex items-center justify-center">1</span>
-              <h3 className="font-display font-bold text-lg md:text-xl text-white uppercase tracking-wide">Puesta en marcha</h3>
-              <span className="rounded-full bg-white/10 px-3 py-1 font-body text-xs font-medium text-white/70">Pago único</span>
+              <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">Puesta en marcha</h3>
+              <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">Pago único</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch mb-14 md:mb-16">
+            <Parallax distance={16} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch mb-14 md:mb-16">
               {TIENDA_TIERS.map(tier => {
                 const hl = tier.popular
                 return (
                   <div
                     key={tier.name}
-                    className={`relative flex flex-col rounded-3xl bg-white p-7 md:p-8 ${
-                      hl ? 'border-2 border-[#D46FC8] shadow-[0_24px_64px_rgba(0,0,0,0.35)]' : 'ring-1 ring-black/[0.07] shadow-[0_16px_56px_rgba(0,0,0,0.25)]'
+                    className={`relative flex flex-col rounded-3xl p-7 md:p-8 transition-transform duration-300 hover:-translate-y-1.5 ${
+                      hl
+                        ? 'bg-[#1C1D24] text-white border-2 border-[#D46FC8] shadow-[0_24px_64px_rgba(0,0,0,0.3)]'
+                        : 'bg-white ring-1 ring-black/[0.07] shadow-[0_16px_56px_rgba(0,0,0,0.12)]'
                     }`}
                   >
                     {hl && (
@@ -246,67 +259,72 @@ export default function TuTiendaLanding() {
                         Más popular
                       </span>
                     )}
-                    <p className="font-body text-sm font-medium text-muted mb-2">{tier.name}</p>
+                    <p className={`font-body text-sm font-medium mb-2 ${hl ? 'text-white/55' : 'text-muted'}`}>{tier.name}</p>
                     <div className="mb-5 flex items-end gap-1.5">
-                      <span className="mb-1 font-body text-2xl font-semibold text-muted">€</span>
-                      <span className="font-display text-5xl font-semibold tracking-tight text-ink">{tier.amount}</span>
-                      <span className="mb-2 font-body text-sm text-muted">+ IVA · pago único</span>
+                      <span className={`mb-1 font-body text-2xl font-semibold ${hl ? 'text-white/60' : 'text-muted'}`}>€</span>
+                      <span className={`font-display text-5xl font-semibold tracking-tight ${hl ? 'text-white' : 'text-ink'}`}>{tier.amount}</span>
+                      <span className={`mb-2 font-body text-sm ${hl ? 'text-white/55' : 'text-muted'}`}>+ IVA</span>
                     </div>
-                    {tier.headline && <p className="font-body text-sm font-bold text-ink mb-3">{tier.headline}</p>}
+                    {tier.headline && <p className={`font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{tier.headline}</p>}
                     <ul className="flex flex-1 flex-col gap-3 mb-6">
                       {tier.features.map(f => (
                         <li key={f.label} className="flex items-start gap-2.5">
                           <Check size={16} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
-                          <span className="font-body text-sm text-ink">{f.label}</span>
+                          <span className={`font-body text-sm ${hl ? 'text-white/85' : 'text-ink'}`}>{f.label}</span>
                         </li>
                       ))}
                     </ul>
                     <PlanCTA
                       plan={tier.planValue}
                       label={tier.cta}
-                      className="inline-flex w-full cursor-pointer items-center justify-center rounded-full bg-[#1A1A1F] px-6 py-3 font-body text-sm font-medium text-[#F2F0EB] transition-colors hover:bg-[#26262C]"
+                      className={`inline-flex w-full cursor-pointer items-center justify-center rounded-full px-6 py-3 font-body text-sm font-medium transition-colors ${
+                        hl ? 'bg-[#F2F0EB] text-[#16161A] hover:bg-white' : 'bg-[#1A1A1F] text-[#F2F0EB] hover:bg-[#26262C]'
+                      }`}
                     />
                   </div>
                 )
               })}
-            </div>
+            </Parallax>
 
             {/* Group 2 — monthly Yele Care */}
             <div className="flex items-center gap-3 mb-2">
               <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8] text-white font-display font-bold flex items-center justify-center">2</span>
-              <h3 className="font-display font-bold text-lg md:text-xl text-white uppercase tracking-wide">Yele Care</h3>
-              <span className="rounded-full bg-white/10 px-3 py-1 font-body text-xs font-medium text-white/70">Cuota mensual</span>
+              <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">Yele Care</h3>
+              <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">Cuota mensual</span>
             </div>
-            <p className="font-body text-sm text-white/60 mb-6 ml-12">Contenido, soporte y rediseños.</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            <p className="font-body text-sm text-muted mb-6 ml-12">Contenido, soporte y rediseños.</p>
+            <Parallax distance={16} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
               {CARE_TIERS.map(t => {
                 const hl = t.popular
                 return (
                   <div
                     key={t.name}
-                    className={`flex flex-col rounded-3xl p-7 ${
-                      hl ? 'bg-[#FBEAF7] border-2 border-[#D46FC8]' : 'bg-white ring-1 ring-black/[0.07]'
+                    className={`flex flex-col rounded-3xl p-7 transition-transform duration-300 hover:-translate-y-1.5 ${
+                      hl
+                        ? 'bg-[#1C1D24] text-white border-2 border-[#D46FC8] shadow-[0_20px_56px_rgba(0,0,0,0.28)]'
+                        : 'bg-white ring-1 ring-black/[0.07]'
                     }`}
                   >
-                    <p className="font-body text-sm font-semibold text-ink mb-2">{t.name}</p>
+                    <p className={`font-body text-sm font-semibold mb-2 ${hl ? 'text-white' : 'text-ink'}`}>{t.name}</p>
                     <div className="mb-5 flex items-end gap-0.5">
-                      <span className="font-display text-4xl font-semibold tracking-tight text-ink">{t.price}</span>
-                      <span className="mb-1.5 font-body text-sm text-muted">/mes</span>
+                      <span className={`font-display text-4xl font-semibold tracking-tight ${hl ? 'text-white' : 'text-ink'}`}>{t.price}</span>
+                      <span className={`mb-1.5 font-body text-sm ${hl ? 'text-white/55' : 'text-muted'}`}>/mes</span>
                     </div>
+                    {t.headline && <p className={`font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{t.headline}</p>}
                     <ul className="flex flex-1 flex-col gap-2.5">
                       {t.features.map(feat => (
                         <li key={feat} className="flex items-start gap-2">
                           <Check size={15} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
-                          <span className="font-body text-sm text-ink leading-snug">{feat}</span>
+                          <span className={`font-body text-sm leading-snug ${hl ? 'text-white/85' : 'text-ink'}`}>{feat}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 )
               })}
-            </div>
+            </Parallax>
 
-            <p className="max-w-2xl mx-auto text-center font-body text-base text-white/60 mt-12 leading-relaxed">
+            <p className="max-w-2xl mx-auto text-center font-body text-base text-muted mt-12 leading-relaxed">
               {d.pricing.payNote}
             </p>
           </div>
@@ -319,12 +337,12 @@ export default function TuTiendaLanding() {
             <div className="md:grid md:grid-cols-2 md:gap-14 md:items-center">
               <div className="mb-10 md:mb-0">
                 <h2
-                  className="font-display font-bold text-white tracking-tight leading-[1.08] mb-5 md:mb-7"
-                  style={{ fontSize: 'clamp(1.9rem, 3.6vw, 2.75rem)' }}
+                  className="font-display font-bold text-white tracking-tight leading-[1.1] mb-5 md:mb-7"
+                  style={{ fontSize: 'clamp(1.65rem, 3vw, 2.35rem)' }}
                 >
-                  Demo: cómo podemos mejorar
+                  Demo sin compromiso:
                   <br />
-                  tu tienda sin compromiso
+                  cómo podemos mejorar tu tienda
                 </h2>
 
                 <p className="font-body text-base md:text-lg font-semibold uppercase tracking-[0.12em] text-white/50 mb-4">
@@ -446,7 +464,7 @@ export default function TuTiendaLanding() {
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">{d.why.title}</h2>
             <p className="font-body text-base text-white/70 mb-10">{d.why.subtitle}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {d.why.items.map((w, i) => (
+              {whyItems.map((w, i) => (
                 <div key={w.title} className="rounded-2xl bg-white/[0.03] border border-white/10 p-6 transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-1 hover:bg-white/[0.06] hover:shadow-xl hover:shadow-black/40">
                   <CareVideo webm={WHY_MEDIA[i].webm} mp4={WHY_MEDIA[i].mp4} poster={WHY_MEDIA[i].poster} />
                   <h3 className="font-display font-bold text-lg text-white mb-1">{w.title}</h3>
@@ -482,7 +500,12 @@ export default function TuTiendaLanding() {
           <div className="max-w-2xl mx-auto">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">{d.buildForm.title}</h2>
             <p className="font-body text-base text-white/70 mb-8">{d.buildForm.subtitle}</p>
-            <BuildLeadForm variant="dark" leadSource={leadSource} sendWelcome />
+            <BuildLeadForm
+              variant="dark"
+              leadSource={leadSource}
+              sendWelcome
+              packages={['Business — 1.199€', 'Pro — 2.799€', 'No estoy seguro — recomendádmelo']}
+            />
           </div>
         </section>
 

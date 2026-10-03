@@ -45,11 +45,15 @@ export default function BuildLeadForm({
   variant = 'dark',
   leadSource,
   sendWelcome,
+  packages = PACKAGES,
 }: {
   id?: string
   variant?: 'light' | 'dark'
   leadSource?: string
   sendWelcome?: boolean
+  // Override the package-interest options (e.g. /es/tutienda drops the 699€
+  // Launch tier since it's ecommerce-only).
+  packages?: string[]
 }) {
   const router = useRouter()
   const isDark = variant === 'dark'
@@ -202,7 +206,7 @@ export default function BuildLeadForm({
       <fieldset>
         <legend className={labelClass}>Which package are you interested in?</legend>
         <div className="flex flex-wrap gap-2">
-          {PACKAGES.map(p => {
+          {packages.map(p => {
             const active = packageInterest.includes(p)
             return (
               <button
