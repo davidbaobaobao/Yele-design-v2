@@ -30,14 +30,18 @@ export default function PricingComparisonCard() {
   return (
     <section
       aria-label="Comparativa de costes entre Yele y Shopify"
-      className="w-full rounded-[26px] border border-white/10 bg-white/[0.06] backdrop-blur-2xl p-5 sm:p-6 md:p-7 shadow-[0_32px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/[0.05]"
+      className="relative w-full overflow-hidden rounded-[26px] border border-white/15 bg-gradient-to-b from-white/[0.1] to-white/[0.03] backdrop-blur-2xl p-5 sm:p-6 md:p-7 shadow-[0_32px_80px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-white/10"
     >
-      <h2 className="font-display font-semibold tracking-tight text-white/95" style={{ fontSize: 'clamp(1.1rem, 1.7vw, 1.35rem)' }}>
+      {/* Shine — a soft highlight sweeping the top edge for the glass look. */}
+      <div className="pointer-events-none absolute inset-x-0 -top-px h-28 bg-gradient-to-b from-white/15 to-transparent" aria-hidden="true" />
+      <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-[#D46FC8]/20 blur-3xl" aria-hidden="true" />
+
+      <h2 className="relative font-display font-semibold tracking-tight text-white/95" style={{ fontSize: 'clamp(1.1rem, 1.7vw, 1.35rem)' }}>
         Comparativa de costes
       </h2>
 
       {/* Comparison header: Yele (dominant) + pill · VS · Shopify */}
-      <div className="mt-2.5 flex items-center gap-3">
+      <div className="relative mt-2.5 flex items-center gap-3">
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="font-display font-bold text-white" style={{ fontSize: 'clamp(1.25rem, 1.9vw, 1.6rem)' }}>Yele</span>
           <span className={`rounded-full px-2.5 py-0.5 font-body text-[10px] sm:text-[11px] font-semibold whitespace-nowrap ${PINK_PILL}`}>
@@ -52,9 +56,9 @@ export default function PricingComparisonCard() {
         </span>
       </div>
 
-      <ul className="mt-4 flex flex-col gap-2.5">
+      <ul className="relative mt-4 flex flex-col gap-2.5">
         {ROWS.map(r => (
-          <li key={r.volume} className="rounded-[18px] border border-white/8 bg-white/[0.04] px-4 py-3.5">
+          <li key={r.volume} className="rounded-[18px] border border-white/8 bg-white/[0.04] px-4 py-3.5 transition-colors duration-200 hover:border-[#D46FC8]/30 hover:bg-white/[0.08]">
             <div className="flex flex-col sm:flex-row sm:items-center">
               {/* Left ~60%: volume + Yele price + saving badge */}
               <div className="sm:w-[60%]">
@@ -81,12 +85,6 @@ export default function PricingComparisonCard() {
           </li>
         ))}
       </ul>
-
-      <div className="mt-4 border-t border-white/8 pt-3.5">
-        <p className="font-body text-[10px] sm:text-[11px] text-white/40 leading-relaxed">
-          Estimación sobre comisiones y cuota mensual. Shopify: plan equivalente por volumen.
-        </p>
-      </div>
     </section>
   )
 }

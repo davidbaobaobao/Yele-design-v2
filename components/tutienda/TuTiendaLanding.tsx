@@ -5,6 +5,7 @@ import LeadForm from '@/components/LeadForm'
 import TuTiendaHero from '@/components/tutienda/TuTiendaHero'
 import PricingComparisonCard from '@/components/tutienda/PricingComparisonCard'
 import Parallax from '@/components/tutienda/Parallax'
+import TiltCard from '@/components/tutienda/TiltCard'
 import ReputationBadge from '@/components/ReputationBadge'
 import PlanCTA from '@/components/letsbuild/PlanCTA'
 import CareVideo from '@/components/letsbuild/CareVideo'
@@ -93,14 +94,14 @@ const CARE_TIERS: { name: string; price: string; popular: boolean; headline: str
   {
     name: 'Plus',
     price: '49€',
-    popular: false,
+    popular: true,
     headline: 'Todo lo de Basic, y además:',
     features: ['Fotos y vídeos customizados de 5 productos al mes', 'Soporte para modificar/añadir productos', 'Rediseño anual'],
   },
   {
     name: 'Pro',
     price: '99€',
-    popular: true,
+    popular: false,
     headline: 'Todo lo de Plus, y además:',
     features: ['Fotos y vídeos customizados de 15 productos al mes', 'Rediseño por temporada', 'Soporte prioritario'],
   },
@@ -109,7 +110,7 @@ const CARE_TIERS: { name: string; price: string; popular: boolean; headline: str
 // ---- Ecommerce-specific core values for the form section. ----
 const TIENDA_VALUES = [
   { title: 'Diseño', body: 'Nada genérico, sin IA barata, sin plantillas aburridas.' },
-  { title: 'Estructura', body: 'Optimizado con un solo propósito: vender.' },
+  { title: 'Estructura', body: 'Optimizado con un solo propósito: VENDER.' },
   { title: 'Rendimiento', body: 'Optimizada para conseguirte más clientes y más ventas.' },
 ]
 
@@ -186,44 +187,49 @@ export default function TuTiendaLanding() {
             <p className="font-body text-base text-white/70 mb-10 text-center">
               Una tienda hecha a medida, con comisiones mucho más bajas.
             </p>
-            <Parallax distance={22} className="overflow-hidden rounded-2xl bg-white shadow-[0_24px_64px_rgba(0,0,0,0.4)] ring-1 ring-black/[0.06]">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-muted px-4 md:px-6 py-4 bg-base/70">Característica</th>
-                    <th className="text-left font-body text-sm font-bold text-[#D46FC8] px-4 md:px-6 py-4 bg-[#D46FC8]/[0.07]">Yele</th>
-                    <th className="text-left font-body text-sm font-semibold text-muted px-4 md:px-6 py-4 bg-base/70">Shopify</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {FEATURE_ROWS.map(r => (
-                    <tr key={r.feature} className="border-t border-hairline">
-                      <td className="px-4 md:px-6 py-4 font-body text-sm text-ink font-semibold align-top">{r.feature}</td>
-                      <td className="px-4 md:px-6 py-4 align-top bg-[#D46FC8]/[0.04]">
-                        <span className="flex items-start gap-2.5">
-                          <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#D46FC8]" aria-hidden="true">
-                            <Check size={12} className="text-white" strokeWidth={3} />
-                          </span>
-                          <span className="font-body text-sm text-ink font-medium">{r.yele}</span>
-                        </span>
-                      </td>
-                      <td className="px-4 md:px-6 py-4 font-body text-sm text-muted align-top">
-                        {r.shopifyNone ? (
-                          <span className="flex items-start gap-2.5">
-                            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-red-500" aria-hidden="true">
-                              <X size={12} className="text-white" strokeWidth={3} />
-                            </span>
-                            {r.shopify}
-                          </span>
-                        ) : (
-                          r.shopify
-                        )}
-                      </td>
+            <div className="relative">
+              {/* Soft shading beneath the table so it lifts off the black bg. */}
+              <div className="pointer-events-none absolute -inset-x-6 bottom-0 h-24 translate-y-1/3 rounded-[50%] bg-black/60 blur-2xl" aria-hidden="true" />
+              <div className="pointer-events-none absolute left-1/2 -bottom-6 h-24 w-3/4 -translate-x-1/2 rounded-[50%] bg-[#D46FC8]/10 blur-3xl" aria-hidden="true" />
+              <Parallax distance={22} className="relative overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-20px_rgba(0,0,0,0.75)] ring-1 ring-black/[0.06]">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-muted px-4 md:px-6 py-4 bg-base/70">Característica</th>
+                      <th className="text-left font-body text-sm font-bold text-[#D46FC8] px-4 md:px-6 py-4 bg-[#D46FC8]/[0.07]">Yele</th>
+                      <th className="text-left font-body text-sm font-semibold text-muted px-4 md:px-6 py-4 bg-base/70">Shopify</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </Parallax>
+                  </thead>
+                  <tbody>
+                    {FEATURE_ROWS.map(r => (
+                      <tr key={r.feature} className="group border-t border-hairline transition-colors duration-200 hover:bg-[#D46FC8]/[0.05]">
+                        <td className="px-4 md:px-6 py-4 font-body text-sm text-ink font-semibold align-top">{r.feature}</td>
+                        <td className="px-4 md:px-6 py-4 align-top bg-[#D46FC8]/[0.04] transition-colors duration-200 group-hover:bg-[#D46FC8]/[0.1]">
+                          <span className="flex items-start gap-2.5">
+                            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#D46FC8]" aria-hidden="true">
+                              <Check size={12} className="text-white" strokeWidth={3} />
+                            </span>
+                            <span className="font-body text-sm text-ink font-medium">{r.yele}</span>
+                          </span>
+                        </td>
+                        <td className="px-4 md:px-6 py-4 font-body text-sm text-muted align-top">
+                          {r.shopifyNone ? (
+                            <span className="flex items-start gap-2.5">
+                              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#D46FC8]" aria-hidden="true">
+                                <X size={12} className="text-white" strokeWidth={3} />
+                              </span>
+                              {r.shopify}
+                            </span>
+                          ) : (
+                            r.shopify
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Parallax>
+            </div>
           </div>
         </section>
 
@@ -242,13 +248,14 @@ export default function TuTiendaLanding() {
               <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">Puesta en marcha</h3>
               <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">Pago único</span>
             </div>
-            <Parallax distance={16} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch mb-14 md:mb-16">
-              {TIENDA_TIERS.map(tier => {
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+              {TIENDA_TIERS.map((tier, i) => {
                 const hl = tier.popular
                 return (
-                  <div
+                  <TiltCard
                     key={tier.name}
-                    className={`relative flex flex-col rounded-3xl p-7 md:p-8 transition-transform duration-300 hover:-translate-y-1.5 ${
+                    index={i}
+                    className={`relative flex flex-col rounded-3xl p-7 md:p-8 ${
                       hl
                         ? 'bg-[#1C1D24] text-white border-2 border-[#D46FC8] shadow-[0_24px_64px_rgba(0,0,0,0.3)]'
                         : 'bg-white ring-1 ring-black/[0.07] shadow-[0_16px_56px_rgba(0,0,0,0.12)]'
@@ -259,14 +266,14 @@ export default function TuTiendaLanding() {
                         Más popular
                       </span>
                     )}
-                    <p className={`font-body text-sm font-medium mb-2 ${hl ? 'text-white/55' : 'text-muted'}`}>{tier.name}</p>
-                    <div className="mb-5 flex items-end gap-1.5">
+                    <p className={`relative font-body text-sm font-medium mb-2 ${hl ? 'text-white/55' : 'text-muted'}`}>{tier.name}</p>
+                    <div className="relative mb-5 flex items-end gap-1.5">
                       <span className={`mb-1 font-body text-2xl font-semibold ${hl ? 'text-white/60' : 'text-muted'}`}>€</span>
                       <span className={`font-display text-5xl font-semibold tracking-tight ${hl ? 'text-white' : 'text-ink'}`}>{tier.amount}</span>
                       <span className={`mb-2 font-body text-sm ${hl ? 'text-white/55' : 'text-muted'}`}>+ IVA</span>
                     </div>
-                    {tier.headline && <p className={`font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{tier.headline}</p>}
-                    <ul className="flex flex-1 flex-col gap-3 mb-6">
+                    {tier.headline && <p className={`relative font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{tier.headline}</p>}
+                    <ul className="relative flex flex-1 flex-col gap-3 mb-6">
                       {tier.features.map(f => (
                         <li key={f.label} className="flex items-start gap-2.5">
                           <Check size={16} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
@@ -277,14 +284,19 @@ export default function TuTiendaLanding() {
                     <PlanCTA
                       plan={tier.planValue}
                       label={tier.cta}
-                      className={`inline-flex w-full cursor-pointer items-center justify-center rounded-full px-6 py-3 font-body text-sm font-medium transition-colors ${
+                      className={`relative inline-flex w-full cursor-pointer items-center justify-center rounded-full px-6 py-3 font-body text-sm font-medium transition-colors ${
                         hl ? 'bg-[#F2F0EB] text-[#16161A] hover:bg-white' : 'bg-[#1A1A1F] text-[#F2F0EB] hover:bg-[#26262C]'
                       }`}
                     />
-                  </div>
+                  </TiltCard>
                 )
               })}
-            </Parallax>
+            </div>
+
+            {/* Payment note sits directly under the one-time build cards. */}
+            <p className="max-w-2xl mx-auto text-center font-body text-base text-muted mt-8 mb-14 md:mb-16 leading-relaxed">
+              {d.pricing.payNote}
+            </p>
 
             {/* Group 2 — monthly Yele Care */}
             <div className="flex items-center gap-3 mb-2">
@@ -292,26 +304,27 @@ export default function TuTiendaLanding() {
               <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">Yele Care</h3>
               <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">Cuota mensual</span>
             </div>
-            <p className="font-body text-sm text-muted mb-6 ml-12">Contenido, soporte y rediseños.</p>
-            <Parallax distance={16} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-              {CARE_TIERS.map(t => {
+            <p className="font-body text-sm text-muted mb-6 ml-12">Mantenimiento, contenido, soporte y rediseños.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+              {CARE_TIERS.map((t, i) => {
                 const hl = t.popular
                 return (
-                  <div
+                  <TiltCard
                     key={t.name}
-                    className={`flex flex-col rounded-3xl p-7 transition-transform duration-300 hover:-translate-y-1.5 ${
+                    index={i}
+                    className={`relative flex flex-col rounded-3xl p-7 ${
                       hl
                         ? 'bg-[#1C1D24] text-white border-2 border-[#D46FC8] shadow-[0_20px_56px_rgba(0,0,0,0.28)]'
                         : 'bg-white ring-1 ring-black/[0.07]'
                     }`}
                   >
-                    <p className={`font-body text-sm font-semibold mb-2 ${hl ? 'text-white' : 'text-ink'}`}>{t.name}</p>
-                    <div className="mb-5 flex items-end gap-0.5">
+                    <p className={`relative font-body text-sm font-semibold mb-2 ${hl ? 'text-white' : 'text-ink'}`}>{t.name}</p>
+                    <div className="relative mb-5 flex items-end gap-0.5">
                       <span className={`font-display text-4xl font-semibold tracking-tight ${hl ? 'text-white' : 'text-ink'}`}>{t.price}</span>
                       <span className={`mb-1.5 font-body text-sm ${hl ? 'text-white/55' : 'text-muted'}`}>/mes</span>
                     </div>
-                    {t.headline && <p className={`font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{t.headline}</p>}
-                    <ul className="flex flex-1 flex-col gap-2.5">
+                    {t.headline && <p className={`relative font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{t.headline}</p>}
+                    <ul className="relative flex flex-1 flex-col gap-2.5">
                       {t.features.map(feat => (
                         <li key={feat} className="flex items-start gap-2">
                           <Check size={15} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
@@ -319,14 +332,10 @@ export default function TuTiendaLanding() {
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </TiltCard>
                 )
               })}
-            </Parallax>
-
-            <p className="max-w-2xl mx-auto text-center font-body text-base text-muted mt-12 leading-relaxed">
-              {d.pricing.payNote}
-            </p>
+            </div>
           </div>
         </section>
 
@@ -342,7 +351,7 @@ export default function TuTiendaLanding() {
                 >
                   Demo sin compromiso:
                   <br />
-                  cómo podemos mejorar tu tienda
+                  Descubre cómo podemos mejorar tu tienda
                 </h2>
 
                 <p className="font-body text-base md:text-lg font-semibold uppercase tracking-[0.12em] text-white/50 mb-4">
