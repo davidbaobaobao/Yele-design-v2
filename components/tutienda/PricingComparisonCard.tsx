@@ -1,16 +1,9 @@
-// Cost-comparison card for the /es/tutienda hero — "Comparativa de costes".
+// Cost-comparison card for the /tutienda hero — "Comparativa de costes".
 // Refined glassmorphism aesthetic: Yele (dominant, soft-pink accent) vs
 // Shopify, three sales-volume tiers. Data-driven rows, responsive (stacks on
 // mobile with explicit Yele/Shopify labels), and accessible (list semantics,
 // decorative dividers/arrow hidden from screen readers). No logos, no claims.
-
-type Row = { volume: string; yele: string; shopify: string; saving: string }
-
-const ROWS: Row[] = [
-  { volume: '5.000 € EN VENTAS/MES', yele: '99 €', shopify: '167 €', saving: '40,7 % menos' },
-  { volume: '20.000 € EN VENTAS/MES', yele: '309 €', shopify: '572 €', saving: '46,0 % menos' },
-  { volume: '50.000 € EN VENTAS/MES', yele: '729 €', shopify: '1.292 €', saving: '43,6 % menos' },
-]
+import type { CompareRow } from '@/lib/i18n/tutienda'
 
 // Soft-pink pill, reused for the "Más rentable" tag and the savings badges.
 const PINK_PILL = 'border border-[#D46FC8]/35 bg-[#D46FC8]/12 text-[#E8A9DE]'
@@ -26,10 +19,18 @@ function SavingBadge({ text }: { text: string }) {
   )
 }
 
-export default function PricingComparisonCard() {
+export default function PricingComparisonCard({
+  title,
+  masRentable,
+  rows,
+}: {
+  title: string
+  masRentable: string
+  rows: CompareRow[]
+}) {
   return (
     <section
-      aria-label="Comparativa de costes entre Yele y Shopify"
+      aria-label="Yele vs Shopify"
       className="relative w-full overflow-hidden rounded-[26px] border border-white/15 bg-gradient-to-b from-white/[0.1] to-white/[0.03] backdrop-blur-2xl p-5 sm:p-6 md:p-7 shadow-[0_32px_80px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-white/10"
     >
       {/* Shine — a soft highlight sweeping the top edge for the glass look. */}
@@ -37,7 +38,7 @@ export default function PricingComparisonCard() {
       <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-[#D46FC8]/20 blur-3xl" aria-hidden="true" />
 
       <h2 className="relative font-display font-semibold tracking-tight text-white/95" style={{ fontSize: 'clamp(1.1rem, 1.7vw, 1.35rem)' }}>
-        Comparativa de costes
+        {title}
       </h2>
 
       {/* Comparison header: Yele (dominant) + pill · VS · Shopify */}
@@ -45,7 +46,7 @@ export default function PricingComparisonCard() {
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="font-display font-bold text-white" style={{ fontSize: 'clamp(1.25rem, 1.9vw, 1.6rem)' }}>Yele</span>
           <span className={`rounded-full px-2.5 py-0.5 font-body text-[10px] sm:text-[11px] font-semibold whitespace-nowrap ${PINK_PILL}`}>
-            Más rentable
+            {masRentable}
           </span>
         </div>
         <span className="hidden sm:block flex-1 h-px bg-white/12" aria-hidden="true" />
@@ -57,7 +58,7 @@ export default function PricingComparisonCard() {
       </div>
 
       <ul className="relative mt-4 flex flex-col gap-2.5">
-        {ROWS.map(r => (
+        {rows.map(r => (
           <li key={r.volume} className="rounded-[18px] border border-white/8 bg-white/[0.04] px-4 py-3.5 transition-colors duration-200 hover:border-[#D46FC8]/30 hover:bg-white/[0.08]">
             <div className="flex flex-col sm:flex-row sm:items-center">
               {/* Left ~60%: volume + Yele price + saving badge */}

@@ -176,10 +176,17 @@ export async function GET(request: Request) {
   const lbnBlock = lbnRoutes.map((r, i) => lbTable(r.url, lbnFunnelsByLocale[i])).join('')
   const lbnHasData = lbnBlock.length > 0
 
-  // /es/tutienda — the ecommerce Meta-ads landing. Same funnel steps, tracked
-  // under page='tutienda' (Spanish only).
-  const ttFunnel = await eventFunnelSince(sinceEvents, 'tutienda', 'es')
-  const ttBlock = lbTable('/es/tutienda', ttFunnel)
+  // tutienda — the ecommerce Meta-ads landing. Same funnel steps, tracked
+  // under page='tutienda', split by locale.
+  const ttRoutes: { locale: string; url: string }[] = [
+    { locale: 'en', url: '/tutienda' },
+    { locale: 'es', url: '/es/tutienda' },
+    { locale: 'zh', url: '/zh/tutienda' },
+  ]
+  const ttFunnelsByLocale = await Promise.all(
+    ttRoutes.map(r => eventFunnelSince(sinceEvents, 'tutienda', r.locale)),
+  )
+  const ttBlock = ttRoutes.map((r, i) => lbTable(r.url, ttFunnelsByLocale[i])).join('')
   const ttHasData = ttBlock.length > 0
   // Per-URL breakdown for the two milestone steps: which sites people scrolled
   // through to the middle, and which they reached the plug form on.
@@ -282,8 +289,8 @@ export async function GET(request: Request) {
     ${lbnHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /es/letsbuildnow visits recorded in the last 24h.</p>'}
     ${lbnBlock}
 
-    <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">🛒 /es/tutienda (Meta ads)</h2>
-    ${ttHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /es/tutienda visits recorded in the last 24h.</p>'}
+    <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">🛒 /tutienda (Meta ads)</h2>
+    ${ttHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /tutienda visits recorded in the last 24h.</p>'}
     ${ttBlock}
 
     <p style="margin:22px 0 0;color:#6F6373;font-size:12px">Low scores are the warm leads — they just watched a robot call their site ugly.</p>

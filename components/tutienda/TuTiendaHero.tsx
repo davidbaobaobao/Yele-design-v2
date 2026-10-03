@@ -4,21 +4,25 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Check, ChevronDown } from 'lucide-react'
 import ReputationBadge from '@/components/ReputationBadge'
+import type { Locale } from '@/lib/i18n/funnel'
+import type { TuTiendaDict } from '@/lib/i18n/tutienda'
 
 // Same instant-painting poster the other funnel heroes use as the LCP bg.
 const POSTER = '/media/hero_new2/hero_poster.jpg'
 
-// Ecommerce Meta-ads hero for /es/tutienda. Text + pills + CTAs on the left,
-// a Yele-vs-Shopify price-comparison table on the right (instead of the
+// Ecommerce Meta-ads hero for /tutienda. Text + pills + CTAs on the left,
+// a Yele-vs-Shopify cost-comparison card on the right (instead of the
 // cubes/form the /letsbuild heroes use). CTAs scroll to Precios / the form.
-export default function TuTiendaHero({ rightPanel }: { rightPanel: React.ReactNode }) {
-  const points = [
-    'Sin plantillas genéricas feas',
-    '40% menos en comisiones',
-    'Mejoramos tus fotos y vídeos de los productos',
-    'Entrega en menos de 4 semanas',
-    'Desde 1.199€',
-  ]
+export default function TuTiendaHero({
+  t,
+  locale,
+  rightPanel,
+}: {
+  t: TuTiendaDict['hero']
+  locale: Locale
+  rightPanel: React.ReactNode
+}) {
+  const points = t.points
 
   return (
     <section className="relative min-h-[calc(100svh-132px)] w-full overflow-hidden" style={{ backgroundColor: '#0D0E12' }}>
@@ -43,9 +47,9 @@ export default function TuTiendaHero({ rightPanel }: { rightPanel: React.ReactNo
               className="font-display font-bold text-white tracking-tight leading-[1.03] mb-5 md:mb-7"
               style={{ fontSize: 'clamp(1.8rem, 2.9vw, 2.3rem)' }}
             >
-              Una tienda de la que presumir.
+              {t.titleLine1}
               <br />
-              A un precio que no asusta.
+              {t.titleLine2}
             </h1>
 
             <ul className="space-y-3 md:space-y-3.5 mb-8 md:mb-9">
@@ -63,17 +67,17 @@ export default function TuTiendaHero({ rightPanel }: { rightPanel: React.ReactNo
                 className="inline-flex items-center justify-center font-body font-semibold text-base md:text-lg bg-[#F2F0EB] hover:bg-white px-8 py-4 rounded-full transition-colors active:scale-95"
                 style={{ color: '#16161A' }}
               >
-                Precios
+                {t.ctaPrecios}
               </a>
               <a
                 href="#tienda-form"
                 className="inline-flex items-center justify-center font-body text-base md:text-lg font-medium text-white px-7 py-4 rounded-full border border-white/30 transition-colors hover:bg-white/10 active:scale-95"
               >
-                Pide demo gratis
+                {t.ctaDemo}
               </a>
             </div>
 
-            <ReputationBadge className="scale-110 origin-left" locale="es" align="left" />
+            <ReputationBadge className="scale-110 origin-left" locale={locale} align="left" />
           </div>
 
           <div className="w-full">{rightPanel}</div>
@@ -83,7 +87,7 @@ export default function TuTiendaHero({ rightPanel }: { rightPanel: React.ReactNo
       <a
         href="#comparativa"
         className="absolute bottom-5 md:bottom-7 left-1/2 -translate-x-1/2 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-[#D46FC8]/60 bg-black/30 text-white backdrop-blur-sm transition-colors hover:bg-[#D46FC8]/20 hover:border-[#D46FC8] cursor-pointer focus-visible:outline-none motion-safe:animate-[heroScrollBounce_1.5s_ease-in-out_infinite]"
-        aria-label="Desplázate"
+        aria-label={t.scrollLabel}
       >
         <ChevronDown size={26} strokeWidth={2.5} aria-hidden="true" />
       </a>

@@ -10,10 +10,12 @@ import ReputationBadge from '@/components/ReputationBadge'
 import PlanCTA from '@/components/letsbuild/PlanCTA'
 import CareVideo from '@/components/letsbuild/CareVideo'
 import StartNowMarquee from '@/components/letsbuild/StartNowMarquee'
+import LocaleSwitcher from '@/components/letsbuild/LocaleSwitcher'
 import { LbHeroPing, LbSeen } from '@/components/letsbuild/LbTrack'
 import WhatsAppLink from '@/components/WhatsAppLink'
 import { EnLangProvider } from '@/components/LangProvider'
-import { getFunnelDict } from '@/lib/i18n/funnel'
+import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
+import { getTuTienda } from '@/lib/i18n/tutienda'
 
 // Below-fold, heavier sections — code-split so the hero/table bundle stays light.
 const LogoMarquee = dynamic(() => import('@/components/LogoMarquee'))
@@ -34,159 +36,45 @@ const WHY_MEDIA = [
 
 const DARK = '#0D0E12'
 
-// ---- Ecommerce pricing tiers (Business / Pro), fixed prices (no "desde"). ----
-const TIENDA_TIERS = [
-  {
-    name: 'Business',
-    amount: '1.199',
-    planValue: 'Business — 1.199€',
-    blurb: '',
-    headline: null,
-    features: [
-      { label: 'Diseño personalizado, no plantilla' },
-      { label: 'Optimizado para vender' },
-      { label: 'Fotos y vídeos customizados para 20 productos' },
-      { label: 'Chat IA inteligente' },
-      { label: 'Pago seguro' },
-    ],
-    care: '49€',
-    cta: 'Elegir Business',
-    popular: true,
-  },
-  {
-    name: 'Pro',
-    amount: '2.799',
-    planValue: 'Pro — 2.799€',
-    blurb: '',
-    headline: 'Todo lo de Business, y además:',
-    features: [
-      { label: 'Fotos y vídeos customizados para 50 productos' },
-      { label: 'Catálogo de 100+ productos' },
-      { label: 'Base de datos de alto rendimiento' },
-      { label: 'Integraciones avanzadas' },
-      { label: 'Extensiones' },
-    ],
-    care: '99€',
-    cta: 'Elegir Pro',
-    popular: false,
-  },
-]
-
-// ---- Feature-by-feature comparison (Yele vs Shopify). ----
-const FEATURE_ROWS: { feature: string; yele: string; shopify: string; shopifyNone?: boolean }[] = [
-  { feature: 'Cuota mensual', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
-  { feature: 'Comisión base', yele: '1 % + 0,20 €', shopify: 'Basic: 2,1 % + 0,30 €' },
-  { feature: 'Comisión para mayor volumen', yele: '0,5 % + 0,02 €', shopify: 'Grow: 1,8 % + 0,30 € · Advanced: 1,6 % + 0,30 €' },
-  { feature: 'Creación de contenido (imágenes y vídeos)', yele: '0 / 5 / 15 productos al mes', shopify: 'No ofrecido', shopifyNone: true },
-  { feature: 'Cuentas de empleados', yele: 'Ilimitadas', shopify: 'Según el plan' },
-  { feature: 'Personalización', yele: 'UI/UX completa', shopify: 'Según el plan y las extensiones' },
-]
-
-// ---- Yele Care maintenance plans for ecommerce. ----
-const CARE_TIERS: { name: string; price: string; popular: boolean; headline: string | null; features: string[] }[] = [
-  {
-    name: 'Basic',
-    price: '29€',
-    popular: false,
-    headline: null,
-    features: ['Alojamiento', 'SSL y seguridad', 'Copias de seguridad'],
-  },
-  {
-    name: 'Plus',
-    price: '49€',
-    popular: true,
-    headline: 'Todo lo de Basic, y además:',
-    features: ['Fotos y vídeos customizados de 5 productos al mes', 'Soporte para modificar/añadir productos', 'Rediseño anual'],
-  },
-  {
-    name: 'Pro',
-    price: '99€',
-    popular: false,
-    headline: 'Todo lo de Plus, y además:',
-    features: ['Fotos y vídeos customizados de 15 productos al mes', 'Rediseño por temporada', 'Soporte prioritario'],
-  },
-]
-
-// ---- Ecommerce-specific core values for the form section. ----
-const TIENDA_VALUES = [
-  { title: 'Diseño', body: 'Nada genérico, sin IA barata, sin plantillas aburridas.' },
-  { title: 'Estructura', body: 'Optimizado con un solo propósito: VENDER.' },
-  { title: 'Rendimiento', body: 'Optimizada para conseguirte más clientes y más ventas.' },
-]
-
-const PLAN_OPTIONS = ['Business — 1.199€', 'Pro — 2.799€']
-
-// ---- Cómo funciona — ecommerce-specific (3 steps). ----
-const TIENDA_HOW = {
-  kicker: 'Cómo funciona',
-  title: 'De la idea a tu tienda online en tres pasos.',
-  steps: [
-    {
-      title: 'Cuéntanos sobre tu negocio',
-      body: 'Montamos una demo de cómo podemos mejorar tu tienda. Si te encaja, seguimos con el proyecto con el primer pago del 50%.',
-    },
-    {
-      title: 'Revisión',
-      body: 'Escuchamos vuestro feedback y aplicamos las mejoras necesarias.',
-    },
-    {
-      title: 'Publicación',
-      body: 'Apruebas, pagas el 50% restante y tu tienda está online. Nuestro Yele Care mantiene todo funcionando después, mes tras mes.',
-    },
-  ],
-}
-
-// ---- FAQ — ecommerce-specific (passed to the shared FAQ component). ----
-const SERVICES_LINK = { label: 'Ver más en nuestros servicios', href: 'https://yele.design/services' }
-const TIENDA_FAQ = [
-  { q: '¿Cuánto cuesta una tienda online?', a: 'Las tiendas de Yele empiezan en 1.199€. La mayoría elige el plan Business (1.199€); las tiendas más avanzadas, el plan Pro (2.799€). Es un pago único por el desarrollo — sin mensualidades de licencia.' },
-  { q: '¿Hay una cuota mensual?', a: 'Sí — Yele Care para tu tienda, desde 29€/mes, en tres niveles: Basic (29€/mes) — alojamiento, seguridad y copias; Plus (49€/mes) — fotos y vídeos de 5 productos al mes, soporte para modificar/añadir productos y un rediseño anual; y Pro (99€/mes) — fotos y vídeos de 15 productos al mes, rediseño por temporada y soporte prioritario.' },
-  { q: '¿Yele Care es obligatorio?', a: 'No — pero lo recomendamos mucho para una tienda. Mantiene todo funcionando (alojamiento, seguridad, copias y monitorización), renueva el contenido de tus productos cada mes e incluye rediseños para que tu tienda nunca quede anticuada. Puedes gestionarla tú mismo, pero con Yele Care no te preocupas por la parte técnica.' },
-  { q: '¿Puedo añadir productos y actualizar mi tienda más adelante?', a: 'Sí — cuando quieras. Puedes gestionar tu catálogo tú mismo de forma sencilla, y con Plus o Pro añadimos y optimizamos productos por ti cada mes.' },
-  { q: '¿Tengo que pagar todo por adelantado?', a: 'No. Pagas el 50% al empezar. El 50% restante se paga cuando la tienda está terminada y aprobada para su lanzamiento.' },
-  { q: '¿La propiedad del diseño y el contenido es mía?', a: 'Sí. Eres propietario del diseño y de todo el contenido — fotos, vídeos y textos — que creamos para tu tienda.' },
-  { q: '¿Puedo recuperar o exportar mis datos cuando quiera?', a: 'Sí — cuando quieras. Puedes recuperar y exportar tus productos, pedidos y datos de clientes en cualquier momento. Tus datos son tuyos.' },
-  { q: '¿El alojamiento está incluido?', a: 'Sí. El alojamiento está incluido con Yele Care.' },
-  { q: '¿Mi dominio está incluido?', a: 'Podemos proporcionar y gestionar un dominio estándar para tu tienda cuando sea necesario, y también puedes traer tu dominio actual. Los dominios premium o inusualmente caros pueden tener un coste adicional.' },
-  { q: '¿El SEO está incluido?', a: 'Todas las tiendas incluyen una base de SEO: configuración técnica, títulos de página, descripciones, sitemap, indexación, optimización móvil y analítica.' },
-  { q: '¿Podéis crear las fotos y vídeos de mis productos?', a: 'Sí. Creamos y mejoramos las fotos y vídeos de tus productos como parte del proyecto, y cada mes con Yele Care — 5 o 15 productos al mes según tu plan.', link: SERVICES_LINK },
-  { q: '¿Podéis gestionar mi publicidad?', a: 'Sí. Yele puede configurar y gestionar campañas de Google Ads y Meta. La gestión de publicidad y la inversión en anuncios son independientes de tu plan de tienda.', link: SERVICES_LINK },
-  { q: '¿Podéis añadir IA a mi tienda?', a: 'Sí. Podemos añadir chat con IA, recomendador de productos, automatización de clientes y seguimiento posventa, entre otras herramientas.', link: SERVICES_LINK },
-]
-
-// /es/tutienda — ecommerce Meta-ads landing. Reuses the proven /letsbuild
-// section flow (care, how, why, testimonials, FAQ, forms, footer) but with
-// store-specific hero, Shopify comparisons, pricing and values. Spanish-only.
-export default function TuTiendaLanding() {
-  const d = getFunnelDict('es')
-  const leadSource = "Tu Tienda (ES)"
-  // Ecommerce override for the "Asequible y transparente" why-card (price +
-  // wording tailored to stores instead of the shared 699€ website copy).
-  const whyItems = d.why.items.map(w =>
-    w.title === 'Asequible y transparente'
-      ? { ...w, body: 'Ecommerce profesionales desde 1199€, con precios claros y sin presupuestos de agencia confusos.' }
-      : w,
-  )
+// /tutienda — ecommerce Meta-ads landing (ES / EN / ZH). Store-specific hero,
+// Shopify comparisons, pricing and values come from lib/i18n/tutienda.ts; the
+// reused letsbuild sections (care videos, why, testimonials, forms, footer)
+// come from getFunnelDict(locale).
+export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) {
+  const d = getFunnelDict(locale)
+  const t = getTuTienda(locale)
+  const leadSource = t.leadSource
+  const legalPrefix = locale === 'es' ? '/es' : ''
+  const planOptions = t.pricing.tiers.map(x => x.planValue)
+  // Ecommerce override for the "Affordable & transparent" why-card (index 1).
+  const whyItems = d.why.items.map((w, i) => (i === 1 ? { ...w, body: t.whyAffordableBody } : w))
 
   return (
     <EnLangProvider>
       <main className="overflow-x-hidden" style={{ backgroundColor: DARK }}>
+        <LocaleSwitcher current={locale} />
         <LbHeroPing page="tutienda" />
 
         {/* ---- HERO — text + pills + CTAs left, cost-comparison card right. ---- */}
-        <TuTiendaHero rightPanel={<Parallax distance={18}><PricingComparisonCard /></Parallax>} />
+        <TuTiendaHero
+          t={t.hero}
+          locale={locale}
+          rightPanel={
+            <Parallax distance={18}>
+              <PricingComparisonCard title={t.compare.title} masRentable={t.compare.masRentable} rows={t.compare.rows} />
+            </Parallax>
+          }
+        />
 
         <LogoMarquee />
 
-        {/* ---- COMPARATIVA Yele vs Shopify (feature table) — dark, pink accent. ---- */}
+        {/* ---- COMPARATIVA Yele vs Shopify (feature table) — white table on black. ---- */}
         <section id="comparativa" className="px-6 py-16 md:py-24 scroll-mt-4" style={{ backgroundColor: DARK }}>
           <div className="max-w-5xl mx-auto">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2 text-center">
-              <span className="text-[#D46FC8]">Yele</span> vs Shopify
+              <span className="text-[#D46FC8]">Yele</span>{t.feature.vsRest}
             </h2>
-            <p className="font-body text-base text-white/70 mb-10 text-center">
-              Una tienda hecha a medida, con comisiones mucho más bajas.
-            </p>
+            <p className="font-body text-base text-white/70 mb-10 text-center">{t.feature.subtitle}</p>
             <div className="relative">
               {/* Soft shading beneath the table so it lifts off the black bg. */}
               <div className="pointer-events-none absolute -inset-x-6 bottom-0 h-24 translate-y-1/3 rounded-[50%] bg-black/60 blur-2xl" aria-hidden="true" />
@@ -195,13 +83,13 @@ export default function TuTiendaLanding() {
                 <table className="w-full border-collapse">
                   <thead>
                     <tr>
-                      <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-muted px-4 md:px-6 py-4 bg-base/70">Característica</th>
+                      <th className="text-left font-body text-xs font-semibold uppercase tracking-wide text-muted px-4 md:px-6 py-4 bg-base/70">{t.feature.colFeature}</th>
                       <th className="text-left font-body text-sm font-bold text-[#D46FC8] px-4 md:px-6 py-4 bg-[#D46FC8]/[0.07]">Yele</th>
                       <th className="text-left font-body text-sm font-semibold text-muted px-4 md:px-6 py-4 bg-base/70">Shopify</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {FEATURE_ROWS.map(r => (
+                    {t.feature.rows.map(r => (
                       <tr key={r.feature} className="group border-t border-hairline transition-colors duration-200 hover:bg-[#D46FC8]/[0.05]">
                         <td className="px-4 md:px-6 py-4 font-body text-sm text-ink font-semibold align-top">{r.feature}</td>
                         <td className="px-4 md:px-6 py-4 align-top bg-[#D46FC8]/[0.04] transition-colors duration-200 group-hover:bg-[#D46FC8]/[0.1]">
@@ -233,23 +121,22 @@ export default function TuTiendaLanding() {
           </div>
         </section>
 
-        {/* ---- PRECIOS — group 1: puesta en marcha (pago único),
-             group 2: Yele Care (cuota mensual). ---- */}
+        {/* ---- PRECIOS — group 1: build (one-time), group 2: Yele Care (monthly). ---- */}
         <LbSeen event="lb_precios" page="tutienda" />
         <section id="pricing" className="bg-white px-6 pt-20 md:pt-28 pb-16 md:pb-24 scroll-mt-4">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-display font-bold text-4xl md:text-5xl text-ink tracking-tight text-center mb-10 md:mb-14">
-              Precios
+              {t.pricing.title}
             </h2>
 
             {/* Group 1 — one-time build */}
             <div className="flex items-center gap-3 mb-6">
               <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8] text-white font-display font-bold flex items-center justify-center">1</span>
-              <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">Puesta en marcha</h3>
-              <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">Pago único</span>
+              <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">{t.pricing.group1}</h3>
+              <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">{t.pricing.pagoUnico}</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-              {TIENDA_TIERS.map((tier, i) => {
+              {t.pricing.tiers.map((tier, i) => {
                 const hl = tier.popular
                 return (
                   <TiltCard
@@ -263,21 +150,21 @@ export default function TuTiendaLanding() {
                   >
                     {hl && (
                       <span className="absolute -top-3.5 left-8 rounded-full bg-[#D46FC8] px-3 py-1 font-body text-xs font-semibold text-white">
-                        Más popular
+                        {t.pricing.masPopular}
                       </span>
                     )}
                     <p className={`relative font-body text-sm font-medium mb-2 ${hl ? 'text-white/55' : 'text-muted'}`}>{tier.name}</p>
                     <div className="relative mb-5 flex items-end gap-1.5">
                       <span className={`mb-1 font-body text-2xl font-semibold ${hl ? 'text-white/60' : 'text-muted'}`}>€</span>
                       <span className={`font-display text-5xl font-semibold tracking-tight ${hl ? 'text-white' : 'text-ink'}`}>{tier.amount}</span>
-                      <span className={`mb-2 font-body text-sm ${hl ? 'text-white/55' : 'text-muted'}`}>+ IVA</span>
+                      <span className={`mb-2 font-body text-sm ${hl ? 'text-white/55' : 'text-muted'}`}>{t.pricing.iva}</span>
                     </div>
                     {tier.headline && <p className={`relative font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{tier.headline}</p>}
                     <ul className="relative flex flex-1 flex-col gap-3 mb-6">
                       {tier.features.map(f => (
-                        <li key={f.label} className="flex items-start gap-2.5">
+                        <li key={f} className="flex items-start gap-2.5">
                           <Check size={16} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
-                          <span className={`font-body text-sm ${hl ? 'text-white/85' : 'text-ink'}`}>{f.label}</span>
+                          <span className={`font-body text-sm ${hl ? 'text-white/85' : 'text-ink'}`}>{f}</span>
                         </li>
                       ))}
                     </ul>
@@ -301,16 +188,16 @@ export default function TuTiendaLanding() {
             {/* Group 2 — monthly Yele Care */}
             <div className="flex items-center gap-3 mb-2">
               <span className="flex-shrink-0 w-9 h-9 rounded-full bg-[#D46FC8] text-white font-display font-bold flex items-center justify-center">2</span>
-              <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">Yele Care</h3>
-              <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">Cuota mensual</span>
+              <h3 className="font-display font-bold text-lg md:text-xl text-ink uppercase tracking-wide">{t.pricing.group2}</h3>
+              <span className="rounded-full bg-ink/[0.06] px-3 py-1 font-body text-xs font-medium text-muted">{t.pricing.cuotaMensual}</span>
             </div>
-            <p className="font-body text-sm text-muted mb-6 ml-12">Mantenimiento, contenido, soporte y rediseños.</p>
+            <p className="font-body text-sm text-muted mb-6 ml-12">{t.pricing.careSubtitle}</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-              {CARE_TIERS.map((t, i) => {
-                const hl = t.popular
+              {t.pricing.careTiers.map((care, i) => {
+                const hl = care.popular
                 return (
                   <TiltCard
-                    key={t.name}
+                    key={care.name}
                     index={i}
                     className={`relative flex flex-col rounded-3xl p-7 ${
                       hl
@@ -318,14 +205,14 @@ export default function TuTiendaLanding() {
                         : 'bg-white ring-1 ring-black/[0.07]'
                     }`}
                   >
-                    <p className={`relative font-body text-sm font-semibold mb-2 ${hl ? 'text-white' : 'text-ink'}`}>{t.name}</p>
+                    <p className={`relative font-body text-sm font-semibold mb-2 ${hl ? 'text-white' : 'text-ink'}`}>{care.name}</p>
                     <div className="relative mb-5 flex items-end gap-0.5">
-                      <span className={`font-display text-4xl font-semibold tracking-tight ${hl ? 'text-white' : 'text-ink'}`}>{t.price}</span>
-                      <span className={`mb-1.5 font-body text-sm ${hl ? 'text-white/55' : 'text-muted'}`}>/mes</span>
+                      <span className={`font-display text-4xl font-semibold tracking-tight ${hl ? 'text-white' : 'text-ink'}`}>{care.price}</span>
+                      <span className={`mb-1.5 font-body text-sm ${hl ? 'text-white/55' : 'text-muted'}`}>{t.pricing.perMonth}</span>
                     </div>
-                    {t.headline && <p className={`relative font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{t.headline}</p>}
+                    {care.headline && <p className={`relative font-body text-sm font-bold mb-3 ${hl ? 'text-white/85' : 'text-ink'}`}>{care.headline}</p>}
                     <ul className="relative flex flex-1 flex-col gap-2.5">
-                      {t.features.map(feat => (
+                      {care.features.map(feat => (
                         <li key={feat} className="flex items-start gap-2">
                           <Check size={15} className="mt-0.5 flex-shrink-0 text-[#D46FC8]" aria-hidden="true" />
                           <span className={`font-body text-sm leading-snug ${hl ? 'text-white/85' : 'text-ink'}`}>{feat}</span>
@@ -349,16 +236,16 @@ export default function TuTiendaLanding() {
                   className="font-display font-bold text-white tracking-tight leading-[1.1] mb-5 md:mb-7"
                   style={{ fontSize: 'clamp(1.65rem, 3vw, 2.35rem)' }}
                 >
-                  Demo sin compromiso:
+                  {t.values.titleLine1}
                   <br />
-                  Descubre cómo podemos mejorar tu tienda
+                  {t.values.titleLine2}
                 </h2>
 
                 <p className="font-body text-base md:text-lg font-semibold uppercase tracking-[0.12em] text-white/50 mb-4">
-                  Nuestros valores
+                  {t.values.kicker}
                 </p>
                 <ul className="space-y-3.5 mb-8 md:mb-9">
-                  {TIENDA_VALUES.map((v, i) => (
+                  {t.values.items.map((v, i) => (
                     <li key={v.title} className="flex items-start gap-3">
                       <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[#D46FC8] text-white font-display font-bold text-sm flex items-center justify-center mt-0.5">
                         {i + 1}
@@ -370,7 +257,7 @@ export default function TuTiendaLanding() {
                   ))}
                 </ul>
 
-                <ReputationBadge className="scale-110 origin-left" locale="es" align="left" />
+                <ReputationBadge className="scale-110 origin-left" locale={locale} align="left" />
               </div>
 
               <div className="md:ml-auto md:w-full md:max-w-md">
@@ -378,21 +265,21 @@ export default function TuTiendaLanding() {
                   variant="dark"
                   ctaLabel={d.form.cta}
                   id="tienda-form"
-                  planOptions={PLAN_OPTIONS}
+                  planOptions={planOptions}
                   leadSource={leadSource}
                   sendWelcome
-                  locale="es"
+                  locale={locale}
                   submitBeacon={{ event: 'lb_submit', page: 'tutienda' }}
                 />
                 <div className="text-center mt-2.5">
-                  <WhatsAppLink label={d.form.whatsapp ?? 'O danos un toque por WhatsApp'} tone="dark" prefill="¡Hola! Me interesa una tienda online con Yele." />
+                  <WhatsAppLink label={d.form.whatsapp ?? 'WhatsApp'} tone="dark" prefill={t.whatsappPrefill} />
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ---- ÚLTIMOS PROYECTOS (moved below the first form) ---- */}
+        {/* ---- ÚLTIMOS PROYECTOS (below the first form) ---- */}
         <div id="proyectos" className="scroll-mt-4">
           <LatestFeaturedWork forceDark title={d.featuredTitle} />
         </div>
@@ -448,10 +335,10 @@ export default function TuTiendaLanding() {
         {/* ---- CÓMO FUNCIONA ---- */}
         <section className="bg-white px-6 pt-8 md:pt-10 pb-16 md:pb-24">
           <div className="max-w-4xl mx-auto">
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">{TIENDA_HOW.kicker}</p>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-10">{TIENDA_HOW.title}</h2>
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted mb-3">{t.how.kicker}</p>
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-ink tracking-tight mb-10">{t.how.title}</h2>
             <div className="space-y-4">
-              {TIENDA_HOW.steps.map((step, i) => (
+              {t.how.steps.map((step, i) => (
                 <div key={step.title} className="group flex gap-5 rounded-2xl p-4 -mx-4 transition-all duration-300 hover:bg-black/[0.03] hover:translate-x-1">
                   <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#D46FC8]/15 text-[#D46FC8] font-display font-bold flex items-center justify-center transition-all duration-300 group-hover:bg-[#D46FC8] group-hover:text-white group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#D46FC8]/30">
                     {i + 1}
@@ -497,24 +384,19 @@ export default function TuTiendaLanding() {
         </section>
 
         {/* ---- TESTIMONIALS ---- */}
-        <Testimonios locale="es" />
+        <Testimonios locale={locale} />
 
         <StartNowMarquee />
 
         <LbSeen event="lb_faq" page="tutienda" />
-        <LetsBuildFAQ locale="es" items={TIENDA_FAQ} />
+        <LetsBuildFAQ locale={locale} items={t.faq} />
 
         {/* ---- LEAD FORM (detailed, 2nd form) ---- */}
         <section id="build-form" className="px-6 py-16 md:py-24" style={{ backgroundColor: DARK }}>
           <div className="max-w-2xl mx-auto">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-white tracking-tight mb-2">{d.buildForm.title}</h2>
             <p className="font-body text-base text-white/70 mb-8">{d.buildForm.subtitle}</p>
-            <BuildLeadForm
-              variant="dark"
-              leadSource={leadSource}
-              sendWelcome
-              packages={['Business — 1.199€', 'Pro — 2.799€', 'No estoy seguro — recomendádmelo']}
-            />
+            <BuildLeadForm variant="dark" leadSource={leadSource} sendWelcome packages={t.buildPackages} />
           </div>
         </section>
 
@@ -528,14 +410,10 @@ export default function TuTiendaLanding() {
               </video>
               <div>
                 <h2 className="font-display font-bold text-3xl md:text-5xl text-white tracking-tight mb-5">
-                  Tu tienda merece un escaparate a su altura.
+                  {t.finalCta.title}
                 </h2>
-                <p className="font-body text-base md:text-lg text-white/70 leading-relaxed mb-2">
-                  Una tienda online a medida, optimizada para vender — con comisiones mucho más bajas que Shopify.
-                </p>
-                <p className="font-body text-base text-white/60">
-                  Tiendas desde 1.199€. Yele Care desde 29€/mes. 50% para empezar, 50% al lanzar.
-                </p>
+                <p className="font-body text-base md:text-lg text-white/70 leading-relaxed mb-2">{t.finalCta.line1}</p>
+                <p className="font-body text-base text-white/60">{t.finalCta.line2}</p>
               </div>
             </div>
             <div className="mt-12 text-center">
@@ -551,9 +429,9 @@ export default function TuTiendaLanding() {
           <div className="max-w-6xl mx-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-body text-sm text-white/50">© {new Date().getFullYear()} Yele. {d.footer.rights}</p>
             <nav className="flex flex-wrap gap-x-6 gap-y-2">
-              <Link href="/es/terms" className="font-body text-sm text-white/60 hover:text-white transition-colors">{d.footer.terms}</Link>
-              <Link href="/es/privacy-policy" className="font-body text-sm text-white/60 hover:text-white transition-colors">{d.footer.privacy}</Link>
-              <Link href="/es/legal-notice" className="font-body text-sm text-white/60 hover:text-white transition-colors">{d.footer.legal}</Link>
+              <Link href={legalPrefix + '/terms'} className="font-body text-sm text-white/60 hover:text-white transition-colors">{d.footer.terms}</Link>
+              <Link href={legalPrefix + '/privacy-policy'} className="font-body text-sm text-white/60 hover:text-white transition-colors">{d.footer.privacy}</Link>
+              <Link href={legalPrefix + '/legal-notice'} className="font-body text-sm text-white/60 hover:text-white transition-colors">{d.footer.legal}</Link>
             </nav>
           </div>
         </footer>
