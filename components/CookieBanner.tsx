@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Cookie, ChevronDown } from 'lucide-react'
 
 declare global {
   interface Window { clarity?: (...args: unknown[]) => void }
@@ -13,47 +12,37 @@ type Prefs = { analytics: boolean; marketing: boolean }
 
 const CONSENT_KEY = 'cookie-consent'
 
-// Geo-split consent model:
-//  • EU / localized pages (/es, /zh): PRIOR OPT-IN. A blocking top panel with a
-//    backdrop — the visitor must click Accept or Reject before anything
-//    non-essential (Meta Pixel, funnel analytics) runs. Toggles default OFF.
-//    This is the AEPD/ePrivacy-compliant path.
-//  • Detected non-EU (English): opt-out — trackers already fired on load
-//    (see lib/metaPixel.ts hasMarketingConsent, which grants by default only
-//    when yele_eu=0). The panel still shows and still asks for a choice, but
-//    without the blocking backdrop since nothing is being gated.
+// Mango-style blocking consent modal: a centered card over a dimmed backdrop
+// that locks the page until the visitor picks an option (Accept all / Necessary
+// only / Manage). Toggles default OFF.
+//
+// Tracker gating is geo-split (see lib/metaPixel.ts hasMarketingConsent +
+// funnelBeacon): EU/unknown are prior opt-in (nothing non-essential runs until
+// Accept); detected non-EU (yele_eu=0) is opt-out. The modal still blocks
+// navigation for everyone — it's the consent gate AND a deliberate interstitial.
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false)
   const [expanded, setExpanded] = useState(false)
-  const [isEu, setIsEu] = useState(true)
-  // Toggles default OFF (opt-in) — only an explicit Accept / Save turns them on.
   const [prefs, setPrefs] = useState<Prefs>({ analytics: false, marketing: false })
   const decidedRef = useRef(false)
   const pathname = usePathname()
   const locale = pathname.startsWith('/es') ? 'es' : pathname.startsWith('/zh') ? 'zh' : 'en'
   const tt = (es: string, en: string, zh?: string) => (locale === 'es' ? es : locale === 'zh' ? (zh ?? en) : en)
-  // Blocking (backdrop + scroll lock) for EU and any localized page — the
-  // stricter audience that requires prior opt-in.
-  const blocking = isEu || locale !== 'en'
+  const policyHref = locale === 'es' ? '/es/cookie-policy' : '/cookie-policy'
 
   useEffect(() => {
     let stored: string | null = null
     try { stored = localStorage.getItem(CONSENT_KEY) } catch { stored = null }
-    if (stored) return
-    let nonEu = false
-    try { nonEu = document.cookie.split('; ').some(c => c === 'yele_eu=0') } catch { nonEu = false }
-    setIsEu(!nonEu)
-    setVisible(true)
+    if (!stored) setVisible(true)
   }, [])
 
-  // Lock page scroll while the blocking panel is up, so the visitor can't
-  // interact with the page before choosing.
+  // Lock page scroll while the modal is up.
   useEffect(() => {
-    if (!visible || !blocking) return
+    if (!visible) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = prev }
-  }, [visible, blocking])
+  }, [visible])
 
   function commit(p: Prefs) {
     if (decidedRef.current) return
@@ -63,159 +52,136 @@ export default function CookieBanner() {
       ad_Storage: p.marketing ? 'granted' : 'denied',
       analytics_Storage: p.analytics ? 'granted' : 'denied',
     })
-    // Lets consent-gated scripts (MetaPixelScript, site-wide) react immediately
-    // — on EU this is what actually mounts the pixel once they accept.
     window.dispatchEvent(new Event('cookie-consent-updated'))
     setVisible(false)
   }
 
-  if (!visible) return null
-
-  const title = tt('Tu privacidad', 'Your privacy', '你的隐私')
-  const desc = tt(
-    'Usamos cookies para analizar el tráfico, medir nuestras campañas y mejorar el sitio. Elige una opción para continuar.',
-    'We use cookies to analyse traffic, measure our campaigns and improve the site. Choose an option to continue.',
-    '我们使用 Cookie 来分析流量、衡量广告效果并改进网站。请选择一项以继续。',
+  const title = tt('LAS COOKIES MEJORAN TU EXPERIENCIA', 'COOKIES IMPROVE YOUR EXPERIENCE', 'COOKIE 让你的体验更好')
+  const body = tt(
+    'Utilizamos cookies propias y de terceros para fines analíticos y para medir nuestras campañas publicitarias. Puedes aceptar todas las cookies o gestionar tus preferencias en el panel de configuración.',
+    'We use our own and third-party cookies for analytics and to measure our advertising campaigns. You can accept all cookies or manage your preferences in the settings panel.',
+    '我们使用自有和第三方 Cookie 进行分析并衡量广告效果。你可以接受全部 Cookie，或在设置面板中管理你的偏好。',
   )
+  const learnMore = tt('Consulta más información en ', 'Learn more in our ', '了解更多请查看')
+  const policyLabel = tt('Política de cookies', 'Cookie Policy', 'Cookie 政策')
 
   return (
     <AnimatePresence>
-      {blocking && (
-        <motion.div
-          key="backdrop"
-          className="fixed inset-0 z-[99] bg-black/50 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          aria-hidden="true"
-        />
-      )}
+      {visible && (
+        <>
+          <motion.div
+            key="backdrop"
+            className="fixed inset-0 z-[110] bg-black/55 backdrop-blur-[2px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            aria-hidden="true"
+          />
 
-      <motion.div
-        key="panel"
-        role="dialog"
-        aria-modal={blocking}
-        aria-label={title}
-        className="fixed inset-x-0 top-0 z-[100] p-3 sm:p-4"
-        initial={{ y: -24, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -24, opacity: 0 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-      >
-        <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl bg-white shadow-[0_24px_70px_rgba(0,0,0,0.3)] ring-1 ring-black/10">
-          {/* Pink accent bar */}
-          <div className="h-1 w-full bg-gradient-to-r from-[#D46FC8] via-[#DE85D2] to-[#D46FC8]" aria-hidden="true" />
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6">
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label={title}
+              className="w-full max-w-lg bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)] rounded-2xl overflow-hidden"
+              initial={{ opacity: 0, scale: 0.96, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98, y: 6 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              <div className="p-7 sm:p-9">
+                <h2 className="font-display font-bold text-ink text-xl sm:text-2xl leading-tight tracking-tight mb-4">
+                  {title}
+                </h2>
 
-          <div className="p-5 sm:p-6">
-            {!expanded ? (
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-                <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <span className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-[#D46FC8]/12 text-[#D46FC8]">
-                    <Cookie size={20} aria-hidden="true" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="font-display font-bold text-ink text-base mb-0.5">{title}</p>
-                    <p className="font-body text-sm text-muted leading-relaxed">{desc}</p>
-                  </div>
-                </div>
+                {!expanded ? (
+                  <>
+                    <p className="font-body text-sm sm:text-[15px] text-muted leading-relaxed mb-7">
+                      {body}{' '}
+                      {learnMore}
+                      <a href={policyHref} className="font-semibold text-ink underline underline-offset-2 hover:text-[#D46FC8] transition-colors">
+                        {policyLabel}
+                      </a>
+                      .
+                    </p>
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center md:flex-shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => commit({ analytics: true, marketing: true })}
-                    className="order-1 sm:order-2 inline-flex items-center justify-center rounded-xl bg-[#D46FC8] px-7 py-3.5 font-body text-base font-semibold text-white shadow-lg shadow-[#D46FC8]/30 transition-colors hover:bg-[#DE85D2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D46FC8]"
-                  >
-                    {tt('Aceptar', 'Accept', '接受')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => commit({ analytics: false, marketing: false })}
-                    className="order-2 sm:order-1 inline-flex items-center justify-center rounded-xl border border-ink/20 px-6 py-3.5 font-body text-base font-medium text-ink transition-colors hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-                  >
-                    {tt('Rechazar', 'Reject', '拒绝')}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="font-display font-bold text-ink text-base">{tt('Preferencias de cookies', 'Cookie preferences', 'Cookie 偏好设置')}</p>
-                  <button onClick={() => setExpanded(false)} aria-label={tt('Cerrar', 'Close', '关闭')} className="text-muted hover:text-ink transition-colors">
-                    <ChevronDown size={18} />
-                  </button>
-                </div>
-
-                <div className="mb-5 rounded-xl border border-hairline overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-hairline bg-black/[0.015]">
-                    <div className="pr-4">
-                      <p className="font-body text-sm font-medium text-ink">{tt('Esenciales', 'Essential', '必要')}</p>
-                      <p className="font-body text-xs text-muted">{tt('Necesarias para que el sitio funcione.', 'Required for the site to function.', '网站运行所必需。')}</p>
+                    <div className="flex flex-col gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setExpanded(true)}
+                        className="font-body text-sm font-semibold uppercase tracking-wide text-ink underline underline-offset-4 hover:text-[#D46FC8] transition-colors self-center py-1"
+                      >
+                        {tt('Configurar cookies', 'Manage cookies', '管理 Cookie')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => commit({ analytics: false, marketing: false })}
+                        className="w-full inline-flex items-center justify-center border border-ink/25 px-6 py-3.5 font-body text-sm font-semibold uppercase tracking-wide text-ink rounded-xl transition-colors hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                      >
+                        {tt('Solo cookies necesarias', 'Necessary only', '仅必要 Cookie')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => commit({ analytics: true, marketing: true })}
+                        className="w-full inline-flex items-center justify-center bg-ink px-6 py-3.5 font-body text-sm font-semibold uppercase tracking-wide text-white rounded-xl transition-colors hover:bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                      >
+                        {tt('Aceptar todas', 'Accept all', '全部接受')}
+                      </button>
                     </div>
-                    <span className="font-body text-xs text-[#34C759] font-medium shrink-0">{tt('Siempre activas', 'Always on', '始终开启')}</span>
-                  </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="mb-6 rounded-xl border border-hairline overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-hairline bg-black/[0.015]">
+                        <div className="pr-4">
+                          <p className="font-body text-sm font-medium text-ink">{tt('Esenciales', 'Essential', '必要')}</p>
+                          <p className="font-body text-xs text-muted">{tt('Necesarias para que el sitio funcione.', 'Required for the site to function.', '网站运行所必需。')}</p>
+                        </div>
+                        <span className="font-body text-xs text-[#34C759] font-medium shrink-0">{tt('Siempre activas', 'Always on', '始终开启')}</span>
+                      </div>
+                      <Toggle
+                        label={tt('Analítica', 'Analytics', '分析')}
+                        desc={tt('Nos ayudan a mejorar el sitio web.', 'Help us improve the website.', '帮助我们改进网站。')}
+                        on={prefs.analytics}
+                        onToggle={() => setPrefs(p => ({ ...p, analytics: !p.analytics }))}
+                        border
+                      />
+                      <Toggle
+                        label={tt('Marketing', 'Marketing', '营销')}
+                        desc={tt('Medición de campañas y publicidad personalizada.', 'Campaign measurement and personalised advertising.', '广告衡量与个性化广告。')}
+                        on={prefs.marketing}
+                        onToggle={() => setPrefs(p => ({ ...p, marketing: !p.marketing }))}
+                      />
+                    </div>
 
-                  <Toggle
-                    label={tt('Analítica', 'Analytics', '分析')}
-                    desc={tt('Nos ayudan a mejorar el sitio web.', 'Help us improve the website.', '帮助我们改进网站。')}
-                    on={prefs.analytics}
-                    onToggle={() => setPrefs(p => ({ ...p, analytics: !p.analytics }))}
-                    border
-                  />
-                  <Toggle
-                    label={tt('Marketing', 'Marketing', '营销')}
-                    desc={tt('Medición de campañas y publicidad personalizada.', 'Campaign measurement and personalised advertising.', '广告衡量与个性化广告。')}
-                    on={prefs.marketing}
-                    onToggle={() => setPrefs(p => ({ ...p, marketing: !p.marketing }))}
-                  />
-                </div>
-
-                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <a
-                    href={locale === 'es' ? '/es/privacy-policy' : locale === 'zh' ? '/zh/privacy-policy' : '/privacy-policy'}
-                    className="font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-2 text-center sm:text-left"
-                  >
-                    {tt('Política de privacidad', 'Privacy policy', '隐私政策')}
-                  </a>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => commit({ analytics: false, marketing: false })}
-                      className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl border border-ink/20 px-5 py-3 font-body text-sm font-medium text-ink transition-colors hover:bg-black/[0.04]"
-                    >
-                      {tt('Rechazar', 'Reject', '拒绝')}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => commit(prefs)}
-                      className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl bg-[#D46FC8] px-6 py-3 font-body text-sm font-semibold text-white shadow-lg shadow-[#D46FC8]/30 transition-colors hover:bg-[#DE85D2]"
-                    >
-                      {tt('Guardar selección', 'Save selection', '保存选择')}
-                    </button>
-                  </div>
-                </div>
+                    <div className="flex flex-col gap-3">
+                      <button
+                        type="button"
+                        onClick={() => commit(prefs)}
+                        className="w-full inline-flex items-center justify-center bg-ink px-6 py-3.5 font-body text-sm font-semibold uppercase tracking-wide text-white rounded-xl transition-colors hover:bg-black"
+                      >
+                        {tt('Guardar selección', 'Save selection', '保存选择')}
+                      </button>
+                      <div className="flex items-center justify-center gap-5">
+                        <button
+                          type="button"
+                          onClick={() => commit({ analytics: false, marketing: false })}
+                          className="font-body text-xs font-medium text-muted hover:text-ink transition-colors underline underline-offset-2"
+                        >
+                          {tt('Rechazar todo', 'Reject all', '全部拒绝')}
+                        </button>
+                        <a href={policyHref} className="font-body text-xs font-medium text-muted hover:text-ink transition-colors underline underline-offset-2">
+                          {policyLabel}
+                        </a>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
-            )}
-
-            {!expanded && (
-              <div className="mt-3 flex items-center justify-center gap-4 md:justify-start">
-                <button
-                  type="button"
-                  onClick={() => setExpanded(true)}
-                  className="font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-2"
-                >
-                  {tt('Personalizar', 'Customise', '自定义')}
-                </button>
-                <a
-                  href={locale === 'es' ? '/es/privacy-policy' : locale === 'zh' ? '/zh/privacy-policy' : '/privacy-policy'}
-                  className="font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-2"
-                >
-                  {tt('Política de privacidad', 'Privacy policy', '隐私政策')}
-                </a>
-              </div>
-            )}
+            </motion.div>
           </div>
-        </div>
-      </motion.div>
+        </>
+      )}
     </AnimatePresence>
   )
 }
