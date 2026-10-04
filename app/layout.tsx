@@ -280,16 +280,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Marketing consent (geo-split: opt-out for detected non-EU, prior
             opt-in for EU/unknown — see lib/metaPixel.ts hasMarketingConsent). */}
         <MetaPixelScript />
-        {/* Google Ads tag — afterInteractive (not lazyOnload): loads right
-            after hydration, off the critical rendering path, but early
-            enough that gtag is reliably ready by the time a real user
-            submits a form (always at least several seconds into the visit),
-            so onboarding_form_submit + enhanced conversions keep firing. */}
-        {/* The heavy gtag library is deferred to browser idle (lazyOnload) to
-            keep it off the critical path / out of TBT. The tiny inline stub
-            below stays afterInteractive so window.gtag + dataLayer exist
-            early — any conversion fired before the library loads is queued in
-            dataLayer and sent once gtag/js finishes loading. */}
+        {/* Google Ads / gtag — DISABLED for now (not running Google Ads).
+            Re-enable by uncommenting both <Script> tags below.
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-18281072925"
           strategy="lazyOnload"
@@ -303,6 +295,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             gtag('config', 'G-970LSR5GJ4');
           `}
         </Script>
+        */}
         {/* Microsoft Clarity — the consentv2 call right after the bootstrap
             IIFE is safe even though the real clarity.js hasn't loaded yet:
             c[a] is already the queue-stub function at this point (assigned

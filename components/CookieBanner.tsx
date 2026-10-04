@@ -83,20 +83,20 @@ export default function CookieBanner() {
               role="dialog"
               aria-modal="true"
               aria-label={title}
-              className="w-full max-w-lg bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)] rounded-2xl overflow-hidden"
-              initial={{ opacity: 0, scale: 0.96, y: 10 }}
+              className="w-full max-w-3xl bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)] rounded-xl overflow-hidden"
+              initial={{ opacity: 0, scale: 0.97, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: 6 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
             >
-              <div className="p-7 sm:p-9">
-                <h2 className="font-display font-bold text-ink text-xl sm:text-2xl leading-tight tracking-tight mb-4">
+              <div className="p-6 sm:p-8">
+                <h2 className="font-display font-bold text-ink text-sm sm:text-base uppercase tracking-wide leading-snug mb-2.5">
                   {title}
                 </h2>
 
                 {!expanded ? (
                   <>
-                    <p className="font-body text-sm sm:text-[15px] text-muted leading-relaxed mb-7">
+                    <p className="font-body text-[13px] text-muted leading-relaxed mb-6 max-w-2xl">
                       {body}{' '}
                       {learnMore}
                       <a href={policyHref} className="font-semibold text-ink underline underline-offset-2 hover:text-[#D46FC8] transition-colors">
@@ -105,25 +105,25 @@ export default function CookieBanner() {
                       .
                     </p>
 
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
                       <button
                         type="button"
                         onClick={() => setExpanded(true)}
-                        className="font-body text-sm font-semibold uppercase tracking-wide text-ink underline underline-offset-4 hover:text-[#D46FC8] transition-colors self-center py-1"
+                        className="font-body text-xs font-semibold uppercase tracking-wide text-ink underline underline-offset-4 hover:text-[#D46FC8] transition-colors py-2 sm:py-0 sm:mr-2"
                       >
                         {tt('Configurar cookies', 'Manage cookies', '管理 Cookie')}
                       </button>
                       <button
                         type="button"
                         onClick={() => commit({ analytics: false, marketing: false })}
-                        className="w-full inline-flex items-center justify-center border border-ink/25 px-6 py-3.5 font-body text-sm font-semibold uppercase tracking-wide text-ink rounded-xl transition-colors hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                        className="w-full sm:w-auto inline-flex items-center justify-center border border-ink/25 px-8 py-4 font-body text-xs font-semibold uppercase tracking-wide text-ink rounded-lg transition-colors hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                       >
                         {tt('Solo cookies necesarias', 'Necessary only', '仅必要 Cookie')}
                       </button>
                       <button
                         type="button"
                         onClick={() => commit({ analytics: true, marketing: true })}
-                        className="w-full inline-flex items-center justify-center bg-ink px-6 py-3.5 font-body text-sm font-semibold uppercase tracking-wide text-white rounded-xl transition-colors hover:bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                        className="w-full sm:w-auto inline-flex items-center justify-center bg-ink px-10 py-4 font-body text-xs font-semibold uppercase tracking-wide text-white rounded-lg transition-colors hover:bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                       >
                         {tt('Aceptar todas', 'Accept all', '全部接受')}
                       </button>
@@ -154,26 +154,21 @@ export default function CookieBanner() {
                       />
                     </div>
 
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+                      <button
+                        type="button"
+                        onClick={() => commit({ analytics: false, marketing: false })}
+                        className="font-body text-xs font-semibold uppercase tracking-wide text-ink underline underline-offset-4 hover:text-[#D46FC8] transition-colors py-2 sm:py-0 sm:mr-auto"
+                      >
+                        {tt('Rechazar todo', 'Reject all', '全部拒绝')}
+                      </button>
                       <button
                         type="button"
                         onClick={() => commit(prefs)}
-                        className="w-full inline-flex items-center justify-center bg-ink px-6 py-3.5 font-body text-sm font-semibold uppercase tracking-wide text-white rounded-xl transition-colors hover:bg-black"
+                        className="w-full sm:w-auto inline-flex items-center justify-center bg-ink px-10 py-4 font-body text-xs font-semibold uppercase tracking-wide text-white rounded-lg transition-colors hover:bg-black"
                       >
                         {tt('Guardar selección', 'Save selection', '保存选择')}
                       </button>
-                      <div className="flex items-center justify-center gap-5">
-                        <button
-                          type="button"
-                          onClick={() => commit({ analytics: false, marketing: false })}
-                          className="font-body text-xs font-medium text-muted hover:text-ink transition-colors underline underline-offset-2"
-                        >
-                          {tt('Rechazar todo', 'Reject all', '全部拒绝')}
-                        </button>
-                        <a href={policyHref} className="font-body text-xs font-medium text-muted hover:text-ink transition-colors underline underline-offset-2">
-                          {policyLabel}
-                        </a>
-                      </div>
                     </div>
                   </>
                 )}
