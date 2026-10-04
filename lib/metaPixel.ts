@@ -26,14 +26,20 @@ export const CONSENT_UPDATED_EVENT = 'cookie-consent-updated'
 // fires a NEW Meta event (trackMetaLead, trackMetaSurveyComplete below),
 // so an explicit Reject at least stops further events even though the
 // already-loaded pixel itself can't be un-loaded.
+// Geo-split consent: an explicit stored choice always wins. With NO stored
+// choice yet, consent is GRANTED only for detected non-EU visitors (yele_eu=0,
+// set by middleware) — opt-out there. EU/unknown visitors are treated as NOT
+// consented until they explicitly Accept in the blocking cookie panel
+// (prior opt-in, AEPD/ePrivacy-compliant), so the pixel stays unmounted for
+// them until then (MetaPixelScript re-checks on the consent-updated event).
 export function hasMarketingConsent(): boolean {
   if (typeof window === 'undefined') return false
   try {
     const raw = localStorage.getItem(CONSENT_KEY)
-    if (!raw) return true
-    return JSON.parse(raw)?.marketing !== false
+    if (raw) return JSON.parse(raw)?.marketing !== false
+    return typeof document !== 'undefined' && document.cookie.split('; ').some(c => c === 'yele_eu=0')
   } catch {
-    return true
+    return false
   }
 }
 

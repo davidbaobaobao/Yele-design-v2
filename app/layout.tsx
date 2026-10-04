@@ -277,7 +277,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Analytics />
         <SpeedInsights />
         {/* Meta Pixel — site-wide for full-funnel attribution, gated behind
-            Marketing consent (opt-out default-granted — see lib/metaPixel.ts). */}
+            Marketing consent (geo-split: opt-out for detected non-EU, prior
+            opt-in for EU/unknown — see lib/metaPixel.ts hasMarketingConsent). */}
         <MetaPixelScript />
         {/* Google Ads tag — afterInteractive (not lazyOnload): loads right
             after hydration, off the critical rendering path, but early

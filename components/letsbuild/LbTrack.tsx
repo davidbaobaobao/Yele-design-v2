@@ -9,17 +9,17 @@ import { useEffect, useRef } from 'react'
 const fired = new Set<string>()
 
 function consentAllows(): boolean {
-  // Opt-OUT model — matches the site-wide Meta Pixel (lib/metaPixel.ts
-  // hasMarketingConsent): default GRANTED on arrival so EU ad traffic that
-  // hasn't clicked "Accept" is still counted; only an explicit Reject
-  // (analytics:false) stops it. Keeps the funnel counts in line with Meta's
-  // own visit numbers. Events are first-party and PII-free (opaque session
-  // id in sessionStorage, no IP).
+  // Geo-split — matches the site-wide Meta Pixel (lib/metaPixel.ts
+  // hasMarketingConsent). An explicit stored choice always wins; with none
+  // yet, allow only for detected non-EU visitors (yele_eu=0, set by
+  // middleware). EU/unknown wait for an explicit Accept in the cookie panel
+  // (prior opt-in). Events are first-party and PII-free (opaque session id,
+  // no IP).
   try {
     const raw = localStorage.getItem('cookie-consent')
-    if (!raw) return true
-    return JSON.parse(raw).analytics !== false
-  } catch { return true }
+    if (raw) return JSON.parse(raw).analytics !== false
+    return document.cookie.split('; ').some(c => c === 'yele_eu=0')
+  } catch { return false }
 }
 
 function sessionId(): string {

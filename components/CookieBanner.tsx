@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Cookie, ChevronDown } from 'lucide-react'
 
 declare global {
   interface Window { clarity?: (...args: unknown[]) => void }
@@ -11,252 +12,231 @@ declare global {
 type Prefs = { analytics: boolean; marketing: boolean }
 
 const CONSENT_KEY = 'cookie-consent'
-// Deliberately generous/short — this is "did they keep browsing," not a
-// precision UX timer. Exact values aren't load-bearing.
-const SCROLL_THRESHOLD_PX = 200
-const AUTO_ACCEPT_TIMEOUT_MS = 5000
 
-// Opt-OUT model: consent is GRANTED the instant a visitor arrives (Meta
-// Pixel/Clarity/gtag all fire immediately — see lib/metaPixel.ts's
-// hasMarketingConsent(), which defaults to true when nothing is stored
-// yet). This banner's job is purely to inform + offer an explicit Reject,
-// not to gate anything itself — "kept browsing without objecting" (a
-// scroll, a click elsewhere, a route change, or a few seconds passing)
-// simply persists that implied default to localStorage so the banner
-// doesn't re-prompt on the next visit; an explicit Reject is the ONLY
-// action that actually turns anything off.
+// Geo-split consent model:
+//  • EU / localized pages (/es, /zh): PRIOR OPT-IN. A blocking top panel with a
+//    backdrop — the visitor must click Accept or Reject before anything
+//    non-essential (Meta Pixel, funnel analytics) runs. Toggles default OFF.
+//    This is the AEPD/ePrivacy-compliant path.
+//  • Detected non-EU (English): opt-out — trackers already fired on load
+//    (see lib/metaPixel.ts hasMarketingConsent, which grants by default only
+//    when yele_eu=0). The panel still shows and still asks for a choice, but
+//    without the blocking backdrop since nothing is being gated.
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false)
   const [expanded, setExpanded] = useState(false)
   const [isEu, setIsEu] = useState(true)
-  const [prefs, setPrefs] = useState<Prefs>({ analytics: true, marketing: true })
-  const bannerRef = useRef<HTMLDivElement>(null)
-  // Guards against the explicit-click path and an auto-accept trigger both
-  // resolving for the same visit (e.g. the "click elsewhere" listener
-  // firing on the same click that hit the Reject button, just a tick
-  // later) — whichever calls commit() first wins, everything after is a
-  // no-op, regardless of exact event-ordering timing.
+  // Toggles default OFF (opt-in) — only an explicit Accept / Save turns them on.
+  const [prefs, setPrefs] = useState<Prefs>({ analytics: false, marketing: false })
   const decidedRef = useRef(false)
   const pathname = usePathname()
-  const firstPathnameRef = useRef(pathname)
-  // The banner lives above the page's LanguageProvider, so it derives its own
-  // language from the path (/es, /zh) to match the page it's shown on.
   const locale = pathname.startsWith('/es') ? 'es' : pathname.startsWith('/zh') ? 'zh' : 'en'
   const tt = (es: string, en: string, zh?: string) => (locale === 'es' ? es : locale === 'zh' ? (zh ?? en) : en)
-  // The banner must STAY until an explicit Accept/Reject (no scroll/timeout
-  // auto-dismiss) for EU visitors AND for any localized page (/es, /zh) — a
-  // Spanish/Chinese page is a European/stricter audience by default. Only the
-  // English pages for detected non-EU visitors get the implied "kept browsing"
-  // dismissal.
-  const stayUntilChoice = isEu || locale !== 'en'
+  // Blocking (backdrop + scroll lock) for EU and any localized page — the
+  // stricter audience that requires prior opt-in.
+  const blocking = isEu || locale !== 'en'
 
   useEffect(() => {
-    // localStorage can THROW in some in-app browsers (Instagram/Facebook
-    // WebView, iOS private mode). If we don't guard it, the whole effect
-    // throws before setVisible() runs and the banner silently never appears —
-    // exactly the "no banner from a Meta ad on iPhone" case. Treat any failure
-    // as "no stored choice yet" so we still show it.
     let stored: string | null = null
     try { stored = localStorage.getItem(CONSENT_KEY) } catch { stored = null }
     if (stored) return
-    // The middleware sets `yele_eu` from geo — '0' means detected non-EU (e.g.
-    // US). We show the banner to EVERYONE, but the behaviour differs:
-    //  • Non-EU (US): a light, semitransparent notice that dismisses itself the
-    //    moment the visitor keeps going (scroll / type / click / route / timeout).
-    //  • EU/unknown: the banner STAYS until an explicit Accept or Reject.
     let nonEu = false
     try { nonEu = document.cookie.split('; ').some(c => c === 'yele_eu=0') } catch { nonEu = false }
     setIsEu(!nonEu)
     setVisible(true)
   }, [])
 
+  // Lock page scroll while the blocking panel is up, so the visitor can't
+  // interact with the page before choosing.
+  useEffect(() => {
+    if (!visible || !blocking) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [visible, blocking])
+
   function commit(p: Prefs) {
     if (decidedRef.current) return
     decidedRef.current = true
-    try { localStorage.setItem(CONSENT_KEY, JSON.stringify({ essential: true, ...p })) } catch { /* storage may be blocked in in-app browsers */ }
-    // Re-affirms consent with the user's actual choice — layout.tsx already
-    // granted implied consent on load, this updates it once they've made an
-    // explicit selection (matters most for a Reject, where Clarity needs to
-    // stop treating the visitor as tracked; analytics_Storage=denied
-    // correctly keeps Clarity cookieless from that point on).
+    try { localStorage.setItem(CONSENT_KEY, JSON.stringify({ essential: true, ...p })) } catch { /* storage may be blocked */ }
     window.clarity?.('consentv2', {
       ad_Storage: p.marketing ? 'granted' : 'denied',
       analytics_Storage: p.analytics ? 'granted' : 'denied',
     })
-    // Broadcast for any other consent-gated script to react to (currently:
-    // components/MetaPixelScript.tsx, site-wide) without this component
-    // needing to know Meta-specific details itself. Meta itself has no
-    // live consent-mode API — a Reject here stops FUTURE fbq calls (see
-    // lib/metaPixel.ts's hasMarketingConsent() checks at each call site),
-    // but can't retroactively undo whatever already fired before this
-    // point. That's expected for the implied-consent model, not a bug.
+    // Lets consent-gated scripts (MetaPixelScript, site-wide) react immediately
+    // — on EU this is what actually mounts the pixel once they accept.
     window.dispatchEvent(new Event('cookie-consent-updated'))
     setVisible(false)
   }
 
-  // Explicit choice via the banner's own buttons.
-  const save = (p: Prefs) => commit(p)
-
-  // Passive "kept browsing" persistence: the first of a scroll past
-  // SCROLL_THRESHOLD_PX, a click anywhere outside the banner itself, a
-  // route change, or the timeout — whichever happens first — just writes
-  // down the already-granted default so this banner doesn't reappear next
-  // visit. Nothing here needs to grant anything that wasn't already true.
-  useEffect(() => {
-    // EU + localized pages: no passive dismissal — the banner stays until an
-    // explicit Accept or Reject. Only non-EU English pages get the implied
-    // "kept browsing" model.
-    if (!visible || stayUntilChoice) return
-    const persistDefault = () => commit({ analytics: true, marketing: true })
-
-    const onScroll = () => {
-      if (window.scrollY > SCROLL_THRESHOLD_PX) persistDefault()
-    }
-    const onClick = (e: MouseEvent) => {
-      if (bannerRef.current?.contains(e.target as Node)) return
-      persistDefault()
-    }
-    // Typing anywhere (e.g. the Web Police search box) also counts as "kept going".
-    const onKey = () => persistDefault()
-    const timer = setTimeout(persistDefault, AUTO_ACCEPT_TIMEOUT_MS)
-
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    // Capture phase, not bubble: an in-banner click (e.g. "Manage") can
-    // synchronously swap the collapsed view for the expanded panel before a
-    // bubble-phase document listener would run, detaching the clicked
-    // button from the DOM first — at that point `bannerRef.current.contains
-    // (e.target)` wrongly returns false since the target is no longer in
-    // the tree, misreading an in-banner click as "outside." Capture runs
-    // top-down before React's own handler, so e.target is still attached.
-    document.addEventListener('click', onClick, true)
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('scroll', onScroll)
-      document.removeEventListener('click', onClick, true)
-      clearTimeout(timer)
-    }
-  }, [visible, stayUntilChoice])
-
-  // Route-change trigger — separate effect since it only needs to react to
-  // pathname actually changing, not fire on mount like the others above.
-  useEffect(() => {
-    if (!visible || stayUntilChoice) return
-    if (pathname !== firstPathnameRef.current) {
-      commit({ analytics: true, marketing: true })
-    }
-  }, [pathname, visible, stayUntilChoice])
-
   if (!visible) return null
 
+  const title = tt('Tu privacidad', 'Your privacy', '你的隐私')
+  const desc = tt(
+    'Usamos cookies para analizar el tráfico, medir nuestras campañas y mejorar el sitio. Elige una opción para continuar.',
+    'We use cookies to analyse traffic, measure our campaigns and improve the site. Choose an option to continue.',
+    '我们使用 Cookie 来分析流量、衡量广告效果并改进网站。请选择一项以继续。',
+  )
+
   return (
-    <div
-      ref={bannerRef}
-      className="fixed bottom-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-xl border-t border-hairline shadow-[0_-2px_20px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]"
-    >
-      {expanded ? (
-        <div className="max-w-2xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="font-body text-sm font-semibold text-ink">{tt('Preferencias de cookies', 'Cookie preferences', 'Cookie 偏好设置')}</p>
-            <button
-              onClick={() => setExpanded(false)}
-              aria-label="Collapse"
-              className="text-muted hover:text-ink transition-colors"
-            >
-              <ChevronDown size={15} />
-            </button>
-          </div>
-
-          <div className="space-y-0 mb-4 rounded-xl border border-hairline overflow-hidden">
-            {/* Essential */}
-            <div className="flex items-center justify-between px-3 py-2.5 border-b border-hairline bg-black/[0.01]">
-              <div>
-                <p className="font-body text-xs font-medium text-ink">{tt('Esenciales', 'Essential', '必要')}</p>
-                <p className="font-body text-[11px] text-muted">{tt('Necesarias para que el sitio funcione.', 'Required for the site to function.', '网站运行所必需。')}</p>
-              </div>
-              <span className="font-body text-[11px] text-[#34C759] font-medium shrink-0 ml-4">{tt('Siempre activas', 'Always on', '始终开启')}</span>
-            </div>
-
-            {/* Analytics */}
-            <div className="flex items-center justify-between px-3 py-2.5 border-b border-hairline">
-              <div>
-                <p className="font-body text-xs font-medium text-ink">{tt('Analítica', 'Analytics', '分析')}</p>
-                <p className="font-body text-[11px] text-muted">{tt('Nos ayudan a mejorar el sitio web.', 'Help us improve the website.', '帮助我们改进网站。')}</p>
-              </div>
-              <button
-                role="switch"
-                aria-checked={prefs.analytics}
-                onClick={() => setPrefs(p => ({ ...p, analytics: !p.analytics }))}
-                className={`relative ml-4 w-9 h-5 rounded-full shrink-0 transition-colors duration-200 ${prefs.analytics ? 'bg-ink' : 'bg-black/15'}`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${prefs.analytics ? 'translate-x-4' : 'translate-x-0'}`} />
-              </button>
-            </div>
-
-            {/* Marketing */}
-            <div className="flex items-center justify-between px-3 py-2.5">
-              <div>
-                <p className="font-body text-xs font-medium text-ink">{tt('Marketing', 'Marketing', '营销')}</p>
-                <p className="font-body text-[11px] text-muted">{tt('Publicidad personalizada.', 'Personalised advertising.', '个性化广告。')}</p>
-              </div>
-              <button
-                role="switch"
-                aria-checked={prefs.marketing}
-                onClick={() => setPrefs(p => ({ ...p, marketing: !p.marketing }))}
-                className={`relative ml-4 w-9 h-5 rounded-full shrink-0 transition-colors duration-200 ${prefs.marketing ? 'bg-ink' : 'bg-black/15'}`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${prefs.marketing ? 'translate-x-4' : 'translate-x-0'}`} />
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <a href={locale === 'es' ? '/es/privacy-policy' : '/privacy-policy'} className="font-body text-[11px] text-muted hover:text-ink transition-colors underline underline-offset-2">
-              {tt('Política de privacidad', 'Privacy policy', '隐私政策')}
-            </a>
-            <button
-              onClick={() => save(prefs)}
-              className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
-            >
-              {tt('Guardar selección', 'Save selection', '保存选择')}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center gap-3">
-          <p className="font-body text-xs text-muted flex-1 min-w-0 truncate">
-            {stayUntilChoice
-              ? tt('Usamos cookies para analizar el tráfico y mejorar el sitio. Tú decides.', 'We use cookies to analyse traffic and improve the site. Your choice, your call.', '我们使用 Cookie 来分析流量并改进网站。由你决定。')
-              : tt('Al seguir navegando, aceptas nuestro uso de cookies.', 'By continuing to browse, you agree to our use of cookies.', '继续浏览即表示你同意我们使用 Cookie。')}
-          </p>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <a
-              href={locale === 'es' ? '/es/privacy-policy' : '/privacy-policy'}
-              className="font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-2 px-2 py-1.5"
-            >
-              {tt('Política de privacidad', 'Privacy Policy', '隐私政策')}
-            </a>
-            <button
-              onClick={() => setExpanded(true)}
-              className="font-body text-xs text-muted hover:text-ink transition-colors flex items-center gap-0.5 px-2 py-1.5"
-            >
-              {tt('Gestionar', 'Manage', '管理')} <ChevronUp size={11} />
-            </button>
-            <button
-              onClick={() => save({ analytics: false, marketing: false })}
-              className="font-body text-xs text-muted hover:text-ink transition-colors px-2 py-1.5"
-            >
-              {tt('Rechazar', 'Reject', '拒绝')}
-            </button>
-            <button
-              onClick={() => save({ analytics: true, marketing: true })}
-              className="font-body text-xs font-medium bg-ink text-white px-3 py-1.5 rounded-lg hover:bg-black transition-colors"
-            >
-              {tt('Aceptar', 'Accept', '接受')}
-            </button>
-          </div>
-        </div>
+    <AnimatePresence>
+      {blocking && (
+        <motion.div
+          key="backdrop"
+          className="fixed inset-0 z-[99] bg-black/50 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          aria-hidden="true"
+        />
       )}
+
+      <motion.div
+        key="panel"
+        role="dialog"
+        aria-modal={blocking}
+        aria-label={title}
+        className="fixed inset-x-0 top-0 z-[100] p-3 sm:p-4"
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -24, opacity: 0 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      >
+        <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl bg-white shadow-[0_24px_70px_rgba(0,0,0,0.3)] ring-1 ring-black/10">
+          {/* Pink accent bar */}
+          <div className="h-1 w-full bg-gradient-to-r from-[#D46FC8] via-[#DE85D2] to-[#D46FC8]" aria-hidden="true" />
+
+          <div className="p-5 sm:p-6">
+            {!expanded ? (
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <span className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-[#D46FC8]/12 text-[#D46FC8]">
+                    <Cookie size={20} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-display font-bold text-ink text-base mb-0.5">{title}</p>
+                    <p className="font-body text-sm text-muted leading-relaxed">{desc}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center md:flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => commit({ analytics: true, marketing: true })}
+                    className="order-1 sm:order-2 inline-flex items-center justify-center rounded-xl bg-[#D46FC8] px-7 py-3.5 font-body text-base font-semibold text-white shadow-lg shadow-[#D46FC8]/30 transition-colors hover:bg-[#DE85D2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D46FC8]"
+                  >
+                    {tt('Aceptar', 'Accept', '接受')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => commit({ analytics: false, marketing: false })}
+                    className="order-2 sm:order-1 inline-flex items-center justify-center rounded-xl border border-ink/20 px-6 py-3.5 font-body text-base font-medium text-ink transition-colors hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                  >
+                    {tt('Rechazar', 'Reject', '拒绝')}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="font-display font-bold text-ink text-base">{tt('Preferencias de cookies', 'Cookie preferences', 'Cookie 偏好设置')}</p>
+                  <button onClick={() => setExpanded(false)} aria-label={tt('Cerrar', 'Close', '关闭')} className="text-muted hover:text-ink transition-colors">
+                    <ChevronDown size={18} />
+                  </button>
+                </div>
+
+                <div className="mb-5 rounded-xl border border-hairline overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-hairline bg-black/[0.015]">
+                    <div className="pr-4">
+                      <p className="font-body text-sm font-medium text-ink">{tt('Esenciales', 'Essential', '必要')}</p>
+                      <p className="font-body text-xs text-muted">{tt('Necesarias para que el sitio funcione.', 'Required for the site to function.', '网站运行所必需。')}</p>
+                    </div>
+                    <span className="font-body text-xs text-[#34C759] font-medium shrink-0">{tt('Siempre activas', 'Always on', '始终开启')}</span>
+                  </div>
+
+                  <Toggle
+                    label={tt('Analítica', 'Analytics', '分析')}
+                    desc={tt('Nos ayudan a mejorar el sitio web.', 'Help us improve the website.', '帮助我们改进网站。')}
+                    on={prefs.analytics}
+                    onToggle={() => setPrefs(p => ({ ...p, analytics: !p.analytics }))}
+                    border
+                  />
+                  <Toggle
+                    label={tt('Marketing', 'Marketing', '营销')}
+                    desc={tt('Medición de campañas y publicidad personalizada.', 'Campaign measurement and personalised advertising.', '广告衡量与个性化广告。')}
+                    on={prefs.marketing}
+                    onToggle={() => setPrefs(p => ({ ...p, marketing: !p.marketing }))}
+                  />
+                </div>
+
+                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <a
+                    href={locale === 'es' ? '/es/privacy-policy' : locale === 'zh' ? '/zh/privacy-policy' : '/privacy-policy'}
+                    className="font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-2 text-center sm:text-left"
+                  >
+                    {tt('Política de privacidad', 'Privacy policy', '隐私政策')}
+                  </a>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => commit({ analytics: false, marketing: false })}
+                      className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl border border-ink/20 px-5 py-3 font-body text-sm font-medium text-ink transition-colors hover:bg-black/[0.04]"
+                    >
+                      {tt('Rechazar', 'Reject', '拒绝')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => commit(prefs)}
+                      className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl bg-[#D46FC8] px-6 py-3 font-body text-sm font-semibold text-white shadow-lg shadow-[#D46FC8]/30 transition-colors hover:bg-[#DE85D2]"
+                    >
+                      {tt('Guardar selección', 'Save selection', '保存选择')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!expanded && (
+              <div className="mt-3 flex items-center justify-center gap-4 md:justify-start">
+                <button
+                  type="button"
+                  onClick={() => setExpanded(true)}
+                  className="font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-2"
+                >
+                  {tt('Personalizar', 'Customise', '自定义')}
+                </button>
+                <a
+                  href={locale === 'es' ? '/es/privacy-policy' : locale === 'zh' ? '/zh/privacy-policy' : '/privacy-policy'}
+                  className="font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-2"
+                >
+                  {tt('Política de privacidad', 'Privacy policy', '隐私政策')}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+function Toggle({ label, desc, on, onToggle, border }: { label: string; desc: string; on: boolean; onToggle: () => void; border?: boolean }) {
+  return (
+    <div className={`flex items-center justify-between px-4 py-3 ${border ? 'border-b border-hairline' : ''}`}>
+      <div className="pr-4">
+        <p className="font-body text-sm font-medium text-ink">{label}</p>
+        <p className="font-body text-xs text-muted">{desc}</p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={on}
+        aria-label={label}
+        onClick={onToggle}
+        className={`relative ml-4 h-6 w-11 rounded-full shrink-0 transition-colors duration-200 ${on ? 'bg-[#D46FC8]' : 'bg-black/15'}`}
+      >
+        <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${on ? 'translate-x-5' : 'translate-x-0'}`} />
+      </button>
     </div>
   )
 }
