@@ -4,6 +4,9 @@ import GraciasClient from './GraciasClient'
 
 export const dynamic = 'force-dynamic'
 
+// Post-checkout thank-you — user-specific, never indexed.
+export const metadata = { robots: { index: false, follow: true } }
+
 const PLAN_VALUES: Record<string, { value: number; currency: string }> = {
   'starter':      { value: 99,  currency: 'USD' },
   'pro':          { value: 169, currency: 'USD' },

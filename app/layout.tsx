@@ -83,9 +83,11 @@ export const metadata: Metadata = {
     },
   },
 
-  alternates: {
-    canonical: 'https://yele.design',
-  },
+  // NOTE: no canonical here on purpose. A canonical set on the root layout is
+  // inherited by every page that doesn't declare its own, which would make
+  // them all canonicalize to the homepage (de-indexing them). The homepage
+  // sets its own canonical in app/page.tsx; every other indexable page sets
+  // its own too. Pages without one simply self-canonicalize to their URL.
 
   icons: {
     icon: [

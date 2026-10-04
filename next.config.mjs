@@ -5,6 +5,20 @@ const nextConfig = {
   },
   async headers() {
     return [
+      // Security headers site-wide. Strict-Transport-Security tells browsers
+      // to only ever reach yele.design over HTTPS (Vercel already redirects
+      // http→https; this enforces it at the browser for a year, incl.
+      // subdomains + HSTS preload). The rest are low-risk hardening headers
+      // that don't affect how anything renders.
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
       // Static video/image/font assets served straight from /public (not
       // through the /_next/image optimizer, which already has its own
       // 1-year minimumCacheTTL below) had no explicit cache policy, so

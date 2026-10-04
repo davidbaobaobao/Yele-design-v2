@@ -2,6 +2,9 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
+// Existing-client notice — not a content page, keep out of the index.
+export const metadata = { robots: { index: false, follow: true } }
+
 export default function YaEresClientePage() {
   return (
     <div className="min-h-screen bg-base flex items-center justify-center px-6">

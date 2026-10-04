@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   // baked in, which rendered as "... — Yele | Yele".
   title: 'Terms and Conditions',
   description: 'General terms of Yele\'s custom website design service — one-time build from $699 plus optional Yele Care maintenance from $49/month.',
+  alternates: { canonical: 'https://yele.design/terms', languages: { es: 'https://yele.design/es/terms' } },
 }
 
 export default function TermsAndConditions() {
