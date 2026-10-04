@@ -52,7 +52,8 @@ export default function TuTiendaLanding({ locale = 'es' }: { locale?: Locale }) 
   return (
     <EnLangProvider>
       <main className="overflow-x-hidden" style={{ backgroundColor: DARK }}>
-        <LocaleSwitcher current={locale} />
+        {/* /es/tutienda hides the language switcher — Spanish Meta-ads traffic. */}
+        {locale !== 'es' && <LocaleSwitcher current={locale} />}
         <LbHeroPing page="tutienda" />
 
         {/* ---- HERO — text + pills + CTAs left, cost-comparison card right. ---- */}

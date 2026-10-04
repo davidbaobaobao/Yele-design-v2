@@ -83,7 +83,9 @@ export default function LetsBuildLanding({
   return (
     <EnLangProvider>
       <main className="overflow-x-hidden" style={{ backgroundColor: DARK }}>
-        <LocaleSwitcher current={locale} />
+        {/* Spanish ad pages (/es/letsbuild, /es/letsbuildnow) hide the
+            language switcher — those visitors come from Spanish Meta ads. */}
+        {locale !== 'es' && <LocaleSwitcher current={locale} />}
         <LbHeroPing page={trackPage} />
 
         {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg. ---- */}
