@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { buildConsentPayload, pageFromPath, localeFromPath, type ConsentEvent } from '@/lib/consent/consentStats'
 
 declare global {
   interface Window { clarity?: (...args: unknown[]) => void }
@@ -11,6 +12,24 @@ declare global {
 type Prefs = { analytics: boolean; marketing: boolean }
 
 const CONSENT_KEY = 'cookie-consent'
+
+// Fire one privacy-first banner-outcome counter. Minimal payload {event,page,
+// locale} via sendBeacon — no cookies, no id, no PII. Fire-and-forget; any
+// failure is swallowed so it can never affect the consent UX.
+const statFired = new Set<ConsentEvent>()
+function sendConsentStat(event: ConsentEvent, pathname: string) {
+  try {
+    if (statFired.has(event)) return
+    const payload = buildConsentPayload(event, pageFromPath(pathname), localeFromPath(pathname))
+    if (!payload) return
+    statFired.add(event)
+    const body = JSON.stringify(payload)
+    const blob = new Blob([body], { type: 'application/json' })
+    if (!navigator.sendBeacon?.('/api/consent-stats', blob)) {
+      fetch('/api/consent-stats', { method: 'POST', body, headers: { 'Content-Type': 'application/json' }, keepalive: true }).catch(() => {})
+    }
+  } catch { /* best-effort only */ }
+}
 
 // Mango-style blocking consent modal: a centered card over a dimmed backdrop
 // that locks the page until the visitor picks an option (Accept all / Necessary
@@ -33,8 +52,11 @@ export default function CookieBanner() {
   useEffect(() => {
     let stored: string | null = null
     try { stored = localStorage.getItem(CONSENT_KEY) } catch { stored = null }
-    if (!stored) setVisible(true)
-  }, [])
+    if (!stored) {
+      setVisible(true)
+      sendConsentStat('shown', pathname)
+    }
+  }, [pathname])
 
   // Lock page scroll while the modal is up.
   useEffect(() => {
@@ -44,9 +66,26 @@ export default function CookieBanner() {
     return () => { document.body.style.overflow = prev }
   }, [visible])
 
+  // "No choice" = the visitor leaves the page while the banner is still
+  // unresolved. `pagehide` is the simplest reliable signal (fires on real
+  // navigation/close/bfcache, not on a mere tab switch like visibilitychange),
+  // and sendConsentStat uses sendBeacon so it survives unload. Fires at most
+  // once (deduped in sendConsentStat) and only if no decision was made.
+  useEffect(() => {
+    if (!visible) return
+    const onHide = () => { if (!decidedRef.current) sendConsentStat('no_choice', pathname) }
+    window.addEventListener('pagehide', onHide)
+    return () => window.removeEventListener('pagehide', onHide)
+  }, [visible, pathname])
+
   function commit(p: Prefs) {
     if (decidedRef.current) return
     decidedRef.current = true
+    // Analytics outcome: 'accept' if any non-essential was enabled (Accept all,
+    // or Save with a toggle on), else 'reject' (Necessary only / Reject all /
+    // Save with everything off). Purely measurement — it does NOT change what
+    // consent is stored below, and Reject is treated exactly like Accept here.
+    sendConsentStat(p.analytics || p.marketing ? 'accept' : 'reject', pathname)
     try { localStorage.setItem(CONSENT_KEY, JSON.stringify({ essential: true, ...p })) } catch { /* storage may be blocked */ }
     window.clarity?.('consentv2', {
       ad_Storage: p.marketing ? 'granted' : 'denied',

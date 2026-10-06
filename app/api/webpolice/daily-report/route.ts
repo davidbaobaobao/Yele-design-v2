@@ -5,6 +5,7 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { scansSince, eventFunnelSince, eventFunnelByTone, eventUrlBreakdown, type FunnelCounts } from '@/lib/webpolice/store'
+import { readConsentStats, sumOutcome, rates, madridDay, type Outcome } from '@/lib/consent/consentStore'
 
 export const runtime = 'nodejs'
 
@@ -188,6 +189,45 @@ export async function GET(request: Request) {
   )
   const ttBlock = ttRoutes.map((r, i) => lbTable(r.url, ttFunnelsByLocale[i])).join('')
   const ttHasData = ttBlock.length > 0
+
+  // ── Cookie-consent banner analytics (aggregate counters) ──────────────────
+  // Yesterday's full Madrid day, for the four Spanish ad pages + an overall.
+  const yesterdayDay = madridDay(new Date(Date.now() - 86_400_000))
+  const consentRows = await readConsentStats(yesterdayDay)
+    .then(rows => rows.filter(r => r.day === yesterdayDay))
+    .catch(() => [])
+  const pct = (n: number | null) => (n === null ? '—' : `${(n * 100).toFixed(1)}%`)
+  const consentRow = (label: string, o: Outcome) => {
+    const r = rates(o)
+    return `
+      <tr>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif">${esc(label)}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${o.shown}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${o.accept} (${pct(r.accept)})</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${o.reject} (${pct(r.reject)})</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;font:13px -apple-system,sans-serif;text-align:center">${o.no_choice} (${pct(r.no_choice)})</td>
+      </tr>`
+  }
+  const consentEsPages: { label: string; page: string }[] = [
+    { label: '/es/letsbuild', page: 'letsbuild' },
+    { label: '/es/letsbuildnow', page: 'letsbuildnow' },
+    { label: '/es/webpolice', page: 'webpolice' },
+    { label: '/es/tutienda', page: 'tutienda' },
+  ]
+  const consentHasData = consentRows.length > 0
+  const consentBlock = `
+    <p style="margin:0 0 8px;color:#6F6373;font-size:12px">Banner outcomes for ${esc(yesterdayDay)} (Madrid). Rates = outcome ÷ shown. Counts are outcomes, not unique people.</p>
+    <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee">
+      <tr>
+        <th align="left" style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Page</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Shown</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Accept</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">Reject</th>
+        <th style="padding:6px 10px;font:600 11px -apple-system,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6F6373">No choice</th>
+      </tr>
+      ${consentEsPages.map(p => consentRow(p.label + ' (es)', sumOutcome(consentRows, { page: p.page, locale: 'es' }))).join('')}
+      ${consentRow('ALL pages / locales', sumOutcome(consentRows))}
+    </table>`
   // Per-URL breakdown for the two milestone steps: which sites people scrolled
   // through to the middle, and which they reached the plug form on.
   const hostOf = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, '') } catch { return u } }
@@ -292,6 +332,10 @@ export async function GET(request: Request) {
     <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">🛒 /tutienda (Meta ads)</h2>
     ${ttHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No /tutienda visits recorded in the last 24h.</p>'}
     ${ttBlock}
+
+    <h2 style="margin:30px 0 2px;font-size:17px;border-top:2px solid #16161A;padding-top:14px">🍪 Cookie consent</h2>
+    ${consentHasData ? '' : '<p style="margin:0 0 8px;color:#6F6373;font-size:12px">No consent-banner events recorded for ' + esc(yesterdayDay) + '.</p>'}
+    ${consentBlock}
 
     <p style="margin:22px 0 0;color:#6F6373;font-size:12px">Low scores are the warm leads — they just watched a robot call their site ugly.</p>
   </div>`
