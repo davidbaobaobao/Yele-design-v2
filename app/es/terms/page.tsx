@@ -25,7 +25,7 @@ export default function TerminosCondiciones() {
           <h1 className="font-display font-semibold text-4xl text-ink tracking-tight mb-3">
             Términos y Condiciones
           </h1>
-          <p className="font-body text-muted text-sm mb-12">Última actualización: agosto de 2026</p>
+          <p className="font-body text-muted text-sm mb-12">Última actualización: octubre de 2026</p>
 
           <div className="font-body text-ink space-y-10 leading-relaxed">
 
@@ -98,6 +98,9 @@ export default function TerminosCondiciones() {
               <p className="text-muted mb-3">
                 Te comprometes a: facilitar a tiempo el contenido, las imágenes y los textos necesarios para construir tu web; usar el servicio de forma lícita; no publicar contenido ilícito, ofensivo, difamatorio o que infrinja derechos; y mantener actualizada tu información de pago para evitar interrupciones.
               </p>
+              <p className="text-muted mb-3">
+                <strong className="text-ink font-medium">Contenido que controlas.</strong> Tienes el control administrativo completo sobre el contenido, los productos, los datos y los medios que subes, publicas o gestionas a través de tu web, su panel o su base de datos. Eres el único responsable de todo ese contenido y garantizas que dispones de todos los derechos necesarios para usarlo y publicarlo. Eres el único responsable de cualquier contenido ilícito o que infrinja derechos de terceros —incluidos derechos de autor, marcas, derechos de imagen, privacidad o cualquier otro derecho de propiedad intelectual— y de cualquier reclamación, sanción o pérdida que de ello se derive. Yele no revisa, supervisa ni controla previamente el contenido que subes y no es responsable de él; al tener conocimiento de contenido ilícito, Yele podrá retirarlo o suspender el servicio afectado.
+              </p>
               <p className="text-muted">
                 Si tu plan incluye e-commerce, eres el único responsable de los productos o servicios que vendes, sus descripciones y precios, la gestión de pedidos y los impuestos, así como de las leyes de consumo y de seguridad de producto aplicables.
               </p>
@@ -128,9 +131,16 @@ export default function TerminosCondiciones() {
             </section>
 
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">10. Limitación de Responsabilidad</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">10. Almacenamiento de Datos y Limitación de Responsabilidad</h2>
+              <p className="text-muted mb-3">
+                <strong className="text-ink font-medium">Almacenamiento con terceros.</strong> Tu web y sus datos —incluido cualquier contenido y los datos de clientes, pedidos y medios— se alojan, almacenan y procesan en infraestructuras y proveedores de servicios de terceros (por ejemplo, proveedores de alojamiento, base de datos, correo y pagos), cada uno bajo sus propios términos y medidas de seguridad. Reconoces y aceptas que tu contenido y tus datos se almacenan en estos terceros. Consulta nuestra{' '}
+                <a href="/es/privacy-policy" className="text-[#0066CC] hover:underline">Política de Privacidad</a> para más detalles.
+              </p>
+              <p className="text-muted mb-3">
+                Yele no es responsable de la pérdida de negocio, ingresos, datos o fondo de comercio derivada del uso o de la imposibilidad de uso del servicio. En la máxima medida permitida por la ley, la responsabilidad total y agregada de Yele en relación con el servicio —incluida la derivada de cualquier brecha de seguridad, incidente de seguridad, acceso no autorizado o pérdida, corrupción o divulgación de datos, ya ocurra en Yele o en un proveedor externo— no excederá el importe de un mes de Yele Care (49€/mes, o 99€/mes en el plan Pro) o, si no tienes contratado Yele Care, el equivalente a una mensualidad de mantenimiento.
+              </p>
               <p className="text-muted">
-                Yele no es responsable de la pérdida de negocio, ingresos o datos derivada del uso o de la imposibilidad de uso del servicio. La responsabilidad total de Yele no excederá el importe que hayas pagado por el último mes de servicio.
+                Nada en estos Términos limita ni excluye la responsabilidad que no pueda limitarse o excluirse conforme a la legislación aplicable, incluida, cuando proceda, la responsabilidad por dolo o culpa grave y la responsabilidad legal en materia de protección de datos frente a los interesados o las autoridades de control.
               </p>
             </section>
 

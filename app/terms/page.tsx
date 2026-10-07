@@ -22,7 +22,7 @@ export default function TermsAndConditions() {
           <h1 className="font-display font-semibold text-4xl text-ink tracking-tight mb-3">
             Terms and Conditions
           </h1>
-          <p className="font-body text-muted text-sm mb-12">Last updated: August 2026</p>
+          <p className="font-body text-muted text-sm mb-12">Last updated: October 2026</p>
 
           <div className="font-body text-ink space-y-10 leading-relaxed">
 
@@ -95,6 +95,9 @@ export default function TermsAndConditions() {
               <p className="text-muted mb-3">
                 You agree to: provide the content, images and text needed to build your site in a timely way; use the service lawfully; not publish unlawful, offensive, defamatory or infringing content; and keep your payment information current to avoid interruptions.
               </p>
+              <p className="text-muted mb-3">
+                <strong className="text-ink font-medium">Content you control.</strong> You have full administrative control over the content, products, data and media you upload, publish or manage through your website, its dashboard or its database. You are solely responsible for all such content and warrant that you hold all rights necessary to use and publish it. You are solely liable for any content that is unlawful or infringes third-party rights — including copyright, trademark, image rights, privacy or any other intellectual-property right — and for any claim, fine or loss arising from it. Yele does not pre-screen, monitor or control the content you upload and is not responsible for it; on becoming aware of unlawful content, Yele may remove it or suspend the affected service.
+              </p>
               <p className="text-muted">
                 If your plan includes e-commerce, you are solely responsible for the products or services you sell, their descriptions and pricing, order fulfilment, and any applicable taxes, consumer and product-safety laws.
               </p>
@@ -125,9 +128,16 @@ export default function TermsAndConditions() {
             </section>
 
             <section>
-              <h2 className="font-display font-semibold text-xl text-ink mb-3">10. Limitation of Liability</h2>
+              <h2 className="font-display font-semibold text-xl text-ink mb-3">10. Data Storage and Limitation of Liability</h2>
+              <p className="text-muted mb-3">
+                <strong className="text-ink font-medium">Third-party storage.</strong> Your website and its data — including any content, customer, order and media data — are hosted, stored and processed on third-party infrastructure and service providers (for example, hosting, database, email and payment providers), each under its own terms and security measures. You acknowledge and accept that your content and data are stored with these third parties. See our{' '}
+                <a href="/privacy-policy" className="text-[#0066CC] hover:underline">Privacy Policy</a> for details.
+              </p>
+              <p className="text-muted mb-3">
+                Yele is not liable for loss of business, revenue, data or goodwill arising from the use of or inability to use the service. To the fullest extent permitted by law, Yele&rsquo;s total aggregate liability under or in connection with the service — including for any data breach, security incident, unauthorized access, or loss, corruption or disclosure of data, whether occurring at Yele or at a third-party provider — shall not exceed the amount of one month of Yele Care ($49/month, or $99/month on the Pro plan) or, if you do not subscribe to Yele Care, the equivalent of one month&rsquo;s maintenance fee.
+              </p>
               <p className="text-muted">
-                Yele is not liable for loss of business, revenue or data arising from the use of or inability to use the service. Yele&rsquo;s total liability shall not exceed the amount you paid for the most recent month of service.
+                Nothing in these Terms limits or excludes any liability that cannot be limited or excluded under applicable law — including, where applicable, liability for gross negligence or wilful misconduct, and any statutory data-protection liability owed directly to data subjects or supervisory authorities.
               </p>
             </section>
 
