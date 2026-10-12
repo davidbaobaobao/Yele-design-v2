@@ -68,10 +68,11 @@ function useDeferredCubes(sectionRef: React.RefObject<HTMLElement | null>) {
   return paintedFired && near && !far && !isLowPower
 }
 
-export default function LetsBuildHero({ locale = 'en', heroForm, titleOverride }: { locale?: Locale; heroForm?: React.ReactNode; titleOverride?: string }) {
+export default function LetsBuildHero({ locale = 'en', heroForm, titleOverride, pointsOverride }: { locale?: Locale; heroForm?: React.ReactNode; titleOverride?: string; pointsOverride?: string[] }) {
   const sectionRef = useRef<HTMLElement>(null)
   const showCubes = useDeferredCubes(sectionRef)
   const h = getFunnelDict(locale).hero
+  const points = pointsOverride ?? h.points
   // Ads variant (/es/letsbuildnow): a lead form on the right instead of the
   // cubes, and the CTAs scroll to Pricing / Projects.
   const now = !!heroForm
@@ -145,7 +146,7 @@ export default function LetsBuildHero({ locale = 'en', heroForm, titleOverride }
             </h1>
 
             <ul className="space-y-3 md:space-y-3.5 mb-8 md:mb-9">
-              {h.points.map(point => (
+              {points.map(point => (
                 <li key={point} className="flex items-start gap-3">
                   <Check size={22} className="text-[#D46FC8] flex-shrink-0 mt-0.5 md:mt-1" aria-hidden="true" />
                   <span className="font-body text-lg md:text-xl font-semibold text-white/90">{point}</span>

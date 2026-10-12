@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Archivo, Instrument_Sans, IBM_Plex_Mono } from 'next/font/google'
-import Script from 'next/script'
+// `next/script` import removed — gtag and Clarity are both disabled below. Re-add
+// `import Script from 'next/script'` when re-enabling either tag.
 import './globals.css'
 import { LanguageProvider } from '@/context/LanguageContext'
 import { Analytics } from '@vercel/analytics/react'
@@ -309,6 +310,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             that same implied-consent model. CookieBanner.tsx re-fires this
             with the user's actual analytics/marketing choice once they
             interact with the banner. */}
+        {/* Microsoft Clarity — DISABLED for now. Re-enable by uncommenting.
         <Script id="ms-clarity" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
@@ -322,6 +324,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             });
           `}
         </Script>
+        */}
       </body>
     </html>
   )

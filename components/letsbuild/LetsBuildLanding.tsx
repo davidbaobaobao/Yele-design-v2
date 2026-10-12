@@ -46,6 +46,7 @@ export default function LetsBuildLanding({
   trackPage = 'letsbuild',
   heroForm = false,
   heroTitle,
+  heroPoints,
 }: {
   leadSource?: string
   locale?: Locale
@@ -57,6 +58,8 @@ export default function LetsBuildLanding({
   // Optional hero-title override (\n for a line break). Falls back to the
   // locale dictionary's default heroTitle when omitted.
   heroTitle?: string
+  // Optional hero bullet-point override. Falls back to the locale dictionary.
+  heroPoints?: string[]
 }) {
   const d = getFunnelDict(locale)
   // Spanish gets its own /es/* legal pages; other locales use the English ones.
@@ -89,7 +92,7 @@ export default function LetsBuildLanding({
         <LbHeroPing page={trackPage} />
 
         {/* ---- HERO — text + testimonial pills left, 3D cubes right/bg. ---- */}
-        <LetsBuildHero locale={locale} heroForm={heroFormEl} titleOverride={heroTitle} />
+        <LetsBuildHero locale={locale} heroForm={heroFormEl} titleOverride={heroTitle} pointsOverride={heroPoints} />
 
         <LogoMarquee />
 

@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
-import { trackMetaLead, getMetaCookies } from '@/lib/metaPixel'
+import { trackMetaLead, getMetaCookies, hasMarketingConsent } from '@/lib/metaPixel'
 
 function uuid(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID()
@@ -111,6 +111,7 @@ export default function BuildLeadForm({
         welcome: sendWelcome,
         fbc: metaCookies.fbc,
         fbp: metaCookies.fbp,
+        marketingConsent: hasMarketingConsent(),
       }),
     })
 

@@ -17,5 +17,18 @@ export const metadata: Metadata = {
 }
 
 export default function LetsBuildEsPage() {
-  return <LetsBuildLanding leadSource="Let's Build (ES)" locale="es" />
+  return (
+    <LetsBuildLanding
+      leadSource="Let's Build (ES)"
+      locale="es"
+      heroTitle="¿Buscas una página web de verdad?"
+      heroPoints={[
+        'Desde 699€',
+        'Sin plantillas genéricas feas',
+        'Lo construimos todo para ti',
+        'Entrega en menos de 4 semanas',
+        'Demo gratuito',
+      ]}
+    />
+  )
 }

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { trackOnboardingFormSubmit } from '@/lib/gtag'
-import { trackMetaLead, getMetaCookies } from '@/lib/metaPixel'
+import { trackMetaLead, getMetaCookies, hasMarketingConsent } from '@/lib/metaPixel'
 import { funnelBeacon } from '@/lib/webpolice/funnelBeacon'
 import { getFunnelDict, type Locale } from '@/lib/i18n/funnel'
 
@@ -246,6 +246,10 @@ export default function LeadForm({
         locale,
         fbc: metaCookies.fbc,
         fbp: metaCookies.fbp,
+        // Gate the server-side CAPI Lead event by the same geo-split marketing
+        // consent the browser pixel uses, so EU visitors who haven't accepted
+        // don't have their (hashed) data sent to Meta.
+        marketingConsent: hasMarketingConsent(),
       }),
     })
 

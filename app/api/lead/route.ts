@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     // `source` (platform) field, but the CAPI call below no longer needs
     // it — every submit gets a server-side Lead event regardless of
     // platform — so it isn't destructured here.
-    const { name, email, phone, company, eventId, fbc, fbp } = body
+    const { name, email, phone, company, eventId, fbc, fbp, marketingConsent } = body
     // Optional richer fields sent by the /letsbuild bottom form only. All
     // backward-compatible: the shared LeadForm (/start, /websites,
     // /newwebsite) never sends these, so they simply render as "(not
@@ -174,7 +174,11 @@ export async function POST(request: Request) {
     // after the response is sent — wrapped in its own try/catch so a
     // Meta-side failure never turns the lead submission itself into an
     // error response.
-    if (eventId) {
+    // Consent gate: only send the server-side CAPI event when marketing consent
+    // is granted (matches the geo-split browser pixel — EU visitors who haven't
+    // accepted send `false`, so their hashed data isn't forwarded to Meta).
+    // `!== false` keeps any caller that doesn't send the flag working as before.
+    if (eventId && marketingConsent !== false) {
       const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID
       const capiToken = process.env.META_CAPI_TOKEN
 
