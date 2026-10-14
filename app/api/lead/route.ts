@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { createHash } from 'crypto'
+import { guard } from '@/lib/rateLimit'
 import { scheduleAiCallback, planFromPackageInterest } from '@/lib/ai-callback/schedule'
 import { welcomeCheckoutEmail } from '@/lib/emails/welcome'
 import { contactAckEmail, unsubscribeUrl } from '@/lib/emails/contactAck'
@@ -31,6 +32,8 @@ function sha256(value: string): string {
 // /api/contact uses, so the insert doesn't depend on an RLS policy existing
 // on discovery_leads.
 export async function POST(request: Request) {
+  const blocked = guard(request, { name: 'lead', max: 8, windowMs: 60_000 })
+  if (blocked) return blocked
   try {
     const body = await request.json()
     // eventId/fbc/fbp arrive from every LeadForm submit now (the Meta Pixel

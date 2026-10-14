@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import { guard } from '@/lib/rateLimit'
 import {
   ADDON_OPTIONS,
   CARE_PLAN_OPTIONS,
@@ -27,6 +28,10 @@ const RECIPIENTS = [
 // SELECT visibility on the row, which would let anyone holding the public
 // anon key dump every lead's contact details.
 export async function POST(request: Request) {
+  // Generous limit (per-step autosaves fire often); no same-origin check since
+  // autosaves may arrive via sendBeacon without a Referer.
+  const blocked = guard(request, { name: 'survey', max: 80, windowMs: 60_000, checkOrigin: false })
+  if (blocked) return blocked
   try {
     const body = await request.json()
     const {

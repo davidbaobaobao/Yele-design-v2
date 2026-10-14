@@ -77,7 +77,9 @@ async function sendBuildPaymentEmails(session: Stripe.Checkout.Session) {
 }
 
 export async function POST(request: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  // Fetch-based HTTP client so the SDK runs on both Node (Vercel) and the
+  // Cloudflare Workers runtime (which has no Node http/https).
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { httpClient: Stripe.createFetchHttpClient() })
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -92,10 +94,29 @@ export async function POST(request: Request) {
 
   let event: Stripe.Event
   try {
-    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
+    // Async verification + SubtleCrypto provider: the Workers runtime only has
+    // async WebCrypto, so the synchronous constructEvent() would throw there.
+    // constructEventAsync works identically on Node, so this is dual-safe.
+    event = await stripe.webhooks.constructEventAsync(
+      body, signature, process.env.STRIPE_WEBHOOK_SECRET!, undefined, Stripe.createSubtleCryptoProvider(),
+    )
   } catch (err) {
     console.error('Webhook signature error:', err)
     return new Response('Webhook signature invalid', { status: 400 })
+  }
+
+  // Idempotency: record this event id. If it's already there, Stripe is
+  // re-delivering an event we handled — acknowledge and do nothing, so a
+  // replay can't double-send emails or re-provision.
+  {
+    const { error: dupErr } = await supabaseAdmin
+      .from('stripe_events')
+      .insert({ id: event.id, type: event.type })
+    if (dupErr) {
+      if (dupErr.code === '23505') return new Response('Already processed', { status: 200 })
+      // Any other error: log and still process (don't drop a real event).
+      console.error('[stripe-webhook] idempotency insert error', dupErr.message)
+    }
   }
 
   if (event.type === 'checkout.session.completed') {

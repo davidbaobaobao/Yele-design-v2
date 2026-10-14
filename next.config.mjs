@@ -17,6 +17,8 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Disable powerful features the site doesn't use.
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()' },
         ],
       },
       // Static video/image/font assets served straight from /public (not
@@ -76,6 +78,10 @@ const nextConfig = {
     ]
   },
   images: {
+    // Cloudflare Workers has no Vercel image optimizer / `sharp`, so the
+    // Cloudflare build (CF_WORKERS=1) serves images unoptimized. On Vercel
+    // (flag unset) optimization stays on exactly as before.
+    unoptimized: process.env.CF_WORKERS === '1',
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [390, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 380],

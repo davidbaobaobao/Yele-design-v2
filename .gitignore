@@ -49,3 +49,11 @@ public/media/webpolice/loading/reel3.*
 public/media/webpolice/_catf_*.jpg
 public/media/webpolice/_montage.jpg
 public/media/webpolice/_catface.jpg
+
+# Cloudflare / local secrets + build output (never commit)
+.dev.vars
+.dev.vars.*
+secrets.json
+.env.vercel
+.open-next/
+.wrangler/

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import { guard } from '@/lib/rateLimit'
 
 const RECIPIENTS = [
   process.env.STUDIO_EMAIL ?? 'info@yele.design',
@@ -8,6 +9,8 @@ const RECIPIENTS = [
 ]
 
 export async function POST(request: Request) {
+  const blocked = guard(request, { name: 'contact', max: 8, windowMs: 60_000 })
+  if (blocked) return blocked
   try {
     const body = await request.json()
     const { nombre, email, mensaje } = body

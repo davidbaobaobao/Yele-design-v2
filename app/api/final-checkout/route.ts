@@ -40,7 +40,7 @@ function str(v: FormDataEntryValue | null): string {
 }
 
 export async function POST(request: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { httpClient: Stripe.createFetchHttpClient() })
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yele.design'
 
   try {

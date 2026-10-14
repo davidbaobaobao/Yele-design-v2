@@ -15,6 +15,10 @@ const ALLOWED = new Set([
 ])
 
 export async function GET(request: Request) {
+  // Dev-only tester — never reachable in production.
+  if (process.env.NODE_ENV === 'production') {
+    return Response.json({ error: 'Not found' }, { status: 404 })
+  }
   const url = new URL(request.url)
   const to = (url.searchParams.get('to') || 'yeletester@gmail.com').trim().toLowerCase()
   const firstName = (url.searchParams.get('name') || 'Final').trim()

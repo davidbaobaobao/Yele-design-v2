@@ -22,7 +22,7 @@ const PRICE_IDS: Record<string, Record<string, string>> = {
 }
 
 export async function POST(request: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { httpClient: Stripe.createFetchHttpClient() })
 
   try {
     const { planId, billing, clientId, promoCode } = await request.json()

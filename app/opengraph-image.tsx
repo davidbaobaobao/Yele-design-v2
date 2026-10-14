@@ -1,6 +1,8 @@
 import { ImageResponse } from 'next/og'
 
-export const runtime = 'edge'
+// Node runtime (not 'edge'): OpenNext/Cloudflare can't bundle an inline edge
+// route, and next/og's ImageResponse works on the Node runtime in Next 14.
+export const runtime = 'nodejs'
 export const alt = 'Yele — Your website, live in 3 days'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'

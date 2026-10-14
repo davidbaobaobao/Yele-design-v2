@@ -33,7 +33,7 @@ async function createSession({ plan, name, email, company, locale }: { plan: str
   const priceId = pricesFor(locale)[plan]
   if (!priceId) return { error: 'Unknown plan', status: 400 as const }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { httpClient: Stripe.createFetchHttpClient() })
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yele.design'
 
   const successParams = new URLSearchParams({ welcome: '1' })

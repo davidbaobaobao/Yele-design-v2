@@ -1,0 +1,30 @@
+{
+  // Cloudflare Workers config for the OpenNext build. Vercel ignores this file.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "yele-v4-cf",
+  // Deploy target account (davidbaobaobao@gmail.com) — same Worker that already
+  // has the secrets + pending custom domain, so keep this name.
+  "account_id": "75e59a571392013ab52c241bd5455a63",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+
+  // Build-time env for the Cloudflare build (serves images unoptimized since
+  // there's no sharp/Vercel optimizer on Workers).
+  "vars": {
+    "CF_WORKERS": "1"
+  }
+
+  // ── Cron (optional) ──────────────────────────────────────────────────────
+  // The Vercel crons in vercel.json do NOT run on Cloudflare. To keep the daily
+  // report + abandoned-survey jobs, either:
+  //  (a) add Cron Triggers here and a scheduled handler (see CLOUDFLARE.md), or
+  //  (b) use an external cron (cron-job.org) that hits the protected endpoints
+  //      with the CRON_SECRET bearer header — simplest, no worker changes.
+  // "triggers": { "crons": ["0 11 * * *", "0 12 * * *", "0 15 * * *"] }
+}

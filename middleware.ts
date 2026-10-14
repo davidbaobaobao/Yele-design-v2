@@ -39,7 +39,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const country = request.headers.get('x-vercel-ip-country')
+  // Geo country header: Cloudflare sets `cf-ipcountry`, Vercel sets
+  // `x-vercel-ip-country`. Read both so the same code works on either host.
+  const country = request.headers.get('cf-ipcountry') ?? request.headers.get('x-vercel-ip-country')
   const isEu = country ? EU_COUNTRIES.has(country) : true // unknown -> assume EU (safe for the banner)
 
   // Locale routing for the homepage + funnel entry paths. A manual choice

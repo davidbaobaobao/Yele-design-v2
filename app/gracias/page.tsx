@@ -29,7 +29,7 @@ export default async function GraciasPage({
 
   if (session_id) {
     try {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { httpClient: Stripe.createFetchHttpClient() })
       const session = await stripe.checkout.sessions.retrieve(session_id)
       const planId = session.metadata?.planId
       if (planId && PLAN_VALUES[planId]) {

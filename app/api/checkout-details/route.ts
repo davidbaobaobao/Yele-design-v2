@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { httpClient: Stripe.createFetchHttpClient() })
 
   const { searchParams } = new URL(request.url)
   const sessionId = searchParams.get('session_id')
