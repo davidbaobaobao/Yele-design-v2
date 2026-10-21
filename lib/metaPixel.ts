@@ -5,7 +5,10 @@ declare global {
   interface Window { fbq?: (...args: unknown[]) => void }
 }
 
-export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? ''
+// Pixel ID is public (ships in the browser bundle). Env var wins; the literal
+// is the current Yele pixel so attribution keeps working on any platform even
+// if NEXT_PUBLIC_META_PIXEL_ID isn't set in that environment.
+export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '1095950116587702'
 
 const CONSENT_KEY = 'cookie-consent'
 // Generic "the visitor changed their cookie choice" broadcast — dispatched
