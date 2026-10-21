@@ -3,11 +3,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import LeadForm from '@/components/LeadForm'
-import { Archivo } from 'next/font/google'
 import { getWP, type WPStrings, type Locale, type Mode } from '@/lib/i18n/webpolice'
 
-// Serious mode uses Archivo (a clean grotesque, close to Sinkin Sans).
-const archivo = Archivo({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], display: 'swap' })
+// Serious mode uses Archivo (a clean grotesque, close to Sinkin Sans). Loaded
+// once in app/layout.tsx as --font-display (weights 400–900); reused here via
+// that CSS variable rather than a second next/font/google fetch at build time.
+const archivo = { className: 'font-[family-name:var(--font-display)]' }
 import { showcaseFor, poolFor, faviconUrl } from '@/lib/webpolice/examples'
 import { getFunnelDict } from '@/lib/i18n/funnel'
 import { useVideoAutoplay } from '@/hooks/useVideoAutoplay'

@@ -13,7 +13,10 @@ import MetaPixelScript from '@/components/MetaPixelScript'
 
 const archivo = Archivo({
   subsets: ['latin'],
-  weight: ['700', '800', '900'],
+  // 400–600 added for webpolice "serious mode" body/UI text, which reuses this
+  // same loader via the --font-display CSS variable (one Google Fonts fetch at
+  // build, not a second duplicate loader in WebPoliceClient).
+  weight: ['400', '500', '600', '700', '800', '900'],
   variable: '--font-display',
   display: 'swap',
 })
