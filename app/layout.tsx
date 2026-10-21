@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Archivo, Instrument_Sans, IBM_Plex_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 // `next/script` import removed — gtag and Clarity are both disabled below. Re-add
 // `import Script from 'next/script'` when re-enabling either tag.
 import './globals.css'
@@ -11,25 +11,30 @@ import CookieBanner from '@/components/CookieBanner'
 // import YelebotGate from '@/components/YelebotGate'
 import MetaPixelScript from '@/components/MetaPixelScript'
 
-const archivo = Archivo({
-  subsets: ['latin'],
-  // 400–600 added for webpolice "serious mode" body/UI text, which reuses this
-  // same loader via the --font-display CSS variable (one Google Fonts fetch at
-  // build, not a second duplicate loader in WebPoliceClient).
-  weight: ['400', '500', '600', '700', '800', '900'],
+// Self-hosted (app/fonts/*.woff2) rather than next/font/google, so production
+// builds never depend on Google Fonts being reachable from the build network
+// (that fetch was failing intermittently on Vercel). Archivo & Instrument Sans
+// are variable fonts (one file covers the whole weight range); webpolice
+// "serious mode" reuses Archivo via the --font-display CSS variable.
+const archivo = localFont({
+  src: './fonts/archivo-variable.woff2',
+  weight: '400 900',
   variable: '--font-display',
   display: 'swap',
 })
 
-const instrumentSans = Instrument_Sans({
-  subsets: ['latin'],
+const instrumentSans = localFont({
+  src: './fonts/instrument-sans-variable.woff2',
+  weight: '400 700',
   variable: '--font-body',
   display: 'swap',
 })
 
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
+const ibmPlexMono = localFont({
+  src: [
+    { path: './fonts/ibm-plex-mono-400.woff2', weight: '400', style: 'normal' },
+    { path: './fonts/ibm-plex-mono-500.woff2', weight: '500', style: 'normal' },
+  ],
   variable: '--font-mono',
   display: 'swap',
 })
