@@ -3,7 +3,7 @@
 // hardcoded copy verbatim so the English pages render unchanged.
 //
 // Currency: the price NUMBERS are identical across locales (699 / 1199 / 2799,
-// and 29 / 49 / 99); only the symbol changes — '$' for English, '€' for
+// and 19 / 49 / 99); only the symbol changes — '$' for English, '€' for
 // Spanish and Chinese — so nothing about Stripe/checkout changes. Brand and
 // product names (Yele, Yele Care, Launch/Business/Pro) stay in Latin script
 // in every locale.
@@ -260,7 +260,7 @@ const en: FunnelDict = {
   care: {
     title1: 'Looked after with ',
     title2: 'Yele Care',
-    subtitle: 'Permanent attention that keeps everything working — from $29/month.',
+    subtitle: 'Permanent attention that keeps everything working — from $19/month.',
     contentTitle: 'Content updates',
     contentBody: 'We help you add new content — new projects, new photos, new menu items, whatever your business needs.',
     redesignTitle: 'Yearly website redesign',
@@ -444,7 +444,7 @@ const es: FunnelDict = {
   care: {
     title1: 'Mantenimiento con ',
     title2: 'Yele Care',
-    subtitle: 'Atención permanente que mantiene todo funcionando — desde 29€/mes.',
+    subtitle: 'Atención permanente que mantiene todo funcionando — desde 19€/mes.',
     contentTitle: 'Actualización de contenido',
     contentBody: 'Te ayudamos a añadir contenido nuevo — proyectos, fotos, platos de menú, lo que tu negocio necesite.',
     redesignTitle: 'Rediseño anual de la web',
@@ -627,7 +627,7 @@ const zh: FunnelDict = {
   care: {
     title1: '由 ',
     title2: 'Yele Care',
-    subtitle: '持续维护，让一切正常运行 — €29/月起。',
+    subtitle: '持续维护，让一切正常运行 — €19/月起。',
     contentTitle: '内容更新',
     contentBody: '我们帮你添加新内容 — 新项目、新照片、新菜单项，任何业务所需。',
     redesignTitle: '每年网站重新设计',

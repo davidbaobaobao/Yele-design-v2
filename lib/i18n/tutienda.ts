@@ -55,7 +55,7 @@ const es: TuTiendaDict = {
   meta: {
     title: 'Crea tu tienda online a medida desde 1.199€ | Yele',
     description:
-      'Una tienda online diseñada a medida, optimizada para vender y con comisiones mucho más bajas que Shopify. Fotos y vídeos de tus productos incluidos. Desde 1.199€ + Yele Care desde 29€/mes.',
+      'Una tienda online diseñada a medida, optimizada para vender y con comisiones mucho más bajas que Shopify. Fotos y vídeos de tus productos incluidos. Desde 1.199€ + Yele Care desde 19€/mes.',
   },
   leadSource: 'Tu Tienda (ES)',
   hero: {
@@ -86,7 +86,7 @@ const es: TuTiendaDict = {
     subtitle: 'Una tienda hecha a medida, con comisiones mucho más bajas.',
     colFeature: 'Característica',
     rows: [
-      { feature: 'Cuota mensual', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
+      { feature: 'Cuota mensual', yele: 'Basic: 19 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
       { feature: 'Comisión base', yele: '1 % + 0,20 €', shopify: '2,1 % + 0,30 €' },
       { feature: 'Comisión para mayor volumen', yele: '0,5 % + 0,02 €', shopify: '1,6 % + 0,30 €' },
       { feature: 'Creación de contenido (imágenes y vídeos)', yele: '0 / 5 / 20 productos al mes', shopify: 'No ofrecido', shopifyNone: true },
@@ -125,7 +125,7 @@ const es: TuTiendaDict = {
       },
     ],
     careTiers: [
-      { name: 'Basic', price: '29€', popular: false, headline: null, features: ['Alojamiento', 'SSL y seguridad', 'Copias de seguridad'] },
+      { name: 'Basic', price: '19€', popular: false, headline: null, features: ['Alojamiento', 'SSL y seguridad', 'Copias de seguridad'] },
       { name: 'Plus', price: '49€', popular: true, headline: 'Todo lo de Basic, y además:', features: ['Creación de fotos y vídeos customizados de 5 productos nuevos al mes', 'Soporte para modificar/añadir productos', 'Rediseño anual'] },
       { name: 'Pro', price: '99€', popular: false, headline: 'Todo lo de Plus, y además:', features: ['Creación de fotos y vídeos customizados de 20 productos nuevos al mes', 'Rediseño por temporada', 'Soporte prioritario'] },
     ],
@@ -151,7 +151,7 @@ const es: TuTiendaDict = {
   },
   faq: [
     { q: '¿Cuánto cuesta una tienda online?', a: 'Las tiendas de Yele empiezan en 1.199€. La mayoría elige el plan Business (1.199€); las tiendas más avanzadas, el plan Pro (2.799€). Es un pago único por el desarrollo — sin mensualidades de licencia.' },
-    { q: '¿Hay una cuota mensual?', a: 'Sí — Yele Care para tu tienda, desde 29€/mes, en tres niveles: Basic (29€/mes) — alojamiento, seguridad y copias; Plus (49€/mes) — fotos y vídeos de 5 productos nuevos al mes, soporte para modificar/añadir productos y un rediseño anual; y Pro (99€/mes) — fotos y vídeos de 20 productos nuevos al mes, rediseño por temporada y soporte prioritario.' },
+    { q: '¿Hay una cuota mensual?', a: 'Sí — Yele Care para tu tienda, desde 19€/mes, en tres niveles: Basic (19€/mes) — alojamiento, seguridad y copias; Plus (49€/mes) — fotos y vídeos de 5 productos nuevos al mes, soporte para modificar/añadir productos y un rediseño anual; y Pro (99€/mes) — fotos y vídeos de 20 productos nuevos al mes, rediseño por temporada y soporte prioritario.' },
     { q: '¿Yele Care es obligatorio?', a: 'No — pero lo recomendamos mucho para una tienda. Mantiene todo funcionando (alojamiento, seguridad, copias y monitorización), renueva el contenido de tus productos cada mes e incluye rediseños para que tu tienda nunca quede anticuada. Puedes gestionarla tú mismo, pero con Yele Care no te preocupas por la parte técnica.' },
     { q: '¿Puedo añadir productos y actualizar mi tienda más adelante?', a: 'Sí — cuando quieras. Puedes gestionar tu catálogo tú mismo de forma sencilla, y con Plus o Pro añadimos y optimizamos productos por ti cada mes.' },
     { q: '¿Tengo que pagar todo por adelantado?', a: 'No. Pagas el 50% al empezar. El 50% restante se paga cuando la tienda está terminada y aprobada para su lanzamiento.' },
@@ -167,7 +167,7 @@ const es: TuTiendaDict = {
   finalCta: {
     title: 'Tu tienda merece un escaparate a su altura.',
     line1: 'Una tienda online a medida, optimizada para vender — con comisiones mucho más bajas que Shopify.',
-    line2: 'Tiendas desde 1.199€. Yele Care desde 29€/mes. 50% para empezar, 50% al lanzar.',
+    line2: 'Tiendas desde 1.199€. Yele Care desde 19€/mes. 50% para empezar, 50% al lanzar.',
   },
   whatsappPrefill: '¡Hola! Me interesa una tienda online con Yele.',
   whyAffordableBody: 'Ecommerce profesionales desde 1199€, con precios claros y sin presupuestos de agencia confusos.',
@@ -178,7 +178,7 @@ const en: TuTiendaDict = {
   meta: {
     title: 'Get a custom online store from €1,199 | Yele',
     description:
-      'A custom-built online store, optimized to sell, with fees much lower than Shopify. Product photos and videos included. From €1,199 + Yele Care from €29/month.',
+      'A custom-built online store, optimized to sell, with fees much lower than Shopify. Product photos and videos included. From €1,199 + Yele Care from €19/month.',
   },
   leadSource: 'Tu Tienda (EN)',
   hero: {
@@ -209,7 +209,7 @@ const en: TuTiendaDict = {
     subtitle: 'A fully custom store, with much lower fees.',
     colFeature: 'Feature',
     rows: [
-      { feature: 'Monthly fee', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
+      { feature: 'Monthly fee', yele: 'Basic: 19 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
       { feature: 'Base transaction fee', yele: '1% + 0.20 €', shopify: '2.1% + 0.30 €' },
       { feature: 'Higher-volume fee', yele: '0.5% + 0.02 €', shopify: '1.6% + 0.30 €' },
       { feature: 'Content creation (photos & videos)', yele: '0 / 5 / 20 products per month', shopify: 'Not offered', shopifyNone: true },
@@ -248,7 +248,7 @@ const en: TuTiendaDict = {
       },
     ],
     careTiers: [
-      { name: 'Basic', price: '29€', popular: false, headline: null, features: ['Hosting', 'SSL & security', 'Backups'] },
+      { name: 'Basic', price: '19€', popular: false, headline: null, features: ['Hosting', 'SSL & security', 'Backups'] },
       { name: 'Plus', price: '49€', popular: true, headline: 'Everything in Basic, plus:', features: ['Creation of custom photos & videos for 5 new products per month', 'Support to edit/add products', 'Yearly redesign'] },
       { name: 'Pro', price: '99€', popular: false, headline: 'Everything in Plus, plus:', features: ['Creation of custom photos & videos for 20 new products per month', 'Seasonal redesign', 'Priority support'] },
     ],
@@ -274,7 +274,7 @@ const en: TuTiendaDict = {
   },
   faq: [
     { q: 'How much does an online store cost?', a: 'Yele stores start at €1,199. Most businesses choose the Business plan (€1,199); more advanced stores go with Pro (€2,799). It’s a one-time payment for the build — no licensing subscriptions.' },
-    { q: 'Is there a monthly fee?', a: 'Yes — Yele Care for your store, from €29/month, in three tiers: Basic (€29/mo) — hosting, security and backups; Plus (€49/mo) — photos and videos for 5 new products a month, support to edit/add products and a yearly redesign; and Pro (€99/mo) — photos and videos for 20 new products a month, seasonal redesigns and priority support.' },
+    { q: 'Is there a monthly fee?', a: 'Yes — Yele Care for your store, from €19/month, in three tiers: Basic (€19/mo) — hosting, security and backups; Plus (€49/mo) — photos and videos for 5 new products a month, support to edit/add products and a yearly redesign; and Pro (€99/mo) — photos and videos for 20 new products a month, seasonal redesigns and priority support.' },
     { q: 'Is Yele Care compulsory?', a: 'No — but we highly recommend it for a store. It keeps everything running (hosting, security, backups and monitoring), refreshes your product content every month and includes redesigns so your store never looks dated. You can manage it yourself, but with Yele Care you never have to worry about the technical side.' },
     { q: 'Can I add products and update my store later?', a: 'Yes — anytime. You can manage your catalog yourself easily, and with Plus or Pro we add and optimize products for you every month.' },
     { q: 'Do I need to pay everything upfront?', a: 'No. You pay 50% to start. The remaining 50% is paid when the store is finished and approved for launch.' },
@@ -290,7 +290,7 @@ const en: TuTiendaDict = {
   finalCta: {
     title: 'Your store deserves a storefront to match.',
     line1: 'A fully custom online store, built to sell — with far lower fees than Shopify.',
-    line2: 'Stores from €1,199. Yele Care from €29/mo. 50% to start, 50% at launch.',
+    line2: 'Stores from €1,199. Yele Care from €19/mo. 50% to start, 50% at launch.',
   },
   whatsappPrefill: "Hi! I'm interested in an online store with Yele.",
   whyAffordableBody: 'Professional ecommerce from €1,199 — clear pricing and no confusing agency quotes.',
@@ -300,7 +300,7 @@ const en: TuTiendaDict = {
 const zh: TuTiendaDict = {
   meta: {
     title: '€1,199 起打造定制网店 | Yele',
-    description: '完全定制的在线商店，为成交而优化，佣金远低于 Shopify。含产品图片和视频。€1,199 起 + Yele Care €29/月起。',
+    description: '完全定制的在线商店，为成交而优化，佣金远低于 Shopify。含产品图片和视频。€1,199 起 + Yele Care €19/月起。',
   },
   leadSource: 'Tu Tienda (ZH)',
   hero: {
@@ -325,7 +325,7 @@ const zh: TuTiendaDict = {
     subtitle: '完全定制的网店，佣金低得多。',
     colFeature: '功能',
     rows: [
-      { feature: '月费', yele: 'Basic: 29 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
+      { feature: '月费', yele: 'Basic: 19 € · Plus: 49 € · Pro: 99 €', shopify: 'Basic: 32 € · Grow: 92 € · Advanced: 384 €' },
       { feature: '基础交易佣金', yele: '1% + 0.20 €', shopify: '2.1% + 0.30 €' },
       { feature: '大额交易佣金', yele: '0.5% + 0.02 €', shopify: '1.6% + 0.30 €' },
       { feature: '内容创作（图片和视频）', yele: '每月 0 / 5 / 20 个产品', shopify: '不提供', shopifyNone: true },
@@ -364,7 +364,7 @@ const zh: TuTiendaDict = {
       },
     ],
     careTiers: [
-      { name: 'Basic', price: '29€', popular: false, headline: null, features: ['托管', 'SSL 与安全', '备份'] },
+      { name: 'Basic', price: '19€', popular: false, headline: null, features: ['托管', 'SSL 与安全', '备份'] },
       { name: 'Plus', price: '49€', popular: true, headline: '包含 Basic 的全部，另加：', features: ['每月为 5 个新产品创作定制图片和视频', '修改/新增产品的支持', '每年改版'] },
       { name: 'Pro', price: '99€', popular: false, headline: '包含 Plus 的全部，另加：', features: ['每月为 20 个新产品创作定制图片和视频', '按季度改版', '优先支持'] },
     ],
@@ -390,7 +390,7 @@ const zh: TuTiendaDict = {
   },
   faq: [
     { q: '做一家网店要多少钱？', a: 'Yele 网店 €1,199 起。大多数企业选择 Business 方案（€1,199）；更进阶的网店选择 Pro（€2,799）。开发是一次性付款 — 没有授权月费。' },
-    { q: '有月费吗？', a: '有 — 面向网店的 Yele Care，€29/月起，分三个等级：Basic（€29/月）— 托管、安全和备份；Plus（€49/月）— 每月 5 个新产品的图片和视频、修改/新增产品的支持以及每年一次改版；Pro（€99/月）— 每月 20 个新产品的图片和视频、按季度改版和优先支持。' },
+    { q: '有月费吗？', a: '有 — 面向网店的 Yele Care，€19/月起，分三个等级：Basic（€19/月）— 托管、安全和备份；Plus（€49/月）— 每月 5 个新产品的图片和视频、修改/新增产品的支持以及每年一次改版；Pro（€99/月）— 每月 20 个新产品的图片和视频、按季度改版和优先支持。' },
     { q: 'Yele Care 是必须的吗？', a: '不是 — 但我们强烈推荐网店使用。它让一切照常运行（托管、安全、备份和监控），每月更新你的产品内容，并包含改版，让你的网店永不过时。你也可以自己管理，但有了 Yele Care，你无需操心技术层面。' },
     { q: '之后我可以新增产品、更新网店吗？', a: '可以 — 随时都行。你可以自己轻松管理商品目录，使用 Plus 或 Pro 时，我们每月为你新增并优化产品。' },
     { q: '需要一次性付清吗？', a: '不需要。开始时支付 50%，剩余 50% 在网店完成并确认上线时支付。' },
@@ -406,7 +406,7 @@ const zh: TuTiendaDict = {
   finalCta: {
     title: '你的网店值得一个与之匹配的门面。',
     line1: '完全定制的在线商店，为成交而生 — 佣金远低于 Shopify。',
-    line2: '网店 €1,199 起。Yele Care €29/月起。50% 启动，50% 上线时支付。',
+    line2: '网店 €1,199 起。Yele Care €19/月起。50% 启动，50% 上线时支付。',
   },
   whatsappPrefill: '你好！我想用 Yele 做一家网店。',
   whyAffordableBody: '专业电商 €1,199 起 — 价格清晰，没有令人困惑的代理报价。',

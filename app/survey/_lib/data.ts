@@ -123,7 +123,7 @@ export interface SurveyAnswers {
 
 // Yele Care maintenance tiers — the survey "which plan do you prefer?" step.
 export const CARE_PLAN_OPTIONS: { id: string; name: string; price: string; blurb: string; image: string; popular?: boolean }[] = [
-  { id: 'lite', name: 'Yele Care Lite', price: '$29/mo', blurb: 'Hosting, security and backups.', image: '/media/services/care_lite.webp' },
+  { id: 'lite', name: 'Yele Care Lite', price: '$19/mo', blurb: 'Hosting, security and backups.', image: '/media/services/care_lite.webp' },
   { id: 'care', name: 'Yele Care', price: '$49/mo', blurb: 'Everything in Lite, plus a yearly redesign, content updates, monitoring and 24/7 support.', image: '/media/services/care.webp', popular: true },
   { id: 'plus', name: 'Yele Care+', price: '$99/mo', blurb: 'Everything in Yele Care, plus advanced security and priority services.', image: '/media/services/care_plus.webp' },
 ]
@@ -147,7 +147,7 @@ export const ADDON_OPTIONS: {
   {
     id: 'chatbot',
     title: 'AI smart chatbot',
-    price: '$99 setup + $29/mo',
+    price: '$99 setup + $19/mo',
     blurb: 'Ultra-intelligent AI chat that answers any question about your business, books appointments, and automates more.',
     image: '/media/services/aichatassistant.jpeg',
   },

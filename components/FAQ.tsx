@@ -12,7 +12,7 @@ const FAQS = [
   {
     question: 'Is there a monthly fee?',
     answer:
-      'Yes — Yele Care, our maintenance plan, from $29/month, in three tiers: Yele Care Lite ($29/mo) — hosting, security and backups; Yele Care ($49/mo) — a yearly redesign, we update your content, plus monitoring; and Yele Care+ ($99/mo) — advanced security, backups, monitoring and services.',
+      'Yes — Yele Care, our maintenance plan, from $19/month, in three tiers: Yele Care Lite ($19/mo) — hosting, security and backups; Yele Care ($49/mo) — a yearly redesign, we update your content, plus monitoring; and Yele Care+ ($99/mo) — advanced security, backups, monitoring and services.',
   },
   {
     question: 'Is Yele Care compulsory?',
@@ -53,7 +53,7 @@ const FAQS_ES = [
   {
     question: '¿Hay una cuota mensual?',
     answer:
-      'Sí — Yele Care, nuestro plan de mantenimiento, desde 29€/mes, en tres niveles: Yele Care Lite (29€/mes) — hosting, seguridad y copias de seguridad; Yele Care (49€/mes) — un rediseño anual, actualizamos tu contenido y monitorización; y Yele Care+ (99€/mes) — seguridad avanzada, copias, monitorización y servicios.',
+      'Sí — Yele Care, nuestro plan de mantenimiento, desde 19€/mes, en tres niveles: Yele Care Lite (19€/mes) — hosting, seguridad y copias de seguridad; Yele Care (49€/mes) — un rediseño anual, actualizamos tu contenido y monitorización; y Yele Care+ (99€/mes) — seguridad avanzada, copias, monitorización y servicios.',
   },
   {
     question: '¿Es obligatorio Yele Care?',

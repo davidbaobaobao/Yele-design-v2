@@ -14,7 +14,7 @@ const FAQS_BY_LOCALE: Record<Locale, { kicker: string; title: string; items: Faq
     title: 'We answer your questions.',
     items: [
       { q: 'How much does a website cost?', a: 'Yele websites start at $699. Most small businesses will choose either our $699 Launch package or our $1,199 Business package. More advanced websites start from $2,799.' },
-      { q: 'Is there a monthly fee?', a: 'Yes — Yele Care, our maintenance plan, from $29/month, in three tiers: Yele Care Lite ($29/mo) — hosting, security and backups; Yele Care ($49/mo) — a yearly redesign, we update your content, plus monitoring; and Yele Care+ ($99/mo) — advanced security, backups, monitoring and services.' },
+      { q: 'Is there a monthly fee?', a: 'Yes — Yele Care, our maintenance plan, from $19/month, in three tiers: Yele Care Lite ($19/mo) — hosting, security and backups; Yele Care ($49/mo) — a yearly redesign, we update your content, plus monitoring; and Yele Care+ ($99/mo) — advanced security, backups, monitoring and services.' },
       { q: 'Is Yele Care compulsory?', a: 'No — but we highly recommend it. Yele Care includes a full design refresh every year, so you get a renewed website annually and everything keeps working — hosted, secure, backed up, monitored and up to date. You can host and manage the site yourself, but with Yele Care you never have to worry about the technical side.' },
       { q: 'Can I update my website later with my content?', a: 'Yes — anytime. With Yele Care Lite you can upload and update your content yourself, easily. With Yele Care and Yele Care+, we help you upload it or do it for you.' },
       { q: 'Do I need to pay everything upfront?', a: 'No. You pay 50% when we begin. The remaining 50% is paid when the website is finished and approved for launch.' },
@@ -33,7 +33,7 @@ const FAQS_BY_LOCALE: Record<Locale, { kicker: string; title: string; items: Faq
     title: 'Respondemos tus preguntas.',
     items: [
       { q: '¿Cuánto cuesta una web?', a: 'Las webs de Yele empiezan en 699€. La mayoría de pequeños negocios elige el plan Launch (699€) o el plan Business (1.199€). Las webs más avanzadas empiezan en 2.799€.' },
-      { q: '¿Hay una cuota mensual?', a: 'Sí — Yele Care, nuestro plan de mantenimiento, desde 29€/mes, en tres niveles: Yele Care Lite (29€/mes) — alojamiento, seguridad y copias; Yele Care (49€/mes) — un rediseño anual, actualizamos tu contenido y monitorización; y Yele Care+ (99€/mes) — seguridad avanzada, copias, monitorización y servicios.' },
+      { q: '¿Hay una cuota mensual?', a: 'Sí — Yele Care, nuestro plan de mantenimiento, desde 19€/mes, en tres niveles: Yele Care Lite (19€/mes) — alojamiento, seguridad y copias; Yele Care (49€/mes) — un rediseño anual, actualizamos tu contenido y monitorización; y Yele Care+ (99€/mes) — seguridad avanzada, copias, monitorización y servicios.' },
       { q: '¿Yele Care es obligatorio?', a: 'No — pero lo recomendamos mucho. Yele Care incluye un rediseño completo cada año, así renuevas tu web anualmente y todo sigue funcionando — alojado, seguro, con copias, monitorizado y actualizado. Puedes alojar y gestionar la web tú mismo, pero con Yele Care nunca tienes que preocuparte por la parte técnica.' },
       { q: '¿Puedo actualizar mi web más adelante con mi contenido?', a: 'Sí — cuando quieras. Con Yele Care Lite puedes subir y actualizar tu contenido tú mismo, fácilmente. Con Yele Care y Yele Care+, te ayudamos a subirlo o lo hacemos por ti.' },
       { q: '¿Tengo que pagar todo por adelantado?', a: 'No. Pagas el 50% al empezar. El 50% restante se paga cuando la web está terminada y aprobada para su lanzamiento.' },
@@ -52,7 +52,7 @@ const FAQS_BY_LOCALE: Record<Locale, { kicker: string; title: string; items: Faq
     title: '解答你的疑问。',
     items: [
       { q: '一个网站要多少钱？', a: 'Yele 网站 €699 起。大多数小企业会选择 €699 的 Launch 方案或 €1,199 的 Business 方案。更进阶的网站 €2,799 起。' },
-      { q: '有月费吗？', a: '有 — Yele Care 是我们的维护方案，€29/月起，分三个等级：Yele Care Lite（€29/月）— 托管、安全和备份；Yele Care（€49/月）— 每年重新设计、更新你的内容并监控；Yele Care+（€99/月）— 进阶安全、备份、监控和服务。' },
+      { q: '有月费吗？', a: '有 — Yele Care 是我们的维护方案，€19/月起，分三个等级：Yele Care Lite（€19/月）— 托管、安全和备份；Yele Care（€49/月）— 每年重新设计、更新你的内容并监控；Yele Care+（€99/月）— 进阶安全、备份、监控和服务。' },
       { q: 'Yele Care 是必须的吗？', a: '不是 — 但我们强烈推荐。Yele Care 每年包含一次完整的设计焕新，所以你每年都能获得焕然一新的网站，一切照常运行 — 托管、安全、备份、监控并保持更新。你也可以自己托管和管理网站，但有了 Yele Care，你无需操心技术层面。' },
       { q: '之后我可以用自己的内容更新网站吗？', a: '可以 — 随时都行。使用 Yele Care Lite，你可以自己轻松上传和更新内容。使用 Yele Care 和 Yele Care+，我们帮你上传或替你完成。' },
       { q: '需要一次性付清吗？', a: '不需要。开始时支付 50%，剩余 50% 在网站完成并确认上线时支付。' },

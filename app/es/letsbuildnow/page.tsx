@@ -8,7 +8,7 @@ import LetsBuildLanding from '@/components/letsbuild/LetsBuildLanding'
 export const metadata: Metadata = {
   title: 'Consigue una web a medida desde 699€ | Yele',
   description:
-    'Diseño e imágenes a medida, entrega en menos de 4 semanas, nuestra agencia se encarga de todo. Webs desde 699€ + Yele Care desde 29€/mes. 50% para empezar, 50% al lanzar.',
+    'Diseño e imágenes a medida, entrega en menos de 4 semanas, nuestra agencia se encarga de todo. Webs desde 699€ + Yele Care desde 19€/mes. 50% para empezar, 50% al lanzar.',
   alternates: { canonical: 'https://yele.design/es/letsbuild' },
   robots: { index: false, follow: true },
   openGraph: {
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     url: 'https://yele.design/es/letsbuildnow',
     siteName: 'Yele',
     title: 'Consigue una web a medida desde 699€ | Yele',
-    description: 'Diseño a medida. Entrega en menos de 4 semanas. Desde 699€ + Yele Care desde 29€/mes.',
+    description: 'Diseño a medida. Entrega en menos de 4 semanas. Desde 699€ + Yele Care desde 19€/mes.',
   },
 }
 

@@ -8,7 +8,7 @@ import { CTAButton } from '@/components/ui/cta-button'
 import PricingCards from '@/components/letsbuild/PricingCards'
 
 const CARE_TIERS = [
-  { name: 'Yele Care Lite', price: '$29', image: '/media/services/care_lite.webp', features: ['Hosting', 'Security', 'Backups'], popular: false },
+  { name: 'Yele Care Lite', price: '$19', image: '/media/services/care_lite.webp', features: ['Hosting', 'Security', 'Backups'], popular: false },
   { name: 'Yele Care', price: '$49', image: '/media/services/care.webp', features: ['Everything in Lite', 'We update your content', 'A full redesign every year', 'Monitoring', '24/7 support'], popular: true },
   { name: 'Yele Care+', price: '$99', image: '/media/services/care_plus.webp', features: ['Everything in Yele Care', 'Advanced security', 'Priority services'], popular: false },
 ]
@@ -55,7 +55,7 @@ const CATEGORIES: ServiceCategory[] = [
     items: [
       {
         name: 'Smart Booking',
-        price: 29,
+        price: 19,
         image: 'smartbooking.jpeg',
         includedIn: 'Pro & Frontier',
         description:
@@ -63,7 +63,7 @@ const CATEGORIES: ServiceCategory[] = [
       },
       {
         name: 'AI Chat Assistant',
-        price: 29,
+        price: 19,
         image: 'aichatassistant.jpeg',
         includedIn: 'Pro & Frontier',
         description:
@@ -244,7 +244,7 @@ export default function ServicesPage() {
                   Yele Care
                 </h2>
                 <p className="font-body text-lg text-white/60 max-w-xl mx-auto">
-                  Maintenance that keeps your website fast, secure and always up to date — from $29/month.
+                  Maintenance that keeps your website fast, secure and always up to date — from $19/month.
                 </p>
               </div>
 
