@@ -14,8 +14,8 @@ export default class DesktopLanding extends React.Component<{ accent?: string },
 constructor(props) {
 super(props);
 this.ANIM = 3256;   // scroll px that drive the card sequence
-this.PEEK_AT = 3380;  // scroll px where the sheet starts peeking up
-this.FORM_AT = 3520; // scroll px where it snaps fully open and locks
+this.PEEK_AT = 3950;  // scroll px where the sheet starts peeking up (long hold on card 3 first)
+this.FORM_AT = 4150; // scroll px where it snaps fully open and locks
 this.drag = null;
 this.sheetEl = null;
 this.PROJECTS = [{"title": "Blackcrest", "desc": "Ventanas y puertas arquitectónicas de alta gama. Una web centrada en el producto con precio al instante según medidas: presupuesta cualquier hueco en segundos.", "v": "/media/siguiente-nivel/proyectos/blackcrest.mp4", "p": "/media/blackcrest/4_poster.webp", "a": "/media/blackcrest/6.webp", "b": "/media/blackcrest/1.webp"}, {"title": "Clark Fork", "desc": "Casas de troncos y madera a medida, construidas en Montana desde 1993. Una web serena y editorial que deja hablar al oficio y al paisaje.", "v": "/media/siguiente-nivel/proyectos/clarkfork.mp4", "p": "/media/clarkfork/4_poster.webp", "a": "/media/clarkfork/2.webp", "b": "/media/clarkfork/3.webp"}, {"title": "Clear Cool Water", "desc": "Una marca de agua de manantial de Florida que se vende por cajas. Una tienda limpia y centrada en el producto, con origen, datos de pureza y pedidos con un toque.", "v": "/media/siguiente-nivel/proyectos/clearwater.mp4", "p": "/media/clearwater/4_poster.webp", "a": "/media/clearwater/1.webp", "b": "/media/clearwater/2.webp"}, {"title": "Reptile Roadshow", "desc": "Espectáculos en vivo con animales exóticos y encuentros con reptiles. Una web atrevida, con tonos de selva y paquetes por niveles que se reservan al instante.", "v": "/media/siguiente-nivel/proyectos/reptileroadshow.mp4", "p": "/media/reptileroadshow/4_poster.webp", "a": "/media/reptileroadshow/1.webp", "b": "/media/reptileroadshow/2.webp"}, {"title": "Shinsetsu", "desc": "Una agencia de viajes boutique que diseña viajes de esquí a medida por la legendaria nieve polvo de Hokkaido.", "v": "/media/siguiente-nivel/proyectos/hokkaido.mp4", "p": "/media/hokkaido/4_poster.webp", "a": "/media/hokkaido/1.webp", "b": "/media/hokkaido/2.webp"}, {"title": "Restoration Bros", "desc": "Especialistas 24/7 en daños por agua y restauración tras desastres en Tampa, con una web pensada para cuando cada minuto cuenta.", "v": "/media/siguiente-nivel/proyectos/renovationbros.mp4", "p": "/media/renovationbros/4_poster.webp", "a": "/media/renovationbros/1.webp", "b": "/media/renovationbros/2.webp"}, {"title": "Duna", "desc": "Branding de producto completo para Duna, dátiles medjool ecológicos.", "v": "/media/siguiente-nivel/proyectos/duna.mp4", "p": "/media/duna/1_poster.webp", "a": "/media/duna/2.webp", "b": "/media/duna/4.webp"}, {"title": "Marketasa", "desc": "Una agencia de marketing de resultados. Una web editorial y de alto contraste que presenta sus casos de éxito como una revista.", "v": "/media/siguiente-nivel/proyectos/marketasa.mp4", "p": "/media/marketasa/4_poster.webp", "a": "/media/marketasa/1.webp", "b": "/media/marketasa/2.webp"}];
@@ -73,9 +73,10 @@ this.midFormRef = (el) => { this.midEl = el; };
 this.onSubmit3 = (e) => {
 if (e && e.preventDefault) e.preventDefault();
 if (this.state.sent3) return;
-this.setState({ sent3: true });
+if (!this.snValidate(['f3-nombre', 'f3-email', 'f3-tel'])) return;
 var g = (id) => { var el = typeof document !== 'undefined' && document.getElementById(id); return el && el.value ? String(el.value).trim() : ''; };
-submitSiguienteNivelLead({ name: g('f3-nombre'), email: g('f3-email'), phone: g('f3-tel'), needs: this.state.needs || [] });
+this.setState({ sent3: true });
+this.snSubmitAndBook({ name: g('f3-nombre'), email: g('f3-email'), phone: g('f3-tel'), needs: this.state.needs || [] });
 };
 this.finalFormRef = (el) => { this.finalEl = el; };
 // Pricing buttons: preselect the plan and glide to the last form
@@ -89,9 +90,10 @@ this.pickBusiness = () => this.pickPlan(this.PLANS[1]);
 this.onSubmit2 = (e) => {
 if (e && e.preventDefault) e.preventDefault();
 if (this.state.sent2) return;
-this.setState({ sent2: true });
+if (!this.snValidate(['f2-nombre', 'f2-email'])) return;
 var g = (id) => { var el = typeof document !== 'undefined' && document.getElementById(id); return el && el.value ? String(el.value).trim() : ''; };
-submitSiguienteNivelLead({ name: g('f2-nombre'), businessName: g('f2-negocio'), email: g('f2-email'), phone: g('f2-tel'), currentWebsite: g('f2-web'), company: g('f2-negocio-desc'), packageInterest: this.state.plan ? [this.state.plan] : [], needs: this.state.needs || [] });
+this.setState({ sent2: true });
+this.snSubmitAndBook({ name: g('f2-nombre'), businessName: g('f2-negocio'), email: g('f2-email'), phone: g('f2-tel'), currentWebsite: g('f2-web'), company: g('f2-negocio-desc'), packageInterest: this.state.plan ? [this.state.plan] : [], needs: this.state.needs || [] });
 };
 // Horizontal swipe on the stage: left = next step, right = previous.
 // Steps: 0 hero, 1 card 1, 2 card 2, 3 card 3; swiping left on card 3 opens the form.
@@ -174,9 +176,10 @@ setTimeout(function () { if (self.ovEl) self.ovEl.pause(); }, 750);
 this.onSubmit = (e) => {
 if (e && e.preventDefault) e.preventDefault();
 if (this.state.sent) return;
-this.setState({ sent: true });
+if (!this.snValidate(['f-nombre', 'f-email', 'f-tel', 'f-empresa'])) return;
 var g = (id) => { var el = typeof document !== 'undefined' && document.getElementById(id); return el && el.value ? String(el.value).trim() : ''; };
-submitSiguienteNivelLead({ name: g('f-nombre'), email: g('f-email'), phone: g('f-tel'), company: g('f-empresa'), timeline: this.state.when || '' });
+this.setState({ sent: true });
+this.snSubmitAndBook({ name: g('f-nombre'), email: g('f-email'), phone: g('f-tel'), company: g('f-empresa'), timeline: this.state.when || '' });
 };
 this.scrollerEl = null;
 this.scrollerRef = (el) => { this.scrollerEl = el; };
@@ -209,6 +212,39 @@ else { try { vid.pause(); } catch (e2) {} }
 }
 if (this.lazyIO) this.lazyIO.observe(el);
 } catch (e) {}
+};
+// Blink any empty/invalid required field red on submit; returns false if any are bad.
+this.snValidate = (ids) => {
+if (typeof document === 'undefined') return true;
+var ok = true, first = null;
+for (var i = 0; i < ids.length; i++) {
+var el = document.getElementById(ids[i]);
+if (!el) continue;
+var val = (el.value || '').trim();
+var bad = !val;
+if (!bad && ids[i].indexOf('email') !== -1) bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+if (bad) {
+ok = false; if (!first) first = el;
+el.classList.remove('sn-invalid'); void el.offsetWidth; el.classList.add('sn-invalid');
+if (!el.dataset.snBound) { el.dataset.snBound = '1'; el.addEventListener('input', function (ev) { ev.currentTarget.classList.remove('sn-invalid'); }); }
+}
+}
+if (first && first.focus) { try { first.focus({ preventScroll: true }); } catch (e) {} }
+return ok;
+};
+// On a valid submit: save the lead (+ fire the Meta Lead pixel) then send the
+// visitor to the Spanish booking calendar, prefilled with their name/email.
+this.snSubmitAndBook = (lead) => {
+var done = false;
+var go = function () {
+if (done) return; done = true;
+try { var qs = new URLSearchParams({ name: lead.name || '', email: lead.email || '' }); window.location.href = '/es/received?' + qs.toString(); }
+catch (e) { window.location.href = '/es/received'; }
+};
+try {
+var pr = submitSiguienteNivelLead(lead);
+if (pr && pr.then) { pr.then(go, go); setTimeout(go, 2500); } else { go(); }
+} catch (e) { go(); }
 };
 this.onScroll = (e) => {
 var y = e.currentTarget.scrollTop;
@@ -490,7 +526,7 @@ return (
 </div>
 
 {/* Scroll room for the card sequence, a short hold on card 3, then the trigger zone for the form */}
-<div aria-hidden="true" style={{ height: "3620px" }}></div>
+<div aria-hidden="true" style={{ height: "4300px" }}></div>
 
 
 
@@ -507,7 +543,7 @@ return (
   <p style={{ margin: "0", fontSize: "28px", fontWeight: "600", lineHeight: "1.2", color: "rgba(255,255,255,0.85)" }}>Demo en 24h</p>
   </div>
   <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-  <form onSubmit={v.onSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px", margin: "0" }}>
+  <form noValidate onSubmit={v.onSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px", margin: "0" }}>
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <label htmlFor="f-nombre" style={{ fontSize: "14px", color: "rgba(255,255,255,0.6)" }}>Nombre <span style={{ color: `${v.accent}` }}>*</span></label>
       <input id="f-nombre" className="sn-yf" type="text" name="nombre" required autoComplete="name" placeholder="Tu nombre completo" style={{ boxSizing: "border-box", width: "100%", height: "46px", padding: "10px 16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)", color: "#FFFFFF", fontFamily: "inherit", fontSize: "16px" }} />
@@ -665,7 +701,7 @@ return (
         <h2 style={{ margin: "0", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "48px", lineHeight: "0.95", fontWeight: "800", fontStretch: "82%", letterSpacing: "-0.015em", textTransform: "uppercase", color: "#16161A" }}>Empezar <span style={{ color: "#B0489F" }}>ahora</span></h2>
         <p style={{ margin: "6px 0 0", fontSize: "22px", fontWeight: "600", lineHeight: "1.2", color: "#16161A" }}>Demo en 24h</p>
       </div>
-      <form onSubmit={v.onSubmit3} style={{ display: "flex", flexDirection: "column", gap: "16px", margin: "0" }}>
+      <form noValidate onSubmit={v.onSubmit3} style={{ display: "flex", flexDirection: "column", gap: "16px", margin: "0" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "16px" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         <label htmlFor="f3-nombre" style={{ fontSize: "14px", color: "#6E6E76" }}>Nombre <span style={{ color: "#B0489F" }}>*</span></label>
@@ -729,7 +765,7 @@ return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
       <p style={{ margin: "0", fontSize: "20px", lineHeight: "1.5", color: "rgba(255,255,255,0.75)" }}>Cuéntanos un poco sobre tu negocio y te recomendaremos el plan adecuado.</p>
     </div>
-    <form onSubmit={v.onSubmit2} style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "16px 20px", margin: "0" }}>
+    <form noValidate onSubmit={v.onSubmit2} style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "16px 20px", margin: "0" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         <label htmlFor="f2-nombre" style={{ fontSize: "14px", color: "rgba(255,255,255,0.6)" }}>Nombre <span style={{ color: `${v.accent}` }}>*</span></label>
         <input id="f2-nombre" className="sn-yf" type="text" required autoComplete="name" placeholder="Tu nombre completo" style={{ boxSizing: "border-box", width: "100%", height: "46px", padding: "10px 16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)", color: "#FFFFFF", fontFamily: "inherit", fontSize: "16px" }} />
