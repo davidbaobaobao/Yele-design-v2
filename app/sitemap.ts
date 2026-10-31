@@ -32,6 +32,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
       alternates: { languages: { en: base, 'x-default': base } },
     },
+    // Siguiente Nivel ES landing (improved ads design).
+    {
+      url: `${base}/nuevoproyecto`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
     // letsbuild — EN / ES / ZH cluster.
     {
       url: `${base}/letsbuild`,

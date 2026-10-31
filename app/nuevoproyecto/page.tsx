@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description:
     'Web nueva completa por 699€ + IVA: diseño singular, sin plantillas, optimizada para móvil y Google. Demo en 24 h, entrega en 7 días.',
   alternates: { canonical: 'https://yele.design/nuevoproyecto' },
-  robots: { index: false, follow: true },
+  robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
     locale: 'es_ES',

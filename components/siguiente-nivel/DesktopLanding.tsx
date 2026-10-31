@@ -190,6 +190,26 @@ el.scrollTo({ top: Math.round(this.ANIM * 0.30), behavior: 'smooth' });
 this.videoRef = (el) => {
 if (el) { el.muted = true; var pr = el.play(); if (pr && pr.catch) pr.catch(function () {}); }
 };
+// Lazy video: below-the-fold clips (why/beyond cards, robot) carry preload="none"
+// and no autoPlay, so nothing downloads until they scroll near the viewport.
+// IntersectionObserver then plays them (which triggers the fetch) and pauses
+// them when they leave — keeping the hero + first paint fast.
+this.lazyIO = null;
+this.lazyVideoRef = (el) => {
+if (!el) return;
+try {
+if (!this.lazyIO && typeof IntersectionObserver !== 'undefined') {
+this.lazyIO = new IntersectionObserver((entries) => {
+entries.forEach((en) => {
+var vid = en.target;
+if (en.isIntersecting) { vid.muted = true; var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {}); }
+else { try { vid.pause(); } catch (e2) {} }
+});
+}, { rootMargin: '300px 0px', threshold: 0.01 });
+}
+if (this.lazyIO) this.lazyIO.observe(el);
+} catch (e) {}
+};
 this.onScroll = (e) => {
 var y = e.currentTarget.scrollTop;
 if (!this.state.formOpen && y >= this.FORM_AT) { if (this.sheetEl) this.sheetEl.scrollTop = 0; this.setState({ y: y, formOpen: true, dragY: 0 }); }
@@ -213,6 +233,7 @@ window.addEventListener('resize', this.onResize);
 componentWillUnmount() {
 window.removeEventListener('resize', this.onResize);
 clearTimeout(this.projT1); clearTimeout(this.projT2); clearTimeout(this.pulseT);
+if (this.lazyIO) { try { this.lazyIO.disconnect(); } catch (e) {} }
 }
 renderVals() {
 var accent = this.props.accent ?? '#D46FC8';
@@ -365,6 +386,7 @@ barW: (p * 100) + '%',
 stepLabel: step,
 onScroll: this.onScroll,
 videoRef: this.videoRef,
+lazyVideoRef: this.lazyVideoRef,
 scrollerRef: this.scrollerRef,
 goToCards: this.goToCards
 };
@@ -525,32 +547,32 @@ return (
     </div>
     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "24px" }}>
       <article className="sn-whycard" style={{ borderRadius: "16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", padding: "24px" }}>
-        <video ref={v.videoRef} src="/media/whyyele3/whyyele1_mobile.mp4" poster="/media/whyyele3/whyyele1_poster.jpg" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
+        <video ref={v.lazyVideoRef} src="/media/whyyele3/whyyele1_mobile.mp4" poster="/media/whyyele3/whyyele1_poster.jpg" muted loop playsInline preload="none" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
         <h3 style={{ margin: "16px 0 0", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "18px", lineHeight: "28px", fontWeight: "700", color: "#FFFFFF" }}>Diseño único</h3>
         <p style={{ margin: "8px 0 0", fontSize: "14px", lineHeight: "22.75px", color: "rgba(255,255,255,0.7)" }}>Creamos un diseño que solo es tuyo, pensado para que tu negocio destaque y se recuerde.</p>
       </article>
       <article className="sn-whycard" style={{ borderRadius: "16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", padding: "24px" }}>
-        <video ref={v.videoRef} src="/media/whyyele3/whyyele6_mobile.mp4" poster="/media/whyyele3/whyyele6_poster.jpg" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
+        <video ref={v.lazyVideoRef} src="/media/whyyele3/whyyele6_mobile.mp4" poster="/media/whyyele3/whyyele6_poster.jpg" muted loop playsInline preload="none" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
         <h3 style={{ margin: "16px 0 0", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "18px", lineHeight: "28px", fontWeight: "700", color: "#FFFFFF" }}>Asequible y transparente</h3>
         <p style={{ margin: "8px 0 0", fontSize: "14px", lineHeight: "22.75px", color: "rgba(255,255,255,0.7)" }}>Webs profesionales desde 699€, con precios claros y sin presupuestos confusos.</p>
       </article>
       <article className="sn-whycard" style={{ borderRadius: "16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", padding: "24px" }}>
-        <video ref={v.videoRef} src="/media/whyyele3/whyyele3_mobile.mp4" poster="/media/whyyele3/whyyele3_poster.jpg" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
+        <video ref={v.lazyVideoRef} src="/media/whyyele3/whyyele3_mobile.mp4" poster="/media/whyyele3/whyyele3_poster.jpg" muted loop playsInline preload="none" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
         <h3 style={{ margin: "16px 0 0", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "18px", lineHeight: "28px", fontWeight: "700", color: "#FFFFFF" }}>A medida</h3>
         <p style={{ margin: "8px 0 0", fontSize: "14px", lineHeight: "22.75px", color: "rgba(255,255,255,0.7)" }}>Diseñada en torno a tu negocio, no una plantilla genérica con tu logo encima.</p>
       </article>
       <article className="sn-whycard" style={{ borderRadius: "16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", padding: "24px" }}>
-        <video ref={v.videoRef} src="/media/whyyele3/whyyele2_mobile.mp4" poster="/media/whyyele3/whyyele2_poster.jpg" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
+        <video ref={v.lazyVideoRef} src="/media/whyyele3/whyyele2_mobile.mp4" poster="/media/whyyele3/whyyele2_poster.jpg" muted loop playsInline preload="none" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
         <h3 style={{ margin: "16px 0 0", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "18px", lineHeight: "28px", fontWeight: "700", color: "#FFFFFF" }}>Entrega rápida</h3>
         <p style={{ margin: "8px 0 0", fontSize: "14px", lineHeight: "22.75px", color: "rgba(255,255,255,0.7)" }}>Objetivo de entrega a partir de 1 semana.</p>
       </article>
       <article className="sn-whycard" style={{ borderRadius: "16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", padding: "24px" }}>
-        <video ref={v.videoRef} src="/media/beyond/AIcall_mobile.mp4" poster="/media/beyond/AIcall_poster.jpg" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
+        <video ref={v.lazyVideoRef} src="/media/beyond/AIcall_mobile.mp4" poster="/media/beyond/AIcall_poster.jpg" muted loop playsInline preload="none" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
         <h3 style={{ margin: "16px 0 0", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "18px", lineHeight: "28px", fontWeight: "700", color: "#FFFFFF" }}>Soporte 24/7</h3>
         <p style={{ margin: "8px 0 0", fontSize: "14px", lineHeight: "22.75px", color: "rgba(255,255,255,0.7)" }}>Seguimos contigo tras el lanzamiento — soporte cuando lo necesites.</p>
       </article>
       <article className="sn-whycard" style={{ borderRadius: "16px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", padding: "24px" }}>
-        <video ref={v.videoRef} src="/media/beyond/Marketing_mobile.mp4" poster="/media/beyond/Marketing_poster.jpg" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
+        <video ref={v.lazyVideoRef} src="/media/beyond/Marketing_mobile.mp4" poster="/media/beyond/Marketing_poster.jpg" muted loop playsInline preload="none" aria-hidden="true" style={{ display: "block", width: "100%", height: "200px", objectFit: "cover", borderRadius: "12px", background: "#0D0E12" }}></video>
         <h3 style={{ margin: "16px 0 0", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "18px", lineHeight: "28px", fontWeight: "700", color: "#FFFFFF" }}>Pensada para crecer</h3>
         <p style={{ margin: "8px 0 0", fontSize: "14px", lineHeight: "22.75px", color: "rgba(255,255,255,0.7)" }}>Añade SEO, publicidad, contenido, IA y automatización a medida que creces.</p>
       </article>
@@ -696,7 +718,7 @@ return (
 
   {/* ===== Vídeo (robot), full-bleed, versión horizontal ===== */}
   <div style={{ position: "relative", flexShrink: "0", margin: "-10px calc(-1 * var(--sn-pad)) 0", background: "#0D0E12" }}>
-    <video ref={v.videoRef} onPause={v.keepPlaying} src="/media/siguiente-nivel/robot-desktop.mp4" poster="/media/siguiente-nivel/robot-desktop-poster.jpg" autoPlay muted loop playsInline preload="metadata" disablePictureInPicture aria-hidden="true" style={{ pointerEvents: "none", display: "block", width: "100%", aspectRatio: "2944 / 1248", objectFit: "cover", objectPosition: "center" }}></video>
+    <video ref={v.lazyVideoRef} src="/media/siguiente-nivel/robot-desktop.mp4" poster="/media/siguiente-nivel/robot-desktop-poster.jpg" muted loop playsInline preload="none" disablePictureInPicture aria-hidden="true" style={{ pointerEvents: "none", display: "block", width: "100%", aspectRatio: "2944 / 1248", objectFit: "cover", objectPosition: "center" }}></video>
     <div style={{ position: "absolute", left: "0", right: "0", top: "0", height: "50%", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "64px var(--sn-pad) 0", boxSizing: "border-box", background: "linear-gradient(180deg, rgba(11,11,13,0.55) 0%, rgba(11,11,13,0.25) 60%, rgba(11,11,13,0) 100%)", pointerEvents: "none" }}>
       <h2 style={{ margin: "0", textAlign: "center", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "64px", lineHeight: "0.95", fontWeight: "800", fontStretch: "82%", letterSpacing: "-0.015em", textTransform: "uppercase", color: "#FFFFFF", textWrap: "balance", textShadow: "0 2px 24px rgba(0,0,0,0.45)" }}>¿Listo para una web <span style={{ color: `${v.accent}` }}>mejor</span>?</h2>
     </div>
@@ -780,7 +802,7 @@ return (
 
 {/* ===== "No quiero" overlay: slides down from the top ===== */}
 <div role="dialog" aria-modal="true" aria-label="¿Seguro?" aria-hidden={v.ovHidden} style={{ position: "absolute", inset: "0", zIndex: "20", overflow: "hidden", background: "#E9A9CF", transform: `${v.ovT}`, transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)", pointerEvents: `${v.ovPE}` }}>
-  <video ref={v.ovVideoRef} src="/media/siguiente-nivel/nope-desktop.mp4" poster="/media/siguiente-nivel/nope-desktop-poster.jpg" muted loop playsInline preload="auto" aria-hidden="true" style={{ position: "absolute", inset: "0", width: "100%", height: "100%", objectFit: "cover", display: "block" }}></video>
+  <video ref={v.ovVideoRef} src="/media/siguiente-nivel/nope-desktop.mp4" poster="/media/siguiente-nivel/nope-desktop-poster.jpg" muted loop playsInline preload="none" aria-hidden="true" style={{ position: "absolute", inset: "0", width: "100%", height: "100%", objectFit: "cover", display: "block" }}></video>
   {/* Sits just above the gorilla's head */}
   <div style={{ position: "absolute", left: "24px", right: "24px", top: "32%", display: "flex", justifyContent: "center" }}>
     <button type="button" className="sn-ctaPink" onClick={v.rethink} tabIndex={v.ovTab} style={{ position: "relative", overflow: "visible", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "16px 32px", border: "0", borderRadius: "12px", background: `${v.accent}`, color: "#16161A", fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: "16px", fontWeight: "600", lineHeight: "1.5", cursor: "pointer", boxShadow: "0 12px 32px rgba(90,20,80,0.28)", fontSize: "18px", padding: "18px 40px" }}>Me lo he pensado{v.pulse2 && (<><span aria-hidden="true" style={{ position: "absolute", inset: "0", borderRadius: "12px", pointerEvents: "none", animation: "snRing 650ms cubic-bezier(0.22, 1, 0.36, 1) forwards" }}></span><span aria-hidden="true" style={{ position: "absolute", inset: "0", borderRadius: "12px", overflow: "hidden", pointerEvents: "none" }}><span style={{ position: "absolute", top: "0", bottom: "0", left: "0", width: "40%", background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)", animation: "snShine 600ms ease-out forwards" }}></span></span></>)}</button>
