@@ -1,0 +1,38 @@
+/* Siguiente nivel landing — styles that inline styles can't express (hover, focus, placeholders, keyframes). */
+.sn-root { position: fixed; inset: 0; z-index: 0; background: #0B0B0D; color: #F4F2EC; overflow: hidden; -webkit-font-smoothing: antialiased; }
+.sn-root a { color: inherit; }
+.sn-root *, .sn-root *::before, .sn-root *::after { box-sizing: border-box; }
+.sn-root h1, .sn-root h2, .sn-root h3, .sn-root p, .sn-root ul, .sn-root ol { margin: 0; }
+.sn-boot { position: absolute; inset: 0; background: #0B0B0D url('/media/siguiente-nivel/hero-mobile-poster.jpg') center / cover no-repeat; }
+@media (min-width: 1024px) { .sn-boot { background-image: url('/media/siguiente-nivel/hero-desktop-poster.jpg'); } }
+.sn-scroller::-webkit-scrollbar{display:none}
+.sn-cta1{transition:background-color .15s cubic-bezier(.4,0,.2,1),transform .15s cubic-bezier(.4,0,.2,1)}
+.sn-cta1:hover{background-color:#FFFFFF !important}
+.sn-cta1:active{transform:scale(.95)}
+.sn-ctaPink{transition:transform .45s cubic-bezier(.34,1.56,.64,1),filter .15s ease}
+.sn-ctaPink:hover{filter:brightness(1.08)}
+.sn-ctaPink:active{transform:scale(.93);transition:transform .08s ease-out}
+@keyframes snRing{0%{box-shadow:0 0 0 0 rgba(212,111,200,0.75)}100%{box-shadow:0 0 0 22px rgba(212,111,200,0)}}
+@keyframes snShine{0%{transform:translateX(-120%) skewX(-20deg)}100%{transform:translateX(220%) skewX(-20deg)}}
+.sn-cta2{transition:color .15s cubic-bezier(.4,0,.2,1)}
+.sn-cta2:hover{color:#FFFFFF !important}
+.sn-yf{transition:border-color .15s cubic-bezier(.4,0,.2,1)}
+.sn-yf::placeholder{color:rgba(255,255,255,0.38)}
+.sn-yf:focus{outline:none;border-color:#D46FC8 !important}
+.sn-chip{transition:border-color .15s cubic-bezier(.4,0,.2,1)}
+.sn-chip:hover{border-color:rgba(255,255,255,0.4) !important}
+.sn-whycard{transition:transform .3s ease,background-color .3s ease,box-shadow .3s ease}
+.sn-whycard:hover{transform:translateY(-4px);background-color:rgba(255,255,255,0.06) !important;box-shadow:0 20px 25px -5px rgba(0,0,0,0.4)}
+.sn-arrowbtn{transition:border-color .25s ease,background-color .25s ease}
+.sn-arrowbtn:hover{border-color:#F2F1EE !important}
+.sn-planbtn{transition:filter .15s ease,transform .15s ease}
+.sn-planbtn:hover{filter:brightness(1.12)}
+.sn-planbtn:active{transform:scale(.97)}
+.sn-yfl{transition:border-color .15s cubic-bezier(.4,0,.2,1)}
+.sn-yfl::placeholder{color:rgba(22,22,26,0.4)}
+.sn-yfl:focus{outline:none;border-color:#D46FC8 !important}
+.sn-chipl{transition:border-color .15s cubic-bezier(.4,0,.2,1)}
+.sn-chipl:hover{border-color:rgba(22,22,26,0.45) !important}
+.sn-send{transition:filter .15s ease,transform .15s ease}
+.sn-send:hover{filter:brightness(1.08)}
+.sn-send:active{transform:scale(.98)}
