@@ -82,8 +82,8 @@ this.finalFormRef = (el) => { this.finalEl = el; };
 // Pricing buttons: preselect the plan and glide to the last form
 this.pickPlan = (label) => {
 this.setState({ plan: label });
-var sh = this.sheetEl, f = this.midEl || this.finalEl;
-if (sh && f) sh.scrollTo({ top: f.offsetTop - 40, behavior: 'smooth' });
+var f = this.midEl || this.finalEl;
+if (f && f.scrollIntoView) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 this.pickLaunch = () => this.pickPlan(this.PLANS[0]);
 this.pickBusiness = () => this.pickPlan(this.PLANS[1]);
@@ -276,11 +276,7 @@ var pr = submitSiguienteNivelLead(lead);
 if (pr && pr.then) { pr.then(go, go); setTimeout(go, 2500); } else { go(); }
 } catch (e) { go(); }
 };
-this.onScroll = (e) => {
-var y = e.currentTarget.scrollTop;
-if (!this.state.formOpen && y >= this.FORM_AT) { if (this.sheetEl) this.sheetEl.scrollTop = 0; this.setState({ y: y, formOpen: true, dragY: 0 }); }
-else this.setState({ y: y });
-};
+this.onScroll = (e) => { this.setState({ y: e.currentTarget.scrollTop }); };
 }
 componentDidUpdate(prevProps, prevState) {
 if (prevState && prevState.proj !== this.state.proj) {
@@ -309,9 +305,10 @@ var p = Math.min(1, Math.max(0, y / this.ANIM));
 var st = this.state;
 var VH = st.vh || 844;
 // peek: 0 → 1 as the scroll nears the trigger (sheet shows up to 120px)
-var peek = Math.min(1, Math.max(0, (y - this.PEEK_AT) / (this.FORM_AT - this.PEEK_AT)));
-// q: how much the sheet covers the stage (0 = hidden, 1 = full)
-var q = st.formOpen ? Math.max(0, 1 - st.dragY / VH) : peek * (120 / VH);
+// No lock/snap sheet any more — the hero/cards just pin via sticky and the
+// rest scrolls normally, so the stage no longer scales/dims under a form.
+var peek = 0;
+var q = 0;
 var sheetT = st.formOpen ? 'translateY(' + st.dragY + 'px)' : 'translateY(' + (VH - Math.round(peek * 120)) + 'px)';
 var easeTr = 'transform 650ms cubic-bezier(0.22, 1, 0.36, 1)';
 var live = st.dragging || (!st.formOpen && peek > 0 && peek < 1);
@@ -444,11 +441,11 @@ stageT: 'scale(' + (1 - 0.06 * q) + ')',
 stageR: (q > 0 ? Math.round(24 * q) : 0) + 'px',
 stageDim: 0.55 * q,
 card2Bg: card2Bg,
-heroT: 'translateX(' + (-off * e1) + '%)',
+heroT: 'translateY(' + (-off * e1) + '%)',
 heroO: 1 - e1 * 0.7,
-c1T: 'translateX(' + (off * (1 - e1) - off * e2) + '%)',
-c2T: 'translateX(' + (off * (1 - e2) - off * e3) + '%)',
-c3T: 'translateX(' + (off * (1 - e3)) + '%)',
+c1T: 'translateY(' + (off * (1 - e1) - off * e2) + '%)',
+c2T: 'translateY(' + (off * (1 - e2) - off * e3) + '%)',
+c3T: 'translateY(' + (off * (1 - e3)) + '%)',
 dim: 0.45 * e1,
 hintO: Math.max(0, 1 - seg(0, 0.08)),
 barW: (p * 100) + '%',
@@ -558,16 +555,12 @@ return (
 </div>
 
 {/* Scroll room for the card sequence, a long hold on card 3, then the trigger zone for the form */}
-<div aria-hidden="true" style={{ height: "4300px" }}></div>
-
-
+<div aria-hidden="true" style={{ height: "3900px" }}></div>
 
 </div>
-</div>
 
-{/* ===== FORM SHEET: rises, snaps to full screen, locks; drag the handle down to leave ===== */}
-<section id="empezar" className="sn-scroller" ref={v.sheetRef} aria-hidden={v.sheetHidden} style={{ position: "absolute", left: "0", right: "0", top: "0", height: "100dvh", zIndex: "10", overflowX: "hidden", overflowY: `${v.sheetOv}`, scrollbarWidth: "none", boxSizing: "border-box", padding: "0 24px 16px", borderRadius: "28px 28px 0 0", background: "#0D0E12", boxShadow: "0 -24px 60px rgba(0,0,0,0.55)", fontFamily: "var(--font-body), system-ui, sans-serif", color: "#FFFFFF", display: "flex", flexDirection: "column", gap: "10px", transform: `${v.sheetT}`, transition: `${v.sheetTr}`, willChange: "transform" }}>
-  <button type="button" aria-label="Arrastra hacia abajo para volver" onPointerDown={v.dragStart} onPointerMove={v.dragMove} onPointerUp={v.dragEnd} onPointerCancel={v.dragEnd} onKeyDown={v.handleKey} tabIndex={v.sheetTab} style={{ position: "sticky", top: "0", zIndex: "3", flexShrink: "0", alignSelf: "stretch", height: "34px", margin: "0 -24px", padding: "0", border: "0", background: "#0D0E12", display: "flex", alignItems: "center", justifyContent: "center", cursor: "grab", touchAction: "none" }}><span style={{ width: "44px", height: "5px", borderRadius: "999px", background: `${v.handleColor}` }}></span></button>
+{/* ===== Below the pinned hero/cards: the form + sections scroll normally (no lock) ===== */}
+<section id="empezar" style={{ position: "relative", width: "100%", boxSizing: "border-box", padding: "16px 24px 16px", borderRadius: "28px 28px 0 0", background: "#0D0E12", boxShadow: "0 -24px 60px rgba(0,0,0,0.55)", fontFamily: "var(--font-body), system-ui, sans-serif", color: "#FFFFFF", display: "flex", flexDirection: "column", gap: "10px" }}>
   {/* Screen 1: the form (fits one screen) */}
   <div style={{ flexShrink: "0", minHeight: "calc(100dvh - 54px)", display: "flex", flexDirection: "column", gap: "10px" }}>
   <h2 style={{ margin: "0 0 4px", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", fontSize: "34px", lineHeight: "0.95", fontWeight: "800", fontStretch: "82%", letterSpacing: "-0.015em", textTransform: "uppercase", color: "#FFFFFF" }}>Empezar <span style={{ color: `${v.accent}` }}>ahora</span></h2>
@@ -850,6 +843,8 @@ return (
     <div style={{ marginTop: "28px", paddingTop: "20px", borderTop: "1px solid rgba(255,255,255,0.08)", fontSize: "12px", color: "rgba(244,242,236,0.45)" }}>© 2026 Yele · yele.design · Hecho en España</div>
   </footer>
 </section>
+
+</div>
 
 {/* ===== "No quiero" overlay: slides down from the top ===== */}
 <div role="dialog" aria-modal="true" aria-label="¿Seguro?" aria-hidden={v.ovHidden} style={{ position: "absolute", inset: "0", zIndex: "20", overflow: "hidden", background: "#E9A9CF", transform: `${v.ovT}`, transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)", pointerEvents: `${v.ovPE}` }}>
