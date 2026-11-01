@@ -73,7 +73,7 @@ this.midFormRef = (el) => { this.midEl = el; };
 this.onSubmit3 = (e) => {
 if (e && e.preventDefault) e.preventDefault();
 if (this.state.sent3) return;
-if (!this.snValidate(['f3-nombre', 'f3-email', 'f3-tel'])) return;
+if (!this.snValidate(e.currentTarget)) return;
 var g = (id) => { var el = typeof document !== 'undefined' && document.getElementById(id); return el && el.value ? String(el.value).trim() : ''; };
 this.setState({ sent3: true });
 this.snSubmitAndBook({ name: g('f3-nombre'), email: g('f3-email'), phone: g('f3-tel'), needs: this.state.needs || [] });
@@ -90,7 +90,7 @@ this.pickBusiness = () => this.pickPlan(this.PLANS[1]);
 this.onSubmit2 = (e) => {
 if (e && e.preventDefault) e.preventDefault();
 if (this.state.sent2) return;
-if (!this.snValidate(['f2-nombre', 'f2-email'])) return;
+if (!this.snValidate(e.currentTarget)) return;
 var g = (id) => { var el = typeof document !== 'undefined' && document.getElementById(id); return el && el.value ? String(el.value).trim() : ''; };
 this.setState({ sent2: true });
 this.snSubmitAndBook({ name: g('f2-nombre'), businessName: g('f2-negocio'), email: g('f2-email'), phone: g('f2-tel'), currentWebsite: g('f2-web'), company: g('f2-negocio-desc'), packageInterest: this.state.plan ? [this.state.plan] : [], needs: this.state.needs || [] });
@@ -206,7 +206,7 @@ setTimeout(function () { if (self.ovEl) self.ovEl.pause(); }, 750);
 this.onSubmit = (e) => {
 if (e && e.preventDefault) e.preventDefault();
 if (this.state.sent) return;
-if (!this.snValidate(['f-nombre', 'f-email', 'f-tel', 'f-empresa'])) return;
+if (!this.snValidate(e.currentTarget)) return;
 var g = (id) => { var el = typeof document !== 'undefined' && document.getElementById(id); return el && el.value ? String(el.value).trim() : ''; };
 this.setState({ sent: true });
 this.snSubmitAndBook({ name: g('f-nombre'), email: g('f-email'), phone: g('f-tel'), company: g('f-empresa'), timeline: this.state.when || '' });
@@ -244,15 +244,15 @@ if (this.lazyIO) this.lazyIO.observe(el);
 } catch (e) {}
 };
 // Blink any empty/invalid required field red on submit; returns false if any are bad.
-this.snValidate = (ids) => {
-if (typeof document === 'undefined') return true;
+this.snValidate = (form) => {
+if (!form || !form.querySelectorAll) return true;
+var els = form.querySelectorAll('input[required], textarea[required], select[required]');
 var ok = true, first = null;
-for (var i = 0; i < ids.length; i++) {
-var el = document.getElementById(ids[i]);
-if (!el) continue;
+for (var i = 0; i < els.length; i++) {
+var el = els[i];
 var val = (el.value || '').trim();
 var bad = !val;
-if (!bad && ids[i].indexOf('email') !== -1) bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+if (!bad && (el.type === 'email' || (el.id && el.id.indexOf('email') !== -1))) bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 if (bad) {
 ok = false; if (!first) first = el;
 el.classList.remove('sn-invalid'); void el.offsetWidth; el.classList.add('sn-invalid');
@@ -468,6 +468,11 @@ return (
 {/* Phone frame: holds the scroller and the "No quiero" overlay */}
 <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden", background: "#0B0B0D" }}>
 
+{/* Always-visible logo — sits above every layer and links to the main site. */}
+<a href="/" aria-label="Yele — inicio" style={{ position: "absolute", top: "20px", left: "24px", zIndex: "40", display: "inline-flex", alignItems: "center", minHeight: "44px", pointerEvents: "auto" }}>
+  <img src="/media/logomedia/mainlogo.svg" alt="Yele" draggable={false} style={{ height: "30px", width: "auto", display: "block" }} />
+</a>
+
 {/* Phone viewport: everything scrolls inside it */}
 <div className="sn-scroller" ref={v.scrollerRef} onScroll={v.onScroll} style={{ position: "relative", width: "100%", height: "100%", overflowY: `${v.scrollOv}`, overflowX: "hidden", scrollbarWidth: "none", background: "#0B0B0D", fontFamily: "var(--font-sn-display), var(--font-display), system-ui, sans-serif", color: "#F4F2EC" }}>
 
@@ -496,10 +501,6 @@ return (
 
   {/* Top bar */}
   <div style={{ position: "absolute", left: "24px", right: "24px", top: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <a href="#" aria-label="Yele" style={{ display: "inline-flex", alignItems: "center", minHeight: "44px" }}>
-      <img src="/media/logomedia/mainlogo.svg" alt="Yele" draggable={false} style={{ height: "30px", width: "auto", display: "block" }} />
-    </a>
-    
   </div>
 
   {/* Hero copy: slides out to the left */}
