@@ -143,6 +143,36 @@ else this.setState({ dragging: false, dragY: 0 });
 this.handleKey = (e) => {
 if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') { e.preventDefault(); this.closeSheet(); }
 };
+// Drag-to-go-back from the 1st form body: grab anywhere that isn't a field
+// (the gaps, labels, background) and pull down to return to card 3. Only when
+// the sheet is scrolled to the very top, so it never fights normal scrolling.
+// Fields keep their typed values — the sheet is never unmounted.
+this.formDragStart = (e) => {
+if (!this.state.formOpen) { this.fdrag = null; return; }
+var t = e.target;
+if (t && t.closest && t.closest('input,textarea,select,button,a,[contenteditable="true"]')) { this.fdrag = null; return; }
+if (this.sheetEl && this.sheetEl.scrollTop > 2) { this.fdrag = null; return; }
+this.fdrag = { y0: e.clientY, dy: 0, active: false, pid: e.pointerId, el: e.currentTarget };
+};
+this.formDragMove = (e) => {
+if (!this.fdrag) return;
+var dy = e.clientY - this.fdrag.y0;
+if (!this.fdrag.active) {
+if (dy > 8 && (!this.sheetEl || this.sheetEl.scrollTop <= 2)) { this.fdrag.active = true; try { this.fdrag.el.setPointerCapture(this.fdrag.pid); } catch (err) {} this.setState({ dragging: true }); }
+else { if (dy < -4) this.fdrag = null; return; }
+}
+dy = Math.max(0, dy);
+this.fdrag.dy = dy;
+this.setState({ dragY: dy });
+};
+this.formDragEnd = () => {
+if (!this.fdrag) return;
+var active = this.fdrag.active, dy = this.fdrag.dy;
+this.fdrag = null;
+if (!active) return;
+if (dy > 140) this.closeSheet();
+else this.setState({ dragging: false, dragY: 0 });
+};
 // CTA 1 press: ring + shine burst, then glide to the cards
 this.pressCta = (e) => {
 if (e && e.preventDefault) e.preventDefault();
@@ -406,6 +436,9 @@ dimTr: live ? 'none' : 'opacity 650ms cubic-bezier(0.22, 1, 0.36, 1)',
 dragStart: this.dragStart,
 dragMove: this.dragMove,
 dragEnd: this.dragEnd,
+formDragStart: this.formDragStart,
+formDragMove: this.formDragMove,
+formDragEnd: this.formDragEnd,
 handleKey: this.handleKey,
 stageT: 'scale(' + (1 - 0.06 * q) + ')',
 stageR: (q > 0 ? Math.round(24 * q) : 0) + 'px',
@@ -543,7 +576,7 @@ return (
   <p style={{ margin: "0", fontSize: "28px", fontWeight: "600", lineHeight: "1.2", color: "rgba(255,255,255,0.85)" }}>Demo en 24h</p>
   </div>
   <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-  <form noValidate onSubmit={v.onSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px", margin: "0" }}>
+  <form noValidate onSubmit={v.onSubmit} onPointerDown={v.formDragStart} onPointerMove={v.formDragMove} onPointerUp={v.formDragEnd} onPointerCancel={v.formDragEnd} style={{ display: "flex", flexDirection: "column", gap: "12px", margin: "0", touchAction: "pan-y" }}>
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <label htmlFor="f-nombre" style={{ fontSize: "14px", color: "rgba(255,255,255,0.6)" }}>Nombre <span style={{ color: `${v.accent}` }}>*</span></label>
       <input id="f-nombre" className="sn-yf" type="text" name="nombre" required autoComplete="name" placeholder="Tu nombre completo" style={{ boxSizing: "border-box", width: "100%", height: "46px", padding: "10px 16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)", color: "#FFFFFF", fontFamily: "inherit", fontSize: "16px" }} />
